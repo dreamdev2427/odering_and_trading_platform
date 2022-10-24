@@ -1,0 +1,111 @@
+{{> Header}}
+
+<script language="javascript">
+	$(document).ready(function() {
+		//$("#inbox").addClass('active');
+    SummernoteMiniDataInitialize('details', 'Enter Payment Details', 400);
+	})
+
+    var deletelink = "";
+
+    function createNewPayment(id) {
+        window.location.href = "/admin/createNewPaymentChannel?id=-" + id;
+        return false;
+    }
+
+
+    function editcchannel(id) {
+        window.location.href = "/admin/createNewPaymentChannel?id=" + id;
+        return false;
+    }
+
+    function activateChannel(id, status) {
+        deletelink = "/admin/activatePaymentChannel?id=" + id + "&status=" + status;
+        if(status == 1)
+            showModelGeneralYesNoDialogBox("Are you sure you want to activate payment channel ?", "Yes Activate", "Cancel");
+        else
+            showModelGeneralYesNoDialogBox("Are you sure you want to de-activate payment channel ?", "Yes De-Activate", "Cancel");
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = deletelink;
+        return false;
+    }
+
+</script>
+
+
+{{> HeaderInnerSto}}
+
+    {{#if errorMessage}}
+        <span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+        <br /><br />
+    {{/if}}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+          <div class="row">
+            <div class="col-md-9">
+                <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" />Payment Channels</h4>
+            </div>
+            <div class="col-md-3">
+                <button type="button" onclick="return createNewPayment()" class="btn btn-info btn-fill btn-wd">New Payment Channel</button>
+            </div>
+          </div>
+				</div>
+
+				<div class="content">
+
+                    {{#if Records.length}}
+                        <table class="table table-striped">
+                            <thead  class="listingHeaderFontSize">
+                                <th>Details</th>
+                                <th>Currency</th>
+                                <th>Status</th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each Records}}
+                                    <tr>
+                                        <td style="width: 55%; vertical-align: top;">
+                                            <span style="font-size:22px;"> {{this.channelTitle}} </span>
+                                            <br />
+                                            <iframe style="height:100%;width:100%;border:1px solid #0b4a03;border-radius: 5px;" srcdoc="{{textBreakLinesEnters this.paymentDetails}}"></iframe>
+                                            <br />&nbsp;
+                                        </td>
+                                        <td style="width: 10%; vertical-align: top;">
+                                            {{this.Abbreviation}} ( {{this.Symbol}} )
+                                            <br />
+                                            {{#if this.isBlockchainBased}}
+                                                {{this.blockchainName}}
+                                            {{/if}}
+                                        </td>
+                                        <td style="width: 25%; vertical-align: top;">
+                                                {{#if this.isActive}}
+                                                        <img src="/img/greendot.png" width="20px"> &nbsp; Active &nbsp;&nbsp;
+                                                        <button onclick="activateChannel({{this.paymentchannelid}}, 0)" class="btn btn-info btn-fill btn-sm"> &nbsp; De-Activate &nbsp; </button>
+                                                {{else}}
+                                                        <img src="/img/reddot.png" width="20px"> &nbsp; De-Active &nbsp;&nbsp;
+                                                        <button onclick="activateChannel({{this.paymentchannelid}}, 1)" class="btn btn-info btn-fill btn-sm"> &nbsp; Activate &nbsp; </button>
+                                                {{/if}}
+                                        </td>
+                                        <td style="width: 10%; vertical-align: top;">
+                                            <button onclick="editcchannel({{this.paymentchannelid}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Edit &nbsp; </button>
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    {{else}}
+                        No Records Found
+                    {{/if}}
+					<br />&nbsp;
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+{{> Footer}}

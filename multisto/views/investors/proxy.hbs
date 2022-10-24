@@ -1,0 +1,400 @@
+{{> Header}}
+
+<html>
+<head>
+    <title></title>
+
+<script language="javascript">
+    var idToExpan = "header{{MeetingRecord.currentItemBeingDiscussed}}";
+
+    $(document).ready(function() {
+            $(".header").click(function () {
+                toggelAgenaItem($(this));
+            });
+
+            var ii = $("#" + idToExpan);
+            toggelAgenaItem(ii);
+            $(ii).css("background-color","#90ee90");
+
+    });
+
+    function toggelAgenaItem($header) {
+        $content = $header.next();
+        $content.slideToggle(200, function () {
+            $header.find("span.iconimage").html(function () {
+                //change text based on condition
+                return $content.is(":visible") ? "<img src='img/minus.png' width='20px' />" : "<img src='img/add.png' width='20px' />";
+            });
+        })
+    }
+
+    function submitProxyInvestos(id) {
+        document.getElementById("meetingInvestorsSelection" + id).submit();
+    }
+
+    function downloadFile(id) {
+      window.location.href = "downloadAgendaIemDocumentProxy?id=" + id;
+      return false;
+    }
+</script>
+
+<style type="text/css">
+    .container {
+        margin:10px;
+        width:98%;
+
+    }
+    .container .header {
+        padding: 10px;
+        background-color: #F0F0F0;
+        cursor: pointer;
+    }
+    .container .content {
+        display: none;
+    }
+</style>
+
+</head>
+    <body>
+
+    <div  style="padding: 80px;">
+        {{#if canProxyAccessMeeting}}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">
+                                <img src="/img/meeting.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{MeetingRecord.title}}
+                            </h4>
+                        </div>
+
+                        <div class="content">
+                            <div class="row">
+                            <div class="col-md-8">
+
+                                    {{MeetingRecord.contents}}
+                                    <br /><br />
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Place</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <img src="/img/place.png" width="25px"> &nbsp;
+                                            {{MeetingRecord.place}}
+                                        </div>
+                                    </div>
+                                    <br />
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Date / Time</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <img src="/img/date.png" width="20px"> &nbsp;
+                                            {{MeetingRecord.openonlydate}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <img src="/img/time.png" width="23px"> &nbsp;
+                                            {{MeetingRecord.starttime}}
+                                            &nbsp;&nbsp;to&nbsp;&nbsp;
+                                            {{MeetingRecord.closetime}}
+                                        </div>
+                                    </div>
+                                    <br />
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Responsible Person</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <img src="/img/user.png" width="20px"> &nbsp;
+                                            {{MeetingRecord.nameResponsiblePerson}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{MeetingRecord.phoneResponsiblePerson}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{MeetingRecord.emailResponsiblePerson}}
+                                        </div>
+                                    </div>
+                                    <br />
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Proxy Person</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <img src="/img/user.png" width="20px"> &nbsp;
+                                            {{MeetingRecord.nameProxyPerson}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{MeetingRecord.phoneProxyPerson}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{MeetingRecord.emailProxyPerson}}
+                                        </div>
+                                    </div>
+                            </div>
+
+                            <div class="col-md-4">
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <img src="/img/greendot.png" width="18px">
+                                            </div>
+                                            <div class="col-md-6">
+                                                Investors attending meeting in-person
+                                            </div>
+                                            <div class="col-md-4">
+                                                {{stats.InPersonMeetingAttend}}
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <img src="/img/greendot.png" width="18px">
+                                            </div>
+                                            <div class="col-md-6">
+                                                Investors who choose to vote online
+                                            </div>
+                                            <div class="col-md-4">
+                                                {{stats.votingOnline}}
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <img src="/img/greendot.png" width="18px">
+                                            </div>
+                                            <div class="col-md-6">
+                                                Investors who choose to vote online in advanced
+                                            </div>
+                                            <div class="col-md-4">
+                                                {{stats.votingOnlineAdvance}}
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <img src="/img/greendot.png" width="18px">
+                                            </div>
+                                            <div class="col-md-6">
+                                                Investors who deregister from the meeting
+                                            </div>
+                                            <div class="col-md-4">
+                                                {{stats.deregisterMeeting}}
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                            </div>
+
+
+                            <br /><br />
+                            <b>Instructions for unannounced proposals / new agenda items</b>
+                            <br /><br />
+                            <img src="/img/greendot.png" width="18px">In favor of the Board of Directors
+                            {{#each stats.BODfavor}}  <img src="/img/graydot.png" width="12px" > {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;    {{/each}}
+
+                            <br /><br />
+                            <img src="/img/greendot.png" width="18px">In favor of the recommendation of the proxy
+                            {{#each stats.proxyfavor}}  <img src="/img/graydot.png" width="12px" > {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;    {{/each}}
+
+                            <br /><br />
+                            <img src="/img/greendot.png" width="18px">In favor of the proposer
+                            {{#each stats.proposerfavor}}  <img src="/img/graydot.png" width="12px" > {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;    {{/each}}
+
+                            <br /><br />
+                            <img src="/img/greendot.png" width="18px">Rejection
+                            {{#each stats.rejectfavor}}  <img src="/img/graydot.png" width="12px" > {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;    {{/each}}
+
+                            <br /><br />
+                            <img src="/img/greendot.png" width="18px"Abstention
+                            {{#each stats.absentfavor}}  <img src="/img/graydot.png" width="12px" > {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;  {{/each}}
+
+                            <br />&nbsp;
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+
+                        <div class="header">
+                            <h4 class="title">
+                                <img src="/img/agendaitem.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Agenda Items
+                            </h4>
+                        </div>
+
+                        <div class="content">
+                            {{#each AgendaItems}}
+                                <div class="container">
+                                        <div class="header" id="header{{this.optionID}}">
+                                            <div class="row">
+                                                <div class="col-sm-1">  <span class="iconimage">  <img src='img/add.png' width='20px' /> </span> </div>
+                                                <div class="col-md-11">  <span style="font-size:18px;">{{this.title}}</span>  </div>
+                                            </div>
+                                        </div>
+                                        <div class="content">
+
+                                            <div class="row">
+                                                    <div class="col-md-7">
+                                                        {{this.desc}}
+                                                        <br /><br />
+                                                        {{#if this.documents.length}}
+                                                            {{#each this.documents}}
+                                                                <div class="row">
+                                                                    <div class="col-md-8">
+                                                                        <div class="row">
+                                                                            <div class="col-md-10">
+                                                                                <img src="/img/document2.png" width="25px"> &nbsp;
+                                                                                {{this.title}}
+                                                                                <br />
+                                                                                <label>{{this.desc}}</label>
+                                                                            </div>
+                                                                            <div class="col-md-2"> <button type="button" onclick="downloadFile({{this.id}})" class="btn btn-info btn-fill btn-sm">Download</button> </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {{/each}}
+                                                        {{/if}}
+                                                    </div>
+
+                                                    <form action="proxyInvestorsSelection" method="post" id="meetingInvestorsSelection{{this.optionID}}">
+
+                                                        <div class="col-md-5">
+                                                            <br /><span style="font-size:20px;"><img width="17px;" src="img/greendot.png" /> &nbsp; Yes</span>
+                                                            <div class="row">
+                                                                <div class="col-md-11">
+                                                                    {{#unless this.isActiveByAdmin}}
+                                                                        <select multiple id="investorsSelectedYes" name="investorsSelectedYes" style="height:140px; overflow-x:auto; font-size:14px;" class="form-control border-input">
+                                                                        {{#each ../investorsRec}}
+                                                                            <option value="{{this.id}}">
+
+                                                                                {{#if this.investortype}}
+                                                                                    {{this.companyname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                {{else}}
+                                                                                    {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                {{/if}}
+
+                                                                                {{this.town}} {{this.country}} &nbsp;&nbsp;&nbsp;
+                                                                                {{this.email}}
+                                                                            </option>
+                                                                        {{/each}}
+                                                                    </select>
+                                                                    {{/unless}}
+                                                                </div>
+                                                            </div>
+                                                            {{#each ../voters}}
+                                                                {{#ifEqual this.votingoptionsid ../this.optionID}}
+                                                                    {{#ifEqual this.votingoptionsvalue 1}}
+                                                                        <img width="15px;" src="img/greendot.png" />
+                                                                        {{#if this.investortype}}
+                                                                            {{this.companyname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        {{else}}
+                                                                            {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        {{/if}}
+                                                                    {{/ifEqual}}
+                                                                {{/ifEqual}}
+                                                            {{/each}}
+
+                                                            <hr/>
+
+                                                            <span style="font-size:20px;"><img width="17px;" src="img/reddot.png" /> &nbsp; No</span>
+                                                            <div class="row">
+                                                                <div class="col-md-11">
+                                                                    {{#unless this.isActiveByAdmin}}
+                                                                        <select multiple id="investorsSelectedNo" name="investorsSelectedNo" style="height:140px; overflow-x:auto; font-size:14px;" class="form-control border-input">
+                                                                        {{#each ../investorsRec}}
+                                                                            <option value="{{this.id}}">
+                                                                                {{#if this.investortype}}
+                                                                                    {{this.companyname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                {{else}}
+                                                                                    {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                {{/if}}
+
+                                                                                {{this.town}} {{this.country}} &nbsp;&nbsp;&nbsp;
+                                                                                {{this.email}}
+                                                                            </option>
+                                                                        {{/each}}
+                                                                    </select>
+                                                                    {{/unless}}
+                                                                </div>
+                                                            </div>
+                                                            {{#each ../voters}}
+                                                                {{#ifEqual this.votingoptionsid ../this.optionID}}
+                                                                    {{#ifEqual this.votingoptionsvalue 2}}
+                                                                        <img width="15px;" src="img/reddot.png" />
+                                                                        {{#if this.investortype}}
+                                                                            {{this.companyname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        {{else}}
+                                                                            {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        {{/if}}
+                                                                    {{/ifEqual}}
+                                                                {{/ifEqual}}
+                                                            {{/each}}
+
+                                                            <hr />
+
+                                                            <span style="font-size:20px;"><img width="17px;" src="img/graydot.png" /> &nbsp; Abstention</span>
+                                                            <div class="row">
+                                                                <div class="col-md-11">
+                                                                    {{#unless this.isActiveByAdmin}}
+                                                                        <select multiple id="investorsSelectedAbs" name="investorsSelectedAbs" style="height:140px; overflow-x:auto; font-size:14px;" class="form-control border-input">
+                                                                        {{#each ../investorsRec}}
+                                                                            <option value="{{this.id}}">
+                                                                                {{#if this.investortype}}
+                                                                                    {{this.companyname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                {{else}}
+                                                                                    {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                {{/if}}
+
+                                                                                {{this.town}} {{this.country}} &nbsp;&nbsp;&nbsp;
+                                                                                {{this.email}}
+                                                                            </option>
+                                                                        {{/each}}
+                                                                    </select>
+                                                                    {{/unless}}
+                                                                </div>
+                                                            </div>
+                                                            {{#each ../voters}}
+                                                                {{#ifEqual this.votingoptionsid ../this.optionID}}
+                                                                    {{#ifEqual this.votingoptionsvalue 3}}
+                                                                        <img width="15px;" src="img/graydot.png" />
+                                                                        {{#if this.investortype}}
+                                                                            {{this.companyname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        {{else}}
+                                                                            {{this.firstname}} {{this.lastname}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        {{/if}}
+                                                                    {{/ifEqual}}
+                                                                {{/ifEqual}}
+                                                            {{/each}}
+
+                                                            <br /><br />
+
+                                                            {{#unless this.isActiveByAdmin}}
+                                                                <button type="button" onclick="submitProxyInvestos({{this.optionID}})" class="btn btn-info btn-fill btn-sm">Submit</button>
+                                                            {{/unless}}
+                                                        </div>
+
+                                                        <input type="hidden" name="optionID" value="{{this.optionID}}" />
+                                                        <input type="hidden" name="meetingID" value="{{this.meetingID}}" />
+                                                        <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                                                    </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                <br />
+                            {{/each}}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {{else}}
+            <center><h4>Meeting is not accessible</h4></center>
+        {{/if}}
+    </div>
+
+    </body>
+</html>

@@ -1,0 +1,125 @@
+query verifyInvestor {
+  investorUser {
+    sto {
+      ID
+      title
+      details
+      isActive
+      logo
+      ethereumContractAddress
+      ethereumWhitelistAddress
+      disclaimer
+      stolink
+      stolinkfull
+      stoType
+      stoInvestorTypes
+      registrationText
+      stoInvestorTypesNotOnShareRegister
+      companyType
+      registrationSuccessText
+      fullDetails
+      exchangeOpenDate
+      propertyPicture
+      externalSystemID
+      projectAddress
+      legalDetails
+      picture
+      verifyInvestorComHostToken
+      parsedSettings {
+        investorCategories {
+          value
+          label
+        }
+      }
+      images {
+        ID
+        title
+        url
+      }
+      documents {
+        ID
+        title
+        url
+      }
+    }
+    investor {
+      ID
+      firstName
+      lastName
+      address
+      country
+      phone
+      cell
+      zip
+      town
+      state
+      email
+      passportNumber
+      nationalID
+      kinname
+      kinphone
+      kinemail
+      investorType
+      companyName
+      titleWithinCompany
+      powerToBindCompany
+      birthDate
+      isTwoFactorEnabled
+      language
+      middleName
+      socialSecurity
+      mailingAddress
+      faxNumber
+      maritalStatus
+      occupation
+      employerName
+      employerAddress
+      retirementAccount
+      trustOrBusinessEntity
+      dateIncorporation
+      taxID
+      govtID
+      isTax
+      secondaryContactName
+      secondaryContactPhone
+      secondaryContactEmail
+      primaryContactName
+      primaryContactPhone
+      primaryContactEmail
+      countryBusiness
+      countryCitizenship
+      taxCountry
+      userName
+      #      PrincipalCountryOfBusiness
+    }
+    investorSto {
+      ID
+      isAccountClosed
+      investorID
+      stoID
+      expectedShares
+      expectedInvestment
+      isKYC
+      applied
+      status
+      usufructuaryFirstName
+      usufructuaryLastName
+      usufructuaryAddress
+      usufructuaryCity
+      usufructuaryCountry
+      usufructuaryEmail
+      beneficialFirstName
+      beneficialLastName
+      beneficialAddress
+      beneficialCity
+      beneficialCountry
+      beneficialEmail
+      beneficialBirth
+      beneficialNationality
+      isUsufructuary
+      isActive
+      notes
+    }
+  }
+  getVerifyInvestorUrl
+}

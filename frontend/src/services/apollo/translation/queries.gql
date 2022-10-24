@@ -1,0 +1,8 @@
+query translationLoad($locale: String) {
+    translations(locale: $locale) {
+        key
+        locale
+        translation
+    }
+    locales
+}

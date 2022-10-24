@@ -1,0 +1,261 @@
+{{> Header}}
+
+<html>
+<head>
+    <title></title>
+
+    <script language="javascript">
+        $(document).ready(function() {
+
+        });
+    </script>
+
+</head>
+<body>
+<br />
+<div class="row">
+    <div class="col-md-9"> </div>
+    <div class="col-md-3">
+        <button type="button" onclick="generatePDF('report')" class="btn btn-info btn-fill">Download PDF</button>
+    </div>
+</div>
+
+<br />
+
+<div id="report">
+    <div class="row">
+            <div class="col-md-1"> </div>
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">
+                            <img src="/img/meeting.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; {{MeetingRecord.title}}
+                        </h4>
+                    </div>
+
+                    <div class="content">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {{MeetingRecord.contents}}
+                                    </div>
+                                    <br /><br /><br /><br />&nbsp;
+                                    <div class="col-md-12">
+
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label>Place</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <img src="/img/place.png" width="20px;" /> &nbsp;
+                                                    {{MeetingRecord.place}}
+                                                </div>
+                                            </div>
+                                            <br />
+
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label>Time</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <img src="/img/date.png" width="20px;" /> &nbsp;
+                                                            {{MeetingRecord.openonlydate}}
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <img src="/img/time.png" width="20px;" /> &nbsp;
+                                                            {{MeetingRecord.starttime}}
+                                                            &nbsp;&nbsp;to&nbsp;&nbsp;
+                                                            {{MeetingRecord.closetime}}
+                                                            &nbsp;&nbsp;
+                                                            <span style="cursor:pointer" class="badge badge-light" title="{{MeetingRecord.timezonetitle}}">{{MeetingRecord.timezone}}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br />
+
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label>Responsible Person</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <img src="/img/user.png" width="20px;" /> &nbsp;
+                                                    {{MeetingRecord.nameResponsiblePerson}}
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                    {{MeetingRecord.phoneResponsiblePerson}}
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                    {{MeetingRecord.emailResponsiblePerson}}
+                                                </div>
+                                            </div>
+                                            <br />
+
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label>Proxy Person</label>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <img src="/img/user.png" width="20px;" /> &nbsp;
+                                                    {{MeetingRecord.nameProxyPerson}}
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                    {{MeetingRecord.phoneProxyPerson}}
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                    {{MeetingRecord.emailProxyPerson}}
+                                                </div>
+                                            </div>
+                                            <br />
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br /> &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <span style="page-break-before:always" />
+
+    <page backtop="2mm" backbottom="2mm" backleft="2mm" backright="2mm">
+            <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-1"> </div>
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">
+                            <img src="/img/agendaitem.png" width="25px;" /> &nbsp;  Meeting Agenda
+                        </h4>
+                    </div>
+
+                    <div class="content">
+                        {{#each AgendaItems}}
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <img src="/img/greendot.png" width="18px">
+                                        &nbsp;
+                                        <b>{{this.title}}</b>
+                                        <br /><br />
+                                        {{this.desc}}
+                                        <br /><br />
+                                        {{#if this.documents.length}}
+                                            {{#each this.documents}}
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <img src="/img/document2.png" width="30px;" /> &nbsp;
+                                                        {{this.title}}
+                                                        <br />
+                                                        <label>{{this.desc}}</label>
+                                                    </div>
+                                                </div>
+                                            {{/each}}
+                                        {{/if}}
+                                    </div>
+                                    <div class="col-md-5">
+                                        {{#ifIn ../MeetingRecord.open '[0,2]'}}
+                                        {{#if this.isActiveByAdmin}}
+                                            {{#if ../votingData.length}}
+
+
+                                                        <b>Votes Casted</b>
+                                                        <br /><br />
+
+                                                        <b><div class="row">
+                                                            <div class="col-md-3">Option</div>
+                                                            {{#unless ../companytype}}
+                                                                <div class="col-md-3">Shares</div>
+                                                                <div class="col-md-3">Nominal<br /> Value</div>
+                                                            {{/unless}}
+                                                            <div class="col-md-3">Investor(s)</div>
+                                                        </div></b>
+
+                                                        {{#each ../votingData}}
+                                                            {{#ifEqual this.votingoptionsid ../optionID}}
+                                                                <div class="row"  style="padding-top:10px;">
+
+                                                                        {{#ifEqual this.votingoptionsvalue 1}}
+                                                                            <div class="col-md-3">Yes</div>
+                                                                        {{/ifEqual}}
+
+                                                                        {{#ifEqual this.votingoptionsvalue 2}}
+                                                                            <div class="col-md-3">No</div>
+                                                                        {{/ifEqual}}
+
+                                                                        {{#ifEqual this.votingoptionsvalue 3}}
+                                                                            <div class="col-md-3">Abstention</div>
+                                                                        {{/ifEqual}}
+
+                                                                        {{#unless ../../companytype}}
+                                                                            <div class="col-md-3">
+                                                                                {{numberFormat this.sum decimalLength="0"}}
+                                                                                <br /> ( {{this.PercentShares}} %)
+                                                                            </div>
+                                                                            <div class="col-md-3">
+                                                                                {{numberFormat this.sumNominalInvestment decimalLength="0"}}
+                                                                                <br /> ( {{this.PercentNominalInvestment}} %)
+                                                                            </div>
+                                                                        {{/unless}}
+
+                                                                        <div class="col-md-3">{{this.count}} <br /> ( {{this.PercentInvestorCount}} %) </div>
+
+                                                                </div>
+                                                            {{/ifEqual}}
+                                                        {{/each}}
+
+                                                        <br />
+                                                        {{#if ../callFromAdmin}}
+                                                            <div class="row">
+                                                                <div class="col-md-4"><b></b></div>
+                                                                <div class="col-md-3"><b>Total<br /> Quantity</b></div>
+                                                                <div class="col-md-5"><b>Represented in <br />Voting</b></div>
+                                                            </div>
+
+                                                            {{#with (lookup ../AgendaItemsTotals optionID) as |AgendaItemTotal|}}
+                                                                <div class="row">
+                                                                    <div class="col-md-4"><b>Investors</b></div>
+                                                                    <div class="col-md-3"> {{numberFormat ../../totalInvestors decimalLength="0"}} </div>
+                                                                    <div class="col-md-5"> {{numberFormat AgendaItemTotal.totalInvestors decimalLength="0"}} (  {{AgendaItemTotal.totalInvestorsPercentage}} %)</div>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-4"><b>Shares</b></div>
+                                                                    <div class="col-md-3"> {{numberFormat ../../totalShares decimalLength="0"}} </div>
+                                                                    <div class="col-md-5"> {{numberFormat AgendaItemTotal.totalShares decimalLength="0"}} ( {{AgendaItemTotal.totalSharesPercentage}} %)</div>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-4"><b>Nominal</b></div>
+                                                                    <div class="col-md-3"> {{numberFormat ../../totalNominalShares decimalLength="0"}} </div>
+                                                                    <div class="col-md-5"> {{numberFormat AgendaItemTotal.totalNominalShares decimalLength="0"}} ( {{AgendaItemTotal.totalNominalSharesPercentage}} %)</div>
+                                                                </div>
+                                                            {{/with}}
+                                                        {{/if}}
+                                                        <br /><br/>
+                                                        <label>Company's final decision</label><br />
+                                                        {{this.CompanyComments}}
+
+                                            {{else}}
+                                                <b>No Votes Casted</b>
+                                            {{/if}}
+                                        {{/if}}
+                                    {{/ifIn}}
+                                    </div>
+                                </div>
+                                <br /><br />
+                                <hr  style="page-break-before:always" />
+                            {{/each}}
+
+                        <br /> &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+        </page>
+</div>
+
+{{> Footer}}
+

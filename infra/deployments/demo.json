@@ -1,0 +1,7 @@
+{
+    "id": "demo",
+    "version": "staging",
+    "apiHostname": "default",
+    "frontendHostname": "demo.digishares.cloud",
+    "multistoHostname": "default"
+}

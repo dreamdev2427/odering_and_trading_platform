@@ -1,0 +1,7 @@
+query customizationAppData($componentTitle: String, $componentId: Int) {
+  fetchCustomizedComponent(componentTitle: $componentTitle, componentID: $componentId) {
+    ID
+    component
+    body
+  }
+}

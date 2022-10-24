@@ -1,0 +1,56 @@
+<html>
+<head>
+    <title>{{SiteParameter_PageTitle}}</title>
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+         function login() {
+             
+                if(document.getElementById("txtCode").value === "") {
+                    alert("Please enter security code from email");
+                    return false;
+                }
+
+                document.getElementById("Login").submit();
+         }
+
+     </script>
+</head>
+
+<body id="LoginForm">
+<br /><br />
+
+<div class="container">
+    <div class="login-form">
+        <div class="main-div">
+            <div class="panel">
+               <img src="/img/stologo/{{logo}}" style="max-height: 170px; max-width: 220px;" /> 
+                <br />
+               <span style="font-size:24px">Two Factor Authentication</span> 
+                <br /><br />
+                2 factor authentication is enabled on this account. An email is sent to your registered email account with  authentication code <br /><br />
+               <p>Please enter code you received in your email</p>
+            </div>
+            
+            <form id="Login" action="/admin/login2post" method="post">
+                <div class="form-group">
+                    <input type="text"  maxLength="70" class="form-control" id="txtCode" name="txtCode" placeholder="Authenticate Code">
+                </div>
+
+                <br>
+                <button onclick="return login()" class="btn btn-primary">Authenticate</button>
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+            </form>
+
+            <br />
+            <a href="/admin/login">Login Again</a>
+            <span style="color:red;"> <b>{{UserMessage}}</b> </span>
+
+        </div>
+    </div>
+</div>
+    
+</body>
+</html>

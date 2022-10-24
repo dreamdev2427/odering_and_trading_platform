@@ -1,0 +1,7 @@
+{
+    "id": "retokens",
+    "version": "staging",
+    "apiHostname": "api.retokens.com",
+    "frontendHostname": "investor.retokens.com",
+    "multistoHostname": "admin.retokens.com"
+}

@@ -1,0 +1,41 @@
+<script>
+    function postIsBlockchainAddressSwitchEnabled(isChecked) {
+      document.getElementById('isBlockchainAddressSwitchEnabled-intValue').value = +isChecked;
+      document.getElementById('isBlockchainAddressSwitchEnabled-redirectUrl').value = window.location.href;
+      document.getElementById('postIsBlockchainAddressSwitchEnabled').submit();
+    }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:0.5rem; margin-right:1rem;" alt='add more'/>Shared blockchain address management</h4>
+        <label>Allow the investor to manage their shared blockchain address details.</label>
+      </div>
+      <div class="content">
+        <form method="post" id="postIsBlockchainAddressSwitchEnabled" action="postParamUpdateToApi">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="switch">
+                <input id="isBlockchainAddressSwitchEnabled"
+                       onclick=postIsBlockchainAddressSwitchEnabled(this.checked) type="checkbox"
+                  {{#if isBlockchainAddressSwitchEnabled}}
+                       checked
+                  {{/if}}
+                >
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" id="isBlockchainAddressSwitchEnabled-intValue" name="intValue"/>
+          <input type="hidden" id="isBlockchainAddressSwitchEnabled-stringValue" name="stringValue" value=""/>
+          <input type="hidden" id="isBlockchainAddressSwitchEnabled-param" name="param" value="isBlockchainAddressSwitchEnabled" />
+          <input type="hidden" id="isBlockchainAddressSwitchEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

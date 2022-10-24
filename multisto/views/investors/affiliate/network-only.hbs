@@ -1,0 +1,54 @@
+{{> Header}}
+{{> HeaderInner}}
+<script lang="javascript">
+    $(document).ready(() => {
+        $("#affiliatenetwork").addClass("active");
+    });
+</script>
+<style>
+    .title {
+        padding-left: 12px;
+    }
+    .toast {
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+</style>
+{{#if message}}
+    <div class="row">
+        <div class="alert alert-info toast">
+            <p>
+                <i class="ti-info-alt"></i>
+                {{message}}
+            </p>
+        </div>
+    </div>
+{{/if}}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="card">
+            <div class="row header">
+                <h4 class="title">
+                    <img src="/img/relative2.png" width="25px;" /> &nbsp; {{{__ "Your Network"}}}
+                </h4>
+            </div>
+            {{#if referrerName}}
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p class="content title">{{{__ "My recommender is"}}}: {{referrerName}}</p>
+                    </div>
+                </div>
+            {{/if}}
+            <div class="row">
+                <div class="col-xs-12">
+                    <div style="overflow:auto;">
+                        {{> affiliatetree}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{> Footer}}

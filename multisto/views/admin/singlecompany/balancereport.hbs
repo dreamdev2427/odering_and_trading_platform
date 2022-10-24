@@ -1,0 +1,90 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {
+
+	})
+    
+    function backtoinv() {
+            window.location.href = "investorsViewSto?id={{id}}";
+            return false;
+    }
+
+</script>
+    
+    {{#if errorMessage}}
+        <span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+        <br /><br />
+    {{/if}}    
+
+{{> HeaderInnerSto}}
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+                
+				<div class="header">
+                    <div class="row">
+                        <div class="col-md-10">                                
+                            <div class="row">
+                                    <div class="col-md-10"> 
+                                            <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Balance Report &nbsp;&nbsp;&nbsp; {{currencyRecord.Abbreviation}} ( {{currencyRecord.Symbol}} )  </h4>
+                                    </div>
+                                    <div class="col-md-2">        
+                                         <button onclick="return backtoinv()"  class="btn btn-info btn-fill ">Back to Investor Profile</button>
+                                    </div>                            
+                            </div>
+                        </div>
+                    </div>
+				</div>
+
+				<div class="content">
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2">  Date  </div>
+                            <div class="col-md-2">  Amount  </div>
+                            <div class="col-md-3">  Details </div> 
+                            <div class="col-md-3">   </div> 
+                            <div class="col-md-2">  Final Balance </div> 
+                        </div>        
+                        
+                        <br />
+                    
+                        {{#each records}}
+                                <div class="row">
+                                            <div class="col-md-2"> 
+                                                {{this.DateApprovedFormated}}
+                                            </div>
+                                    
+                                            <div class="col-md-2"> 
+                                                {{currencySymbol this.currencyID}} {{numberFormat this.Amount decimalLength="-"}} 
+                                            </div>
+                                            
+                                            <div class="col-md-3"> 
+                                                {{this.Details}}
+                                            </div>
+                                    
+                                            <div class="col-md-3"> 
+                                                {{#ifEqual this.isApproved 1}} <span style="color:green"><b>Deposit By Investor</b>{{/ifEqual}}
+                                                {{#ifEqual this.isApproved 2}} <span style="color:red"><b>Declined</b></span> {{/ifEqual}}
+                                                
+                                                {{#ifEqual this.isApproved 3}} <span style="color:green"><b>Increased by Admin</b></span> {{/ifEqual}}
+                                                {{#ifEqual this.isApproved 4}} <span style="color:red"><b>Reduced by Admin</b></span> {{/ifEqual}}
+                                                {{#ifEqual this.isApproved 5}} <span style="color:green"><b>Shares Transferred</b></span> {{/ifEqual}}                                                
+                                            </div>
+                                    
+                                            <div class="col-md-2"> 
+                                                {{currencySymbol this.currencyID}}  {{numberFormat this.runningBalance decimalLength="-"}} 
+                                            </div>                                         
+                                </div>
+                                <br />
+                        {{/each}}
+                        <br />&nbsp;
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+{{> Footer}}

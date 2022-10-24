@@ -1,0 +1,234 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function () {
+        boolenChoiceCreater('disclaimer', 'disclaimer');
+        boolenChoiceCreater('Registration', 'Registration');
+        boolenChoiceCreater('RegistrationBanner', 'RegistrationBanner');
+        boolenChoiceCreater('EnablePaymentModule', 'EnablePaymentModule');
+        boolenChoiceCreater('isInternalExchangeEnabled', 'isInternalExchangeEnabled');
+        currencyConvertor('DefaultSTOCurreny');
+        investorCatCreator();
+        });
+    data = {{{ json Datarows }}}
+
+    function boolenChoiceCreater(tagid, value) {
+        let response = {{{ json Datarows }}}
+        data =  JSON.parse(response.settings)
+        if(parseInt(data[value])) {
+            document.getElementById(tagid).innerHTML = `<option value="0">False</option>
+                                                        <option value="1" selected>True</option>`
+        } else {
+            document.getElementById(tagid).innerHTML = `<option value="0" selected>False</option>
+                                                        <option value="1">True</option>`
+        }     
+    }
+    function currencyConvertor(tagId) {
+        let response = {{{ json Datarows }}}
+        let data = JSON.parse(response.settings)
+        let currencytable = {{{ json Currency}}}
+        let currencyList
+        for(let i = 0; i < currencytable.length; i++) {
+            if(currencytable[i].ID == data.DefaultSTOCurreny) {
+                currencyList += `<option value=${currencytable[i].ID} selected>${currencytable[i].Abbreviation} (${currencytable[i].Symbol})</option>`
+            } else {
+                currencyList += `<option value=${currencytable[i].ID}>${currencytable[i].Abbreviation}</option>`
+            }
+        }
+        document.getElementById(tagId).innerHTML = currencyList;
+
+
+    }
+    function investorCatCreator() {
+            let response = {{{ json Datarows }}}
+        let data = JSON.parse(response.settings)
+
+        document.getElementById('InvestorCategory').value = JSON.stringify(data['InvestorCategory'])
+        //document.getElementById('ListCountry').value = JSON.stringify(data['ListCountry'])
+
+    }
+    //"ListCountry": document.getElementById('ListCountry').value,
+
+    function updateSTOData() {
+        let query = {"disclaimer": document.getElementById('disclaimer').value, "Registration": document.getElementById('Registration').value, "RegistrationBanner": document.getElementById('RegistrationBanner').value, "InvestorCategory": JSON.parse(document.getElementById('InvestorCategory').value), "DefaultSTOCurreny": document.getElementById('DefaultSTOCurreny').value, "EnablePaymentModule": document.getElementById('EnablePaymentModule').value, "isInternalExchangeEnabled": document.getElementById('isInternalExchangeEnabled').value}       
+        const data = {field: query}
+        let xhr = new XMLHttpRequest()
+        xhr.open("POST", window.location.href);
+        xhr.setRequestHeader("X-CSRF-Token", "{{csrfToken}}");
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.onreadystatechange = function () {//Call a function when the state changes.
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    location.reload();
+                } else {
+                    return xhr.response;
+                }
+            }
+        }
+        xhr.send(JSON.stringify(data));
+        
+        
+    }
+
+
+</script>
+
+<script>
+
+    function sendTestEmail() {
+        if(document.getElementById("emailTestServer").value == "") {
+            alert("Please enter email address")
+            return;
+        }
+        window.location.href = "sendTestEmail?email=" + document.getElementById("emailTestServer").value + "&id={{ID}}";
+        return false;
+    }  
+
+</script>
+
+
+
+{{> HeaderInnerPlatform}}
+
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; STO Config</h4>
+                </div>
+                <div class="content">
+    
+                    {{#if message}}
+                        <span style="color:red;">{{message}}</span>
+                    {{/if}}
+
+
+                    <form id="stodetail" method="post">
+    
+                        <div class="row">
+                            <div class="col-md-3">
+                                Title
+                            </div>
+                            <div class="col-md-4">
+                                <input disbaled type="text" class="form-control border-input" id="stotitle" name="title"
+                                    value="{{Datarows.title}}">
+                            </div>
+                        </div>
+
+                        <br />
+                        <label>Settings Detail</label>
+    
+                        <div class="row">
+                            <div class="col-md-3">
+                                Disclaimer
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control border-input" id="disclaimer">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                RegistrationBanner
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control border-input" id="RegistrationBanner">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                Registration
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control border-input" id="Registration">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                EnablePaymentModule
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control border-input" id="EnablePaymentModule">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                isInternalExchangeEnabled
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control border-input" id="isInternalExchangeEnabled">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                InvestorCategory
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="InvestorCategory" name="InvestorCategory" value="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                DefaultSTOCurreny
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control border-input" id="DefaultSTOCurreny">
+                                </select>
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col-md-3">
+    
+                            </div>
+                            <div class="col-md-9">
+                                <button type="button" onclick="updateSTOData()" class="btn btn-info btn-fill">Update</button>
+                            </div>
+                        </div>
+    
+    
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+    
+                    <hr />
+                    <h4>
+                        Test Email Server for this STO
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            Enter Email Address 
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control border-input" id="emailTestServer" name="emailTestServer"
+                                value="">
+                            <br />
+
+                            <div class="col-md-9">
+                                <button type="button" onclick="sendTestEmail()" class="btn btn-info btn-fill">Send Test Email</button>
+                            </div>                            
+                        </div>
+                    </div>
+    
+                    <br>
+                    <div class="footer">
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{{> Footer}}

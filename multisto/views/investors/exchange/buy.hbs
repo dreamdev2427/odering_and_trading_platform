@@ -1,0 +1,999 @@
+{{> Header}}
+
+{{> atomicswap}}
+
+<script language="javascript">
+
+        var tradeType = {{record.type}};     //1=Sell       2=Buy
+
+        var atomicSwapAcceptable = {{record.atomicSwapAcceptable}};
+        var investorAmount = {{investorAmount}};
+        var sharesOnOffer = {{record.shares}};
+        var investorNonBlockchainShares = {{investorNonBlockchainShares}};
+        var contractabi = [
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "approve",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": true,
+              "inputs": [],
+              "name": "totalSupply",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "name": "addedValue",
+                  "type": "uint256"
+                }
+              ],
+              "name": "increaseAllowance",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "mint",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "burn",
+              "outputs": [],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": true,
+              "inputs": [
+                {
+                  "name": "owner",
+                  "type": "address"
+                }
+              ],
+              "name": "balanceOf",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [],
+              "name": "renounceOwnership",
+              "outputs": [],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "burnFrom",
+              "outputs": [],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": true,
+              "inputs": [],
+              "name": "registry",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "constant": true,
+              "inputs": [],
+              "name": "owner",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "constant": true,
+              "inputs": [],
+              "name": "isOwner",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "addMinter",
+              "outputs": [],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [],
+              "name": "renounceMinter",
+              "outputs": [],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "name": "subtractedValue",
+                  "type": "uint256"
+                }
+              ],
+              "name": "decreaseAllowance",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": true,
+              "inputs": [
+                {
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "isMinter",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "constant": true,
+              "inputs": [
+                {
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "name": "spender",
+                  "type": "address"
+                }
+              ],
+              "name": "allowance",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "transferOwnership",
+              "outputs": [],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "name": "_registry",
+                  "type": "address"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "constructor"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "name": "reason",
+                  "type": "uint8"
+                },
+                {
+                  "indexed": true,
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "CheckStatus",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "name": "previousOwner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "name": "newOwner",
+                  "type": "address"
+                }
+              ],
+              "name": "OwnershipTransferred",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "MinterAdded",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "name": "account",
+                  "type": "address"
+                }
+              ],
+              "name": "MinterRemoved",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "name": "from",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Transfer",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": true,
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "indexed": true,
+                  "name": "spender",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "name": "value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Approval",
+              "type": "event"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "_to",
+                  "type": "address"
+                },
+                {
+                  "name": "_value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "transfer",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "_from",
+                  "type": "address"
+                },
+                {
+                  "name": "_to",
+                  "type": "address"
+                },
+                {
+                  "name": "_value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "transferFrom",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": false,
+              "inputs": [
+                {
+                  "name": "_from",
+                  "type": "address"
+                },
+                {
+                  "name": "_to",
+                  "type": "address"
+                },
+                {
+                  "name": "_value",
+                  "type": "uint256"
+                }
+              ],
+              "name": "forceTransfer",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "bool"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "constant": true,
+              "inputs": [],
+              "name": "_service",
+              "outputs": [
+                {
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+            }
+          ];
+
+        var contract_address = "{{record.atomicSwapTokenAddressAcceptable}}";         //This is the token what will be swapped with shares tokens
+
+        var isWalletConnected = 0;
+        var currentWalletAccount = "";
+        var tokenAccount = "{{offerRec.atomicBuyerPublicKey}}";
+
+        $(document).ready(function() {
+            $("#trading").addClass('active');
+        })
+        function submitForm() {
+            if(atomicSwapAcceptable == 1) {
+                 if(  $("#publickey option").length == 0 ) {
+                     showModelGeneralOKDialogBox("This trade is a token swap in blockchain. You have not set your crypto wallet in the system so you cannot make an offer");
+                     return;
+                 }
+            } else if(atomicSwapAcceptable == 0) {
+
+                if(tradeType == 2)  {
+                    //  This is Buy trade  where this user is selling his shares
+                      if(document.getElementById("shares").value > investorNonBlockchainShares) {
+                            showModelGeneralOKDialogBox("You only own " + investorNonBlockchainShares + " shares that you can sell. Please enter less than this number");
+                            return;
+                      }
+                }
+
+            }
+
+
+            if(isNaN(document.getElementById("shares").value) ) {
+                showModelGeneralOKDialogBox("Please enter numeric values in number of shares");
+                return;
+            } else {
+                if(document.getElementById("shares").value == "") {
+                    showModelGeneralOKDialogBox("Please enter number of shares");
+                    return;
+                }
+
+                if ( parseInt(document.getElementById("shares").value) > sharesOnOffer ) {
+                    showModelGeneralOKDialogBox("Only " + sharesOnOffer + " shares are on offer in this trade. Please enter value less than or equal to " + sharesOnOffer);
+                    return;
+                }
+
+            }
+
+            if(isNaN(document.getElementById("rate").value) ) {
+                showModelGeneralOKDialogBox("Please enter numeric values in token/amount");
+                return;
+            } else {
+                if(document.getElementById("rate").value == "") {
+                    showModelGeneralOKDialogBox("Please enter token/amount");
+                    return;
+                }
+            }
+
+            document.getElementById("buytrading").submit();
+        }
+        function returnToMain() {
+            window.location.href = "trading";
+            return false;
+        }
+        function deleteOffer() {
+            window.location.href = "deleteBuyOffer?id={{offerRec.ID}}";
+            return false;
+        }
+
+        {{#if offerRecFound}}
+            async function appriveTokensTransfersLocalFunction() {
+
+                if(isWalletConnected == 0) {
+                      showModelGeneralOKDialogBox("Wallet is not yet connect. Please perform step 1");
+                      return;
+                }
+
+                if(currentWalletAccount.toLowerCase() != tokenAccount.toLowerCase()) {
+                      showModelGeneralOKDialogBox("Wallet account {{offerRec.atomicBuyerPublicKey}} is not selected");
+                      return;
+                }
+
+                Wallet_ApproveTransfers({{offerRec.rateFrom}}, contract_address, 1)
+            }
+        {{/if}}
+
+        function Wallet_BlockchainAccountSelected(account) {
+            isWalletConnected = 1;
+            currentWalletAccount = account;
+            $("#wallet").show();
+            $("#walletnotconnected").hide();
+            $("#selectedAccount").text(account);
+        }
+        function Wallet_ApproveTransfersSuccessEvent(obj) {
+            window.location.href = "changeSwapStatus?id={{record.ID}}&status=4";
+            return false;
+        }
+        function Wallet_ApproveTransfersFailureEvent(error) {
+         showModelGeneralOKDialogBox("Error occured in blockchain. Please make sure your wallet is configured correctly and you have required tokens in your account" + JSON.stringify(error) );
+    }
+        function Wallet_TransactionEvent(id, data) {
+            if(id == 1)
+                $("#spanApproveTrnasferExecuting").show();
+        }
+
+        async function closeSwapOperation() {
+
+                  if(isWalletConnected == 0) {
+                          showModelGeneralOKDialogBox("Wallet is not yet connect. Please perform step 1");
+                          return;
+                  }
+
+                  const web3 = new Web3(provider);
+
+                  // Get list of accounts of the connected wallet
+                  const accounts = await web3.eth.getAccounts();
+
+                  web3.eth.getTransactionCount(accounts[0], 'pending').then(obj=> {
+
+                            const contract = new web3.eth.Contract(swapcontractabi, swapcontract_address);
+
+                                const _executor = "{{sellerPublicKey}}";
+                                const _swapNumber = web3.utils.toHex( {{offerRec.atomicSwapSecret}} );
+
+                                // creating raw tranaction
+                                const rawTransaction = {
+                                    from: accounts[0],
+                                    gasPrice: web3.utils.toHex(120 * 1e9),
+                                    gasLimit: 93399 + 1000000,
+                                    to: swapcontract_address,
+                                    value: 0x0,
+                                    data: contract.methods.close(_executor, _swapNumber ).encodeABI(),
+                                    nonce: web3.utils.toHex( obj ),
+                                };
+
+                            web3.eth.sendTransaction( rawTransaction )
+                            .once('transactionHash', function(hash){
+                                $("#spanSwapTrnasferExecuting").show();
+                            })
+                            .once('receipt', function(receipt){ })
+                            .on('confirmation', function(confNumber, receipt){  })
+                            .on('error', function(error){
+                                 showModelGeneralOKDialogBox("An error occured while executing blockchain transaction");
+                                 return;
+                            }).then ( obj => {
+                                    window.location.href = "changeSwapStatus?id={{record.ID}}&status=5";
+                                    return false;
+                            });
+                  })
+            }
+        function shareCountChanged(shareCount) {
+            if (isNaN(shareCount.value)) {
+                shareCount.value = 0;
+            }
+            shareCount.value = parseFloat(shareCount.value).toFixed({{ShareCountInFractions}});
+            return;
+        }
+
+</script>
+
+{{> HeaderInner}}
+
+    <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/lock.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; {{#ifEqual record.type 1}} Sell {{else}} Buy {{/ifEqual}} Trade Details  </h4>
+                    <label> Please review order details below and make your offer </label>
+                </div>
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Share Type</label>
+                        </div>
+                        <div class="col-md-8">
+                            {{record.title}}
+                        </div>
+                    </div>
+                    <br />
+
+                    {{#if record.atomicSwapAcceptable}}
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Number of Shares offered asdf sale</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{numberFormat record.shares decimalLength="ShareCountInFractions"}}
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Price</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{numberFormat record.rateFrom decimalLength="-"}}  &nbsp;&nbsp;  USDC
+                                </div>
+                            </div>
+
+
+
+                    {{else}}
+                            <label>Investor is willing to take payment thrugh direct cash payments </label>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Number of Shares to {{#ifEqual record.type 1}} Sell {{else}} Buy {{/ifEqual}} </label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{numberFormat record.shares decimalLength="ShareCountInFractions"}}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Asking Price / Share</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{currencySymbol record.currencyid}} {{numberFormat record.rateFrom decimalLength="-"}}
+                                </div>
+                            </div>
+
+                    {{/if}}
+
+                    <br />&nbsp;
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/lock.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Make Your Offer</h4>
+                    <label>Please enter details of your offer and number of shares you want to {{#ifEqual record.type 1}} Buy {{else}} Sell {{/ifEqual}}</label>
+                </div>
+                <div class="content">
+
+                        {{#if isRecordBelongToUser}}
+                            <label>This trade belongs to your account</label>
+                        {{else}}
+
+                            {{#if offerRecFound}}
+                                    <b>You have previously made an offer</b>
+                                    <br /><br />
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            Shares to Buy
+                                        </div>
+                                        <div class="col-md-3">
+                                            {{numberFormat offerRec.sharesPartial decimalLength="ShareCountInFractions"}}
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            {{#if record.atomicSwapAcceptable}}
+                                                    Price Offered
+                                            {{else}}
+                                                    Amount Offered
+                                            {{/if}}
+                                        </div>
+                                        <div class="col-md-3">
+                                            {{#if record.atomicSwapAcceptable}}
+                                                USDC
+                                            {{else}}
+                                                {{currencySymbol record.currencyid}}
+                                            {{/if}}
+                                            &nbsp;&nbsp;&nbsp;
+                                            {{numberFormat offerRec.rateFrom decimalLength="-"}}
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    {{#ifEqual record.atomicSwapCurrentStatus 0}}
+                                            <br />
+                                            You can Delete Offer
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <button type="button" onclick="deleteOffer()" class="btn btn-info btn-fill btn-sm">Delete my Offer</button>
+                                    {{/ifEqual}}
+
+                            {{else}}
+
+                                    {{#if isOfferSectionEnabled}}
+
+                                            <div class="row">
+                                                    <div class="col-md-12">
+                                                        {{#if record.atomicSwapAcceptable}}
+
+                                                        {{else}}
+
+                                                                {{#ifEqual record.type 1}}
+                                                                        Your have <b>{{currencySymbol record.currencyid}} {{numberFormat investorAmount decimalLength="-"}} </b>
+                                                                        in your accounts. If investor accepts your offer then shares will be transferred to your account and your internal wallet will be reduced
+                                                                        <br /><br />
+                                                                {{else}}
+
+                                                                        you are offering to sell your shares. Currently you own {{investorNonBlockchainShares}} shares that you can  sell
+
+                                                                {{/ifEqual}}
+
+                                                        {{/if}}
+                                                    </div>
+                                            </div>
+
+                                            <form id="buytrading" action="/tradingbuypost" method="post">
+
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label>Enter number of share to
+                                                                {{#ifEqual record.type 1}} Buy {{else}} Sell {{/ifEqual}}
+                                                                <br/>
+                                                                (up to {{ShareCountInFractions}} decimals)
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <input type="text" maxlength="15" value="{{offerRec.sharesPartial}}"
+                                                                   class="form-control border-input" id="shares" name="shares"
+                                                                   onchange="shareCountChanged(this)" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                    <br />
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label>
+                                                                    {{#if record.atomicSwapAcceptable}}
+                                                                            Price Offered
+                                                                    {{else}}
+                                                                            Price Offered
+                                                                    {{/if}}
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-md-2">
+
+                                                            <input type="text"  value="{{offerRec.rateFrom}}" maxlength="15" class="form-control border-input" id="rate" name="rate" placeholder="">
+
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            {{#if record.atomicSwapAcceptable}}
+                                                                    USDC
+                                                            {{else}}
+                                                                    {{currencySymbol record.currencyid}}
+                                                            {{/if}}
+                                                        </div>
+
+                                                    </div>
+                                                    <br />
+
+                                                    <inut type="hidden" id="desc" name="desc" />
+
+                                                    {{#if record.atomicSwapAcceptable}}
+                                                            {{#if publickeys.length}}
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <label>Specify Wallet Address: </label>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                                    <select id="publickey" name="publickey" class="form-control border-input">
+                                                                                        {{#each publickeys}}
+                                                                                            <option value="{{this.publickey}}">{{this.publickey}}</option>
+                                                                                        {{/each}}
+                                                                                    </select>
+                                                                        </div>
+                                                                    </div>
+                                                            {{else}}
+                                                                    <input type="hidden" id="publickey" name="publickey" value="">
+                                                            {{/if}}
+                                                     {{else}}
+                                                            <input type="hidden" id="publickey" name="publickey" value="">
+                                                     {{/if}}
+
+                                                    <br />
+                                                    <div class="row">
+                                                        <div class="col-md-1"></div>
+                                                        <div class="col-md-6">
+                                                            <button type="button" onclick="submitForm()" class="btn btn-info btn-fill">Make Your Offer</button>
+                                                            &nbsp;&nbsp;&nbsp;
+                                                            <button type="button" onclick="returnToMain()" class="btn btn-info btn-fill">Cancel</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <input type="hidden" name="exchangeid" value="{{record.ID}}" />
+                                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                                            </form>
+
+                                    {{else}}
+
+                                            {{#if record.atomicSwapAcceptable}}
+
+                                                  This trade is a blockchain transfer. You do not have any public address from your wallet whitelisted in blockchain
+                                                  <br /><br />
+                                                  Please setup your priviate wallet, arrange required number of crypti currency and contact administration
+
+                                            {{else}}
+                                                    You do not have sufficient funds in your internal wallet.
+                                                    This trade requires
+                                                    &nbsp;&nbsp;<b>{{currencySymbol record.currencyid}} {{numberFormat record.rateFrom decimalLength="-"}}</b>&nbsp;&nbsp;
+                                                    while you have    &nbsp;&nbsp;<b>{{currencySymbol record.currencyid}} {{investorAmount}}</b> &nbsp;&nbsp;
+                                                    <br /><br />
+                                                    Please transfer some amounts to your internal wallet in this project
+                                            {{/if}}
+
+                                    {{/if}}
+
+                            {{/if}}
+
+                        {{/if}}
+
+
+                        {{#if record.atomicSwapAcceptable}}
+
+                                {{#ifGreater record.atomicSwapCurrentStatus 0}}
+
+                                                    <h4>The seller has accepted the trade and has initiated the trade. Please follow following steps to make the transfer</h4>
+
+                                                    <hr >
+                                                    <h4> Step 1 - Connect your Ethereum Wallet</h4>
+                                                    <button type="button" onclick="connectWallet()" class="btn btn-info btn-fill"> Connect Wallet </button>
+
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <span id="walletnotconnected" >
+                                                             <img src="/img/reddot.png" width="20px"> &nbsp;&nbsp;&nbsp;  Wallet is not connect
+                                                    </span>
+                                                    <span id="wallet" style="display:none;">
+                                                            <img src="img/greendot.png" width="20px">  Wallet is connect
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <b>Selected Account in Wallet</b>   &nbsp;&nbsp;&nbsp;    <span id="selectedAccount"></span>
+                                                    </span>
+                                                    <hr >
+
+
+                                                    <h4> Step 2 - Approve Transfer of Token</h4>
+
+                                                    {{#ifGreater record.atomicSwapCurrentStatus 3}}
+                                                           <img src="img/greendot.png" width="20px">  You have approved the shares transfer. Please perform Step 3 and swap the shares with your tokens
+                                                    {{else}}
+                                                          <button type="button" onclick="appriveTokensTransfersLocalFunction()" class="btn btn-info btn-fill">Approve Transfer</button>
+
+                                                          &nbsp;&nbsp;&nbsp;
+                                                          <span style="display:none; color:red;" id="spanApproveTrnasferExecuting">
+                                                                <img src="img/loading2.gif" width="25px"> &nbsp;  Please wait, blockchain transaction is executing. Do not close this browser window
+                                                          </span>
+
+                                                    {{/ifGreater}}
+
+                                                    <hr >
+
+                                                    <h4> Step 3 - Initiate Blockchain Swap Operation</h4>
+
+                                                    {{#ifGreater record.atomicSwapCurrentStatus 4}}
+                                                           <img src="img/greendot.png" width="20px">  This trade is complete
+                                                    {{else}}
+                                                          <button type="button" onclick="closeSwapOperation()" class="btn btn-info btn-fill">Finalize Swap</button>
+                                                          &nbsp;&nbsp;&nbsp;
+                                                          <span style="display:none; color:red;" id="spanSwapTrnasferExecuting">
+                                                                <img src="img/loading2.gif" width="25px"> &nbsp;  Please wait, blockchain transaction is executing. Do not close this browser window
+                                                          </span>
+                                                    {{/ifGreater}}
+
+                                                <br /><br />
+
+                                    {{/ifGreater}}
+
+                            {{/if}}
+
+                    <br />&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

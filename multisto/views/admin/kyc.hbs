@@ -1,0 +1,269 @@
+{{> Header}}
+
+<script language="javascript">
+    var totalRecords = {{RecordCount}};
+    var totalNumberOfRecordsOnPages = {{RecordsPerPaging}};
+
+    $(document).ready(function() {
+        $("#KYC").addClass('active');
+
+        if(getParameterByName("name") != null)
+            document.getElementById("name").value = getParameterByName("name");
+
+        var currentPage = 1;
+        if(getParameterByName("page") != null)
+            currentPage = parseInt(getParameterByName("page")) + 1;
+
+        var pages = Math.floor(totalRecords/totalNumberOfRecordsOnPages);
+        var remainder = totalRecords % totalNumberOfRecordsOnPages;
+        if(remainder > 0)
+            pages = pages + 1;
+
+        var a = 0;
+        for(a=1;a<=pages;a++)
+        {
+            if(currentPage == a)
+                $("#pages").append("<option selected value='" + a + "'>" + a + "</option>")
+            else
+                $("#pages").append("<option value='" + a + "'>" + a + "</option>")
+        }
+    })
+    function viewClicked(id) {
+        window.location.href = "KYCView?id=" + id + "&link=0";
+        return false;
+    }
+    function resetForm() {
+        window.location.href = "investorsKYCList";
+        return false;
+    }
+    function submitForm() {
+        var search = getPageSearchCriteria();
+
+        if(search == "")
+            showModelGeneralOKDialogBox("Select some search criteria");
+        else
+        {
+            window.location.href = "investorsKYCList?" + search;
+            return false;
+        }
+    }
+    function dataPageChanged() {
+
+        var search = getPageSearchCriteria();
+
+        if(search != "")
+            search = search + "&";
+
+        var pag = document.getElementById("pages").value;
+        pag = pag - 1;
+        search = search + "page=" + pag;
+
+        window.location.href = "investorsKYCList?" + search;
+        return false;
+    }
+    function getPageSearchCriteria() {
+
+        var search = "";
+
+        if(document.getElementById("name").value != "")
+            search = "name=" + document.getElementById("name").value;
+
+        return search;
+
+    }
+    function searchinvestors() {
+        window.location.href = "searchNewInvestorsForInvitation"
+    }
+    function deleteInvitation(id) {
+        window.location.href = "deleteInvestorInvitation?id=" + id;
+    }
+    function viewKYCClicked(id) {
+        document.location.href="viewInvitedInvestorKYC?link=0&id=" + id;
+        return false;
+    }
+
+    var investorIDToDelete = 0;
+    function rejectUpgrade(id) {
+        investorIDToDelete = id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to reject and delete investor's kyc request", "Yes Delete", "Cancel")
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = "/admin/rejectInvestorUpgradeRequest?id=" + investorIDToDelete;
+        return false;
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+
+  {{#ifEqual errorMessage 1}}
+      <span style="color:red;">Invitation has been added but email could not be sent to investor. Please send him email on his email address</span>
+      <br />&nbsp;
+  {{/ifEqual}}
+
+  {{#ifEqual errorMessage 2}}
+      <span style="color:red;">Email invitation has been sent to investor</span>
+      <br />&nbsp;
+  {{/ifEqual}}
+
+
+   <div class="row">
+   <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/registernew.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;  New Registration</h4>
+            </div>
+            <div class="content">
+
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <span style="font-size:15px;"> Enter Name  </span>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="name" name="name" class="form-control border-input" type=text />
+                    </div>
+
+                    <div class="col-md-4">
+                        <button onclick="submitForm()" class="btn btn-info btn-fill">Search Investors</button>
+                        &nbsp;&nbsp;&nbsp;
+                        <button onclick="resetForm()" class="btn btn-info btn-fill">Reset Search</button>
+                    </div>
+
+                    <div class="col-md-1"> </div>
+                </div> <br>
+
+
+                {{#if investorRecordsFound}}
+
+                    <span style="float:right; padding-right:40px;"> <b>Investors found &nbsp;&nbsp;&nbsp; {{RecordCount}}</b> </span>
+
+                    <div class="content table-responsive table-full-width icon-section">
+
+                        <table style="overflow:scroll;" class="table table-striped">
+                            <thead>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Country</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Date</th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+
+                                {{#each DataRows}}
+                                <tr>
+                                    <td style="width: 2%">
+                                        <img src="/img/investortype{{this.investorType}}.png" width="25px;" />
+                                    </td>
+                                    <td style="width: 20%">{{this.firstName}} {{this.lastName}}</td>
+                                    <td style="width: 10%">{{this.country}}</td>
+                                    <td style="width: 20%">{{this.email}}</td>
+                                    <td style="width: 10%">{{this.phone}}</td>
+                                    <td style="width: 15%">{{this.KYCUpdateDateFormat}}</td>
+
+                                    <td>
+                                        <button onclick="return viewClicked({{this.ID}})" class="btn btn-sm btn-info btn-fill"> &nbsp; View &nbsp; </button>
+
+                                        <button onclick="return rejectUpgrade({{this.ID}})" class="btn btn-sm btn-info btn-fill"> &nbsp; Delete &nbsp; </button>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+
+                        <div class="row">
+                            <div class="col-md-9"></div> <div class="col-md-1"> &nbsp;&nbsp;  &nbsp;</div>
+                            <div class="col-md-2"><b>Goto Page</b> <select onchange="dataPageChanged()" style="width:85px;" id="pages" name="pages"   class="form-control border-input"  ></select></div>
+                        </div>
+
+                        <div class="row"><div class="col-md-12">
+                            <img src="/img/investortype0.png" width="25px;" style="margin-left:20px;" />
+                            {{privateInvestorTypeText}}
+                            <img src="/img/investortype1.png" width="25px;" style="margin-left:20px;"/>
+                            {{companyInvestorTypeText}}
+                        </div></div>
+
+                    </div>
+
+                {{else}}
+                    <label>No new registrations found</label>
+                    <br /> &nbsp;
+                {{/if}}
+            </div>
+
+        </div>
+    </div>
+   </div>
+
+   {{#if SingleSignInEnabled}}
+   <div class="row topPaddingBetweenPageSections">
+   <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title"> <img src="/img/registernew.png" width="25px;" style="padding-bottom:4px;" /> &nbsp; Invited Investors  </h4>
+                    </div>
+                    <div class="col-md-3">
+                        <button onclick="return searchinvestors()" class="btn btn-info btn-fill"> &nbsp; Search  and Send Invitation &nbsp; </button>
+                    </div>
+                </div>
+                {{#if inviteRecord.length}}
+                    <p class="category">List of Investors who are invited to the company</p>
+                {{/if}}
+            </div>
+            <div class="content">
+                <div class="content">
+
+                    {{#if inviteRecord.length}}
+
+                        <table class="table table-striped">
+                            <thead>
+                                <th>Name</th>
+                                <th>City</th>
+                                <th>Country</th>
+                                <th>Email</th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+
+                                {{#each inviteRecord}}
+                                <tr>
+                                    <td style="width: 15%">{{this.FirstName}} {{this.LastName}}</td>
+                                    <td style="width: 15%">{{this.city}}</td>
+                                    <td style="width: 15%">{{this.country}}</td>
+                                    <td style="width: 20%">{{this.email}}</td>
+                                    <td style="width: 10%">
+                                        {{#ifEqual this.currentStatus 1}}
+                                            <span style="color:green;"> <b>Accepted</b> </span>
+                                        {{/ifEqual}}
+
+                                        {{#ifEqual this.currentStatus 2}}
+                                            <span style="color:red;"> <b>Rejected</b> </span>
+                                        {{/ifEqual}}
+                                    </td>
+                                    <td style="width: 25%">
+                                        {{#ifEqual this.currentStatus 1}}
+                                            <button onclick="return viewKYCClicked({{this.ID}})" class="btn btn-sm btn-info btn-fill"> &nbsp; View KYC &nbsp; </button> &nbsp;
+                                        {{/ifEqual}}
+                                        <button onclick="return deleteInvitation({{this.ID}})" class="btn btn-sm btn-info btn-fill"> &nbsp; Delete &nbsp; </button>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+
+                    {{else}}
+                        <label>No Invitations Found</label>
+                    {{/if}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+   </div>
+   {{/if}}
+
+{{> Footer}}

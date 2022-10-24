@@ -1,0 +1,93 @@
+stages:
+  - build
+  - tag
+  - deploy
+
+.build-image: # partial pipeline, uses the FOLDER env variable to determine which codebase to build
+  image: docker:20.10
+  stage: build
+  services:
+    - docker:dind
+  script:
+    - base64 -d $GCP_SA_KEY | docker login -u _json_key --password-stdin https://gcr.io # login to gcloud registry
+    - export LATEST_IMAGE="gcr.io/$GCP_ID/digishares-platform/$FOLDER:latest" # save the name of the version
+    - docker pull "$LATEST_IMAGE" || true # get latest image for caching
+    - docker build --build-arg commit_hash="$CI_COMMIT_SHORT_SHA" --cache-from "$LATEST_IMAGE" -t "$LATEST_IMAGE" ./$FOLDER # build image
+    - docker push "$LATEST_IMAGE"  # upload image to gcloud
+      # LEGACY GITLAB BUILD
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY # login to gitlab registry
+    - export GITLAB_IMAGE="$CI_REGISTRY_IMAGE/$FOLDER:latest" # save the name of the version
+    - docker tag "$LATEST_IMAGE" "$GITLAB_IMAGE" # add tag
+    - docker push "$GITLAB_IMAGE"
+
+generate-version-number: # saves the version of the next release
+  stage: build
+  image: node:latest
+  script:
+    - npm install -ignore-scripts
+    - npx semantic-release --dry-run
+  artifacts:
+    reports:
+      dotenv: "versions.env" # provides LAST_VERSION, RELEASE_CHANNEL and NEXT_VERSION env variables to subsequent pipelines
+  only:
+    refs:
+      - production
+      - staging
+
+version-images: # adds the version number to the latest images
+  stage: tag
+  image: docker:20.10
+  services:
+    - docker:dind
+  script:
+    - '[ -z "$NEXT_VERSION" ] && exit 0' # check if new version number was generated
+    - base64 -d $GCP_SA_KEY | docker login -u _json_key --password-stdin https://gcr.io # login to gcloud registry
+    - export GCLOUD_REGISTRY="gcr.io/$GCP_ID/digishares-platform" # save the name of the registry
+    - export CODEBASES="frontend multisto api db-create" # space delimeted codebase list
+    - alias codebase_command='echo "$CODEBASES"| sed "s/ /\n/g" | xargs -I {} -P 6' # runs a command for each codebase, replacing {} with a codbase name
+    - codebase_command docker pull "$GCLOUD_REGISTRY/{}:latest" # get the current image of a codebase
+    - codebase_command docker tag "$GCLOUD_REGISTRY/{}:latest" "$GCLOUD_REGISTRY/{}:$NEXT_VERSION" # add a a version number to the current image
+    - codebase_command docker push "$GCLOUD_REGISTRY/{}:$NEXT_VERSION" # upload the versioned image
+  only:
+    refs:
+      - staging
+
+generate-release: # generates a changelog and releases
+  stage: deploy
+  image: node:latest
+  script:
+    - '[ -z "$NEXT_VERSION" ] && exit 0' # check if new version number was generated
+    - npm install -ignore-scripts
+    - npm run semantic-release
+  only:
+    refs:
+      - production
+      - staging
+
+
+update-deployments:
+  stage: deploy
+  image: node:latest
+  script:
+    - '[ -z "$NEXT_VERSION" ] && exit 0' # check if new version number was generated
+    - 'curl --request POST --form "token=$CI_JOB_TOKEN" --form "ref=master" --form "variables[NEXT_VERSION]=$NEXT_VERSION" --form "variables[RELEASE_CHANNEL]=$RELEASE_CHANNEL" "https://gitlab.com/api/v4/projects/33517963/trigger/pipeline"'
+  only:
+    refs:
+      - staging
+      - production
+
+build-db:
+  extends: .build-image
+  variables:
+    FOLDER: db
+  only:
+    refs:
+      - staging
+    changes:
+      - "db/**/*"
+
+include:
+  - "/api/.gitlab-ci.yml"
+  - "/frontend/.gitlab-ci.yml"
+  - "/multisto/.gitlab-ci.yml"
+  - "/db-create/.gitlab-ci.yml"

@@ -1,0 +1,440 @@
+{{> Header}}
+
+	<script language="javascript">
+        {{#if shareType.isBlockchain}}
+            var tokensInHand = {{companyWalletBalance}};
+        {{else}}
+            var tokensInHand = {{shareType.companyShares}};
+        {{/if}}
+
+        {{#if investorWallet.length}}
+            var isInvestorWalletAddressesSetAvailable = 1;
+        {{else}}
+            var isInvestorWalletAddressesSetAvailable = 0;
+        {{/if}}
+
+        {{#if buyPropertyAlertShow}}
+            var buyPropertyAlertShowTransfer = 1;
+            var investorCurrentCurrencyBalance = {{investorCurrencyBalance.amount}};
+        {{else}}
+                var buyPropertyAlertShowTransfer = 0;
+        {{/if}}
+
+		{{#if buyPropertyAlertShow}}
+			var purchasePriceOffered = {{buyPropertyAlert.purchasePriceOffered}};
+		{{else}}
+			var purchasePriceOffered = 0;
+		{{/if}}
+
+        var nominalValue = {{shareType.nominalValue}};
+        var premiumValue = {{shareType.premiumValue}};
+        var currency = "{{shareType.currencyID}}";
+        {{#if buyPropertyAlertShow}}
+            var currencySymbol = "{{currencySymbol buyPropertyAlert.fromCurrencyID}}";
+        {{else}}
+            var currencySymbol = "{{currencySymbol shareType.currencyID}}";
+        {{/if}}
+        var blockchainProtocol = {{shareType.blockchainProtocol}};
+		var walletCustodyType = {{shareType.walletCustodyType}};
+        var isShareBlockchain = {{shareType.isBlockchain}};
+        var calculatedInvestorBalanceToBuyShares = 0;
+		var transferSharesOnChain = isShareBlockchain ? 1 : 0;
+        var smartContractAddress = "{{smartContractAddress}}";
+
+        var blockchaindecimals = {{shareType.blockchaindecimals}};
+        var compamnyBlockchainPublicAddress = "{{shareType.ethereumBlockchainPublicAddress}}";
+        var isMetaMaskConnected = 0;
+        var metaMaskAddress = "";
+        var isSellRequest = {{isSellRequest}};
+
+        Number.prototype.format = function(n, x) {
+            var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
+            return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&\'');
+        };
+
+        $(document).ready(function(){
+            document.getElementById("transferSharesOnChain").value = `${transferSharesOnChain}`;
+
+            $("#InvestorsMenu").addClass('active');
+            const checkbox = document.getElementById('chkOffChainTransfer')
+            if(checkbox != null) {
+                if (checkbox) {
+                        checkbox.addEventListener('change', (event) => {
+                          if (event.target.checked) {
+                              $("#spanInvestorWalletAddress").hide();
+                          } else {
+                                $("#spanInvestorWalletAddress").show();
+                          }
+                        })
+                }
+            }
+
+            changeTokensField();
+        });
+        function backToInvestor() {
+            window.location.href = "investorsViewSto?id={{id}}";
+            return false;
+        }
+        function SubmitForm() {
+
+            //if shares are being transferred because or investor share request and investment needs to be reduced then check following
+            if( buyPropertyAlertShowTransfer == 1) {
+                if( investorCurrentCurrencyBalance < calculatedInvestorBalanceToBuyShares ) {
+                    showModelGeneralOKDialogBox("Investor does not have sufficient balance")
+                    return;
+                }
+            }
+
+            const checkboxOffChain = document.getElementById('chkOffChainTransfer');
+
+            if(isNaN( document.getElementById("tokens").value) ) {
+                showModelGeneralOKDialogBox("Tokens/Shares amount is not numeric");
+                return;
+            }
+
+            if (document.getElementById("tokens").value <= 0) {
+                showModelGeneralOKDialogBox("Shares to transfer cannot be negative or zero");
+                return;
+            }
+
+            if (tokensInHand < document.getElementById("tokens").value ) {
+                showModelGeneralOKDialogBox("Tokens must be less than or equal to " + tokensInHand);
+                return;
+            }
+
+            var message = "";
+
+            if( isInvestorWalletAddressesSetAvailable == 0 && isShareBlockchain == 1 ) {
+               	message = "<b>Investor blockchain wallet is not set</b>,  shares will be transferred off-chain within platform <br /><br />";
+				document.getElementById("transferSharesOnChain").value = "0";
+				transferSharesOnChain = 0;
+			}
+
+            if(   isInvestorWalletAddressesSetAvailable == 1 && checkboxOffChain.checked == true  ) {
+               	message = "Shares will be transferred off-chain within platform <br /><br />";
+				document.getElementById("transferSharesOnChain").value = "0";
+				transferSharesOnChain = 0;
+			}
+
+            showModelGeneralYesNoDialogBox(message + "Are you sure you want to transfer " + document.getElementById("tokens").value + " share(s)", "Transfer Shares", "Cancel");
+
+        }
+        function generalModelOKButtonClickedClientEvent() {
+            if(isMetaMaskConnected == 1) {
+                if( compamnyBlockchainPublicAddress.toLowerCase() != metaMaskAddress.toLowerCase() ) {
+                    showModelGeneralOKDialogBox("Please select company address from MetaMask. Company Address is " + compamnyBlockchainPublicAddress);
+                    return;
+                } else {
+                    const publicAddress = document.getElementById('publicAddress').selectedOptions[0].value;
+                    sendTokensTransactionThroughMetaMask(publicAddress, document.getElementById("tokens").value, smartContractAddress, blockchaindecimals);
+                }
+
+            } else {
+                const checkboxOffChain = document.getElementById('chkOffChainTransfer');
+
+                if(   isShareBlockchain == 0   ||   walletCustodyType == 1   ||  transferSharesOnChain == 0 || blockchainProtocol == 3 || blockchainProtocol == 7 ) {
+                    submitFormToServer();
+                } else {
+                    $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+                    initializePublicKeyFileObject();
+                }
+            }
+        }
+        function callbackPublicKeyFileAndPasswordCollected(fileContents, password) {
+            document.getElementById("password").value = password;
+            document.getElementById("filecontents").value = fileContents;
+            document.getElementById("frmtoken").submit();
+        }
+        function changeTokensField(){
+
+			if(purchasePriceOffered == 0) {
+					var num = 0;
+					if(document.getElementById("tokens").value != "")
+						num = parseFloat(document.getElementById("tokens").value);
+					else
+						num = 0;
+
+					var v = (num * premiumValue).toFixed(3);
+					calculatedInvestorBalanceToBuyShares = v;
+					document.getElementById("investment").value = v;
+
+					var v2 = currencySymbol + " " + v;
+					$("#spanInvetment").html(  v2  );
+			} else {
+					document.getElementById("investment").value = purchasePriceOffered;
+					$("#spanInvetment").html(  currencySymbol + " " + purchasePriceOffered  );
+			}
+        }
+        function connectMetaMask() {
+            connectWallet();
+        }
+        function Wallet_BlockchainAccountSelected(account) {
+            $("#metaMaskSection").show();
+            $("#metaMaskAccountAddress").html( account );
+
+            isMetaMaskConnected = 1;
+            metaMaskAddress = account;
+        }
+        function Wallet_TransactionEvent(data) {
+            document.getElementById("metaMaskTransaction").value = "1"
+            document.getElementById("blockchainTransactionID").value = data;
+            submitFormToServer();
+        }
+        function submitFormToServer() {
+            document.getElementById("password").value = "";
+            document.getElementById("filecontents").value = "";
+            document.getElementById("txtOpenDate").value =  commonGetMySQLDateFormat( document.getElementById("txtOpenDate").value );
+            document.getElementById("frmtoken").submit();
+        }
+
+	</script>
+
+{{> HeaderInnerSto}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">
+                        <img src="/img/transfer.png" width="32px" style="margin-right: 0.2em;"/>
+                        Transfer {{#if shareType.isBlockchain}} Blockchain {{/if}} Shares to Company
+                    </h4>
+                </div>
+
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label style="margin-right: 0.2em;">Investor</label>
+                            {{investorRec.firstName}} {{investorRec.lastName}}
+                        </div>
+                        <div class="col-md-3">
+                            <label style="margin-right: 0.2em;">ID</label>
+                            {{investorRec.ID}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label style="margin-right: 0.2em;">Investor address</label>
+                            {{investorRec.town}} {{investorRec.state}} {{investorRec.country}}
+                        </div>
+                        <div class="col-md-3">
+                            <label style="margin-right: 0.2em;">Email</label>
+                            {{investorRec.email}}
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    {{#if shareType.companyShares}}
+                    <form id="frmtoken" name="frmtoken" action="transactionTransferShares" method="post">
+                        <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <span style="font-size:20px;">{{shareType.title}}</span>
+                                <br /><br />
+
+                                <label style="margin-right: 0.2em;">Available Company Shares</label>
+                                <b style="margin-right: 10em;">
+                                    {{#if shareType.isBlockchain}}
+                                        {{numberFormat companyWalletBalance decimalLength="-"}}
+                                    {{else}}
+                                        {{numberFormat shareType.companyShares decimalLength="ShareCountInFractions"}}
+                                    {{/if}}
+                                </b>
+                                <span style="margin-left:2rem;">
+                                    <label style="margin-right: 0.2em;">Nominal Value</label>
+                                    <b>
+                                        {{currencySymbol shareType.currencyID}}  {{numberFormat shareType.nominalValue decimalLength="ShareCountInFractions"}}
+                                    </b>    
+                                </span>
+                                <span style="margin-left:2rem;">
+                                    <label style="margin-right: 0.2em;">Market Value</label>
+                                    <b>
+                                        {{#if shareType.premiumValue}}
+                                            {{currencySymbol shareType.currencyID}}  {{numberFormat shareType.premiumValue decimalLength="ShareCountInFractions"}}
+                                        {{else}}
+                                            n/a
+                                        {{/if}}
+                                    </b>
+                                </span>
+                                <span style="margin-left:2rem;">
+                                    <label style="margin-right:0.2rem;">Sell Value</label>
+                                    <b>
+                                        {{currencySymbol shareType.currencyID}} {{numberFormat shareType.sellValue decimalLength="ShareCountInFractions"}}
+                                    </b>
+                                </span>
+                                <br />
+
+                                {{#if shareType.reduceSharesForPurchase}}
+                                        <label style="margin-right: 0.2em;">Shares locked by Admin</label>
+                                        <b>{{numberFormat shareType.reduceSharesForPurchase decimalLength="-"}}</b>
+                                {{/if}}
+
+                                <br /><br />
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>How many shares to transfer</label>
+                                            <input  type="text" onkeyup="changeTokensField()" style="width:170px; " id="tokens"
+                                                   name="tokens" class="form-control border-input"
+                                                   value="{{#if buyPropertyAlertShow}}{{buyPropertyAlert.shares}}{{/if}}"
+                                                   placeholder="Enter Shares"
+                                                   {{#if buyPropertyAlertShow}} onkeydown="return false;" {{/if}}
+                                                   />
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Date of Transfer</label>
+                                            <input  id="txtOpenDate" name="txtOpenDate" onkeydown="return false;"  value="{{defaultDate}}" class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label style="margin-right: 0.2em;">Investment</label>
+                                            <b><span id="spanInvetment">{{currencySymbol buyPropertyAlert.fromCurrencyID}}</span></b>
+                                            <input type="hidden" id="investment" name="investment"  value="">
+                                            <!-- <input type="hidden" id="currencyid" name="currencyid"  value="">   -->
+                                        </div>
+
+                                        <div class="col-md-9">
+                                            {{#if buyPropertyAlertShow}}
+                                                <label style="margin-right: 0.2em;">Investor Current Balance</label>
+                                                    {{#if investorCurrencyBalance.amount}}
+                                                        <b>
+                                                            {{currencySymbol investorCurrencyBalance.currencyID}}
+                                                            {{numberFormat investorCurrencyBalance.amount decimalLength="-"}}
+                                                        </b>
+                                                    {{else}}
+                                                        <b>Investor has no balance</b>
+                                                    {{/if}}
+											{{else}}
+												<label>This is manual transfer of shares. Please make sure investor has sufficient balance. You have reduce investor balance manually</label>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{#if shareType.isBlockchain}}
+                                    {{#if investorWallet.length}}
+
+                                        <div class="form-group">
+                                            <input  type="checkbox" id="chkOffChainTransfer" name="chkOffChainTransfer" style="margin-right: 0.2em;">
+                                            <label>Transfer Shares Off-Chain to Internal Wallet</label>
+                                        </div>
+
+                                        <span id="spanInvestorWalletAddress">
+                                            <label>OR </label> <br /><br />
+                                            <div class="form-group">
+                                                <label>Select Investor Wallet Address</label>
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <select class="form-control border-input" name="publicAddress" id="publicAddress">
+                                                            {{#each investorWallet}}
+                                                                <option value="{{this.publicKey}}">{{this.publicKey}}</option>
+                                                            {{/each}}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </span>
+
+                                    {{else}}
+                                        <img src="/img/reddot.png" width="20px" style="margin-right: 0.2em;">
+                                        <span style="font-size:18px;color:red">No Wallet Addresses Available. Shares will be transferred off-chain</span>
+                                    {{/if}}
+                                {{/if}}
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Certificate Nos</label>
+                                            <input  type="text" style="width:270px; " id="certificatesnos"  name="certificatesnos" class="form-control border-input" placeholder="Enter Certificate Number(s)" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>Share Nos</label>
+                                            <input  type="text" style="width:270px; " id="sharenos"  name="sharenos" class="form-control border-input" placeholder="Enter Share Number(s)" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Details</label>
+                                    <textarea  name="description" id="description" class="form-control border-input" placeholder="Enter Investment Details" maxlength="500" rows="4" cols="10"></textarea>
+                                </div>
+
+                                <div>
+                                  <input style="width:20px; height:20px;" type="checkbox" id="chkSendEmail" name="chkSendEmail"
+                                    {{#ifEqual Data.CurrentClientID 14}}
+                                         checked
+                                    {{/ifEqual}}
+                                  >
+                                  <label>Send email to investor</label>
+                                  <br /><br />
+                                </div>
+                                <div>
+                                    {{#if shareType.isBlockchain}}
+                                        {{#if investorWallet.length}}
+                                            {{#ifIn shareType.blockchainProtocol '[1, 2, 4, 5, 6]'}}
+                                                <button type="button" class="btn btn-info btn-fill btn-wd" onclick="connectMetaMask()" style="margin-right: 0.2em;">Connect MetaMask</button>
+                                                <span id="metaMaskSection" style="display:none;">
+                                                    <img src="/img/greendot.png" width="20px;"> Meta Mask is connected
+
+                                                    <br /><br />
+
+                                                    <span id="metaMaskAccountAddress" style="margin-right: 0.2em;"></span>
+                                                    ( Please make sure this is the correct address to send transaction )
+
+                                                </span>
+                                            {{/ifIn}}
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
+                                <br /><br />
+                                <div class="text-left">
+                                    <button type="button" class="btn btn-info btn-fill btn-wd" onclick="SubmitForm()" style="margin-right: 0.2em;">Transfer Shares</button>
+                                    <button type="button" onclick="return backToInvestor()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="fromCurrencyID" name="fromCurrencyID" value="{{buyPropertyAlert.fromCurrencyID}}">
+
+                        <input type="hidden" id="id" name="id" value="{{id}}">
+                        <input type="hidden" id="walletCustodyType" name="walletCustodyType" value="{{shareType.walletCustodyType}}">
+                        <input type="hidden" id="sid" name="sid" value={{sid}}>
+                        <div class="clearfix"></div>
+
+                        <input type="hidden" id="transferSharesOnChain" name="transferSharesOnChain" value="1" />
+                        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" />
+                        <input type="hidden" id="password" name="password" />
+                        <input type="hidden" id="filecontents" name="filecontents" />
+                        <input type="hidden" id="blockchainTransactionID" name="blockchainTransactionID" value="" />
+                        <input type="hidden" id="metaMaskTransaction" name="metaMaskTransaction" value="0" />
+                        {{#if buyPropertyAlertShow}}
+                            <input type="hidden" id="buyPropertyAlertID" name="buyPropertyAlertID" value="{{buyPropertyAlert.ID}}"/>
+                        {{/if}}
+
+                        {{#if isSellRequest}}
+                            <input type="hidden" id="isSellRequest" name="isSellRequest" value="{{isSellRequest}}"/>
+                        {{/if}}
+                        </div>
+                    </form>
+                    {{else}}
+                        <h4>Company does not have any shares to transfer</h4>
+                        <br /><br />
+                        <button type="button" onclick="return backToInvestor()" class="btn btn-info btn-fill btn-wd">Back</button>
+                    {{/if}}
+
+                    <br><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{{> atomicswap}}
+{{> privateKeySelectorDialog}}
+{{> Footer}}

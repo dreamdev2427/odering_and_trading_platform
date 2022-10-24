@@ -1,0 +1,417 @@
+<style>
+    .flex-stretch {
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+    }
+    .center {
+        align-self: center;
+        justify-content: center;
+    }
+    .pad-h {
+        padding-left: 4px;
+        padding-right: 4px; 
+    }
+    @media(min-width: 768px) {
+        .flex-centered {
+            display: flex;
+            align-items: center;
+        }
+    }
+</style>
+<script language="javascript">
+    var payoutsDataTable{{{this.id}}};
+    var nextInvestorPayoutsDataTable{{{this.futureId}}};
+    {{!-- This payus out dividends --}}
+    function approve(id) {
+        showModelGeneralYesNoDialogBox("Please confirm that you want to distribute a total amount of <b>{{this.currency.Abbreviation}} {{this.totalAmount}}</b> to {{this.investors}} investors", "Yes, distribute {{this.currency.Symbol}} {{this.totalAmount}}", "Cancel");
+        $(".modal-title").html("Dividend Distribution");
+        const area = $("#commonDialogYesNoDivTextArea");
+        area.css("display", "block");
+        changeModalYesButton("Yes, distribute {{this.currency.Symbol}} {{this.totalAmount}}", "btn-success", () => {
+            $(`#approve-${id}-form`).submit();
+        });
+    }
+    {{!-- This deletes whole dividend templates and their history --}}
+    function deleteDividend{{id}}() {
+        showModelGeneralYesNoDialogBox("Please confirm that you want to completely erase dividend template <b>{{this.title}}</b> with {{this.investors}} current investors and <b>all of it's payment history and data</b>. This will not return any money distributed via dividends and it could make record keeping more difficult.", "Yes, delete the dividend", "Cancel");
+        $(".modal-title").html("Delete Dividend with History");
+        const area = $("#commonDialogYesNoDivTextArea");
+        area.css("display", "block");
+        changeModalYesButton("Yes, delete the dividend", "btn-danger", () => {
+            {{!-- $(`#delete-{{this.id}}-form`).submit(); --}}
+            triggerDelete{{id}}();
+        });
+    }
+    $(document).ready(() => {
+        {{!-- Helper function for data table --}}
+        const renderDate = (type, date) => {
+            switch(type) {
+                default: return new Date(date);
+                case 'sort': return new Date(date).valueOf();
+                case 'display': return new Date(date).toLocaleDateString();
+            }
+        } 
+
+        {{!-- This defines our ajax data table for payouts history within a template --}}
+        if (payoutsDataTable{{{this.id}}}) payoutsDataTable{{{this.id}}}.destroy();
+        payoutsDataTable{{{this.id}}} = $('#payoutsData-{{{this.id}}}').DataTable({
+            order: [1, 'desc'],
+            deferRender: true, // Optimize rendering
+            buttons: [
+                'searchBuilder'
+            ],
+            language: {
+                processing: `Loading...<br/><div class="lds-ripple"><div></div><div></div></div>`,
+                loading: `Loading...<br/><div class="lds-ripple"><div></div><div></div></div>`,
+            },
+            ajax: 'dividendPayouts/{{{this.id}}}',
+            dataSrc: 'data',
+            columns: [
+                {
+                    data: 'dateTimeFrom',
+                    render: (data, type, row, meta) => renderDate(type, row.dateTimeFrom),
+                },
+                {
+                    data: 'dateTimeDue',
+                    render: (data, type, row, meta) => renderDate(type, row.dateTimeDue),
+                },
+                {
+                    data: 'totalAmount',
+                    render: (data, type, row, meta) => localeCurrency(row.totalAmount, row.currency?.Abbreviation),
+                    className: 'text-right',
+                },
+                { data: 'investors' },
+                {
+                    data: 'totalInvestorShares',
+                    render: (data, type, row, meta) => localeNumber(row.totalInvestorShares),
+                    className: 'text-right',
+                },
+                {
+                    data: 'companyShares',
+                    render: (data, type, row, meta) => localeNumber(row.companyShares),
+                    className: 'text-right',
+                },
+                { data: 'awardStrategy' },
+                {
+                    data: 'awardValue',
+                    render: (data, type, row, meta) => localeNumber(row.awardValue),
+                    className: 'text-right',
+                },
+                { data: 'status' },
+                {
+                    data: null,
+                    orderable: false,
+                    render: (data, type, row, meta) =>
+                        `<button class="btn btn-info" onclick="showInvestorPayouts(${row.id});"><span class="glyphicon glyphicon-tasks"></span></button>`
+                },
+            ],
+        });
+
+        {{!-- This defines our ajax data table for (future) investor payouts in a payout --}}
+        if (nextInvestorPayoutsDataTable{{{this.futureId}}}) nextInvestorPayoutsDataTable{{{this.futureId}}}.destroy();
+        nextInvestorPayoutsDataTable{{{this.futureId}}} = $('#nextInvestorPayouts-{{{this.id}}}').DataTable({
+            order: [0, 'asc'],
+            deferRender: true, // Optimize rendering
+            buttons: [
+                'searchBuilder'
+            ],
+            language: {
+                processing: `Loading...<br/><div class="lds-ripple"><div></div><div></div></div>`,
+            },
+            ajax: 'dividendInvestorPayouts/{{{this.futureId}}}',
+            dataSrc: 'data',
+            columns: [
+                { data: 'investorName' },
+                {
+                    data: 'investorShares',
+                    render: (data, type, row, meta) => localeNumber(row.investorShares),
+                    className: 'text-right',
+                },
+                {
+                    data: 'amount',
+                    render: (data, type, row, meta) => localeCurrency(row.amount, row.currency?.Abbreviation),
+                    className: 'text-right',
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    render: (data, type, row, meta) => `internal balance`,
+                },
+                { data: 'status' },
+            ],
+        });
+
+        {{!-- Load / Reload table data when this dividend is toggled --}}
+        $('#payoutsBtn-{{this.id}}').on('click', function() {
+            payoutsDataTable{{{this.id}}}.ajax.reload(); // {{!-- Payout + history --}}
+            nextInvestorPayoutsDataTable{{{this.futureId}}}.ajax.reload();
+        });
+    });
+
+    {{!-- This function toggles the isActive status of a dividend --}}
+    function changeStatus(jqElement) {
+        var checked = jqElement.is(':checked');
+        var status = (checked) ? "ON" : "OFF";
+        var id = jqElement.attr('data-id');
+        var form = $(`#isActive-${id}`);
+        $.ajax({
+            method: "POST",
+            url: form.attr('action'),
+            data: form.serialize(),
+            error: (err) => {
+                jqElement.prop("checked", !jqElement.prop("checked"));
+            },
+            success: (res) => {
+                $(`#statusLabel-${id}`).html(status);
+            }
+        });
+    }
+
+    function changeAwardValue(id) {
+        var form = $(`#changeAwardValue-${id}`);
+        $.ajax({
+            method: "POST",
+            url: form.attr('action'),
+            data: form.serialize(),
+            error: (err) => {
+                const lbl = $(`#awardValueStatus-${id}`);
+                lbl.html(`❌ Error: Couldn't re-calculate the dividends. Check that next payout isn't already pending`);
+                lbl.fadeIn(1);
+                lbl.fadeOut(3000);
+                lbl.css('color', 'red');
+            },
+            success: (res) => {
+                location.reload();
+                {{!-- TODO: Ajax it maybe --}}
+            }
+        });
+    }
+    
+    function triggerDelete{{id}}() {
+        var form = $(`#delete-{{id}}-form`);
+        $.ajax({
+            method: "POST",
+            url: form.attr('action'),
+            data: form.serialize(),
+            error: (err) => {
+                alert(`A server error occurred and we couldn't delete the dividend.`);
+            },
+            success: (res) => {
+                location.reload();
+            }
+        });
+    }
+</script>
+
+<div id="payouts-{{this.id}}" class="row collapse">
+    <div clas="col-md-12">
+		<div class="card">
+			
+            <div class="header">
+                
+                <div class="row flex-centered">
+                    <div class="col-xs-12 col-md-8 col-lg-9">                
+                        <h4 class="title">
+                            <img src="/img/dividends.png" width="30px" >
+                            &nbsp;
+                            {{#if this.title}}
+                                {{this.title}} - {{this.shareType.title}}
+                            {{else}}
+                                {{this.shareType.title}}
+                            {{/if}}
+                        </h4>
+                        <label></label>
+                    </div> 
+                    <div class="col-xs-12 col-md-1 cold-lg-1 flex-stretch pad-h">
+                        <form id="delete-{{this.id}}-form" action="purgeDividend" method="POST" style="white-space: nowrap;">
+                            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}"/>
+                            <input type="hidden" name="id" value="{{this.id}}" />
+                        </form>
+                        <button onclick="deleteDividend{{this.id}}();" class="btn btn-danger">
+                            Delete Dividend
+                        </button>
+                    </div>
+                    <div class="col-xs-5 col-md-2 cold-lg-1 flex-stretch pad-h">
+                        <div style="white-space: nowrap;">
+                            <label style="margin-bottom: 0;" class="center pad-h" title="If OFF - pay once only. If ON, will reuse settings and remind you to pay for new periods.">
+                                <i class="ti-info-alt"></i>
+                                Auto-Renew:
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4 col-md-1 flex-stretch pad-h">
+                        <form id="isActive-{{this.id}}" action="dividendIsActive" style="white-space: nowrap;">
+                            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}"/>
+                            <input type="hidden" name="id" value="{{this.id}}" />
+                            <div class="row flex-stretch">
+                                <div class="col-xs-4 center flex-stretch">
+                                    <label id="statusLabel-{{this.id}}" for="isActive" style="margin-bottom: 0;" class="center pad-h">{{#if this.isActive}}ON{{else}}OFF{{/if}}</label>
+                                </div>
+                                <div class="col-xs-8 center flex-stretch">
+                                    <label class="switch" style="margin-bottom: 0;">
+                                        <input name="isActive" class="input-sm center" type="checkbox" {{#if this.isActive}}checked="true"{{/if}} data-id="{{this.id}}" onclick="changeStatus($(this))" value="1">
+                                        <span class="slider round slider-danger center"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-xs-2 col-md-1">
+                        <button data-toggle="collapse" data-target="#payouts-{{this.id}}" onclick="scrollToId('dividends', 'fast');" class="btn btn-info">
+                            Hide
+                        </button>
+                    </div>
+                </div>
+			</div>
+
+            <main class="content" style="overflow-x: scroll;">
+
+                {{#ifEqual this.status "completed"}}
+                
+                    <hr/>
+
+                    <h5>
+                        <img src="/img/minus.png" width="20px">
+                        &nbsp;
+                        Next Payout
+                    </h5>
+                    You can begin planning a Next Payout if you turn ON the dividend template Auto-Renew feature and refresh the page.
+
+                {{else}}
+
+                    <hr/>
+
+                    <h5>
+                        <img src="/img/nonblockchain.png" width="20px">
+                        &nbsp;
+                        Next Payout
+                        {{#ifEqual this.status "future"}}{{else}}
+                            [{{this.status}}]
+                        {{/ifEqual}}
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-md-2 col-xs-6">
+                            <form id="changeAwardValue-{{this.id}}" action="dividendChangeAwardValue" method="POST">
+                                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}"/>
+                                <input type="hidden" name="id" value="{{this.id}}" />
+                                <input type="number" name="awardValue" value="{{this.awardValue}}" min="0.001" max="999999999.999" step="0.001" class="form-control border-input" />
+                            </form>
+                        </div>
+                        <div class="col-md-2 col-xs-6">
+                            <button class="btn btn-info btn-fill" onclick="changeAwardValue({{this.id}});">Change Award Value</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label id="awardValueStatus-{{this.id}}"></label>
+                        </div>
+                    </div>
+
+                            <table class="table display responsive nowrap" style="overflow: auto;" width="100%">
+                                <thead class="listingHeaderFontSize thead">
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Amount</th>
+                                    <th>Investors</th>
+                                    <th>Distributed Shares</th>
+                                    <th>Company Shares</th>
+                                    <th>Award Strategy</th>
+                                    <th>Award Value</th>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{localeDate this.dateTimeFrom}}</td>
+                                        <td>{{localeDate this.dateTimeDue}}</td>
+                                        <td>
+                                            {{this.currency.Symbol}}
+                                            <script>document.write((+("{{roundNumber this.totalAmount 3}}")).toLocaleString());</script>
+                                        </td>
+                                        <td>{{this.investors}}</td>
+                                        <td><script>document.write((+("{{roundNumber this.totalInvestorShares 3}}")).toLocaleString());</script></td>
+                                        <td><script>document.write((+("{{roundNumber this.companyShares 3}}")).toLocaleString());</script></td>
+                                        <td>{{this.awardStrategy}}</td>
+                                        <td>× <script>document.write((+("{{roundNumber this.awardValue 3}}")).toLocaleString());</script></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h5>Individual Transactions</h5>
+
+                            <table id="nextInvestorPayouts-{{this.id}}" class="table display responsive nowrap" style="overflow: auto;" width="100%">
+                                <thead class="listingHeaderFontSize thead">
+                                    <th>Name</th>
+                                    <th>Shares</th>
+                                    <th>Dividend</th>
+                                    <th>Account / Wallet</th>
+                                    <th>Status</th>
+                                </thead>
+                                <tbody>
+                                    {{!-- Populated by AJAX --}}
+                                </tbody>
+                            </table>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{#ifEqual this.status 'future'}}{{else}}
+                                <p>
+                                    It looks like all transactions haven't finished yet.
+                                    <br/>
+                                    Review the list of individual transactions for details.
+                                    If any are not marked as "complete" it means they didn't go through due to a problem.
+                                    <br/>
+                                    By clicking "Approve" you can retry all pending transactions. We won't perform any transactions already marked as "complete".
+                                </p>
+                            {{/ifEqual}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-2">
+                            <form id="approve-{{this.id}}-form" action="triggerDividendPayout" method="POST" style="white-space: nowrap;">
+                                <input type="hidden" name="_csrf" value="{{@root.csrfToken}}"/>
+                                <input type="hidden" name="id" value="{{this.id}}" />
+                            </form>
+                            <button class="btn btn-block btn-success btn-fill btn-large" onclick="approve({{this.id}});">
+                                {{#ifEqual this.status 'future'}} Approve and transfer payments
+                                {{else}} Approve and finalize payment
+                                {{/ifEqual}}
+                            </button>
+                        </div>
+                    </div>
+                
+                {{/ifEqual}}
+
+                <hr/>
+
+                <h5>
+                    <img src="/img/date.png" width="20px">
+                    &nbsp;
+                    History
+                </h5>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            If in doubt, you can also check the <a href="activitylogsto?activityType=40">Activity Log</a>, which will list each individual payment.
+                        </p>
+                    </div>
+                </div>
+                <table id="payoutsData-{{this.id}}" class="table table-hover" width="100%">
+                    <thead class="listingHeaderFontSize thead">
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Amount</th>
+                        <th>Investors</th>
+                        <th>Distributed Shares</th>
+                        <th>Company Shares</th>
+                        <th>Award Strategy</th>
+                        <th>Award Value</th>
+                        <th>Status<th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </main>
+        </div>
+    </div>
+</div>

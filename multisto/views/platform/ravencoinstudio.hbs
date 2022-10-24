@@ -1,0 +1,441 @@
+{{> Header}}
+
+<script language="javascript">
+    var recordFound = {{recordFound}};
+    var operation = 0;
+    const RVNBalance = {{currentRVNBalance}};
+    const ravenServerConnected = {{ravenServerConnected}};
+    const selectedSTOID = {{selectedSTOID}};
+
+
+    $(document).ready(function() {
+        if({{recordFound}}) {
+            let element = document.getElementById("stoid");
+            element.value = "{{record.stoid}}";
+        }
+        $('#mainAsset').keyup(function() {
+            str = $(this).val();
+            str = str.replace(/\s/g,'');
+            $(this).val(str);
+        });
+    })
+
+    function copyText(key) {
+        navigator.clipboard.writeText(key);
+
+        showModelGeneralOKDialogBox(key + " public key is copied in your clipboard");
+    }
+
+
+    function createTokenInformation() {
+
+        if( RVNBalance < 3200 ) {
+            showModelGeneralOKDialogBox("Do you not have required RVN to send this transaction in your Ravencoin wallet. You must have atleast 3200 RVN in your Ravencoin wallet");
+            return;
+        }
+
+        if(ravenServerConnected == 0) {
+            showModelGeneralOKDialogBox("Raven Wallet is not connected or configured");
+            return;
+        }
+
+
+        if(recordFound == 0) {
+            if( document.getElementById("PublicKey").value == "") {
+                showModelGeneralOKDialogBox("Please enter Public Key");
+                return;
+            } else {
+                if( document.getElementById("PublicKey").value.length < 3 ) {
+                    showModelGeneralOKDialogBox("PublicKey should be atleast 3 character long");
+                    return;
+                }
+            }
+
+            if( document.getElementById("mainAsset").value == "") {
+                showModelGeneralOKDialogBox("Please enter main asset name")
+                return;
+            } else {
+                if( document.getElementById("mainAsset").value.length < 3 ) {
+                    showModelGeneralOKDialogBox("Main Asset name must be atleast 3 character long");
+                    return;
+                }
+            }
+
+        }
+
+        if( document.getElementById("titleToken").value == "") {
+            showModelGeneralOKDialogBox("Please enter Title")
+            return;
+        } else {
+            if( document.getElementById("titleToken").value.length < 3 ) {
+                showModelGeneralOKDialogBox("Title Token should be atleast 3 character long");
+                return;
+            }
+        }
+
+        document.getElementById("titleToken").value = document.getElementById("titleToken").value.toUpperCase();
+
+        if( document.getElementById("nominal").value == "") {
+            showModelGeneralOKDialogBox("Enter Nominal Value")
+            return;
+        } else {
+            if( isNaN ( document.getElementById("nominal").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid nominal value number");
+                return;
+            }
+        }
+
+        if( document.getElementById("premimum").value == "") {
+            showModelGeneralOKDialogBox("Enter Premimum Value")
+            return;
+        }else {
+            if( isNaN ( document.getElementById("premimum").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid premimum value number");
+                return;
+            }
+        }
+
+
+        if( document.getElementById("tokenAmount").value == "") {
+            showModelGeneralOKDialogBox("Enter number of tokens to mint with deployment")
+            return;
+        }else {
+            if( isNaN ( document.getElementById("tokenAmount").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid number of tokens");
+                return;
+            } else {
+                operation = 4;
+                showModelGeneralYesNoDialogBox("Do you want to start minting ?", "Yes", "Cancel")
+            }
+        }
+
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        document.getElementById("tokenStudioForm").submit();
+    }
+    function generateNewAddress() {
+          window.location.href = "generateNewRavenAddress";
+          return false;
+    }
+    function addNewAddress() {
+        if(  document.getElementById("addPublicKey").value  == "" ) {
+            showModelGeneralOKDialogBox("Please enter Ravencoin Public Address");
+            return;
+        }
+
+        window.location.href = "addNewRavenAddress?address=" + document.getElementById("addPublicKey").value;
+        return false;
+    }
+</script>
+
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                 <h3 class="title"><img src="/img/tokenstudio.png" width="35px;"> &nbsp; Ravencoin Token Studio </h3>
+                 <label>Deploy Ravencoin Security Token</label>
+            </div>
+            <b><ul><span style="color:red;" id="ResendSecretErrorMessage"></span></ul></b>
+
+            <div class="content">
+
+                <img src="/img/ravencoin.jpeg" width="100%" height="180px;">
+
+                {{#if studioMessage}}
+                    <br /><br /><span style="color:red;"><b>{{studioMessage}}</b></span>
+                {{/if}}
+
+                <br /><br />
+                <span style="font-size:20px;">Using this Token Studio you can deploy Ravencoin security tokens on the blockchain</span>
+                <br /><br />
+
+                <span style="font-size:20px;">Ravencoin Deployment Steps</span>
+                <br /><br />
+
+
+                <img src="/img/greendot.png" width="10px">  <b>Wallet Setup</b>    &nbsp;&nbsp;&nbsp; <label> Wallet Setup     Make sure your wallet is ready and that you have sufficient RVN in your account. At least 3100 RVN are needed to mint the security tokens </label>
+                <br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Deployment Steps</b>    &nbsp;&nbsp;&nbsp;<label> There are 4 steps in the deployment process and 4 transactions to be sent to the blockchain. Each step deploys a resource and waits for the completion of the transaction </label>
+                <br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Deploy Main Asset</b>    &nbsp;&nbsp;&nbsp;<label>  For the first step, please enter the token information and it will then deploy the main asset on the blockchain. Wait for the transaction to complete before proceeding to the next step </label>
+                <br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Setup Qualifier Name</b>    &nbsp;&nbsp;&nbsp;<label> For the next step, please setup the Qualifier Name. This will be a token used to whitelist investor addresses </label>
+                <br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Assign Qualifier Name</b>    &nbsp;&nbsp;&nbsp;<label> For the next step, please assign a Qualifier Name with the company address that will hold company token </label>
+                <br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Deploy Restricted Asset</b>    &nbsp;&nbsp;&nbsp; <label> Next, deploy the restricted asset and issue the initial supply of tokens to the company address. This will also link the platform with the token in blockchain and you can start whitelisting and issuing tokens to investors </label>
+
+
+
+                    <br />
+                    <img src="/img/lineseparator.png" width="100%"  height="30px">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <h4>Add Ravencoin Public Address</h4>
+                                <label>Please make sure the address is already created as a wallet and that you have a backup of the private key</label>
+                                <input type="text" maxLength="100" id="addPublicKey" name="addPublicKey" class="form-control border-input" placeholder="Ravencoin PublicKey Address">
+                                <br />
+                                <button type="button" onclick="return addNewAddress()" class="btn btn-info btn-fill">Add Ravencoin Address</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-5">
+                            <h4>Generate new wallet address</h4>
+                            <label>Generate address of new Ravencoin wallet</label>
+                            <br />
+                            <label>(Remember that each wallet only has a single address)</label>
+                            <button type="button" onclick="return generateNewAddress()" class="btn btn-info btn-fill">Generate Ravencoin Address</button>
+                        </div>
+                    </div>
+
+                    <img src="/img/lineseparator.png" width="100%"  height="30px">
+
+                        <label>Your current RVN balance in wallet</label>
+                        <br />
+                    <span style="font-size:25px;">
+                        {{currentRVNBalance}} RVN
+                    </span>
+
+                    <br /><br />
+                    {{#if ravencoinAddress.length}}
+                        Following addresses are in platform and your wallet. You can purchase RVN in any one of these addresses
+                        <br />
+                        {{#each ravencoinAddress}}
+                            <img src="/img/fields.png" style="cursor: pointer" width="30px" onclick="copyText('{{this.publicKey}}')"> &nbsp;
+                            {{this.publicKey}}
+                            <br />
+                        {{/each}}
+                    {{else}}
+                        <b> You do not have any address in platform. Please add or generate a address </b>
+                    {{/if}}
+
+                    <img src="/img/lineseparator.png" width="100%"  height="30px">
+
+                    {{#if recordFound}}
+
+                        <br /><br />
+                        {{#if record.isMainAssetTransactionSend}}
+                            <br />
+                            <img src="/img/no1.jpg" width="30px;">
+                            Main asset transaction has been sent. Waiting for completion… .
+                        {{/if}}
+                        {{#if record.isMainAssetTransactionDone}}
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <b>Main asset has been deployed</b>
+                        {{/if}}
+
+
+                        {{#if record.isQualifierNameTrnasactionSend}}
+                            <br /><br />
+                            <img src="/img/no2.jpg" width="45px;">
+                            Qualifier name transaction has been sent. Waiting for completion….
+                        {{/if}}
+                        {{#if record.isQualifierNameTrnasactionDone}}
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <b> Qualifier name has been deployed </b>
+                        {{/if}}
+
+
+                        {{#if record.qualifierAssignTransactionIDSend}}
+                            <br /><br />
+                            <img src="/img/no3.png" width="30p;">
+                            Qualifier name assignment transaction has been sent. Waiting for completion…
+                        {{/if}}
+                        {{#if record.qualifierAssignTransactionIDDone}}
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <b>
+                            Qualifier name assignment has been deployed </b>
+                        {{/if}}
+
+
+                        {{#if record.createRestrictedAssetTransactionIDSend}}
+                            <br /><br />
+                            <img src="/img/no4.png" width="30p;">
+                            Restricted asset transaction has been sent. Waiting for completion….
+                        {{/if}}
+
+
+                        <br /><br />
+                        <b>Refresh the page to see progress. This can take several minutes</b>
+
+                    {{else}}
+
+                        <span style="font-size:20px;">Enter Token Information</span>
+
+                        <form id="tokenStudioForm" name="tokenStudioForm" action="ravencoinstudiopost" method="post">
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        {{#if recordFound}}
+                                            <br />
+                                            {{record.PublicKey}}
+                                        {{else}}
+                                            <label>Select Wallet Address to Use <br /> This will be company address that will hold new or existinng compamny tokens </label>
+                                            {{#if ravencoinAddress.length}}
+                                                <select id="PublicKey" name="PublicKey" class="form-control border-input" >
+                                                    {{#each ravencoinAddress}}
+                                                        <option value="{{this.publicKey}}">{{this.publicKey}}</option>
+                                                    {{/each}}
+                                                    Note :
+                                                    <br /> 2. This is the address that will hold company token when security token is deployed
+                                                    <br /> 3. Your wallet and this address should hold atleast 3100 RVN to deploy restricted asset in blockchain
+                                                </select>
+                                            {{else}}
+                                                <br />
+                                                <b> No Public Address found in platform. Please setup a public account and add in system using above form or click Generate button to create a public/private key in your wallet </b>
+                                            {{/if}}
+
+                                        {{/if}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>
+                                            Selected Project
+                                         </label>
+                                          <br />
+                                         {{stoTitle}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>{{#unless recordFound}}Enter{{/unless}} Main Asset name</label>
+
+                                        {{#if record.isMainAssetTransactionSend}}
+                                            <br />
+                                            {{record.mainAsset}}
+                                            <input type="hidden" id="mainAsset" style="text-transform:uppercase" name="mainAsset" value="{{record.mainAsset}}">
+                                        {{else}}
+                                            <input type="text" maxLength="150"  style="text-transform:uppercase" id="mainAsset" name="mainAsset" class="form-control border-input" placeholder="Enter main asset name" value="{{record.mainAsset}}">
+                                        {{/if}}
+                                        {{#unless recordFound}}
+                                        1. Main asset with this name will be created in blockchain <br />
+                                        2. Make sure name of the asset is unique in Ravencoin blockchain  <br />
+                                        3. No spaces allowed in asset name  (Ravencoin blockchain requirement)  <br />
+                                        4. Valid characters are A-Z, 0-9<br />
+                                        5. Also the name must be all upper case letters (Ravencoin blockchain requirement)
+                                        {{/unless}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br />
+                            {{#if recordFound}}
+                                <label>Token Divisibility</label> <br />
+                                {{#if record.unitDecimals}}
+                                    Token is set divisible
+                                {{else}}
+                                    Token is not divisible
+                                {{/if}}
+                            {{else}}
+                                <img src="/img/greendot.png" width="10px"> &nbsp;&nbsp;
+                                Do you want your tokens divisible or not. By default checkbox is enabled which means tokens are divisible. Divisibility means that tokens can be transferred in fractions
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="checkbox" id="unitDecimals" name="unitDecimals" checked value="1"/> &nbsp;&nbsp;&nbsp; <label> Token Divisible </label>
+                                    </div>
+                                </div>
+                            {{/if}}
+
+
+                            {{#if recordFound}}
+                                <br /><br /><br />
+                                <label>IPFS Document Link</label><br />
+                                {{record.ipfsDocumentHash}}
+                            {{/if}}
+                            <br /><br />
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Share Class Title</label>
+                                        <input type="text" maxLength="150" id="titleToken" name="titleToken" class="form-control border-input" placeholder="Title of the share class" value="{{record.title}}">
+                                        This is not on the blockchain but used within the platform
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Nominal Value </label>
+                                        <input  type="text" maxLength="10" id="nominal" name="nominal" class="form-control border-input" placeholder="Nominal Value" value="{{record.nominal}}">
+                                        Non-blockchain project
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2"></div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Market Value</label>
+                                        <input type="text"    maxLength="10" id="premimum" name="premimum" class="form-control border-input" placeholder="Market Value" value="{{record.premimum}}">
+                                        Non-blockchain project
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <br />
+                                        <label>Enter number of tokens to mint</label>
+                                        <input type="text" maxLength="150" id="tokenAmount" name="tokenAmount" class="form-control border-input" placeholder="Qualifier Assets" value="">
+                                        1. These tokens will be assigned to the company wallet address {{record.PublicKey}}
+                                        <br /> 2. When the platform receives notification that the transaction was successful, a new asset class will be created in the selected project
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{#if record.isMainAssetTransactionSend}}
+                                {{#if record.isMainAssetTransactionDone}}
+                                    <label>Main Asset has been deployed. Transaction ID is </label><br />
+                                {{else}}
+                                    <label>Main Asset transaction is send. Waiting for completion. Transaction ID is </label><br />
+                                {{/if}}
+                                {{record.mainAssetTransactionID}}
+                            {{/if}}
+                            <br /><br />
+
+                            {{#if ravencoinAddress.length}}
+                                <button type="button" onclick="return createTokenInformation()" class="btn btn-info btn-fill">
+                                    Start Token Minting
+                                </button>
+                            {{else}}
+                                <br />
+                                <b> No Public Address found in platform. Please setup a public account and add in system using above form or click Generate button to create a public/private key in your wallet </b>
+                            {{/if}}
+
+
+                            <input type="hidden" id="stoid" name="stoid" value="{{selectedSTOID}}" />
+                            <input type="hidden" id="action" name="action" value="1" />
+                            <input type="hidden" id="op" name="op" value="0" />
+                            <input type="hidden" id="password" name="password" />
+                            <input type="hidden" id="filecontents" name="filecontents" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        </form>
+
+                    {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> privateKeySelectorDialog}}
+{{> Footer}}

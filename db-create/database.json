@@ -1,0 +1,34 @@
+{
+  "create-db": {
+    "driver": "mysql",
+    "user": {
+      "ENV": "DB_USER"
+    },
+    "host": {
+      "ENV": "DB_SERVER"
+    },
+    "password": {
+      "ENV": "DB_PASSWORD"
+    },
+    "multipleStatements": true
+  },
+  "populate-db": {
+    "driver": "mysql",
+    "user": {
+      "ENV": "DB_USER"
+    },
+    "host": {
+      "ENV": "DB_SERVER"
+    },
+    "password": {
+      "ENV": "DB_PASSWORD"
+    },
+    "database": {
+      "ENV": "DB_DATABASE"
+    },
+    "values_hostname": {
+      "ENV": "VALUES_HOSTNAME"
+    },
+    "multipleStatements": true
+  }
+}

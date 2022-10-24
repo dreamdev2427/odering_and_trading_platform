@@ -1,0 +1,283 @@
+{{> Header}}
+
+<style>
+  .has-error .form-control {
+    background-color: #fffcf5 !important;
+  }
+</style>
+
+<script language="javascript">
+
+  let selectedLanguage = "All";
+
+  $(document).ready(function () {
+    const modal = $('#translation-modal');
+    const addLangModal = $('#locale-modal');
+    const _csrf = '{{csrfToken}}';
+    const keyInput = $('#translation-key');
+    const localeInput = $('#translation-locale');
+    const textInput = $('#translation-text');
+    const createLocale = $('#new-locale');
+
+    keyInput.on('focus', () => {
+      if (keyInput.parent().hasClass('has-error')) {
+        keyInput.parent().removeClass('has-error');
+      }
+    });
+
+    textInput.on('focus', () => {
+      if (textInput.parent().hasClass('has-error')) {
+        textInput.parent().removeClass('has-error');
+      }
+    });
+
+    createLocale.on('focus', () => {
+      if(createLocale.parent().hasClass('has-error')){
+        createLocale.parent().removeClass('has-error');
+      }
+    })
+
+    $('.js-add').on('click', () => {
+      modal.modal({ backdrop: 'static', keyboard: true });
+    });
+
+    $('.js-add-lang').on('click', () => {
+      addLangModal.modal({ backdrop: 'static', keyboard: true });
+    });
+
+    $(document).on('click', '.js-edit', (e) => {
+      const data = $(e.currentTarget).data();
+      keyInput.val(data.key);
+      localeInput.val(data.locale);
+      textInput.val(data.translation);
+      modal.modal({ backdrop: 'static', keyboard: true });
+    });
+
+    modal.on('hidden.bs.modal', () => {
+      keyInput.val('');
+      localeInput.val('en');
+      textInput.val('');
+    });
+
+    $('.js-save').on('click', () => {
+      let hasError = false;
+      const key = keyInput.val();
+      const locale = localeInput.val();
+      const translation = textInput.val();
+      if (!key) {
+        keyInput.parent().addClass('has-error');
+        hasError = true;
+      }
+      if (!locale) {
+        localeInput.parent().addClass('has-error');
+        hasError = true;
+      }
+      if (!translation) {
+        textInput.parent().addClass('has-error');
+        hasError = true;
+      }
+
+      if (hasError) {
+        return;
+      }
+
+      $.post('/platform/postTranslation', { key, locale, translation, _csrf })
+        .done(() => {
+          modal.modal('hide');
+          const tr = $(`#${locale}-${key} .js-translation`);
+          if (tr.length) {
+            tr.html(translation);
+            $(`#${locale}-${key} button`).data('translation', translation)
+          } else {
+            const newTr = `
+            <tr id="${locale}-${key}">
+                <td>${locale}</td>
+                <td>${key}</td>
+                <td class="js-translation">${translation}</td>
+                <td>
+                  <button
+                    class="btn btn-default js-edit"
+                    data-locale="${locale}"
+                    data-key="${key}"
+                    data-translation="${translation}"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            `
+            $('#translation-table tbody').append(newTr);
+          }
+        });
+    });
+
+    $('.js-save-lang').on('click', () => {
+
+      let hasError = false;
+      const locale = createLocale.val();
+      if (!locale) {
+        createLocale.parent().addClass('has-error');
+        hasError = true;
+      }
+
+      if (hasError) {
+        return;
+      }
+
+      $.post('/platform/addTranslationLanguage', { locale, _csrf })
+        .done(() => {
+        addLangModal.modal('hide');
+        window.location.href = `translations?&lang=${locale}`;
+        });
+    });
+  });
+  function languageChanged(){
+    selectedLanguage = $("#languageDropdown").val();
+    window.location.href = `translations?&lang=${selectedLanguage}`;
+  }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+{{#if message}}
+  <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b>
+  <br /><br />
+{{/if}}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-4">
+            <h4 class="title">Translations</h4>
+          </div>
+          <div class="col-md-4">
+            <select onchange="return languageChanged()"class="form-control border-input" id="languageDropdown" name="languageDropdown">
+              <option value="Select language">Select language</option>
+              <option value="All">All</option>
+              {{#each translationsLocales}}
+                <option id="{{this.locale}}" value="{{this.locale}}">{{this.locale}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary pull-right js-add-lang">Add Language</button>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary pull-right js-add">Add Translation</button>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <table class="table" id="translation-table">
+          <thead>
+            <tr>
+              <th>Locale</th>
+              <th>Key</th>
+              <th>Translation</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each translationsList}}
+              <tr id="{{this.locale}}-{{this.key}}">
+                <td>{{this.locale}}</td>
+                <td>{{this.key}}</td>
+                <td class="js-translation">{{{this.translation}}}</td>
+                <td>
+                  <button
+                    class="btn btn-default js-edit"
+                    data-locale="{{this.locale}}"
+                    data-key="{{this.key}}"
+                    data-translation="{{this.translation}}"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="translation-modal" tabindex="-1" role="dialog" aria-labelledby="translation-modal"
+     aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+          aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Translation modal</h4>
+      </div>
+      <div class="modal-body">
+        <form id="translation-form">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="translation-locale" class="control-label">Locale</label>
+                <select id="translation-locale" class="form-control border-input" name="locale" required>
+                  {{#each translationsLocales}}
+                    <option id="{{this.locale}}" value="{{this.locale}}">{{this.locale}}</option>
+                  {{/each}}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="translation-key" class="control-label">Key</label>
+                <input name="key" type="text" class="form-control border-input" id="translation-key"
+                       placeholder="Enter a key" required>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="translation-text" class="control-label">Translation</label>
+            <textarea name="translation" class="form-control border-input" id="translation-text" required
+                      rows="5"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary js-save">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="locale-modal" tabindex="-1" role="dialog" aria-labelledby="locale-modal"
+     aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+          aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Add Translation modal</h4>
+      </div>
+      <div class="modal-body">
+        <form id="add-locale-form">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="new-locale" class="control-label">Locale</label>
+                <input name="locale" type="text" class="form-control border-input" id="new-locale"
+                       placeholder="Enter a locale" required>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary js-save-lang">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+{{> Footer}}

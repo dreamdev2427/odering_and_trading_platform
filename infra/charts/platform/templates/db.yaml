@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mysql
+  labels:
+    app: {{ .Release.Name }}-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-mysql
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mysql
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-mysql-m
+          image: "gcr.io/storied-chimera-334509/digishares-platform/db:latest"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3306
+          resources:
+            requests:
+              cpu: 10m
+              ephemeral-storage: 1000Mi
+              memory: 250Mi
+            limits:
+              cpu: 300m
+              ephemeral-storage: 1000Mi
+              memory: 500Mi
+          volumeMounts:
+            - mountPath: "/var/lib/mysql"
+              subPath: "mysql"
+              name: mysql-data
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: dbsecrets
+                  key: password
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-db-volumeclaim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-mysql-service
+spec:
+  selector:
+    app: {{ .Release.Name }}-mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306

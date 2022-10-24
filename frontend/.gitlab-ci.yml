@@ -1,0 +1,25 @@
+
+build-frontend:
+  extends: .build-image
+  services:
+    - docker:dind
+  variables:
+    FOLDER: frontend
+  only:
+    refs:
+      - staging
+    changes:
+      - "frontend/**/*"
+
+deploy-develop-frontend:
+  stage: deploy
+  image: cdrx/rancher-gitlab-deploy
+  variables:
+    FOLDER: frontend
+  script:
+    - upgrade --environment Default --stack gosecurity --service digishares-frontend-devel --new-image "$CI_REGISTRY_IMAGE/$FOLDER:latest" --create --no-start-before-stopping --rollback-on-error --finish-upgrade
+  only:
+    refs:
+      - staging
+    changes:
+      - "frontend/**/*"

@@ -1,0 +1,67 @@
+{{> Header}}
+
+
+
+<script language="javascript">
+
+    $(document).ready(function() { 
+        
+    });
+
+    function submitForm() {
+            var e = document.getElementById("investortype");
+            var val = e.options[e.selectedIndex].value;
+
+            window.location.href = "/investortypeselectpost?val=" + val;
+            return false;
+    }
+
+</script>
+
+</head>
+    <body>
+
+    <center>
+        
+        <br />        <br />        <br />        <br />        <br /><br />
+        
+        <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="card">
+
+                        <div class="content">
+                            <br />
+                                <img src="/img/stologo/{{logo}}" width="200px"  /> 
+                                <br />
+                                <h3>How do you want to register  in platform </h3>
+
+                                <br /><br />
+                            
+                                    <div class="row">
+                                            <div class="col-md-2"></div>     
+                                            <div class="col-md-8">                            
+                                                    <select id="investortype" class="form-control border-input" style="font-size:20px; height:50px;">
+                                                            <option value="0">Natural Person (Individual)</option>
+                                                            <option value="1">Legal Entity ( Business )</option>
+                                                    </select>
+                                            </div>
+                                            <div class="col-md-2"></div>                                          
+                                    </div>
+                            
+                                    <br /><br />
+                            
+                                    <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Start Your Profile</button>                                            
+                            
+                                    <br /><br /><br />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+        </div>
+    </center> 
+
+        
+    </body>
+</html>

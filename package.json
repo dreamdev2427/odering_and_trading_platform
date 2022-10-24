@@ -1,0 +1,30 @@
+{
+  "name": "digishares-platform",
+  "version": "1.0.0",
+  "description": "",
+  "devDependencies": {
+    "@saithodev/semantic-release-backmerge": "^2.1.0",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/gitlab": "^7.0.4",
+    "husky": "^7.0.0",
+    "semantic-release": "^19.0.2"
+  },
+  "scripts": {
+    "setup": "npm install && cd multisto && npm install && cd ../frontend && npm install && cd ../api && npm install",
+    "postinstall": "husky install",
+    "pre-commit": "cd multisto && npx lint-staged && cd ../frontend && npx lint-staged && cd ../api && npx lint-staged",
+    "semantic-release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/digishares/digishares-platform.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/digishares/digishares-platform/issues"
+  },
+  "homepage": "https://gitlab.com/digishares/digishares-platform#readme"
+}

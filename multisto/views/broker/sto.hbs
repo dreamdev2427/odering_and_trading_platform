@@ -1,0 +1,181 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+            $("#DashboardMenu").addClass('active');
+    })
+
+    function openExchange() {
+        window.location.href = "exchange";
+        return false;
+    }
+    function viewinvestors(id) {
+        window.location.href = "investors?id=" + id;
+        return false;
+    }
+</script>
+
+
+{{> HeaderInnerBroker}}
+
+        <div class="row">
+               <div class="col-md-12 ">
+                    <div class="card">
+                        <div class="header">
+
+                            <div class="row">
+                                    <div class="col-md-10">
+                                            <h4 class="title"> <img src="/img/company.png" width="30px;" style="padding-bottom:4px;" />
+                                            &nbsp; {{record.title}}</h4>
+                                    </div>
+                                    <div class="col-md-2">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="content">
+
+
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="/img/stobanners/{{record.propertypicture}}" width="100%">
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            {{record.details}}
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <img src="/img/stologo/{{record.logo}}" width="90px;">
+                                        </div>
+
+                                    </div>
+
+
+                                    <h4>Total Registered Investors &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{countInvestors}}
+                                            &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <button type="button" onclick="return viewinvestors({{record.ID}})"class="btn btn-info btn-fill">View Investor List</button>
+                                    </h4>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <br />
+
+        <div class="row">
+               <div class="col-md-12 ">
+                    <div class="card">
+                        <div class="header">
+
+                            <div class="row">
+                                    <div class="col-md-10">
+                                            <h4 class="title"> <img src="/img/company.png" width="30px;" style="padding-bottom:4px;" />
+                                            &nbsp; Company Shares</h4>
+                                    </div>
+                                    <div class="col-md-2">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="content">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-3"><b>Total Shares</b></div>
+                                    <div class="col-md-3"> {{numberFormat TotalShares decimalLength="ShareCountInFractions"}} </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-3"><b>Company Shares</b></div>
+                                    <div class="col-md-3">{{numberFormat TotalCompanyShares decimalLength="ShareCountInFractions"}}</div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-3"><b>Investor Shares</b></div>
+                                    <div class="col-md-3">{{numberFormat TotalInvestorShares decimalLength="ShareCountInFractions"}} </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br /><br />
+
+                                <div class="row">
+                                    <div class="col-md-4"> &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;Share</div>
+                                    <div class="col-md-2">Total Shares</div>
+                                    <div class="col-md-2">Remaining Shares</div>
+                                    <div class="col-md-2">Nominal</div>
+                                     <div class="col-md-2">Premimum</div>
+                                </div>
+                                <br />
+                                {{#each shares}}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                                {{#if this.isblockchain}}
+                                                    <img src="/img/blockchainwallet.png" title="Tokenized Shares" width="22px;" />
+                                                {{else}}
+                                                    <img src="/img/nonblockchain.png"  title="Non-tokenized Shares" width="25px;" />
+                                                {{/if}}  &nbsp;
+                                                {{this.title}}
+                                        </div>
+
+                                        <div class="col-md-2">
+                                                {{this.totalShares}}
+                                        </div>
+
+                                        <div class="col-md-2">
+                                                {{this.companyShares}}
+                                        </div>
+
+                                        <div class="col-md-2">
+                                                {{currencySymbol this.currencyid}} &nbsp; {{this.nominalValue}}
+                                        </div>
+
+                                         <div class="col-md-2">
+                                                {{currencySymbol this.currencyid}} &nbsp; {{this.premimum}}
+                                        </div>
+
+                                    </div>
+                                    <br />
+                                {{/each}}
+
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <br />
+
+        <div class="row">
+               <div class="col-md-12 ">
+                    <div class="card">
+                        <div class="header">
+
+                            <div class="row">
+                                    <div class="col-md-10">
+                                            <h4 class="title"> <img src="/img/company.png" width="30px;" style="padding-bottom:4px;" />
+                                            &nbsp; Exchange Orders</h4>
+                                    </div>
+                                    <div class="col-md-2">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="content">
+
+                                    <div class="row">
+                                            <div class="col-md-12">
+                                                    <label>No Orders Found</label>
+                                            </div>
+                                            <br />
+                                    </div>
+
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <br />
+
+{{> Footer}}
+
+

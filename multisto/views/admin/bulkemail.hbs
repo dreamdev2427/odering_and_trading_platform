@@ -1,0 +1,142 @@
+{{> Header}}
+
+<script language="javascript">
+    var UploadFile_Size = 5;
+    var investorCount = 0;
+    var bulkEmailSending = 0;
+
+	$(document).ready(function() {
+        InvestorSearchModule_setControls();
+        SummernoteBasicDataInitialize('emailText0', 'Enter Email Text', 300); 
+        
+        InvestorSearchModule_submitForm();
+	})
+    function submitForm() { 
+        if(bulkEmailSending == 1)
+            return;
+        
+        bulkEmailSending = 1;
+
+        if (investorCount == 0) {
+            showModelGeneralOKDialogBox("No investor selected");
+            return;
+        }
+        
+        if(document.getElementById("emailTitle0").value == "") {
+            showModelGeneralOKDialogBox("Title is required");
+            return;
+        }
+        
+        if(document.getElementById("emailText0").value == "") {
+            showModelGeneralOKDialogBox("Email text is required");
+            return;
+        }
+
+        if(  document.getElementById("photos222").files.length > 0 )
+            uploadMultiplefilesToServer('photos222', 'fileUplodProgressUpload2', 3, '/admin/uploadFiles');
+        else
+            sendFormToServer();
+        
+    }
+	function fileValidation() {
+        checkAndUpdateMultiFileUpload('photos222', 'upload-file2',  MultifileMultifileExtensions1, MultifileMultifileExtensions1msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);     
+	}
+    function multipleFilesUploadingDoneEvent(data) {
+        document.getElementById("files").value = JSON.stringify(data);
+        sendFormToServer();
+    }    
+    function sendFormToServer() {
+        var param = InvestorSearchModule_getPageSearchCriteriaJSON();
+        if(param.hasOwnProperty('name')) 
+            document.getElementById("namesearch").value = param.name;
+        if(param.hasOwnProperty('type'))
+            document.getElementById("typesearch").value = param.type;
+        
+        document.getElementById("emailTitle").value = document.getElementById("emailTitle0").value;
+        document.getElementById("emailText").value = document.getElementById("emailText0").value;
+        //alert(document.getElementById("files").value);
+        if ($('#chkSendBulkEmail').is(":checked")){document.getElementById("bulkemailchkbx").value = 1}
+		else{ document.getElementById("bulkemailchkbx").value = 0}
+        
+        document.getElementById("bulkEmail").submit();
+    }
+    function InvestorSearchModule_callbackJsonCallData(data) {
+        var param = InvestorSearchModule_getPageSearchCriteriaJSON();
+        investorCount = data.count;
+        $("#investorcount").html(investorCount);
+    }
+//function boxchecked() {
+	//	if ($('#chkSendBulkEmail').is(":checked"))
+      //   document.getElementById("bulkemailchkbx").value = 1
+		//else
+         //document.getElementById("bulkemailchkbx").value = 0
+	//}
+</script>
+
+{{> HeaderInnerSto}}
+
+{{> investorSearchModule  targetServerSideEndpointAutoPost='searchInvestorcountjson' HelperMessage="Select investors to whom bulk email will be send"  ShowViewSelectedButton=1 JSONRemoteCallWithoutRedirect=1}}
+
+{{>multifileupload}}
+
+<div class="row">
+		<div class="col-md-12 topPaddingBetweenPageSections">
+			<div class="card">
+
+				<div class="header">
+                    <div class="col-md-10">                                
+                        <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Bulk Email to Investors</h4>
+                    </div>
+				</div>
+
+				<div class="content">
+
+                        <h4>Selected Investors &nbsp;&nbsp;&nbsp; <span id="investorcount"></span></h4>
+                        <br />
+                    
+
+                            <label>Email Title</label>
+                            <input id="emailTitle0" name="emailTitle0" class="form-control border-input" type=text placeholder="Title"/> 
+
+                            <br />
+                            <label>Email Text</label>
+                            <textarea id="emailText0" name="emailText0" rows="5" class="form-control border-input"></textarea>
+                            <br />
+                            
+                            <div class="upload-btn-wrapper">
+                                <button class="btnfile">Select File</button>
+                                <input   id="photos222"   name="photos222" multiple="multiple" type="file"  onchange="fileValidation()" >
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <span style="color: green; font-size: 12px; " id="upload-file2">No File Selected</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="progress" style="display: none;">
+                                      <div id="fileUplodProgressUpload2" class="progress-bar" role="progressbar" style="width: 0px;" ></div> 
+                                    </div>                   
+                                </div>
+                            </div>
+
+                            <br /><br />
+                            <input style="width:20px; height:20px;"  type="checkbox" id="chkSendBulkEmail" name="chkSendBulkEmail"> &nbsp;<label>Send internal message</label>
+                            <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Send emails to investors</button>
+                    
+					<br />&nbsp;
+				</div>
+
+			</div>
+		</div>
+</div>
+
+<form id="bulkEmail" name="bulkEmail" action="sendBulkEmail"  method="post">
+    <input type="hidden" id="emailTitle" name="emailTitle" value="">
+    <input type="hidden" id="emailText" name="emailText" value="">
+    <input type="hidden" id="bulkemailchkbx" name="bulkemailchkbx" value="">
+    <input type="hidden" id="files" name="files" value="[]">
+    <input type="hidden" id="namesearch" name="namesearch" value="">
+    <input type="hidden" id="typesearch" name="typesearch" value="">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>    
+
+{{> Footer}}

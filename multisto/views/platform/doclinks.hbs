@@ -1,0 +1,148 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#doclinks").addClass('active');
+    })
+
+    var linkToDelete = "";
+
+    function addNewLink() {
+        $('#addNewLinkDialog').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+    }
+
+    function createLink() {
+        if(document.getElementById("txtLinkTitle").value == "") {
+            showModelGeneralOKDialogBox("Link title cannot be empty");
+            return;
+        }
+
+        window.location.href = "createNewLink?title=" +  document.getElementById("txtLinkTitle").value;
+        return false;
+    }
+
+    function showDocuments(id) {
+        window.location.href = "doclinksdocuments?id=" + id;
+        return false;
+    }
+
+    function enabledisablelinks(id, en) {
+        window.location.href = "doclinksenabledisable?id=" + id + "&en=" + en;
+        return false;
+    }
+
+    function deletelink(id) {
+        linkToDelete = "deleteplatformlinkdoc?id=" + id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete the link ? <br /><br /> Please make sure there are no documents in the link or link will not be deleted", "Yes Delete", "Cancel")
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+         window.location.href = linkToDelete;
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                        <h4 class="title">External Links</h4>
+                        <label>External Links receive documents from clients / investors</label>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button onclick="return addNewLink()" class="btn btn-info btn-fill"> &nbsp; Create New Link &nbsp; </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+
+                {{#if Records}}
+                    <table class="table table-striped">
+                        <thead>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each Records}}
+                                <tr>
+                                    <td style="width: 75%; font-size:16px;">
+                                        <span style="font-size:22px;">
+                                            {{this.title}}
+                                            {{#if NewDocs}}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                                <span style="color:red; font-size:14px;">({{NewDocs}} New)</span>
+                                            {{/if}}
+                                        </span>
+                                        <br />
+                                        <span style="font-size:14px;">
+                                            {{../mainSTO}}/platform/link?id={{this.secret}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <span style="color:green;">
+                                                ( {{this.TotalDocs}} Documents )
+                                            </span>
+                                        </span>
+                                    </td>
+                                    <td style="width: 5%; padding-left:30px;">
+                                        {{#if this.isEnabled}}
+                                            <img src="/img/greendot.png" width="25px" >
+                                        {{else}}
+                                            <img src="/img/reddot.png" width="22px" >
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 5%;"><button onclick="return enabledisablelinks({{this.ID}}, {{#if this.isEnabled}}0{{else}}1{{/if}} )" class="btn btn-info btn-fill btn-sm"> {{#if this.isEnabled}}Disable{{else}}Enable{{/if}} </button></td>
+                                    <td style="width: 10%;"><button onclick="return showDocuments({{this.ID}})" class="btn btn-info btn-fill btn-sm"> Documents </button></td>
+                                    <td style="width: 5%;"><button onclick="return deletelink({{this.ID}})" class="btn btn-info btn-fill btn-sm">Delete </button></td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
+                    <br /><br />
+                    <img src="/img/greendot.png" width="25px" > &nbsp &nbsp Link is open and anybody having this link can upload documents
+                    <br />
+                    <img src="/img/reddot.png" width="22px" > &nbsp &nbsp Link is closed. Click Enable
+                    <br />&nbsp;
+                {{else}}
+                    <br />
+                    <label> No links found </label>
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addNewLinkDialog" tabindex="-1" role="dialog" aria-labelledby="addNewLinkDialog" aria-hidden="true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h5 class = "modal-title" id = "myModalLabel">
+                Create New Link
+            </h5>
+         </div>
+
+         <div  class="modal-body">
+             <label>Enter Link Title</label>
+             <input type="text" text="ewfwef" id="txtLinkTitle"  maxlength="70" class="form-control border-input" />
+         </div>
+         <br /><br />
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="createLink()"> Create Link </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+{{> Footer}}

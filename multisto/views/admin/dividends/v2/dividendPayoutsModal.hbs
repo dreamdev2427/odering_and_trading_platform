@@ -1,0 +1,98 @@
+<script language="javascript">
+
+    function renderDate(type, date) {
+        switch(type) {
+            default: return new Date(date);
+            case 'sort': return new Date(date).valueOf();
+            case 'display': return new Date(date).toLocaleDateString();
+        }
+    }
+
+    var dividendInvestorPayoutsDataTable;
+    function loadInvestorPayouts(id) {
+        //window.dividendPayoutHistoryID = id;
+        //dividendInvestorPayoutsDataTable.ajax.url(`dividendInvestorPayouts/${id}`).load();
+        if (dividendInvestorPayoutsDataTable) {
+            dividendInvestorPayoutsDataTable.destroy();
+        }
+        dividendInvestorPayoutsDataTable = $('#dividendInvestorPayouts').DataTable({
+            order: [0, 'asc'],
+            //deferRender: true, // Optimize rendering
+            //deferLoading: true, // Optimize rendering
+            buttons: [
+                'searchBuilder'
+            ],
+            ajax: `dividendInvestorPayouts/${id}`,
+            dataSrc: 'data',
+            processing: true,
+            language: { 
+                loadingRecords: `Loading...<br/>{{> LoadingRipple}}`,
+            },
+            columns: [
+                { data: 'investorName' },
+                {
+                    data: 'amount',
+                    render: (data, type, row, meta) => localeCurrency(row.amount, row.currency?.Abbreviation),
+                    className: 'text-right',
+                },
+                {
+                    data: 'awardValue',
+                    render: (data, type, row, meta) => localeNumber(row.awardValue, 3),
+                    className: 'text-right',
+                },
+                { data: 'awardStrategy' },
+                {
+                    data: 'investorShares',
+                    render: (data, type, row, meta) => localeNumber(row.investorShares, 1),
+                    className: 'text-right',
+                },
+                { data: 'status' },
+                {
+                    data: 'dateTimeFrom',
+                    render: (data, type, row, meta) => renderDate(type, row.dateTimeFrom),
+                },
+                {
+                    data: 'dateTimeDue',
+                    render: (data, type, row, meta) => renderDate(type, row.dateTimeDue),
+                },
+            ],
+        });
+        //dividendInvestorPayoutsDataTable.ajax.reload();
+    }
+
+    function showInvestorPayouts(id) {
+        showModelGeneralOKDialogBox(`Loading...<br/>{{> LoadingRipple}}`);
+        const area = $("#modelGeneralOKMessageArea");
+        area.empty();
+        area.html(dividendPayoustHtml);
+        area.css("display", "block");
+        var body = $(".modal-body");
+        var dialog = $(".modal-dialog");
+        var title = $(".modal-title");
+        dialog.addClass("modal-lg");
+        dialog.width("90%");
+        title.html("Dividend Payout Transaction Records");
+        loadInvestorPayouts(id);
+    }
+
+</script>
+<div class="row">
+    <div class="col-xs-12" style="overflow-x: scroll;">
+
+        <table id="dividendInvestorPayouts" class="table table-hover responsive nowrap" width="100%" style="overflow:auto;">
+            <thead class="listingHeaderFontSize thead">
+                <th>Investor</th>
+                <th>Amount</th>
+                <th>Award Value</th>
+                <th>Award Strategy</th>
+                <th>Investor Shares</th>
+                <th>Status<th>
+                <th>From</th>
+                <th>To</th>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+    </div>
+</div>

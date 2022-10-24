@@ -1,0 +1,108 @@
+<script language="javascript">
+
+  $(document).ready(function() {
+    const helloSignTestMode = JSON.parse('{{{helloSignTestMode}}}');
+    if (helloSignTestMode === 1) {
+      document.getElementById('helloSignTestMode').setAttribute("checked", "true");
+    } else {
+      document.getElementById('helloSignTestMode').removeAttribute("checked");
+    }
+  })
+
+  function submitChanges() {
+    document.getElementById('saveParams').submit();
+  }
+
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-10">
+            <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> HelloSign Parameters</h4>
+            <label>Please follow the instructions and make sure all fields are filled in:</label>
+          </div>
+          <div class="col-md-1">
+            <button onclick="submitChanges()" class="btn btn-info btn-fill">Save All</button>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <form method="post" id="saveParams" action="postChangeHelloSignSettings">
+          <div class="row">
+            <div class="col-md-12">
+              <b>HelloSign API KEY</b>
+              <br/>
+              <label>The API KEY can be found here:
+                <a href="https://app.hellosign.com/home/myAccount?current_tab=api">
+                  https://app.hellosign.com/home/myAccount?current_tab=api
+                </a>
+              </label>
+              <br/>
+              <input name="helloSignApiKey" class="form-control border-input" value="{{helloSignApiKey}}">
+            </div>
+          </div>
+          <hr/>
+
+          <div class="row">
+            <div class="col-md-1">
+              <label class="switch mini-switch">
+                <input class="input-sm" id="helloSignTestMode" name="helloSignTestMode" type="checkbox">
+                <span class="slider round"></span>
+              </label>
+            </div>
+            <div class="col-md-11">
+              <b>HelloSign TestMode</b>
+              <br/>
+              <label>The test mode is used in order to switch to the "free" development only plan. This mode will generate non-legal binding documents</label>
+              <br/>
+            </div>
+          </div>
+          <hr/>
+
+          <div class="row">
+            <div class="col-md-12">
+              <b>HelloSign ClientID</b>
+              <br/>
+              <label>The ClientID can be found here:
+                <a href="https://app.hellosign.com/home/myAccount?current_tab=api">
+                  https://app.hellosign.com/home/myAccount?current_tab=api
+                </a>
+                After creating a new Api App
+              </label>
+              <br/>
+              <input name="helloSignClientID" class="form-control border-input" value="{{helloSignClientID}}">
+            </div>
+          </div>
+          <hr/>
+
+          <div class="row">
+            <div class="col-md-12">
+              <b>Note: please remember to set the "Event callback" in your API app to: "yourDomain"/api/helloSignWebhookPost</b>
+              Note 2: yourDomain refers to the link to your API and not the v1 or v2 investor links.
+              <br/>
+              {{#if helloSignClientID}}
+                <label>
+                  This can be found here:
+                  <a href="https://app.hellosign.com/oauth/editAppDetails?client_id={{helloSignClientID}}">
+                    https://app.hellosign.com/oauth/editAppDetails?client_id={{helloSignClientID}}
+                  </a>
+                </label>
+              {{else}}
+                <label>
+                  This field resides on HelloSign's Edit API app details page
+                </label>
+              {{/if}}
+              <label>
+                This field is necessary in order to detect when an investor has successfully signed a contract
+              </label>
+            </div>
+          </div>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

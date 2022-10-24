@@ -1,0 +1,27 @@
+mutation InvestorInvestingEntityCreate($data: InvestingEntityInput!) {
+  investorInvestingEntityCreate(data: $data)
+}
+
+mutation InvestorInvestingEntityUpdate($data: InvestingEntityInput!, $entityID: Int!) {
+  investorInvestingEntityUpdate(data: $data, entityID: $entityID)
+}
+
+mutation InvestorInvestingEntityRemove($entityID: Int!) {
+  investorInvestingEntityRemove(entityID: $entityID)
+}
+
+mutation InvestorInvestingEntityMemberCreate($data: InvestingEntityMemberInput!) {
+  investorInvestingEntityMemberCreate(data: $data)
+}
+
+mutation InvestorInvestingEntityMemberUpdate($data: InvestingEntityMemberInput!, $memberID: Int!) {
+  investorInvestingEntityMemberUpdate(data: $data, memberID: $memberID)
+}
+
+mutation InvestorInvestingEntityMemberRemove($memberID: Int!) {
+  investorInvestingEntityMemberRemove(memberID: $memberID)
+}
+
+mutation InvestorBuyAlertMarketSpace($data: InvestorBuyAlertMSInput!) {
+  investorBuyAlertMarketSpace(data: $data)
+}

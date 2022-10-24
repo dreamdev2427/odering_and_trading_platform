@@ -1,0 +1,183 @@
+{{> Header}}
+
+{{> HeaderInnerSto}}
+
+<script language="javascript">
+    isEmailSending = 0;
+
+    $(document).ready(function() {
+        $("#documents").addClass('active');
+
+            $('#emailText').summernote({
+                dialogsInBody: true,
+                placeholder: 'Enter Email Text',
+                tabsize: 2,
+                height: 300
+              });
+
+    })
+
+    function settleContract() {
+        showModelGeneralYesNoDialogBox(`Are you sure you want to settle this contract with {{record.FirstName}} {{record.LastName}}. Once contract is settled then it will become permanent record in the platform and no party can delete or make changes in the contract`, "Yes Settle Contract", "Cancel");
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = "settleinvestorDocumentContract?id={{record.iddoc}}&docid={{record.documentid}}&offerid={{record.documentofferinvestorid}}&dirid={{record.directoryid}}";
+    }
+
+
+    function sendEmail() {
+            if(isEmailSending == 1)
+                return;
+
+            if(document.getElementById("emailText").value == "") {
+                showModelGeneralOKDialogBox("Enter email text");
+                return true;
+            } else {
+                isEmailSending = 1;
+                document.getElementById("emailTextForInvestor").value = document.getElementById("emailText").value;
+                document.getElementById("frmSendEmailToInvestor2").submit();
+            }
+    }
+
+</script>
+
+    {{#if errorMessage}}
+        <span style="color:red; font-size:18px; ">{{errorMessage}}</span>
+        <br >&nbsp;
+    {{/if}}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/documents2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Investor  </h4>
+                </div>
+
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-1">
+                            <label>Name</label>
+                        </div>
+                        <div class="col-md-3">
+                            {{record.FirstName}} {{record.LastName}}
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-1">
+                            <label>Address</label>
+                        </div>
+                        <div class="col-md-4">
+                            {{record.Address}}
+                        </div>
+
+                        <div class="col-md-4">
+                            {{record.town}} {{record.country}}
+                        </div>
+                    </div>
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-md-1">
+                            <label>Phone</label>
+                        </div>
+                        <div class="col-md-4">
+                            {{record.phone}}
+                        </div>
+
+                        <div class="col-md-1">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-md-4">
+                            {{record.email}}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/documents2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp;
+                    Contract Details</h4>
+                </div>
+
+                <div class="content" style="overflow: hidden">
+                    {{{record.contents}}}
+                </div>
+
+
+                {{#ifEqual record.DocumentStatus 2}}
+                    <br /><br />
+                    <hr />
+                    <h4>&nbsp;&nbsp;&nbsp;&nbsp;Settle Contract</h4>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label> Click to settle the contract. This will make the contract permanent record in the system.  </label>
+                    <br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <button onclick="return settleContract()" class="btn btn-info btn-fill btn-wd"> Settle Contract </button>
+                {{/ifEqual}}
+
+
+                <br /><br />&nbsp;
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+      <div class="header">
+        <h4 class="title">Signature</h4>
+      </div>
+      <div class="content">
+        {{#ifEqual internalSignatureMode 'draw'}}
+          <img src="{{signatureFileContents}}" width="250px;" alt='signature Placeholder'/>
+          <br/>
+        {{/ifEqual}}
+        <hr/>
+        <b>{{record.FirstName}} {{record.LastName}}</b>
+        <br />
+        {{record.signaturedate2}}
+      </div>
+    </div>
+
+    {{#ifEqual record.DocumentStatus 2}}
+        <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/documents2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Send Email </h4>
+                    <label>Send email to investor if any information is incorrect or needs to be changed in the contract</label>
+                </div>
+
+                <div class="content">
+                    <textarea id="emailText" name="emailText" maxlength="3500" rows="10" class="form-control border-input" style="width:100%;"></textarea>
+                </div>
+
+                &nbsp;&nbsp; <button onclick="return sendEmail()" class="btn btn-info btn-fill btn-wd"> Send Email </button>
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+    {{/ifEqual}}
+
+
+<form id="frmSendEmailToInvestor2" name="frmSendEmailToInvestor2" action="/admin/sendEmailToInvestor" method="post">
+    <input type="hidden" name="emailText" id="emailTextForInvestor" />
+    <input type="hidden" name="id1" value="4" />
+    <input type="hidden" name="id2" value="{{record.ID}}" />
+    <input type="hidden" name="docid" value="{{record.iddoc}}" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+
+{{> Footer}}

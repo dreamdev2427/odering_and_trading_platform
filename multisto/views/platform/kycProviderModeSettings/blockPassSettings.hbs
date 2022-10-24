@@ -1,0 +1,89 @@
+<script language="javascript">
+  function submitChanges() {
+    document.getElementById('saveParams').submit();
+  }
+</script>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-10">
+          <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Block Pass Parameters</h4>
+          <label>Please follow the instructions and make sure all fields are filled in:</label>
+        </div>
+        <div class="col-md-1">
+          <button onclick="submitChanges()" class="btn btn-info btn-fill">Save All</button>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <form method="post" id="saveParams" action="postChangeBlockPassSettings">
+        <div class="row">
+          <div class="col-md-12">
+            <b>Client ID</b>
+            <br/>
+            <label>The Client ID can be found here:
+              <a href="https://console.blockpass.org/blockpass_console/#/services/list">
+                https://console.blockpass.org/blockpass_console/#/services/list
+              </a>
+            </label>
+            <br/>
+            Note: if you don't see any services present within the table, please create one first.
+            <br/>
+            <input name="blockPassClientID" class="form-control border-input" value="{{blockPassClientID}}">
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Api Key</b>
+            <br/>
+            <label>The Api Key can be found here:
+              <a href="https://console.blockpass.org/blockpass_console/#/services/list">
+                https://console.blockpass.org/blockpass_console/#/services/list
+              </a>
+              <br/>
+              <b>
+                Note: The Api key can be seen only right after creating it. If you failed to copy the Api key in time, please create a new one.
+                <br/>
+                Note2: When creating a new Api Key, please check the "Return metadata and identity attributes" option in order to receive the investor's data.
+              </b>
+            </label>
+            <br/>
+            <input name="blockPassApiKey" class="form-control border-input" value="{{blockPassApiKey}}">
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Webhook Secret Token</b>
+            <br/>
+            <label>The Webhook Secret Token can be found under the "webhooks" tab, here:
+              <a href="https://console.blockpass.org/blockpass_console/#/services/list">
+                https://console.blockpass.org/blockpass_console/#/services/list
+              </a>
+              <br/>
+              <b>
+                Note: If you don't see any webhooks there, please create one with the following settings:
+                <br/>
+                <li><b>Name:</b> Any descriptive name you wish to provide</li>
+                <li><b>Events:</b>Select all events available</li>
+                <li><b>Endpoint:</b>your digishares domain followed by /api/investorBlockPassWebhookPost</li>
+                <li><b>Content Type:</b>application/json</li>
+                <li><b>Endpoint Secret:</b>make sure the value provided on block pass matches the one provided in the field bellow (feel free to edit it as you wish, just make sure it matches on both platforms)</li>
+                <br/>
+              </b>
+            </label>
+            <br/>
+            <input name="blockPassBlockPassWebhookToken" class="form-control border-input" value="{{blockPassBlockPassWebhookToken}}">
+          </div>
+        </div>
+        <hr/>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+  </div>
+</div>

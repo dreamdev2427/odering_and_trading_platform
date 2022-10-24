@@ -1,0 +1,321 @@
+{{> Header}}
+
+
+<script language="javascript">
+    var link = "";
+    const currentCurrencyBalance = {{ currentCurrencyBalance }};
+    const investmentRequired = {{ investmentRequired }};
+
+    $(document).ready(function () {})
+
+    function goBack(){
+        window.location.href = "currentorders";
+        return false;
+    }
+
+    // record.ID represents the InvestorBuyPropertyAlert ID
+    
+    function declineRequest() {
+        link = "purchaseSharesRequestDeclined?id={{record.ID}}";
+        showModelGeneralYesNoDialogBox("Are you sure you want to decline request", "Yes", "Cancel");
+    }
+    function transferShares() {
+        window.location.href = "reviewInvestorTransaction?id={{record.investorID}}&sid={{record.ShareTypeID}}&tid={{record.ID}}&sellReq={{isSellRequest}}";
+        return false;
+    }
+    function transferSharesBlockchain() {
+        link = "transferBlockchainSharesWithCustodian?id={{record.ID}}";
+        showModelGeneralYesNoDialogBox("Are you sure you want to transfer shares in blockchain ?  <br /><br /> 1.  Have you verified investor's public address &nbsp; <b> {{record.publickey}} </b>  <br /><br /> 2. Have you transferred &nbsp; <b> {{record.Shares}} </b> &nbsp;  shares using custodian account to investor's public address ?  <br /><br />  If no then it is recommended that you first transfer shares using your custodian account and then mark this transaction as verified", "Yes - Transfer", "Cancel")
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = link;
+        return false;
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+
+{{#if errorMessage}}
+<span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+<br /><br />
+{{/if}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title"> <img src="/img/lock2.png" width="30px;" style="padding-bottom:-10px;" />
+                            &nbsp; Sell request from investor</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Share Requested</label>
+                    </div>
+                    <div class="col-md-4">
+                        {{record.title}}
+                    </div>
+
+                    <div class="col-md-5">
+                        <span style="margin-right:1rem;">
+                            <label style="margin-right:0.2rem;">Nominal Value</label>{{currencySymbol record.toCurrencyID}} {{numberFormat record.nominalValue decimalLength="ShareCountInFractions"}}
+                        </span>
+                        <span style="margin-right:1rem;">
+                            <label style="margin-right:0.2rem;">Market Value</label>{{currencySymbol record.toCurrencyID}} {{numberFormat record.premimum decimalLength="ShareCountInFractions"}}
+                        </span>
+                        <span style="margin-right:1rem;">
+                            <label style="margin-right:0.2rem;">Sell Value</label>{{currencySymbol record.toCurrencyID}} {{numberFormat record.sellValue decimalLength="ShareCountInFractions"}}
+                        </span>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Available Company Shares</label>
+                    </div>
+                    <div class="col-md-9">
+                        {{numberFormat record.companyShares decimalLength="ShareCountInFractions"}}
+                    </div>
+                </div>
+
+                <br /><br />
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Investor</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{record.FirstName}} &nbsp; {{record.LastName}}
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>Investor ID</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{record.investorID}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Date of Birth</label>
+                    </div>
+                    <div class="col-md-5">
+                        {{record.InvDOB}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Phone</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{record.phone}}
+                    </div>
+
+                    <div class="col-md-1">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-md-4">
+                        {{record.email}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>City</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{record.town}}
+                    </div>
+
+                    <div class="col-md-1">
+                        <label>State</label>
+                    </div>
+                    <div class="col-md-2">
+                        {{record.state}}
+                    </div>
+
+                    <div class="col-md-1">
+                        <label>Country</label>
+                    </div>
+                    <div class="col-md-2">
+                        {{record.country}}
+                    </div>
+
+                </div>
+
+                <br /><br />
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Date Requested</label>
+                    </div>
+                    <div class="col-md-10">
+                        {{record.DateReceivedFormat}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Shares To Be Sold</label>
+                    </div>
+                    <div class="col-md-5">
+                        {{numberFormat record.Shares decimalLength="ShareCountInFractions"}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Sell Value</label>
+                    </div>
+                    <div class="col-md-8">
+                        {{currencySymbol record.fromCurrencyID}} {{numberFormat record.sellValue decimalLength="-"}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Total Price to be Paid:</label>
+                    </div>
+                    <div class="col-md-8">
+                        {{currencySymbol record.fromCurrencyID}} {{numberFormat investmentRequired decimalLength="5"}}
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Message from Investor</label> <br />
+                        {{record.Details}}
+                    </div>
+                </div>
+
+                <br /><br /><br />
+
+
+                {{#if record.isblockchain}}
+
+                <h4 class="title"> <img src="/img/blockchainwallet.png" width="25px"> &nbsp; Blockchain Transfer Request
+                </h4>
+                <label>Investor is requesting to transfer shares through blockchain to private wallet. Here is the
+                    Ethereum public key provided. Please make sure that investor has setup his wallet correctly and owns
+                    the private key of this address</label>
+                <br />
+                <b>{{record.publickey}}</b>
+
+                <br /><br /><br />
+                {{/if}}
+
+
+
+                <h4 class="title"> <img src="/img/wallet.png" width="25px"> &nbsp; Investor Current Balance(s) with
+                    Project </h4>
+                <br />
+                {{#if balances.length}}
+                {{#each balances}}
+                <div class="row">
+                    <div class="col-md-2">
+                        <img src="/img/graydot.png" width="15px">
+                        &nbsp;
+                        {{this.Abbreviation}}
+                    </div>
+                    <div class="col-md-4">
+                        {{this.Symbol}} {{numberFormat this.Amount decimalLength="-"}}
+                    </div>
+                </div>
+                <br />
+                {{/each}}
+                {{else}}
+                <label>No Balances Found</label>
+                {{/if}}
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+
+            <div class="header">
+            </div>
+
+            <div class="content">
+                {{#unless isNewInvestor}}
+
+                {{#if InvestmentIsAvailable}}
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <button type="button" onclick="return transferShares()"
+                            class="btn btn-info btn-fill btn-wd">Transfer Shares </button>
+                    </div>
+
+                    <div class="col-md-8">
+                        Transfer Shares from Investor and increase Investor Balance. This will also send an email to
+                        investor
+                    </div>
+                </div>
+                {{else}}
+                {{#if isMarketSpace}}
+                <div class="row">
+                    <div class="col-md-8">
+                        Please make sure the investor has been transferred the exact amount required, off platform.
+                    </div>
+                    <br /><br />
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <button type="button" onclick="return transferShares()"
+                            class="btn btn-info btn-fill btn-wd">Transfer Shares To Company</button>
+                    </div>
+
+                    <div class="col-md-8">
+                        Transfer Shares to Company and investor Investor Balance. This will also send an email to
+                        investor
+                    </div>
+                </div>
+                <br /><br />
+                {{/if}}
+                {{/if}}
+                {{/unless}}
+                <br /><br />
+
+
+
+                {{#unless isNewInvestor}}
+                <div class="row">
+                    <div class="col-md-3">
+                        <button type="button" onclick="return declineRequest()"
+                            class="btn btn-info btn-fill btn-wd">Decline Request </button>
+                    </div>
+
+                    <div class="col-md-8">
+                        You can decline request which will mark this request as rejected. An email will be send to
+                        investor informing him about decline
+                    </div>
+                </div>
+                {{/unless}}
+
+                <br/>
+
+                <div class="row">
+                    
+                    <div class="col-md-3">
+                        <button type="button" onclick="return goBack()"
+                            class="btn btn-info btn-fill btn-wd">Go Back </button>
+                    </div>
+
+                    
+                </div>
+                <br /><br />
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,25 @@
+mutation saveSharePurchaseContractFields($documentID: Int!, $sharePurchaseID: Int!, , $fieldValues: [DocumentFieldValueDTO!]!) {
+  setSubmittedSharePurchaseDocument(documentID: $documentID,sharePurchaseID:$sharePurchaseID, fieldValues: $fieldValues)
+
+}
+mutation saveSharePurchaseContractSignature($documentID: Int!, $sharePurchaseID: Int!, ,$signature: String!) {
+  setSharePurchaseDocumentSignature(documentID: $documentID,sharePurchaseID:$sharePurchaseID, base64: $signature)
+}
+mutation sendSharePurchaseContract($documentID: Int!, $sharePurchaseID: Int!, ) {
+  sendSharePurchaseContract(documentID: $documentID,sharePurchaseID:$sharePurchaseID)
+}
+mutation deleteSharePurchaseRequest($documentID: Int!) {
+  deleteSharePurchaseRequest(documentID: $documentID)
+}
+mutation InvestorBuyAlertRemove($alertID: Int!) {
+  investorBuyAlertRemove(alertID: $alertID)
+}
+mutation InvestorBuyAlertHide($alertID: Int!) {
+  investorBuyAlertHide(alertID: $alertID)
+}
+mutation SetDocuSignSignature($documentID: Int!, $sharePurchaseID: Int!, $docusignEnvelopeID: String!) {
+  setDocuSignSignature(documentID: $documentID, sharePurchaseID: $sharePurchaseID, docusignEnvelopeID:$docusignEnvelopeID)
+}
+mutation CreateBlockchainTransactionTransfer($data: BlockchainSharesTransferTransactionsInput!) {
+  createBlockchainTransactionTransfer(data: $data)
+}

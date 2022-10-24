@@ -1,0 +1,23 @@
+#mutation investorDepositBalance($data: InvestorDepositBalance!) {
+#  investorDepositBalance(data: $data)
+#}
+
+mutation investorDepositWithdrawAlert($data: InvestorDepositWithdrawAlertInput!) {
+    investorDepositWithdrawAlert(data: $data)
+}
+
+mutation InvestorBuyAlert($query: InvestorBuyAlertInput!) {
+    investorBuyAlert(query: $query)
+}
+
+mutation InvestorInvoiceAlertDelete($ID: Int!){
+    investorInvoiceAlertDelete(ID: $ID)
+}
+
+mutation VerifyTransactionFromBlockchain($data: VerifyCryptoReciepeInput!) {
+  verifyTransactionFromBlockchain(data: $data)
+}
+
+mutation InvestorSellAlert($data: InvestorBuyAlertInput!) {
+    investorSellAlert(data: $data)
+}

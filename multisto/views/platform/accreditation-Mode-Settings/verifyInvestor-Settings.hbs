@@ -1,0 +1,106 @@
+<script>
+  function submitChanges() {
+    document.getElementById('saveParams').submit();
+  }
+</script>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-10">
+          <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more'/> Verify Investor Parameters</h4>
+          <label>Please follow the instructions and make sure all fields are filled in:</label>
+        </div>
+        <div class="col-md-1">
+          <button onclick="submitChanges()" class="btn btn-info btn-fill">Save All</button>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <form method="post" id="saveParams" action="postChangeVerifyInvestorSettings">
+        <div class="row">
+          <div class="col-md-12">
+            <b>API Token</b>
+            <br/>
+            <label>The API Token can be found here:
+              <a href="https://www.verifyinvestor.com/settings">
+                https://www.verifyinvestor.com/settings
+              </a>
+            </label>
+            <br/>
+            Note: if you don't see any API, please contact your verify investor representative and ask them to enable the "Embedded API".
+            <br/>
+            <input name="verifyInvestorComApiToken" class="form-control border-input" value="{{verifyInvestorComApiToken}}"/>
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Webhook URL</b>
+            <br/>
+            <label>The Webhook URL can be found under the "Webhook URL" section, here:
+              <a href="https://www.verifyinvestor.com/settings">
+                https://www.verifyinvestor.com/settings
+              </a>
+              <br/>
+              <b>
+                Please fill in the Webhook URL on the source provided above, with our API link you were provided, followed by /api/investorVerifyInvestorComWebhookPost
+                <br/>
+                For example, if your API link is <b> https://3a46632816a933.lhr.life </b>
+                The webhook URL section on verify investor . com should be: <b> https://3a46632816a933.lhr.life/api/investorVerifyInvestorComWebhookPost </b>
+              </b>
+            </label>
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Hosts and Tokens</b>
+            <br/>
+            <label>The Hosts and Tokens can be found under the "Hosts and Tokens" section, here:
+              <a href="https://www.verifyinvestor.com/settings">
+                https://www.verifyinvestor.com/settings
+              </a>
+              <br/>
+              <label>
+                Please create a host, on the source provided about, for every project you wish to hold on this platform.
+                <br/>
+                The <b>HOST</b> should be filled in with the FRONT END URL you have been provided.
+                Any other customization on the page is optional for the functionality of this service.
+                <br/>
+                Please note the <b>Token:</b> from this page and insert it in the specific project you wish to use verify investor for.
+                <br/>
+                The Token should be placed under the PROJECT LIST -> SPECIFIC PROJECT -> SETTINGS -> "Accreditation Settings" section
+              </label>
+            </label>
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Internal URLs</b>
+            <br/>
+            <label>The Internal URLs are used to connect to specific verify investor services. They don't often change.
+              <br/>
+              <b>
+                Note: you do not need to change anything here
+              </b>
+            </label>
+            <br/>
+            <label>Front End:</label>
+            <input name="frontendURL" class="form-control border-input" value="{{verifyInvestorComUrls.frontendURL}}"/>
+            <br/>
+            <label>Back End:</label>
+            <input name="backendURL" class="form-control border-input" value="{{verifyInvestorComUrls.backendURL}}"/>
+          </div>
+        </div>
+        <hr/>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,100 @@
+.red-swan-custom {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    padding: 7px;
+}
+
+.btn-info-сustom {
+    background-color: red !important;
+    border-color: red !important;
+    font-size: 12px;
+    /* border-radius: 26px !important; */
+    font-weight: normal !important;
+}
+
+.main-div {
+    background: #ffffff none repeat scroll 0 0;
+    border-radius: 5px;
+    max-width: 392px;
+    padding: 40px 60px;
+}
+
+.main-div a {
+    color: #337ab7;
+    text-decoration: none;
+}
+
+.imageBoxWIthoutWidth {
+    padding: 20px;
+    -webkit-box-shadow: 28px 15px 24px -9px rgba(0,0,0,0.75);
+    -moz-box-shadow: 28px 15px 24px -9px rgba(0,0,0,0.75);
+    box-shadow: 28px 15px 24px -9px rgba(0,0,0,0.75);
+    border: solid 1px #d6d6d6;
+}
+
+.h-editor {
+    min-height: 350px;
+}
+
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+.minw-400 {
+    min-width: 480px !important;
+}
+
+.fs-20 {
+    font-size: 20px;
+}
+
+
+.fs-18 {
+    font-size: 18px;
+}
+
+.fs-16 {
+    font-size: 16px;
+}
+
+.fs-14 {
+    font-size: 14px;
+}
+
+.minw-90 {
+    min-width: 90px;
+}
+
+.custom-icom-swal {
+    scale: 0.65;
+}
+
+.custom-title-swal {
+    font-size: 24px;
+}
+
+.z-none {
+    z-index: unset;
+}
+
+.minw-400 {
+    min-width: 200px;
+}
+
+.minw-300 {
+    min-width: 300px;
+}
+
+.minw-200 {
+    min-width: 200px;
+}
+
+.minw-100 {
+    min-width: 200px;
+}
+
+
+.w-90 {
+    width: 90%;
+}

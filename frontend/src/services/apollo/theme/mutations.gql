@@ -1,0 +1,3 @@
+mutation setThemeConfig($theme: String!) {
+  setThemeConfig(theme: $theme)
+}

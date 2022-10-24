@@ -1,0 +1,94 @@
+<script>
+  $(document).ready(function() {
+    const walletMode = JSON.parse('{{{internalWalletMode}}}');
+    oneCheckBoxOnly(walletMode);
+  })
+  function oneCheckBoxOnly(id) {
+    for (let i = 1;i <= 2; i++)
+    {
+      document.getElementById(i).checked = false;
+    }
+    document.getElementById(id).checked = true;
+  }
+  function saveInternalWalletMode() {
+    document.getElementById('setInternalWalletModeForm').submit();
+  }
+</script>
+<div class="row">
+    <div class="col-md-12">
+    <div class="card">
+        <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more' /> Internal Wallet Mode</h4>
+        <label>Change the way internal wallets are managed on the platform</label>
+        </div>
+        <div class="content">
+        <div class="row">
+            <div class="col-md-12">
+            <form id="setInternalWalletModeForm" action="/platform/setInternalWalletMode" method="post">
+                <div class="row">
+                <div class="col-md-1">
+                    <label class="switch">
+                    <input id="1" name="isInternalWalletStoSpecificEnabledToggle"
+                            onclick=oneCheckBoxOnly(this.id) type="checkbox">
+                    <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="col-md-11">
+                    <div class="row">
+                    Sto Specific
+                    </div>
+                    <div class="row">
+                    <label>
+                        Investors will have dedicated wallets for each STO defined in the platform
+                    </label>
+                    </div>
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-md-1">
+                    <label class="switch">
+                    <input id="2" name="isInternalWalletGlobalEnabledToggle"
+                            onclick=oneCheckBoxOnly(this.id) type="checkbox">
+                    <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="col-md-11">
+                    <div class="row">
+                    Global
+                    </div>
+                    <div class="row">
+                    <label>
+                        Investors will have one set of wallets for all of the defined STOs in the platform
+                    </label>
+                    </div>
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-md-1">
+                    <label class="switch">
+                    <input id="3" name="isInternalWalletGlobalEnabledToggle"
+                            onclick=oneCheckBoxOnly(this.id) type="checkbox">
+                    <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="col-md-11">
+                    <div class="row">
+                    No balances
+                    </div>
+                    <div class="row">
+                    <label>
+                        Investors will have no internal balances for all of the defined STOs in the platform
+                    </label>
+                    </div>
+                </div>
+                </div>
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+            </form>
+
+            <button onclick="saveInternalWalletMode()" class="btn btn-info btn-fill">Save</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>

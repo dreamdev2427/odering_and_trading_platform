@@ -1,0 +1,521 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#voting").addClass('active');
+
+        $('.txtFinalDecisions').keypress(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+            }
+        });
+        
+    })
+    var agendaItemID = 0;
+    var resultStatus = 0;
+    
+    function downloadDocument(id) {
+        window.location.href = "downloadAgendaIemDocument?id=" + id;
+        return false;
+    }
+    function saveAgentaItemComments(id) {
+            document.getElementById("agendaID").value = id;
+            document.getElementById("comment").value = document.getElementById("txtOptionAdminText" + id).value;
+            document.getElementById("meetingAgendaItemComments").submit();
+        }
+
+    function activateVotingForDIscussion(id) {
+        window.location.href = "enableAgendaItemForDiscussion?id=" + id + "&vid={{id}}";
+        return false;           
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = "activateAgendaItem?id=" + agendaItemID + "&vid={{id}}&status=" + resultStatus;
+        return false;
+    }
+    function sendProxyLinkEmail() {
+        window.location.href = "sendEmailToProxyPerson?id={{id}}";
+        return false;
+    }
+    function printMeeting(id) {
+        window.open("/admin/meetingView?id=" + id + "&type=1");
+    }
+    function printMeetingResult(id) {
+        window.open("/admin/meetingView?id=" + id + "&type=2");
+    }
+
+    function activateVotingResults(id) {
+        resultStatus = 1;
+        agendaItemID = id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to show results ?.", "Show Results", "Cancel");
+    }    
+    function hideVotingResults(id) {
+        resultStatus = 0;        
+        agendaItemID = id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to hide results ?.", "Hide Results", "Cancel");        
+    }
+    
+    function activateproxylink(status) {
+        window.location.href = "activateDeactivateProxyLink?id={{id}}&status=" + status;
+        return false;        
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+{{#if message}}
+    <span style="color:red"> <b>{{message}}</b> </span> <br /> &nbsp;
+{{/if}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    <img src="/img/meeting.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; {{MeetingRecord.title}} 
+                </h4>
+            </div>
+
+            <div class="content">
+                
+                <div class="row">
+                    <div class="col-md-8"> 
+                        <div class="row">
+                            <div class="col-md-12">                    
+                                {{MeetingRecord.contents}} 
+                            </div>
+                            <br /><br /><br /><br />&nbsp;
+                            <div class="col-md-12">        
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Place</label>
+                                        </div>                        
+                                        <div class="col-md-9">
+                                            <img src="/img/place.png" width="20px;" /> &nbsp; 
+                                            {{MeetingRecord.place}}
+                                        </div>
+                                    </div>
+                                    <br />
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Time</label>
+                                        </div>                        
+                                        <div class="col-md-9">    
+                                            <div class="row">
+                                                <div class="col-md-5">
+                                                    <img src="/img/date.png" width="20px;" /> &nbsp; 
+                                                    {{MeetingRecord.openonlydate}}  
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <img src="/img/time.png" width="20px;" /> &nbsp; 
+                                                    {{MeetingRecord.starttime}} 
+                                                    &nbsp;&nbsp;to&nbsp;&nbsp; 
+                                                    {{MeetingRecord.closetime}}   
+                                                    &nbsp;&nbsp;
+                                                    <span style="cursor:pointer" class="badge badge-light" title="{{MeetingRecord.timezonetitle}}">{{MeetingRecord.timezone}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br />
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Responsible Person</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <img src="/img/user.png" width="20px;" /> &nbsp; 
+                                            {{MeetingRecord.nameResponsiblePerson}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{MeetingRecord.phoneResponsiblePerson}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{MeetingRecord.emailResponsiblePerson}}
+                                        </div>
+                                    </div>
+                                    <br />
+                                
+                                <br />
+                                <button type="button" onclick="printMeeting({{this.id}})" class="btn btn-info btn-fill">Print Meeting </button>
+                                &nbsp;&nbsp;&nbsp;
+                                <button type="button" onclick="printMeetingResult({{this.id}})" class="btn btn-info btn-fill">Print Meeting Results</button>                       
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="col-md-4">     
+
+                                <div class="row">
+                                    <div class="col-md-1">  
+                                        <img src="/img/greendot.png" width="18px">
+                                    </div>
+                                    <div class="col-md-6">  
+                                        Investors attending meeting in-person 
+                                    </div>
+                                    <div class="col-md-4">                            
+                                        {{stats.InPersonMeetingAttend}}
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-1">  
+                                        <img src="/img/greendot.png" width="18px">
+                                    </div>
+                                    <div class="col-md-6">  
+                                        Investors who will attend the AGM live online
+                                    </div>
+                                    <div class="col-md-4">                            
+                                        {{stats.InPersonMeetingAttendOnline}}
+                                    </div>
+                                </div>
+                                <br />                            
+                                <div class="row">
+                                    <div class="col-md-1">  
+                                        <img src="/img/greendot.png" width="18px">
+                                    </div>
+                                    <div class="col-md-6">  
+                                        Investors who choose to vote online in advance
+                                    </div>
+                                    <div class="col-md-4">                            
+                                        {{stats.votingOnline}}
+                                    </div>
+                                </div>
+                                <br />    
+                                <div class="row">
+                                    <div class="col-md-1">  
+                                        <img src="/img/greendot.png" width="18px">
+                                    </div>
+                                    <div class="col-md-6">  
+                                        Deregister from the meeting
+                                    </div>
+                                    <div class="col-md-4">                            
+                                        {{stats.deregisterCount}}
+                                    </div>
+                                </div>                        
+
+                                {{#ifIn ../MeetingRecord.open '[0,2]'}} 
+                                    <br /><br />
+                                    <b>Instructions for unannounced proposals / new agenda items</b>
+                                    <br /><br />
+                                    <div class="row">
+                                        <div class="col-md-1">  
+                                            <img src="/img/greendot.png" width="18px">
+                                        </div>                                
+                                        <div class="col-md-7">  
+                                            In favor of the Board of Directors
+                                        </div>
+                                        <div class="col-md-3">                            
+                                            {{stats.BODfavor}}
+                                        </div>
+                                    </div><br />
+                                    <div class="row">
+                                        <div class="col-md-1">  
+                                            <img src="/img/greendot.png" width="18px">
+                                        </div>                                
+                                        <div class="col-md-7">  
+                                            In favor of the recommendation of the proxy
+                                        </div>
+                                        <div class="col-md-3">                            
+                                            {{stats.proxyfavor}}
+                                        </div>
+                                    </div><br />
+                                    <div class="row">
+                                        <div class="col-md-1">  
+                                            <img src="/img/greendot.png" width="18px">
+                                        </div>                                
+                                        <div class="col-md-7">  
+                                            In favor of the proposer
+                                        </div>
+                                        <div class="col-md-3">                            
+                                            {{stats.proposerfavor}}
+                                        </div>
+                                    </div><br />
+                                    <div class="row">
+                                        <div class="col-md-1">  
+                                            <img src="/img/greendot.png" width="18px">
+                                        </div>                                
+                                        <div class="col-md-7">  
+                                            Rejection
+                                        </div>
+                                        <div class="col-md-3">                            
+                                            {{stats.rejectfavor}}
+                                        </div>
+                                    </div><br />
+                                    <div class="row">
+                                        <div class="col-md-1">  
+                                            <img src="/img/greendot.png" width="18px">
+                                        </div>                                
+                                        <div class="col-md-7">  
+                                            Abstention
+                                        </div>
+                                        <div class="col-md-3">                            
+                                            {{stats.absentfavor}}
+                                        </div>
+                                    </div>
+                                {{/ifIn}}
+                            </div>
+                </div>
+                <br /> &nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    <img src="/img/user.png" width="25px;" /> &nbsp;  Proxy Person
+                </h4>
+                <label>Proxy person is company representative who can cast vote on behalf of investors who cannot vote on their own during the meeting or they are not present during the meeting </label>
+            </div>
+
+            <div class="content">
+                    
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <label>Proxy Person</label>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <img src="/img/user.png" width="20px;" /> &nbsp; 
+                                            {{MeetingRecord.nameProxyPerson}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{MeetingRecord.phoneProxyPerson}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{MeetingRecord.emailProxyPerson}}
+                                        </div>
+                                    </div>
+                                    <br />
+
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <label>Proxy Link</label>
+                                        </div>
+                                        <div class="col-md-10" style="word-wrap:break-word;">
+                                            <button type="button" onclick="sendProxyLinkEmail({{this.id}})" class="btn btn-info btn-fill btn-sm">Send Email to Proxy Person</button>
+                                            <br />
+                                            <label>When meeting is scheduled the platform sends an email to proxy person with link to access the meeting. If proxy person lost that email or does not receive email on above email address, you can click this button to re-send the link to above email address</label>
+                                        </div>
+                                    </div>
+
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Meeting Access</label>
+                                            </div>
+                                            <div class="col-md-10" style="word-wrap:break-word;">
+                                                {{#if MeetingRecord.isVotingOpenForProxy}}
+                                                        <button type="button" onclick="activateproxylink(0)" class="btn btn-info btn-fill btn-sm">Deactivate Proxy Link</button>
+                                                        <br />
+                                                        <img src = "/img/greendot.png" width="20px"> &nbsp; 
+                                                        <label>Proxy can still access meeting link and cast votes for agenda items whose results are not yet revealed</label>
+                                                
+                                                {{else}}
+                                                        <button type="button" onclick="activateproxylink(1)" class="btn btn-info btn-fill btn-sm">Activate Proxy Link</button>
+                                                        <br />
+                                                        <img src = "/img/reddot.png" width="20px"> &nbsp; 
+                                                        <label>Proxy link is disabled and is not accessible by proxy person </label>
+                                                {{/if}}
+                                            </div>
+                                        </div>
+                    
+                <br /> &nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    <img src="/img/agendaitem.png" width="25px;" /> &nbsp;  Meeting Agenda
+                </h4>
+            </div>
+
+            <div class="content">
+
+                {{#each AgendaItems}}
+                        <div class="row">
+                            <div class="col-md-7">
+                                <img src="/img/greendot.png" width="18px">
+                                &nbsp;
+                                <b>{{this.title}}</b>
+                                <br /><br />
+                                {{this.desc}} 
+                                <br /><br />
+                                {{#if this.documents.length}}
+                                    {{#each this.documents}}
+                                        <div class="row">
+                                            <div class="col-md-10"> 
+                                                <img src="/img/document2.png" width="30px;" /> &nbsp; 
+                                                {{this.title}} 
+                                                <br />
+                                                <label>{{this.desc}}</label>
+                                            </div>
+                                            <div class="col-md-2"> <button type="button" onclick="downloadDocument({{this.id}})" class="btn btn-info btn-fill btn-sm">Download</button> </div>
+                                        </div>
+                                    {{/each}}
+                                {{/if}}
+                            </div>
+                            <div class="col-md-5">
+                                {{#ifIn ../MeetingRecord.open '[0,2]'}} 
+                                        {{#if this.isActiveByAdmin}}
+                                            {{#if ../votingData.length}}
+
+                                                        <b>Votes Casted</b>
+                                                        <br /><br />
+
+                                                        <b><div class="row">
+                                                            <div class="col-md-3">Option</div>
+                                                            {{#unless ../companytype}} 
+                                                                <div class="col-md-3">Share Votes</div> 
+                                                                <div class="col-md-3">Nominal<br /> Value</div>
+                                                            {{/unless}}
+                                                            <div class="col-md-3">Investor(s)</div>
+                                                        </div></b>
+
+                                                        {{#each ../votingData}}
+                                                            {{#ifEqual this.votingoptionsid ../optionID}}
+                                                                <div class="row"  style="padding-top:10px;">
+
+                                                                        {{#ifEqual this.votingoptionsvalue 1}} 
+                                                                            <div class="col-md-3">Yes</div>
+                                                                        {{/ifEqual}}
+
+                                                                        {{#ifEqual this.votingoptionsvalue 2}}
+                                                                            <div class="col-md-3">No</div>
+                                                                        {{/ifEqual}}
+
+                                                                        {{#ifEqual this.votingoptionsvalue 3}}
+                                                                            <div class="col-md-3">Abstention</div>
+                                                                        {{/ifEqual}}
+
+                                                                        {{#unless ../../companytype}}
+                                                                            <div class="col-md-3">
+                                                                                {{numberFormat this.sum decimalLength="0"}}
+                                                                                <br /> ( {{this.PercentShares}} %) 
+                                                                            </div>
+                                                                            <div class="col-md-3">
+                                                                                {{numberFormat this.sumNominalInvestment decimalLength="0"}}
+                                                                                <br /> ( {{this.PercentNominalInvestment}} %)
+                                                                            </div>
+                                                                        {{/unless}}
+
+                                                                        <div class="col-md-3">{{this.count}} <br /> ( {{this.PercentInvestorCount}} %) </div>
+
+                                                                </div>
+                                                            {{/ifEqual}}
+                                                        {{/each}}
+
+                                                        <br />                    
+                                                        <div class="row">
+                                                            <div class="col-md-4"></div>
+                                                            <div class="col-md-3"><b>Total<br />Quantity</b></div>
+                                                            <div class="col-md-5"><b>Represented in <br />Voting</b></div>
+                                                        </div>
+
+                                                        {{#with (lookup ../AgendaItemsTotals optionID) as |AgendaItemTotal|}}
+                                                            <div class="row">
+                                                                <div class="col-md-4"><b>Investors</b></div>
+                                                                <div class="col-md-3"> {{numberFormat ../../totalInvestors decimalLength="0"}} </div>
+                                                                <div class="col-md-5"> {{numberFormat AgendaItemTotal.totalInvestors decimalLength="0"}} (  {{AgendaItemTotal.totalInvestorsPercentage}} %)</div>     
+                                                            </div>
+
+                                                            <div class="row">
+                                                                <div class="col-md-4"><b>Share Votes</b></div>
+                                                                <div class="col-md-3"> {{numberFormat ../../totalShares decimalLength="0"}} </div>
+                                                                <div class="col-md-5"> {{numberFormat AgendaItemTotal.totalShares decimalLength="0"}} ( {{AgendaItemTotal.totalSharesPercentage}} %)</div> 
+                                                            </div>    
+
+                                                            <div class="row">
+                                                                <div class="col-md-4"><b>Nominal</b></div>
+                                                                <div class="col-md-3"> {{numberFormat ../../totalNominalShares decimalLength="0"}} </div>
+                                                                <div class="col-md-5"> {{numberFormat AgendaItemTotal.totalNominalShares decimalLength="0"}} ( {{AgendaItemTotal.totalNominalSharesPercentage}} %)</div>   
+                                                            </div>           
+                                                        {{/with}}
+
+                                            {{else}}
+                                                <b>No Votes Casted</b>
+                                            {{/if}}
+                                        {{else}}
+                                                {{#if ../MeetingRecord.open}} 
+                                                        {{#if this.isItemCurrentlyDiscussing}}
+                                                            <span style="font-size:20px; color:red;">
+                                                                <img src="/img/reddot.png" width="25px" > &nbsp; 
+                                                                Currently discussing Agenda Item
+                                                            </span>
+                                                            <br /><br />
+                                                        {{else}}
+                                                            <button type="button" onclick="activateVotingForDIscussion({{this.optionID}})" class="btn btn-info btn-fill btn-sm">Set Agenda Item as Currently Discussing </button>   
+                                                            <br /><br />
+                                                        {{/if}}
+                                                    {{/if}}
+                                
+                                                <span style="color:green;"> 
+                                                        {{#if ../MeetingRecord.open}} 
+                                                                <img src="/img/greendot.png" width="15px" > &nbsp; 
+                                                                Voting is allowed on this agenda item
+                                                        {{/if}}
+                                                </span> 
+                                                <br /><br />
+                                
+                                        {{/if}}
+                                
+                                        <br />
+                                        {{#ifEqual ../MeetingRecord.open 0}}
+                                                {{{../__ "Voting has been finalised"}}}
+                                        {{/ifEqual}}
+                                        
+                                        <br /><br />
+                                         {{#ifEqual this.isActiveByAdmin 0}}
+                                                <button type="button" onclick="activateVotingResults({{this.optionID}})" class="btn btn-info btn-fill btn-sm">
+                                                        {{#if ../MeetingRecord.open}}                                         
+                                                                Stop Voting / Show Results
+                                                        {{else}}
+                                                                Show Results
+                                                        {{/if}}
+                                                </button>  
+                                        {{/ifEqual}}
+                                
+                                        {{#ifEqual this.isActiveByAdmin 1}}
+                                                {{#ifEqual ../MeetingRecord.open 0}} 
+                                                    <button type="button" onclick="hideVotingResults({{this.optionID}})" class="btn btn-info btn-fill btn-sm">
+                                                            Hide Results
+                                                    </button>  
+                                                {{/ifEqual}}
+                                        {{/ifEqual}}
+                                
+                                        {{#unless ../MeetingRecord.open}} 
+                                                    <br /><br/>
+                                                    <label>Enter company's final decision below</label>
+                                                    <textarea  id="txtOptionAdminText{{this.optionID}}" name="txtOptionAdminText" class="form-control border-input txtFinalDecisions" rows="5" cols="100">{{this.CompanyComments}}</textarea> <br />
+                                                    <button type="button" onclick="saveAgentaItemComments({{this.optionID}})" class="btn btn-info btn-fill btn-sm">Save Comment</button> 
+                                        {{/unless}}
+                                
+                                {{/ifIn}}
+                            </div>
+                        </div>
+                        <br /><br />
+                        <hr />
+                    {{/each}}                    
+
+                <br /> &nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="meetingAgendaItemComments" name="meetingAgendaItemComments" action="/admin/meetingAgendaItemComments" method="post">
+    <input type="hidden" name="comment" id="comment" />
+    <input type="hidden" name="agendaID" id="agendaID" />
+    <input type="hidden" name="id" value="{{id}}" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+
+
+{{> Footer}}

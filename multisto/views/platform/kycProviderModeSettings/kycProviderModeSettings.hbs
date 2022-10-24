@@ -1,0 +1,108 @@
+{{> Header}}
+
+<script>
+  function changeKycMainSettings(mode, param) {
+    document.getElementById('param').value = param;
+    document.getElementById('intValue').value = mode;
+    document.getElementById('postChangeKycMainSettings').submit();
+  }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-8">
+          <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt="add more"/> KYC Provider </h4>
+          <label>Change the platform through which investors should finish their KYC</label>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button onclick="changeKycMainSettings(0, 'KycProvider')" class="btn
+            {{#ifEqual kycMode 0}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Internal</button>
+            <button onclick="changeKycMainSettings(1, 'KycProvider')" class="btn
+            {{#ifEqual kycMode 1}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">BlockPass</button>
+            <button onclick="changeKycMainSettings(2, 'KycProvider')" class="btn
+            {{#ifEqual kycMode 2}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">SumSub</button>
+            <button onclick="changeKycMainSettings(3, 'KycProvider')" class="btn
+            {{#ifEqual kycMode 3}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Netki</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-8">
+          <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt="add more"/> KYC Requirement Step </h4>
+          <label>Change the step in which the investor is required to pass KYC</label>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button onclick="changeKycMainSettings(0, 'KycRequirementStep')" class="btn
+            {{#ifEqual kycRequirementStep 0}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">On Register</button>
+            <button onclick="changeKycMainSettings(1, 'KycRequirementStep')" class="btn
+            {{#ifEqual kycRequirementStep 1}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">On Purchase</button>
+            <button onclick="changeKycMainSettings(2, 'KycRequirementStep')" class="btn
+            {{#ifEqual kycRequirementStep 2}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Ignore KYC</button>
+            <button onclick="changeKycMainSettings(3, 'KycRequirementStep')" class="btn
+            {{#ifEqual kycRequirementStep 3}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">After Document Signing, Before Payment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form method="post" id="postChangeKycMainSettings" action="postParamUpdateToApi">
+    <input type="hidden" id="intValue" name="intValue"/>
+    <input type="hidden" id="stringValue" name="stringValue" value=""/>
+    <input type="hidden" id="param" name="param" value="" />
+    <input type="hidden" name="redirectUrl" value="/platform/kycProviderModeSettings" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+  </form>
+  {{> kycProviderModeSettings}}
+</div>
+{{> Footer}}

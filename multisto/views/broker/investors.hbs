@@ -1,0 +1,158 @@
+{{> Header}}
+
+<script language="javascript">
+    var totalRecords = {{RecordCount}};
+    var totalNumberOfRecordsOnPages = {{RecordsPerPaging}};
+
+    $(document).ready(function() {
+        //$("#InvestorsMenu").addClass('active');
+
+        var currentPage = 1;
+        if(getParameterByName("page") != null)
+            currentPage = parseInt(getParameterByName("page")) + 1;
+
+        var pages = Math.floor(totalRecords/totalNumberOfRecordsOnPages);
+        var remainder = totalRecords % totalNumberOfRecordsOnPages;
+        if(remainder > 0)
+            pages = pages + 1;
+
+        var a = 0;
+        for(a=1;a<=pages;a++) {
+            if(currentPage == a)
+                $("#pages").append("<option selected value='" + a + "'>" + a + "</option>")
+            else
+                $("#pages").append("<option value='" + a + "'>" + a + "</option>")
+        }
+
+        //calculate percentages of investor's shares
+        $(".SharesValue").each(function( index ) {
+            var n = parseInt($(this).text());
+
+            if(!isNaN(n)) {
+                n = ((n / TotalShares) * 100).toFixed(2).toString();
+                $(this).parent().parent().find(".SharesPercentValue").text(n + " %");
+            }
+        });
+
+        {{#if BulkUploadsInvestorsCount}}
+            InvestorSearchModule_enableBulkInvestorSelectionInDropDown();
+        {{/if}}
+
+        InvestorSearchModule_setControls();
+    })
+    function viewClicked(id) {
+        window.location.href = "investorsViewSto?id=" + id;
+        return false;
+    }
+    function viewKYC(id) {
+        window.location.href = "KYCView?id=" + id + "&link=1";
+        return false;
+    }
+    function addInvestor() {
+        window.location.href = "searchInvestorEmailtoRegister";
+        return false;
+    }
+    function refreshTokens(investorID, investorPublicKey) {
+        window.location.href = "refreshToken?id=" + investorID + "&publicKey=" + investorPublicKey + "&screen=list";
+        return false;
+    }
+    function dataPageChanged() {
+        var pag = document.getElementById("pages").value;
+        pag = pag - 1;
+        search = search + "page=" + pag;
+
+        window.location.href = "/broker/investors?id={{id}}&page=" + pag;;
+        return false;
+    }
+    function viewClicked(id) {
+        window.location.href = "/broker/investorview?id=" + id + "&stoid={{id}}"
+        return false;
+    }
+
+</script>
+
+{{> HeaderInnerBroker}}
+
+<div class="row">
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/list.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Investors List </h4>
+            </div>
+            <br />
+
+            <div class="content">
+
+                <div class="content table-responsive table-full-width icon-section">
+
+                    <span style="float:right; padding-right:40px;"> <b>Total investors &nbsp;&nbsp;&nbsp; {{RecordCount}}</b> </span>
+
+                    <table class="table table-striped">
+                        <thead class="listingHeaderFontSize">
+                            <th>ID</th>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Country</th>
+                            <th>Shares</th>
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each DataRows}}
+                            <tr>
+                                <td style="width: 5%; vertical-align: top;">{{this.ID}}</td>
+                                <td style="width: 5%; vertical-align: top;">
+                                    <img src="/img/investorstotypesicons/i{{this.KYCCurrentStatus}}.png"  width="23px;" />
+                                </td>
+                                <td style="width: 40%; vertical-align: top;">
+                                    {{#if this.investorType}}
+                                       {{this.CompanyName}}
+                                    {{else}}
+                                        {{this.FirstName}} {{this.LastName}}
+                                    {{/if}}
+                                </td>
+                                <td style="width: 15%; vertical-align: top;">
+                                    {{this.country}}
+                                </td>
+                                <td style="width: 10%; vertical-align: top;">
+                                    <span class="SharesValue" style="display:none;">{{#if this.Shares}}{{numberFormat this.Shares decimalLength="ShareCountInFractions"}}{{/if}}</span>
+                                    &nbsp;{{#if this.Shares}}{{numberFormat this.Shares decimalLength="ShareCountInFractions"}}{{/if}}&nbsp;
+                                </td>
+                                <td style="width: 10%; vertical-align: top;">
+                                    <span class="SharesPercentValue"> </span>
+                                </td>
+                                <td style="width: 15%; vertical-align: top;">
+                                    <button onclick="return viewClicked({{this.ID}})" class="btn btn-sm btn-info btn-fill">View</button>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-md-9"></div> <div class="col-md-1"> &nbsp;&nbsp;&nbsp;</div>
+                        <div class="col-md-2"><b>Goto Page</b> <select onchange="dataPageChanged()" style="width:85px;" id="pages" name="pages"   class="form-control border-input"  ></select></div>
+                    </div>
+                    <br />
+                    <div class="row"><div class="col-md-12">
+                        {{#each STOInvestorTypes}}
+                            <b style="margin-left:20px;"></b><img src="/img/investorstotypesicons/i{{this.id}}.png"  width="23px;" /> &nbsp; {{this.type}} &nbsp;&nbsp;
+                        {{/each}}
+                    </div></div>
+
+
+                    <br />
+                    <div class="row"><div class="col-md-12">
+                        {{#each investorTypes}}
+                            <b style="margin-left:20px;"></b><img src="/img/investorstotypesicons/i{{this.id}}.png"  width="23px;" /> &nbsp; {{this.type}} &nbsp;&nbsp;
+                        {{/each}}
+                    </div></div>
+
+                    <br /> &nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

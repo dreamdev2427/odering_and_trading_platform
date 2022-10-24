@@ -1,0 +1,101 @@
+<script language="javascript">        
+     var Question1 = "{{stepData.Question1}}";
+    
+    $(document).ready(function(){
+        $("input[name=Question1]").val([Question1]);
+        
+        if(Question1 == "No")
+            $("#spanErrorNonEligibleInvestor").show();
+        else
+            $("#spanErrorNonEligibleInvestor").hide();
+           
+    })
+    function submitForm() {
+        
+        if( document.getElementById("userAgree").checked  == false)
+            showModelGeneralOKDialogBox("Please give you consent to apply")
+        else {
+            showModelGeneralYesNoDialogBox("Are you sure you have completed your profile and ready to apply ?", "Yes", "Cancel")
+        }             
+    }
+    
+    function generalModelOKButtonClickedClientEvent() {
+            document.getElementById("frmwizardpost").submit();   
+    }
+    
+    function showbox() {
+        $('#myModal').appendTo("body").modal( { backdrop: 'static', keyboard: true });        
+    }    
+    
+    function prevpage(){
+            window.location.href = "/wizard?step=2";
+            return false;        
+    }        
+    
+    
+
+</script>
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        
+        <div class="card">
+            <div class="header">
+                <h4 class="title">   Submit Your Profile for Verification </h4>
+            </div>
+            <div class="content">
+                
+                        <div class="row">
+                                    <div class="col-md-12">
+
+Herein you confirm the information provided are true and correct to the best of your knowledge and acknowledge that false statements, information and submitted Documents may disqualify you from investing in offerings through BahgsFund Marketplace.
+<br /><br />                                        
+                                        Management will activate your profile upon review of all submitted Information and may contact you if anything is missing. Management reserves the right to deny an individual or entity the opportunity to invest based on false and/or Misleading information and discoveries during the KYC-AML process.
+                                        
+<br /><br />                                                                                
+                                        By selecting “Yes, I give my consent”, you accept the terms of use of the operator of BahgsFund Marketplace.
+                                                        
+                                                        <br/>
+                                                        <b><span id="concentErrorMessage" style="color:red;">{{message}}</span></b>
+
+                                                        <form action="wizardSubmit" method="post" id="frmwizardpost" name="frmwizardpost">           
+                                                          <br /><br />
+                                                          <input type="checkbox" name="userAgree" id="userAgree" value="Yes" style="height:20px; width:20px;"   /> &nbsp;&nbsp;&nbsp;&nbsp; <b>Yes, I give my consent</b>
+
+                                                            <br /><br />
+
+                                                                <input type="hidden" name="getEmails" id="getEmails" value="yes" />
+                                                                <input type="hidden" name="applyFor" id="applyFor" value="9" />
+                                                                <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                                <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                                                                <button type="button" onclick="return prevpage()" class="btn btn-info btn-fill btn-wd">
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; < &nbsp; Previous Page &nbsp;&nbsp;&nbsp;&nbsp;</button>
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                                                <button type="button" onclick="return submitForm(4)" class="btn btn-info btn-fill btn-wd" >Submit Your Profile</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            
+                                                            
+
+                                                                                                
+
+                                                        </form>
+                                                        <br />
+                                                    
+                                                        <div class="footer"></div>
+                                    </div>
+                        </div>
+
+            </div>
+        </div>
+
+    </div>
+    
+</div>
+
+
+
+
+
+
+

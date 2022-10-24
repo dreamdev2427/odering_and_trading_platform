@@ -1,0 +1,183 @@
+{{> Header}}
+
+	<script language="javascript">
+        const tradeType = {{record.type}};          //1=Sell Trade     2=Buy Trade
+        var RedirectURL = "";
+
+        $(document).ready(function() {
+            //$("#trading").addClass('active');
+        })
+        function startswap(id) {
+            window.location.href = "acceptSwap?id={{record.ID}}&offerid=" + id;
+            return false;
+        }
+        function acceptwap(id) {
+            if(tradeType == 1) {
+                RedirectURL = "acceptSellSwapInternal?id={{record.ID}}&offerid=" + id;
+            } else {
+                RedirectURL = "acceptBuySwapInternal?id={{record.ID}}&offerid=" + id;
+            }
+
+            if(tradeType == 1)
+                showModelGeneralYesNoDialogBox("You are selling your shares and if you click Yes then shares will be transferred to buyer and funds will be transferred from buyer to you internal wallet. This action cannot be reversed  <br /><br />  Are you sure you want to continue with swap", "Yes Swap", "Cancel");
+            else
+                showModelGeneralYesNoDialogBox("You are buying shares from other investor and if you click Yes then shares will be transferred to your account while funds will be transferred from your internal wallet to seller's. This action cannot be reversed  <br /><br />  Are you sure you want to continue with swap", "Yes Swap", "Cancel");
+        }
+        function generalModelOKButtonClickedClientEvent() {
+                window.location.href = RedirectURL;
+                return false;
+        }
+	</script>
+
+{{> HeaderInner}}
+
+    <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/lock.png" width="35px;" style="padding-bottom:4px;" /> &nbsp;  Order Details </h4>
+                </div>
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-7">
+                            <label>Share Type</label>
+                            &nbsp;&nbsp;&nbsp;
+                            {{record.title}}
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label>Opening / Closing Date</label>
+                            &nbsp;&nbsp;&nbsp;
+                            {{record.dateFrom}} - {{record.dateTo}}
+                        </div>
+                    </div>
+                    <br />
+
+                    {{#if record.atomicSwapAcceptable}}
+
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label>Shares Offered</label>
+                                </div>
+                                <div class="col-md-9">
+                                    {{numberFormat record.shares decimalLength="ShareCountInFractions"}}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label>
+                                        Price </label>
+                                </div>
+                                <div class="col-md-9">
+                                    {{numberFormat record.rateFrom decimalLength="-"}}  &nbsp;&nbsp; USDC
+                                </div>
+                            </div>
+
+
+                    {{else}}
+                            <label>Investor is willing to take payment thrugh direct cash payments </label>
+
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label>Shares Offered</label>
+                                </div>
+                                <div class="col-md-9">
+                                    {{numberFormat record.shares decimalLength="ShareCountInFractions"}}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label>Asking Amount</label>
+                                </div>
+                                <div class="col-md-9">
+                                    {{currencySymbol record.currencyid}} {{numberFormat record.rateFrom decimalLength="-"}}
+                                </div>
+                            </div>
+
+                    {{/if}}
+
+                    <br />&nbsp;
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">
+                        Trade Offers
+                    </h4>
+                    <label>You have received the following trade offers. Investor contract details are also shown</label>
+                </div>
+
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <label>You have received </label> &nbsp;&nbsp; <b>{{offers.length}}</b>  &nbsp;&nbsp;  <label>trade offer(s) from other investors</label>
+
+                            <br /><br />
+                            {{#if offers.length}}
+
+                                {{#each offers}}
+
+                                    <b>Offer {{addTovalue @index 1}} </b>
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                                <label> Number of Shares to Buy </label>
+                                        </div>
+                                        <div class="col-md-8">
+                                                {{this.sharesPartial}}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                                <label>Price Offered</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                                 {{#if ../record.atomicSwapAcceptable}}
+                                                        USDC
+                                                {{else}}
+                                                        {{currencySymbol ../record.currencyid}}
+                                                 {{/if}}
+                                                &nbsp;&nbsp;
+                                                 {{this.rateFrom}}
+                                        </div>
+                                    </div>
+
+
+                                    <br />
+                                    {{#if ../record.atomicSwapAcceptable}}
+                                            <button type="button" onclick="startswap({{this.offerID}})" class="btn btn-info btn-fill btn-sm">Accept Offer and Start Ctypro Swap</button>
+                                    {{else}}
+                                            <button type="button" onclick="acceptwap({{this.offerID}})" class="btn btn-info btn-fill btn-sm">Accept Swap</button>
+                                    {{/if}}
+                                    <hr />
+
+                                {{/each}}
+
+                            {{/if}}
+                        </div>
+                    </div>
+                    <br />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{{> Footer}}

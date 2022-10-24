@@ -1,0 +1,128 @@
+<script language="javascript">        
+    var investorType2 = "{{stepData.investorType}}"
+    var currencySelected = "{{stepData.Currency}}"    
+    
+    $(document).ready(function(){
+        $("input[name=investorType]").val([investorType2]);
+
+		if(!currencySelected == "") {
+			var element = document.getElementById("Currency");
+			element.value = currencySelected;            
+		}
+		
+		currencyChange();
+    })
+    function submitForm() {
+        var res = "";
+        
+        if(document.getElementById("TotalAmount").value == "") 
+            document.getElementById("TotalAmount").value = "0";
+        
+        document.getElementById("wizardForm").submit();        
+    }
+    function showbox() {
+        $('#myModal').appendTo("body").modal( { backdrop: 'static', keyboard: true });        
+    }    
+        
+</script>
+
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">{{{__ "Information on your future investment intentions into this company"}}}</h4>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form id="wizardForm" name="wizardForm" action="wizardPost" method="post">
+                            <ul style="color:red;"><span id="ErrorMessages">{{messages}}</span></ul>    
+
+                            {{{__ "Please indicate below how much you would like to invest in the company in the future"}}}
+                            <br /><br />
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>{{{__ "Select Currency"}}} </label>
+
+                                        <select onchange="currencyChange()" id="Currency" name="Currency" class="form-control border-input" value="{{stepData.Currency}}" >
+                                            <option value="CHF">CHF</option>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                        </select>                
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label> {{{__ "Enter Amount"}}} </label>
+                                        <input type="text" maxlength="60" name="TotalAmount" id="TotalAmount" class="form-control border-input" placeholder="Enter Amount" value="{{#if stepData.TotalAmount}}{{stepData.TotalAmount}}{{/if}}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <div class="form-group">
+                                        <br />
+                                        <label>{{{__ "Do you view yourself as"}}} </label>
+                                          <br />
+                                          <input type="radio" id="investorType" name="investorType"  value="Private Investor" /> &nbsp;&nbsp;&nbsp;&nbsp;  {{{__ "Private Client: if none of the below applies"}}}  
+                                          <br /><br />
+                                          <input type="radio" id="investorType"  name="investorType" value="Professional Investor" />  &nbsp;&nbsp;&nbsp;&nbsp; {{{__ "Professional Client: if one of the following applies"}}}
+
+                                          <br /><br /><br />
+                                          <input type="radio" id="investorType"  name="investorType" value="Institutional Investor" />  &nbsp;&nbsp;&nbsp;&nbsp; {{{__ "Business Entity: if one of the following applies"}}}
+
+                                          <br /><br />                                    
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                            <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                            <br /><br />
+                            <button type="button" onclick="submitForm()" class="btn btn-info btn-fill btn-wd">{{{__ "Save and Next"}}} </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href='wizard?step=2' class="btn btn-info btn-fill btn-wd"> {{{__ "Next without Save"}}} </a>     
+                            
+                        </form>
+                        <br /><br />&nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class = "modal fade" id = "myModal" tabindex = "-1" role = "dialog" 
+   aria-labelledby = "myModalLabel" aria-hidden = "true">
+
+   <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-body">
+            <br /><br />
+            <span style="color:gray; padding-left:20px;">File not available yet</span>
+            <br /><br />
+         </div>
+
+         <div class = "modal-footer">                 
+            <button type = "button" class = "btn btn-default" data-dismiss = "modal">
+               Close
+            </button>                 
+         </div>
+
+      </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+
+

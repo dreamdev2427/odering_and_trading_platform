@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Release.Name }}-api
+  name: {{ .Release.Name }}-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-api
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-api
+    spec:
+      volumes:
+          - name: volume
+            persistentVolumeClaim:
+              claimName: {{ .Release.Name }}-volumeclaim
+      containers:
+        - image: "gcr.io/storied-chimera-334509/digishares-platform/api:{{ include "version.current" . }}"
+          name: {{ .Release.Name }}-api-m
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: volume
+              mountPath: /usr/src/app/uploads
+              subPath: uploads
+          resources:
+            requests:
+              cpu: 50m
+              ephemeral-storage: 50Mi
+              memory: 400Mi
+            limits:
+              cpu: 600m
+              ephemeral-storage: 1000Mi
+              memory: 800Mi
+          ports:
+            - containerPort: 3000
+          env:
+            - name: VERSION
+              value: "{{ include "version.current" . }}"
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: dbsecrets
+                  key: username
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: dbsecrets
+                  key: password
+            - name: MYSQL_DATABASE
+              value: digishares
+            - name: MYSQL_HOST
+              value: {{ .Release.Name }}-mysql-service.testkits.svc.cluster.local
+            #              valueFrom:
+            #                configMapKeyRef:
+            #                  name: dbsecrets
+            #                  key: ip
+            - name: GCS_SA
+              value: "eyJ0eXBlIjoic2VydmljZV9hY2NvdW50IiwicHJvamVjdF9pZCI6ImRpZ2lzaGFyZXMiLCJwcml2YXRlX2tleV9pZCI6IjMwOThkNDNjYmJhMWMxMDczNzcxNTRjMDgyN2JiNWJmYTI4ZWNhNWEiLCJwcml2YXRlX2tleSI6Ii0tLS0tQkVHSU4gUFJJVkFURSBLRVktLS0tLVxuTUlJRXZnSUJBREFOQmdrcWhraUc5dzBCQVFFRkFBU0NCS2d3Z2dTa0FnRUFBb0lCQVFDa1pjZ3NlZzAzWGZWXC9cbkFLWTJUVmVyVFpMa0pMWGtrUlpMZ2FFSjBTeXQ4aGRScXBTdHpGNW52Z0pSdG1cL0FRTmZic3NNbktvTHNNUUduXG5wcm5ocE55bTBEajNtb21SRjNvakVrOG1WQmd6YXdrOTdDbmFcL3oyUWVMMVdpNlNjMW8xTWkzb2VpVmx1Z2x2RlxubktCUXZ6SHdGVXVnMU5Ub2o5cWRoSW1JV28xMGxNeG9jaWkwaEpyRXRYSEttQ3pRSzVLXC93citGYU9mVWg5a1Fcbm9mTk9OYVwvS3F1bWFqcXc2VHJ3NUtYbzI5K0R3XC9INFwvNlwvTCtKaVRLNUlkZTl5WGtHMmtCNzVKdzhVcFVBeExEXG5sTURUblRadEY2K21ZRHZqK1wvZ2hzeGhkT1dsXC9wTEFNRU1UZWM1SDJFVUw5WlE3b0tWOVhQNElXNkRsVGVwOEhcbm85eW1Pc3k1QWdNQkFBRUNnZ0VBR3dSNUxjb1BNdnEzbGx3eWRMa29QOGhiYkRBV1RvNkRsZndqVFp3NVZncnpcbnh5R2NGcVlBRzllUHhRTVJBWTBHako0bjBWOThyYmx1RnJIaFdaS0JDczhzbFpDcHJCVXFKdXBpNUo4c2JRTFpcbnZYbjY5UGsra21ndFliUklaTmdqMTZFU2ZFTkJWZGFKbzRQV212NlpBK1pVREFYK1NZd2V0d1ZwbnVXVzJzSTNcbjRkdWtQM1JBdnpSUjFPTjVyN3BSMFhtbXhtM2x0XC9Sekd1dHdWN0Rva1wvQThFbEJGYUFvN0JWK2I4bmdRQ3kyVVxueTRVckh1XC9oZWp3d1ZYbENsV1VNdDVSdjhva2xHa1FvNFpnbzVMOWFHcTZDWDdUR1dhK1JDY28xZEZMeFI1ZnZcbnl1Vmw3bFNaT1hUdkV0MVwveUw3Uzl4VDhzcE9oamE2WUlVajN0c2ZpNlFLQmdRRGVUeEdMWUlTaEhRZ3o5cEZKXG5LeVk0d0pTdzNvQ0pOTjJyYklWXC9TYzVONVZKQkl1bm00OVRLT3lmWnVHNFVJUXBXZ1czcndGaDAyS3FMcWxpYVxuRVljRmYrd3NNeTdEYW5LNnVUd3dXTHNqN2FoMHh1SlVtZllcL2V2cG43cTBNbGo0eFY1a1ZNbzg4SFEwdkpQWjdcblVCZU9LMk14V2FEN2szZ1wvNTFOWUtlRTAxUUtCZ1FDOVQrMERhWCtreEMrRU9kZ3JrMVlcL09lXC9LRTl2bVEwdStcbmZYeHZ3bkNmUEFYb1NQUXpTOFBzZHFvcG95MXBQV0syVkdiaTNHeGhiSDBGWUNHcUdhSCtXMzRYcHFNQnF1UkJcbmF5U0lcL3I3ZjI2RmJUK1BlbWtkeXR5blloMXB5UkZpTG81bGg0aGg0ZEJvNnFoVFZwQ2REWk1tZ2FRalNXeDZzXG5MOTVuaEl3NlZRS0JnUUNFRlFKZGh4a0dDSlBKRytReVR0ckV1VmNleHZRamtTOXJIRzBzdFpOSG9NcUFQTmd3XG5BSWw3Smk2Rkl4ajBDTFYxdEN5MDkzRVc2MnhZMHZzVmZ2aDBBZzgySzZyTEhFSFNReUJKc1U1dkNGTWdIdEoyXG5aWXR6S0FRRElFSGN5cDlrXC9hRE1nVitzM2EzcHB0SnpiYUN4TFlJZjNoclJua3JCM1JVZHVyUTlpUUtCZ0M2K1xuYTNGcVBVQTd5TmZIU0o4SjFFUHNWRTc3TkZMWXp2ME1Fd3V0WVEyUVRvMGFabUc4Rlhadm5uaUZlQk1DT3p0MVxuXC82bUliNkptblVBVWludHJ0Tm9QVVVVWnVpb1JQaWNCQTVab0FFMVo5NitLUEdPY2lJUEV3aXBhMFhSaGQ5T1NcbjQ2Nk5teWt5MGI4bWU5cDhtODFDTjU3S0VJbVFRalNWNVQ1K05mbTVBb0dCQUlDTnp6eU1RYjRnOElsTjBRZXpcbk9SQlVpeUIwOWtvNUxpd0RjZ3N2eTZ5RENvcTdudG9pVzQxVlRGaFVJSjBJOUFKbXh3bng4NjdSQlJIeXJkTmtcbjJHdlFFREdTYlhCdjhRUDJaMEZSMGFXTmFzbUM2aXlpbFEzOTdEWTlyNVVjMG5LSVYwQTc5QVwvVlpqUGhMN2gzXG41REVDUXkxUXI3YTFOYmhaSDkxOHBKWHNcbi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS1cbiIsImNsaWVudF9lbWFpbCI6ImRzLWFwcEBkaWdpc2hhcmVzLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiY2xpZW50X2lkIjoiMTA4NzU0MzcyMjA4ODM4MDYxMTU4IiwiYXV0aF91cmkiOiJodHRwczpcL1wvYWNjb3VudHMuZ29vZ2xlLmNvbVwvb1wvb2F1dGgyXC9hdXRoIiwidG9rZW5fdXJpIjoiaHR0cHM6XC9cL29hdXRoMi5nb29nbGVhcGlzLmNvbVwvdG9rZW4iLCJhdXRoX3Byb3ZpZGVyX3g1MDlfY2VydF91cmwiOiJodHRwczpcL1wvd3d3Lmdvb2dsZWFwaXMuY29tXC9vYXV0aDJcL3YxXC9jZXJ0cyIsImNsaWVudF94NTA5X2NlcnRfdXJsIjoiaHR0cHM6XC9cL3d3dy5nb29nbGVhcGlzLmNvbVwvcm9ib3RcL3YxXC9tZXRhZGF0YVwveDUwOVwvZHMtYXBwJTQwZGlnaXNoYXJlcy5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSJ9"
+            - name: GCS_BUCKET_NAME
+              value: "digishares-saas-bucket"
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: "development"
+            - name: PRIVATE_JWT_KEY
+              value: "^#$5sX(Hf6KUo!#65^"
+            - name: FRONTEND_URL
+              value: "{{ include "hostnames.frontend" . }}"
+            - name: VERIFY_URL
+              value: "http://{{ include "hostnames.frontend" . }}/verify/"
+            - name: PASSWORD_SALT
+              value: "7fa73b47df808d36c5fe328546ddef8b9011b2c6"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-api-internal"
+spec:
+  type: NodePort
+  selector:
+    app: "{{ .Release.Name }}-api"
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "{{ .Release.Name }}-api-ingress"
+  annotations:
+    networking.gke.io/managed-certificates: "{{ .Release.Name }}-managed-cert"
+spec:
+  tls:
+    - hosts:
+        - "{{ include "hostnames.api" . }}"
+      secretName: {{ .Release.Name }}-tls
+  rules:
+    - host: "{{ include "hostnames.api" . }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: "{{ .Release.Name }}-api-internal"
+                port:
+                  number: 80
+  ingressClassName: nginx
+
+{{ if .Values.smoke }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-api-smoke
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+  selector:
+    app: "{{ .Release.Name }}-api"
+  type: LoadBalancer
+{{ end }}

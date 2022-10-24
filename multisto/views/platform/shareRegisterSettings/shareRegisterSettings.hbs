@@ -1,0 +1,88 @@
+{{> Header}}
+
+<script language="javascript">
+    function updateGhostBalanceSelector() {
+        $.ajax({
+            type: "GET",
+            url: 'api/shareRegisterSettings',
+            success: (data) => {
+                $("label[name='selector']").removeClass('active').removeClass('focus').prop('checked', false);
+                $(`#ghost-${data.ghostInvestorBehavior ?? 0}`).prop('checked', true).parent().addClass('active').addClass('focus');
+            },
+            error: (err) => alert(`Could not connect to server`),
+        });
+    }
+
+    $(document).ready(() => {
+        updateGhostBalanceSelector();
+
+        $("#ghostBalancesSwitch").on('change', () => {
+            //const selected = $("input[type='radio'][name='ghost-switch']:checked");
+            $.ajax({
+                type: "POST",
+                url: 'api/shareRegisterSettings',
+                data: $("#shareRegisterSettings").serialize(),
+                success: () => {
+                    updateGhostBalanceSelector();
+                },
+                error: (err) => alert(`Server Error`),
+            });
+        });
+    });
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="header">
+            <h4 class="title"> <img src="/img/report.png" width="30px;" style="padding-bottom:4px;"
+                    alt='ShareCap Settings' />Share Register Settings</h4>
+            <label>Change platform settings in regards to the share register</label>
+        </div>
+        <div class="content">
+            <div class="row">
+                <div class="col-md-12">
+                    <form id="shareRegisterSettings" class="form-group">
+                        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}">
+                        <label for="ghostBalancesSwitch" style="display: block;">
+                            When an investor record is deleted from the system, their share balances are left behind as
+                            ghost balances.
+                            <br />
+                            In this menu you can control how this affects the behavior of the Share Register every time
+                            it is re-calculated.
+                            <br />
+                            <br />
+                            What shall the register do with ghost balances:
+                        </label>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div id="ghostBalancesSwitch" class="btn-group-vertical" data-toggle="buttons">
+                                    <label name="selector" class="btn btn-info active">
+                                        <input type="radio" name="ghostInvestorBehavior" id="ghost-0" value=0 checked> Hide from
+                                        page, but keep
+                                        in system (default)
+                                    </label>
+                                    <label name="selector" class="btn btn-info">
+                                        <input type="radio" name="ghostInvestorBehavior" id="ghost-1" value=1> Display with
+                                        placeholders
+                                    </label>
+                                    <label name="selector" class="btn btn-info">
+                                        <input type="radio" name="ghostInvestorBehavior" id="ghost-2" value=2> Clean up and
+                                        refund the
+                                        Company
+                                    </label>
+                                    <label name="selector" class="btn btn-info">
+                                        <input type="radio" name="ghostInvestorBehavior" id="ghost-3" value=3> Hide, but
+                                        calculate in
+                                        "Distributed Shares"
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

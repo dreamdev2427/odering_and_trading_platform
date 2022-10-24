@@ -1,0 +1,559 @@
+{{> Header}}
+
+<script language="javascript">
+    const searchElementIds = ['searchId', 'searchCountry', 'searchCurrency', 'searchAbbreviation', 'searchSymbol', 'searchIsBlockchainBased'];
+    const orderElementIds = ['orderId', 'orderCountry', 'orderCurrency', 'orderAbbreviation', 'orderSymbol', 'orderIsBlockchainBased'];
+
+    const totalRecords = {{RecordCount}};
+    const totalNumberOfRecordsOnPages = {{RecordsPerPaging}};
+    $(document).ready(function() {
+        $("#currencyManagement").addClass('active');
+        initializePageNumberValue();
+        initializeCountryDropdown();
+        initializeSearchAndOrderElementValues(searchElementIds);
+        initializeSearchAndOrderElementValues(orderElementIds);
+        handledefualtCurrencySettings();
+    })
+
+    function initializeCountryDropdown() {
+        // select default sto
+        const defaultStosSelected = `All`;
+
+        const countryInput = document.getElementById('searchCountry');
+        countryInput.value = defaultStosSelected;
+        countryInput.onfocus = function() {
+            countryInput.name = countryInput.value;
+            countryInput.value ='';
+        }; // on focus - clear input
+        countryInput.onblur = function() {
+            if (countryInput.value === ''){
+                countryInput.value = countryInput.name;
+            }
+        };
+    }
+    function initializeSearchAndOrderElementValues(elementIdArray) {
+        for(i=0; i<elementIdArray.length; i++) {
+            const element = document.getElementById(elementIdArray[i]);
+            if (element) {
+                element.addEventListener("keyup", function(event) {
+                    event.preventDefault();
+                    if (event.keyCode === 13) {
+                        document.getElementById("searchBtn").click();
+                    }
+                });
+            }
+            const param = getParameterByName(elementIdArray[i]);
+            if (param) {
+                element.value = param;
+                if (elementIdArray[i] === 'searchIsBlockchainBased') {
+                    if (param === String(0)) {
+                        element.checked = false;
+                    } else if (param === String(1)){
+                        element.checked = true;
+                    }
+                } else if (elementIdArray[i] === 'searchCountry') {
+                    const options = document.getElementById('countryDropdown').options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value.includes(param)) {
+                            element.value = options[i].value;
+                        }
+                    }
+                }
+                if (elementIdArray[i].includes('order')) {
+                    if (param==='asc') {
+                        element.className = 'ti-arrow-up';
+                    } else {
+                        element.className = 'ti-arrow-down';
+                    }
+                }
+            }
+        }
+    }
+    function initializePageNumberValue() {
+        let currentPage = 1;
+        if(getParameterByName("recordsPage") != null)
+            currentPage = parseInt(getParameterByName("recordsPage"));
+        let pages = Math.floor(totalRecords/totalNumberOfRecordsOnPages);
+        let remainder = totalRecords % totalNumberOfRecordsOnPages;
+        if(remainder > 0)
+            pages = pages + 1;
+        if (!pages)
+            pages = 1;
+        let beggining = 0;
+        let length = 0;
+        switch (currentPage) {
+            case 1: beggining = currentPage; length = currentPage + 10; break;
+            case pages: beggining = currentPage - 5; length = pages; break;
+            default: beggining = Math.max(currentPage - 5, 1); length = Math.min(currentPage + 5, pages); break;
+        }
+        if (beggining > 1) {
+            $("#pages").append(`<option value='${1}'>${1}</option>`);
+            $("#pages").append(`<optgroup label="..."></optgroup>`);
+        }
+        for(a=beggining;a<=length && a <= pages;a++)
+        {
+            if(currentPage == a)
+                $("#pages").append(`<option selected value='${a}'>${a}</option>`)
+            else
+                $("#pages").append(`<option value='${a}'>${a}</option>`)
+        }
+        if (length < pages) {
+
+            $("#pages").append(`<optgroup label="..."></optgroup>`);
+            $("#pages").append(`<option value='${pages}'>${pages}</option>`);
+        }
+    }
+
+    function dataPageChanged() {
+        let page = '';
+        if(page != "")
+            page = page + "&";
+        const pag = document.getElementById("pages").value;
+        page = page + "recordsPage=" + pag;
+        const search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        window.location.href = composeLink('getCurrencySearchPage', page, search, order);
+        return false;
+    }
+    function composeLink(base, page, search, order) {
+        let link = `${base}?`;
+        if (page) {
+            link += `${page}`;
+        }
+        if (search && search.length > 0) {
+            link += `&${search}`;
+        }
+        if (order && order.length > 0) {
+            link += `&${order}`;
+        }
+        return link;
+    }
+    function getPageCriteria(elementIdArray) {
+        let query = '';
+        for (i=0; i < elementIdArray.length; i++) {
+            const element = document.getElementById(elementIdArray[i]);
+            if (element !== null && element.value !== undefined && element.value !== '') {
+                let toAddValue = element.value;
+                if (elementIdArray[i] === 'searchIsBlockchainBased') {
+                    if (element.checked) {
+                        toAddValue = 1;
+                    } else {
+                        toAddValue = 0;
+                    }
+                } else if(element.id === 'searchCountry') {
+                    if (element.value !== 'All') {
+                        query = addToQuery(query, elementIdArray[i], element.value);
+                    }
+                } else {
+                    query = addToQuery(query, elementIdArray[i], toAddValue);
+                }
+            }
+        }
+        return query;
+    }
+
+    function addToQuery(query, toAddName, toAddValue) {
+        if (query !== '' && toAddValue !== '') {
+            query += '&';
+        }
+        if (toAddValue !== '') {
+            query += `${toAddName}=${toAddValue}`;
+        }
+        return query;
+    }
+    function searchCurrencies() {
+        const search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        window.location.href = composeLink('getCurrencySearchPage', null, search, order);
+    }
+    function exportToCsv() {
+        const search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        window.location.href = composeLink('exportCurrenciesToCsv', null, search, order);
+    }
+    function updateOrder(element) {
+        const iTag = element.getElementsByTagName('i')[0];
+        if (iTag.value==='asc') {
+            iTag.value = 'desc';
+            iTag.className = 'ti-arrow-down';
+        } else {
+            iTag.value = 'asc';
+            iTag.className = 'ti-arrow-up';
+        }
+        searchCurrencies();
+    }
+    function addCurrency() {
+        const div = document.getElementById('addCurrencyDiv');
+        div.hidden = false;
+        return;
+    }
+    function addCurrencyPost(currencyId) {
+        const newSymbolValue = document.getElementById(`${currencyId}-Symbol`).value;
+        const newAbbreviationValue = document.getElementById(`${currencyId}-Abbreviation`).value;
+        const newCurrencyValue = document.getElementById(`${currencyId}-Currency`).value;
+        const newCountryValue = document.getElementById(`${currencyId}-Country`).value;
+        const newIdValue = document.getElementById(`${currencyId}-ID`).value;
+        const newIsBlockchainBasedValue = document.getElementById(`${currencyId}-IsBlockchainBased`).checked;
+        if(newSymbolValue == "") {
+            showModelGeneralOKDialogBox("Enter Symbol");
+            return;
+        }
+        if(newAbbreviationValue == "") {
+            showModelGeneralOKDialogBox("Enter Abbreviation");
+            return;
+        }
+        if(newCurrencyValue == "") {
+            showModelGeneralOKDialogBox("Enter Currency");
+            return;
+        }
+        if(newCountryValue == "") {
+            showModelGeneralOKDialogBox("Enter Country");
+            return;
+        }
+        document.getElementById('symbolInput').value = newSymbolValue;
+        document.getElementById('abbreviationInput').value = newAbbreviationValue;
+        document.getElementById('currencyInput').value = newCurrencyValue;
+        document.getElementById('countryInput').value = newCountryValue;
+        document.getElementById('idInput').value = newIdValue;
+        if (newIsBlockchainBasedValue) {
+            document.getElementById('isBlockchainBasedInput').value = 1;
+        } else {
+            document.getElementById('isBlockchainBasedInput').value = 0;
+        }
+        document.getElementById('addCurrencyForm').submit();
+    }
+    function enableRowEdit(currencyId) {
+        $(`#${currencyId}-row`).find('input').prop("disabled", false);
+        document.getElementById(`${currencyId}-saveButton`).style = '';
+        document.getElementById(`${currencyId}-editButton`).style = 'display:none';
+
+    }
+
+    function showCryptoPartial(props, blockchainid) {
+        document.getElementById('blockchainID').innerHTML = ''
+        const blocky = {{{ json blockChain }}}
+        let test = {{{ json DataRows }}}
+        let data = test.filter(elem => elem.ID == props)[0]
+        document.getElementById('curID').value = props 
+        document.getElementById('isNative').innerHTML = data.isNative ? `<option value="1" selected>True</option><option value="0">False</option>` : `<option value="1">True</option><option value="0" selected>False</option>`
+        document.getElementById('blockchainID').innerHTML = blocky.map(elem => {
+            let htmlTag = ''
+            if(elem.id == blockchainid){
+                htmlTag += `<option value='${elem.id}' selected>${elem.title}</option>`
+            }else {
+                htmlTag += `<option value='${elem.id}'>${elem.title}</option>`
+
+            }
+            return htmlTag
+        })
+        document.getElementById('Address').value = data.Address
+        document.getElementById('cryptoReceivingAddress').value = data.cryptoReceivingAddress
+
+    }
+    function updateCryptoCurrency() {
+        const $form = $("#cryptoUpdate");
+        const data = parseFormData($form);
+        document.getElementById('errorField').innerHTML = ''
+        
+        if(!data.Address) {
+            document.getElementById('errorField').innerHTML += "<p>Address can't be empty</p>" 
+        }
+        if(!data.cryptoReceivingAddress) {
+            document.getElementById('errorField').innerHTML += "<p>Crypto Receiving Address can't be empty</p>" 
+        }
+        if(data.Address && data.cryptoReceivingAddress) {
+            $('#cryptoUpdate').submit()
+        }
+    }
+
+    function parseFormData($form) {
+            const unindexed_array = $form.serializeArray();
+            const indexed_array = {};
+
+            $.map(unindexed_array, function (n, i) {
+                indexed_array[n['name']] = n['value'];
+            });
+
+            return indexed_array;
+        }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="title"> <img src="/img/relative.png" width="30px;" style="padding-bottom:4px;" />Manage Platform Currencies</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <br>
+                        <button type="button" onclick="return addCurrency()" class="btn btn-info btn-fill btn-wd">
+                            Add Currency
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <br>
+                        <button type="button" onclick="return exportToCsv()" class="btn btn-info btn-fill btn-wd">
+                            Export To Csv
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <b>Go To Page</b>
+                        <select onchange="dataPageChanged()" id="pages" name="pages" class="form-control border-input"  ></select>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Search Id</label>
+                        <input type="number" min="0" id="searchId" class="form-control border-input">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Search Country</label>
+                        <input id="searchCountry" class="form-control border-input" list="countryDropdown">
+                        <datalist id="countryDropdown">
+                            <option>All</option>
+                            {{#each countryList}}
+                                <option value="{{this.[0]}}">  {{this.[1]}}  </option>
+                            {{/each}}
+                        </datalist>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Search Currency</label>
+                        <input id="searchCurrency" class="form-control border-input">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Search IsBlockchainBased</label>
+                        <input onchange="this.value=checked" type="checkbox" id="searchIsBlockchainBased" value="" class="form-control border-input">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Search Abbreviation</label>
+                        <input id="searchAbbreviation" class="form-control border-input">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Search Symbol</label>
+                        <input id="searchSymbol" class="form-control border-input">
+                    </div>
+                    <div class="col-md-4">
+                        <br>
+                        <button type="button" id="searchBtn" onclick="return searchCurrencies()" class="btn btn-info btn-fill btn-wd">
+                            Search
+                        </button>
+                    </div>
+                </div>
+                <br>
+            </div>
+            <br>
+
+            <div class="content">
+                {{#if DataRows.length}}
+                    <b><div class="row">
+                        <div style="cursor: pointer" class="col-md-1" onclick="updateOrder(this)">
+                            ID
+                            <i id="orderId" value="0"></i>
+                        </div>
+                        <div style="cursor: pointer" class="col-md-2" onclick="updateOrder(this)">
+                            Country
+                            <i id="orderCountry" value="0"></i>
+                        </div>
+                        <div style="cursor: pointer;" class="col-md-2" onclick="updateOrder(this)">
+                            Currency
+                            <i id="orderCurrency" value="0"></i>
+                        </div>
+                        <div style="cursor: pointer" class="col-md-2" onclick="updateOrder(this)">
+                            Abbreviation
+                            <i id="orderAbbreviation" value="0"></i>
+                        </div>
+                        <div style="cursor: pointer" class="col-md-1" onclick="updateOrder(this)">
+                            Symbol
+                            <i id="orderSymbol" value="0"></i>
+                        </div>
+                        
+                        <div style="cursor: pointer" class="col-md-2" onclick="updateOrder(this)">
+                            Is Blockchain Based
+                            <i id="orderIsBlockchainBased" value="0"></i>
+                        </div>
+                        <div class="col-md-2">
+
+                        </div>
+                    </div></b><br />
+                    <div id="addCurrencyDiv" class="row" hidden="true">
+                        <div class="col-md-1">
+                            <input id="0-ID" name="ID" type="number" class="form-control border-input" disabled>
+                        </div>
+                        <div id="newCountry" style="word-wrap:break-word" class="col-md-2">
+                            <input id="0-Country" name="Country" class="form-control border-input" list="addCurrencyCountryDropdown"
+                               onfocus = "this.name = this.value; this.value =''"
+                               onblur = " if (this.value === ''){this.value = this.name;}">
+                            <datalist id="addCurrencyCountryDropdown">
+                                {{#each countryList}}
+                                    <option value="{{this.[0]}}">  {{this.[1]}}  </option>
+                                {{/each}}
+                            </datalist>
+                        </div>
+                        <div id="newCurrency" style="word-wrap:break-word" class="col-md-2">
+                            <input id="0-Currency" name="Currency" class="form-control border-input"/>
+                        </div>
+                        <div id="newAbbreviation" class="col-md-2">
+                            <input id="0-Abbreviation" name="Abbreviation" class="form-control border-input"/>
+                        </div>
+                        <div id="newSymbol" class="col-md-1">
+                            <input id="0-Symbol" name="Symbol" class="form-control border-input"/>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="0-IsBlockchainBased"
+                                {{#ifEqual defaultCurrencyMode 1}} disabled {{/ifEqual}}
+                                {{#ifEqual defaultCurrencyMode 2}} checked disabled {{/ifEqual}}
+                                   name="IsBlockchainBased" type="checkbox" class="form-control border-input" value="0"/>
+                        </div>
+                        <div class="col-md-2">
+                            <button type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal" onclick="addCurrencyPost(0)" >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                    <br>
+
+                    {{#each DataRows}}
+                            <div id="{{this.ID}}-row" class="row">
+                                <div class="col-md-1">
+                                    <input id="{{this.ID}}-ID" value="{{this.ID}}" class="form-control border-input" disabled>
+                                </div>
+                                <div style="word-wrap:break-word" class="col-md-2">
+                                    <input id="{{this.ID}}-Country"  value="{{this.Country}}" class="form-control border-input"
+                                           list="addCurrencyCountryDropdown" disabled
+                                           onfocus = "this.name = this.value; this.value =''"
+                                           onblur = " if (this.value === ''){this.value = this.name;}">
+                                </div>
+                                <div style="word-wrap:break-word" class="col-md-2">
+                                    <input id="{{this.ID}}-Currency" value="{{this.Currency}}" class="form-control border-input" disabled>
+                                </div>
+                                <div class="col-md-2">
+                                    <input id="{{this.ID}}-Abbreviation" value="{{this.Abbreviation}}" class="form-control border-input" disabled>
+                                </div>
+                                <div class="col-md-1">
+                                    <input id="{{this.ID}}-Symbol" value="{{this.Symbol}}" class="form-control border-input" disabled>
+                                </div>
+                                <div class="col-md-2">
+                                    <input class="form-control border-input" id="{{this.ID}}-IsBlockchainBased" type="checkbox"
+                                        {{#ifEqual ../defaultCurrencyMode 1}} disabled {{/ifEqual}}
+                                        {{#ifEqual ../defaultCurrencyMode 2}} disabled {{/ifEqual}}
+                                        {{#if this.isBlockchainBased}}
+                                            checked
+                                        {{/if}}
+                                    />
+                                </div>
+                                <div class="col-md-2" style="display:inline-flex">
+                                    <button id="{{this.ID}}-editButton" type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"
+                                            onclick="enableRowEdit({{this.ID}})">
+                                        Edit
+                                    </button>
+                                    <button id="{{this.ID}}-saveButton" type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"
+                                            onclick="addCurrencyPost({{this.ID}}, {{this.blockchainID}})" style="display: none">
+                                        Save
+                                    </button>
+                                    <br/>
+                                    {{#if this.isBlockchainBased}}
+                                    <button type="button" class="btn btn-info btn-fill btn-sm cryptoForm" data-toggle="modal" data-target="#myModal" data-whatever="{{this.ID}}" style="margin-left: 1px;" onclick="showCryptoPartial({{this.ID}}, {{this.blockchainID}})">Crypto Details</button>
+                                    {{/if}}
+                                </div>
+                            </div>
+                            <br />
+                    {{/each}}
+                    <br /><br />
+                {{else}}
+                        <label>No Records Found</label>
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<form id="addCurrencyForm" action="AddOrUpdateCurrency" method="post">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <input id="idInput" name="ID" type="hidden" class="form-control border-input" value="new">
+    <input id="countryInput" name="Country" class="form-control border-input" type="hidden" />
+    <input id="currencyInput" name="Currency" class="form-control border-input" type="hidden" />
+    <input id="abbreviationInput" name="Abbreviation" class="form-control border-input" type="hidden" />
+    <input id="symbolInput" name="Symbol" class="form-control border-input" type="hidden" />
+    <input id="isBlockchainBasedInput" name="IsBlockchainBased" type="hidden" class="form-control border-input" value="0"/>
+</form>
+<div class="modal fade bd-example-modal-lg" id="myModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="width: 100%;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit / View Blockchain details of currency</h4>
+            </div>
+            <div class="modal-body" style="height: 100%;">
+                <div id="errorField" style="color: red;"></div>
+                <form id="cryptoUpdate" method="post" action="VieworUpdateCurrencyCrypto">  
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <input type="number" id="curID" name="ID" hidden/>         
+                    <div class="row">
+                        <div class="col-md-3">
+                            Is Native 
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control border-input" id="isNative" name="isNative">
+                            </select>
+                        </div>
+                        <div  class="col-md-6">
+                            If this currency is native blockchain token like bitcoin, ether for Ethereum or ravencoin then select true. Select false if this token is Ethereum based custom token like USDC
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-md-3">
+                            Blockchain
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-control border-input" id="blockchainID" name="blockchainID">
+                                
+                            </select>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-3">
+                            Token Smart Contract Address
+                        </div>
+                        <div class="col-md-8">
+                            <input value="" class="form-control border-input" id="Address" name="Address"/>
+                        </div>
+                    </div> 
+                    <br />
+                    <div class="row">
+                        <div class="col-md-3">
+                            Wallet receiving address
+                        </div>
+                        <div class="col-md-8">
+                            <input value="" class="form-control border-input" id="cryptoReceivingAddress" name="cryptoReceivingAddress" />
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            Disclaimer: Wallet receiving address needs to be different from the issuers wallet address
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" onclick="updateCryptoCurrency()">Update</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{{> Footer}}

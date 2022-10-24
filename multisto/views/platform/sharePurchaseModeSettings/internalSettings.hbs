@@ -1,0 +1,80 @@
+<script>
+  function postChangeInternalSignSettings(mode) {
+    document.getElementById('signatureMode').value = mode;
+    const drawSignaturePrefillFonts = document.getElementById('drawSignaturePrefillFonts');
+    const prefillFonts = document.getElementById('prefillFonts')?.value;
+    if (drawSignaturePrefillFonts && prefillFonts && prefillFonts !== '') {
+      drawSignaturePrefillFonts.value = prefillFonts;
+    }
+    document.getElementById('postChangeInternalSignSettings').submit();
+  }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-8">
+            <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Internal Signing - Signature Mode</h4>
+            <label>Change the way investors should sign the documents</label>
+          </div>
+          <div class="col-md-1">
+            <button onclick="postChangeInternalSignSettings()" class="btn btn-info btn-fill">Save All</button>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button onclick="postChangeInternalSignSettings('draw')" class="btn
+              {{#ifEqual internalSignatureMode 'draw'}}
+                btn-info
+              {{else}}
+                btn-secondary
+              {{/ifEqual}} btn-fill">Draw Signature On Canvas</button>
+              <button onclick="postChangeInternalSignSettings('checkmark')" class="btn
+              {{#ifEqual internalSignatureMode 'checkmark'}}
+                btn-info
+              {{else}}
+                btn-secondary
+              {{/ifEqual}} btn-fill">CheckMark</button>
+            </div>
+          </div>
+        </div>
+        {{#ifEqual internalSignatureMode 'draw'}}
+          <br/>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-12">
+                <b>
+                  Prefill Signature Fonts
+                </b>
+                <br/>
+                <label>
+                  This field is used to describe the fonts of the suggested signatures that are available for the investor during the document signing process.
+                  <br/>
+                  Please fill in vales from and separate them by , For example: Cedarville Cursive, UnifrakturCook
+                  <br/>
+                  For a list of supported fonts, please visit:
+                  <a href="https://fonts.google.com/">https://fonts.google.com/</a>
+                </label>
+                <br/>
+                <b>Note: leaving this field empty will force the user to draw their own signature every time</b>
+              </div>
+            </div>
+            <input type="text" class="form-control border-input" id="prefillFonts" value="{{drawSignaturePrefillFonts}}"/>
+          </div>
+        </div>
+        {{/ifEqual}}
+      </div>
+    </div>
+    <form id="postChangeInternalSignSettings" method="post" action="/platform/postChangeInternalSignSettings">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+      <input type="hidden" id="signatureMode" name="signatureMode" />
+      <input type="hidden" id="drawSignaturePrefillFonts" name="drawSignaturePrefillFonts" value="{{drawSignaturePrefillFonts}}"/>
+    </form>
+  </div>
+</div>

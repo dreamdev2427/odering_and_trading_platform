@@ -1,0 +1,105 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+            $("#DashboardMenu").addClass('active');
+    })
+    function openProperty(id) {
+        window.location.href = "sto?id=" + id;
+        return false;
+    }
+    function generateBrokerID() {
+        document.getElementById("frmGenerateBrokerID").submit();
+    }
+</script>
+
+{{> HeaderInnerBroker}}
+
+<div class="row" style="z-index:700;position:relative;">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Broker ID</h4>
+                    <label>You can invite an investor using your Broker ID</label>
+                </div>
+                <div class="content">
+                    {{#if brokerID}}
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p>Broker ID:</p>
+                        </div>
+                        <div class="col-md-9">
+                            <p><strong>{{brokerID}}</strong></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p>Invitation Link:</p>
+                        </div>
+                        <div class="col-md-9">
+                            <p class="text-info">{{frontendURL}}/sign-up?brokerID={{brokerID}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>Investors Invited (<mark style="color: green;">{{invitedInvestorsCount}}</mark>)</p>
+                        </div>
+                    </div>
+                    {{else}}
+                    <form id="frmGenerateBrokerID" name="frmGenerateBrokerID" action="/broker/generateBrokerID" method="POST">
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        <button type="button" onclick="generateBrokerID()" class="btn btn-info btn-fill">
+                            Generate
+                        </button>
+                    </form>
+                    {{/if}}
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{#each sto}}
+        <div class="row">			
+               <div class="col-md-12 ">
+                    <div class="card">
+                        <div class="header">
+                                    
+                            <div class="row">			
+                                    <div class="col-md-10">                            
+                                            <h4 class="title"> <img src="/img/company.png" width="30px;" style="padding-bottom:4px;" />  
+                                            &nbsp; {{this.title}}</h4>
+                                    </div>
+                            </div>
+                            
+                        </div>
+                        <div class="content">
+
+
+                                    <div class="row">			
+                                        <div class="col-md-2">                        
+                                               <img src="/img/stobanners/{{this.propertypicture}}" width="100%">
+                                        </div>
+                                        
+                                        <div class="col-md-8">    
+                                                {{this.details}}
+
+                                                <br /><br />                                        
+                                                <button onclick="return openProperty({{this.id}})" class="btn btn-info btn-fill"> &nbsp; Open STO Details &nbsp; </button>
+                                        </div>
+                                        
+                                        <div class="col-md-2">                        
+                                               <img src="/img/stologo/{{this.logo}}" width="90px;">
+                                        </div>
+                                    </div>
+                                    
+                                    <br />&nbsp;
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <br />
+{{/each}}
+
+{{> Footer}}

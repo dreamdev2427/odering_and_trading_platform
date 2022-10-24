@@ -1,0 +1,234 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+
+    })
+    var link = "";
+    var typeoffileupload = 0;
+
+    function showuploaddialog(type) {
+            if(type == 1)
+                $('#divFileUploadTitle').hide();
+            else {
+                document.getElementById("txtTitleOfFile").value = "";
+                $('#divFileUploadTitle').show();
+            }
+
+            typeoffileupload = type;
+
+            document.getElementById("type").value = type;
+            $('#addNewLinkDialog').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            return false;
+    }
+    function callMultiFileUpdate() {
+
+
+
+        $("#fileuploading").show();
+        if(typeoffileupload == 1)
+            checkAndUpdateMultiFileUpload('photos222', 'upload-file1',  MultifileMultifileExtensions3, MultifileMultifileExtensions3msg, 1, MultifileMultifileMaxFileSizeMB1);
+        else
+            checkAndUpdateMultiFileUpload('photos222', 'upload-file1',  MultifileMultifileExtensions2, MultifileMultifileExtensions2msg, 1, MultifileMultifileMaxFileSizeMB1);
+
+    }
+
+    function startUploadigFile() {
+
+        if(typeoffileupload == 2) {
+            if(document.getElementById("txtTitleOfFile").value == "") {
+                showModelGeneralOKDialogBox("Please enter file title");
+                return;
+            }
+        }
+
+
+        uploadMultiplefilesToServer('photos222', 'fileUplodProgressUpload', 3, '/platform/uploadFiles');
+
+    }
+
+    function multipleFilesUploadingDoneEvent(data) {
+        document.getElementById("title").value = document.getElementById("txtTitleOfFile").value;
+        document.getElementById("fil1").value = JSON.stringify(data);
+        document.getElementById("sendpostfile").submit();
+    }
+    function deleteFile(id) {
+        link = "deletepropertyrelatedfile?pid={{id}}&id=" + id;
+        showModelGeneralYesNoDialogBox("Do you want to delete file ?", "Delete", "Cancel");
+    }
+
+    function showDocumentToShareClass(id) {
+        document.getElementById("documentId").value = id;
+        $('#modalLinkDocumentToShareClass').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = link;
+        return false;
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+{{> multifileupload}}
+
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                            <h4 class="title">Project Images</h4>
+                    </div>
+                   <div class="col-md-3">
+                            <button type="button" onclick="return showuploaddialog(1)"class="btn btn-info btn-fill btn-wd">
+                                    Upload Image
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                    {{#if images.length}}
+                            {{#each images}}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                        <img src="/img/stobanners/{{this.Link}}" width="80px;" >
+                                        </div>
+                                        <div class="col-md-4">
+                                        <a class="btn btn-info btn-fill btn-sm" href="/img/stobanners/{{this.Link}}" download>Download</a>
+                                        <button  onclick="deleteFile({{this.ID}})" type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"> Delete </button>
+                                        <button onclick="showDocumentToShareClass({{this.ID}})" type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"> Link to Share Class </button>
+                                        </div>
+                                        {{#if ShareClasses.length}}
+                                            <div class="col-md-4">
+                                                <b>Share Classes:</b> <br/>
+                                                {{#each ShareClasses}}
+                                                    {{this.title}} <br/>
+                                                {{/each}}
+                                            </div>
+                                        {{/if}}
+                                    </div>
+                                    <hr/>
+                            {{/each}}
+                            </span>
+                    {{else}}
+                            <label>No Images Found</label>
+                    {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                            <h4 class="title">Project Documents</h4>
+                    </div>
+                   <div class="col-md-3">
+                            <button type="button" onclick="return showuploaddialog(2)"class="btn btn-info btn-fill btn-wd">
+                                    Upload Document
+                            </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                    {{#if docs.length}}
+                            {{#each docs}}
+                                <div class="row">
+                                   <div class="col-md-4">
+                                            <img src="/img/document2.png" width="25px" >  &nbsp;&nbsp;  {{this.Title}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <form>
+                                            <a class="btn btn-info btn-fill btn-sm" href="/img/stobanners/{{this.Link}}" download>Download</a>
+                                            <button onclick="deleteFile({{this.ID}})" type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"> Delete </button>
+                                            <button onclick="showDocumentToShareClass({{this.ID}})" type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"> Link to Share Class </button>
+                                        </form>
+                                    </div>
+                                    {{#if ShareClasses.length}}
+                                        <div class="col-md-4">
+                                            <b>Share Classes:</b> <br/>
+                                            {{#each ShareClasses}}
+                                                {{this.title}} <br/>
+                                            {{/each}}
+                                        </div>
+                                    {{/if}}
+                                </div>
+                                <hr/>
+                                <br />
+                            {{/each}}
+
+                    {{else}}
+                            <label>No Documents Found</label>
+                    {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addNewLinkDialog" tabindex="-1" role="dialog" aria-labelledby="addNewLinkDialog" aria-hidden="true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h5 class = "modal-title" id = "myModalLabel">
+                Upload File / Image
+            </h5>
+         </div>
+
+         <div  class="modal-body">
+
+                <div class="upload-btn-wrapper">
+                    <button class="btnfile">Select File</button>
+                    <input   id="photos222"   name="photos222" multiple="multiple" type="file"  onchange="callMultiFileUpdate()" >
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span style="color: green; font-size: 12px; " id="upload-file1">No File Selected</span>
+                    <br /><br />
+                </div>
+
+                    <div id="divFileUploadTitle">
+                            Enter Title <br />
+                            <input id="txtTitleOfFile" name="txtTitleOfFile" name="" class="form-control border-input" type="text" style="" >
+                    </div>
+
+                <br /><br />
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                <div class="row">
+                    <div class="col-md-6"></div>
+                   <div class="col-md-6">
+                        <div class="progress" style="display:none;">
+                          <div id="fileUplodProgressUpload" class="progress-bar" role="progressbar" style="width: 0px" ></div>
+                        </div>
+                    </div>
+                </div>
+
+         </div>
+
+         <div class = "modal-footer">
+                    <input class="btn btn-info btn-fill" onclick="startUploadigFile()" name="Photo Uploads" value="Upload File" />
+                    <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<form id="sendpostfile" method="post" action="/platform/uploadSTORelatedFilesPost">
+    <input type="hidden" id="id" name="id" value="{{id}}">
+    <input type="hidden" id="fil1" name="fil1" value="">
+    <input type="hidden" id="type" name="type" value="">
+    <input type="hidden" id="title" name="title" value="">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

@@ -1,0 +1,319 @@
+<style>
+    .notification {
+        background: #ff0036;
+        margin-left: 1rem;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        $.get("/platform/unreadMessagesCount", function(data) {
+            if(data.COUNT !== 0) {
+                document.getElementById("unreadMessages").innerHTML = data.COUNT;
+            }
+        });
+
+        $('.list-group-items').on('click', function() {
+            $('.ti', this)
+                .toggleClass('ti-angle-right')
+                .toggleClass('ti-angle-down');
+        });
+    });
+
+    function logout() {
+        window.location.href = "adminlogout";
+        return false;
+    }
+    function settings() {
+        window.location.href = "platformsettings";
+        return false;
+    }
+    function toNewRegisterList() {
+        switch ({{Data.kycProvider}}){
+            case 0:
+                window.location.href = "registerlist";
+                break;
+            case 1:
+                window.location.href = `https://kyc.blockpass.org/kyc/dashboard/#/{{Data.blockPassClientId}}/kyc_list`;
+                break;
+            default:
+                window.location.href = "registerlist";
+                break;
+        }
+        return false;
+    }
+    function toInvestors() {
+        switch ({{Data.kycProvider}}){
+            case 0:
+                window.location.href = "investors";
+                break;
+            case 1:
+                window.location.href = `https://kyc.blockpass.org/kyc/dashboard/#/{{Data.blockPassClientId}}/kyc_list`;
+                break;
+            default:
+                window.location.href = "investors";
+                break;
+        }
+        return false;
+    }
+    function toCopyInvestors() {
+        window.location.href = "copyInvestors";
+        return false;
+    }
+    function toStoTools() {
+        window.location.href = "stoTools";
+        return false;
+    }
+
+    function toInvestorSearch() {
+        window.location.href = "getInvestorSearchPage";
+        return false;
+    }
+    function toCurrencyManagement() {
+        window.location.href = "getCurrencySearchPage";
+        return false;
+    }
+    function toTranslationsManagement() {
+        window.location.href = "translations";
+        return false;
+    }
+    function toStosMetaKeysManagement() {
+        window.location.href = "stosMetaKeys";
+        return false;
+    }
+    function toVerifyInvestorComTestSuit() {
+      window.location.href = "getVerifyInvestorComTestSuit";
+    }
+</script>
+
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div  class="sidebar" data-background-color="black" data-active-color="danger">
+    <!--
+		Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+		Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+	-->
+    	<div class="sidebar-wrapper" style="overflow-x: hidden; overflow-y: auto;">
+            <div class="logo">
+                 <a href="{{Data.website}}" class="simple-text"  target="_blank" >
+                    <img src="/img/stologo/{{Data.logo}}"  style="max-height: 100px; max-width: 120px;" />
+                </a>
+            </div>
+
+            <ul class="nav">
+                <li id="DashboardMenu">
+                    <a href="dashboard">
+                        <i class="ti-panel"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+
+                <li id="sto">
+                    <a href="sto">
+                        <i class="ti-timer"></i>
+                        <p>Project List</p>
+                    </a>
+                </li>
+
+                <li id="fees">
+                    <a href="fees">
+                        <i class="ti-pie-chart"></i>
+                        <p>Fees</p>
+                    </a>
+                </li>
+
+                <li id="commissions">
+                    <a href="commissions">
+                        <i class="ti-gift"></i>
+                        <p>Commissions</p>
+                    </a>
+                </li>
+
+                <li id="brokerlinks">
+                    <a href="brokerlinks">
+                        <i class="ti-plus"></i>
+                        <p>Brokers</p>
+                    </a>
+                </li>
+
+                <li id="chat">
+                    <a href="chat">
+                        <i class="ti-headphone-alt"></i>
+                        <p>
+                            Support<span id="unreadMessages" class="badge badge-pill badge-danger notification"></span>
+                        </p>
+                    </a>
+                </li>
+
+                <li id="doclinks">
+                    <a href="doclinks">
+                        <i class="ti-view-list"></i>
+                        <p>External Links</p>
+                    </a>
+                </li>
+
+                <li id="bulkupload">
+                    <a href="bulkuploads">
+                        <i class="ti-upload"></i>
+                        <p>Bulk Upload</p>
+                    </a>
+                </li>
+
+                <li id="bulkdownloads">
+                    <a href="bulkdownloads">
+                        <i class="ti-download"></i>
+                        <p>Bulk Download</p>
+                    </a>
+                </li>
+
+
+                {{#if Data.affiliateEnabled}}
+                    <li id="affiliatePayouts">
+                        <a href="affiliatepayouts">
+                            <i class="ti-money"></i>
+                            <p>Affiliate Payouts</p>
+                        </a>
+                    </li>
+                    <li id="referralnetwork">
+                        <a href="referralnetwork">
+                            <i class="ti-sharethis"></i>
+                            <p>Referral Network</p>
+                        </a>
+                    </li>
+                {{/if}}
+
+                <li id="registerlist" >
+                    <a href="javascript:void(0);" onclick="toNewRegisterList()">
+                        <i class="ti-rss-alt"></i>
+                        <p>Unfinished Registers</p>
+                    </a>
+                </li>
+                <li id="investors">
+                    <a href="javascript:void(0);" onclick="toInvestors()">
+                        <i class="ti-user"></i>
+                        <p>Investors</p>
+                    </a>
+                </li>
+
+                <li id="copyStoParams">
+                    <a href="javascript:void(0);" onclick="toStoTools()">
+                        <i class="ti-wand"></i>
+                        <p>Copy Project Params</p>
+                    </a>
+                </li>
+                <li id="copyStoInvestors">
+                    <a href="javascript:void(0);" onclick="toCopyInvestors()">
+                        <i class="ti-wand"></i>
+                        <p>Copy Project Investors</p>
+                    </a>
+                </li>
+
+                <li id="currencyManagement">
+                    <a href="javascript:void(0);" onclick="toCurrencyManagement()">
+                        <i class="ti-money"></i>
+                        <p>Manage Currencies</p>
+                    </a>
+                </li>
+                <li id="translationsManagement">
+                    <a href="javascript:void(0);" onclick="toTranslationsManagement()">
+                        <i class="ti-world"></i>
+                        <p>Manage Translations</p>
+                    </a>
+                </li>
+                <li id="stosMetaKeysManagement">
+                    <a href="javascript:void(0);" onclick="toStosMetaKeysManagement()">
+                        <i class="ti-layers-alt"></i>
+                        <p>Manage Meta keys</p>
+                    </a>
+                </li>
+                <li id="polymeshAccounts">
+                    <a href="polymeshAccounts">
+                        <i class="ti-money"></i>
+                        <p>Polymesh Accounts</p>
+                    </a>
+                </li>
+                
+
+                {{#ifEqual Data.CurrentClientID 2}}
+                        <li id="redswan">
+                            <a href="redswaninfo">
+                                <i class="ti-view-list"></i>
+                                <p>RedSwan </p>
+                            </a>
+                        </li>
+                 {{/ifEqual}}
+
+                {{#ifEqual Data.CurrentClientID 6}}
+                    <li id="geniusInvestorSearch">
+                        <a href="javascript:void(0);" onclick="toInvestorSearch()">
+                            <i class="ti-search"></i>
+                            <p>Genius Investor Search </p>
+                        </a>
+                    </li>
+                {{/ifEqual}}
+
+
+                {{#if Data.isPrivateKeyEnabled}}
+                <li id="privateKeys">
+                    <a href="privateKeys">
+                        <i class="ti-view-list"></i>
+                        <p>Private Key </p>
+                    </a>
+                </li>
+                {{/if}}
+              {{#if Data.verifyInvestorEnabledAndStaging}}
+                <li id="verifyInvestorComTestSuit">
+                  <a href="javascript:void(0);" onclick="toVerifyInvestorComTestSuit()">
+                    <i class="ti-dashboard"></i>
+                    <p>VerifyInvestor Tests</p>
+                  </a>
+                </li>
+              {{/if}}
+
+            </ul>
+    	</div>
+    </div>
+
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar bar1"></span>
+                        <span class="icon-bar bar2"></span>
+                        <span class="icon-bar bar3"></span>
+                    </button>
+                    <a class="navbar-brand stopATagLink">{{Data.sto0Title}}: Platform Dashboard</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a class="stopATagLink"><b>Current User:</b> {{Data.Login_UserName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="return settings();" data-toggle="dropdown">
+                                <i class="ti-settings"></i>
+				                <span >Settings</span>
+                            </a>
+                        </li>
+						<li>
+                            <a href="#" onclick="return logout();">
+								<i class="ti-arrow-circle-up"></i>
+								<span >Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+
+        <div class="content">
+		      <div class="container-fluid">
+

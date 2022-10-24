@@ -1,0 +1,147 @@
+<script>
+  function showMembers(entityID){
+    const entityMembersDiv = $('#entityMembers');
+    if (entityMembersDiv.attr('data-value') == entityID || entityMembersDiv.attr('data-value') == '' ||
+      (entityMembersDiv.attr('data-value') != entityID && entityMembersDiv.is(':hidden'))){
+      entityMembersDiv.toggle();
+    }
+    const entities = JSON.parse(decodeURIComponent('{{investingEntityEncoded}}'));
+    if (!entities) {
+      return;
+    }
+    entityMembersDiv.attr('data-value', entityID);
+    let html = `<hr/>
+<label>Entity Members:<label/>
+<br/>
+<table class="table display responsive nowrap">
+                  <thead class="listingHeaderFontSize thead">
+                  <th>Member ID</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Role</th>
+                  <th>Signatory</th>
+                  <th>Email</th>
+                  </thead>
+                  <tbody>`;
+    let search = true;
+    let j = 0;
+    while(search) {
+      if (entities[j].ID === entityID){
+        const members = entities[j].members;
+        if (members && members.length > 0) {
+          for(let i=0; i<members.length; i++) {
+            html += `
+                <tr>
+                  <td>${members[i].ID}</td>
+                  <td>${members[i].firstName}</td>
+                  <td>${members[i].lastName}</td>
+                  <td>${members[i].role}</td>
+                  <td>${members[i].signatory === 1 ?
+                    '<img src="/img/greendot.png" width="20px" alt="YES" />' :
+                    '<img src="/img/reddot.png" width="20px" alt="NO" />'
+                  }</td>
+                  <td>${members[i].email}</td>
+                </tr>`;
+          }
+          search = false;
+        }
+      }
+      if (j >= entities.length) {
+        search = false;
+      }
+      j++;
+    }
+    html += `
+        </tbody>
+      </table>`;
+    entityMembersDiv.innerText = html;
+    document.getElementById('entityMembers').innerHTML = html;
+  }
+
+  function isAccredited(entityID) {
+    const isEnabled = document.getElementById(`isAccreditedToggle-${entityID}`).checked;
+    document.getElementById('isAccreditationEnabled').value = +isEnabled;
+    document.getElementById('entityID').value = entityID;
+    document.getElementById('investorID').value = getParameterByName("id");
+    document.getElementById('changeMode').submit();
+  }
+</script>
+
+{{#if investingEntity}}
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-12">
+          <h4 class="title">
+            <img src="/img/dividends.png" width="30px" >
+            Investing Entities <small class="tag">BETA</small>
+          </h4>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <table id="investingEntities" class="table table-hover" style="overflow: auto;">
+        <thead class="listingHeaderFontSize thead">
+          <th>ID</th>
+          <th>Official Name</th>
+          <th>Nickname</th>
+          <th>Entity Type</th>
+          <th>Tax ID</th>
+          <th>Accredited</th>
+          <th>Payment Method</th>
+          <th>Members</th>
+          <th>Address</th>
+          <th>City</th>
+          <th>Zip</th>
+          <th>Country</th>
+          <th></th>
+        </thead>
+        <tbody>
+          {{#each investingEntity}}
+            <tr>
+              <td>{{this.ID}}</td>
+              <td>{{this.name}}</td>
+              <td>{{this.nickname}}</td>
+              <td>{{this.type}}</td>
+              <td>{{this.taxId}}</td>
+              <td>
+                <label class="switch">
+                  <input id="isAccreditedToggle-{{this.ID}}" name="isAccreditedToggle"
+                         onclick=isAccredited({{this.ID}}) type="checkbox"
+                    {{#ifEqual this.accredited 1}}
+                      checked >
+                    {{else}}
+                      >
+                    {{/ifEqual}}
+                    <span class="slider round"></span>
+                </label>
+              </td>
+              <td>{{this.paymentMethod}}</td>
+              <td>{{this.membersCount}}</td>
+              <td>{{this.address}}</td>
+              <td>{{this.city}}</td>
+              <td>{{this.postalCode}}</td>
+              <td>{{this.country}}</td>
+              <td>
+                {{#if this.members}}
+                  <button class="btn btn-info"
+                          onclick="showMembers({{this.ID}})">
+                    <span class="glyphicon glyphicon-tasks"></span>
+                  </button>
+                {{/if}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <div id="entityMembers" data-value="" style="display: none"/>
+    </div>
+  </div>
+  <form id="changeMode" method="post" action="/admin/accreditEntity">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <input type="hidden" id="entityID" name="entityID" />
+    <input type="hidden" id="investorID" name="investorID" />
+    <input type="hidden" id="isAccreditationEnabled" name="isAccreditationEnabled" />
+  </form>
+{{/if}}
+

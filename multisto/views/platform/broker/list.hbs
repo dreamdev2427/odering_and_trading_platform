@@ -1,0 +1,62 @@
+{{> Header}}
+
+	<script language="javascript">
+
+        $(document).ready(function(){
+            $("#brokerlinks").addClass('active');                
+        })
+        function viewClicked(id) {
+            window.location.href = "brokerview?id=" + id;
+            return false;
+        }
+        function addUser() {
+            window.location.href = "brokeradd";
+            return false;
+        }
+
+	</script>
+
+{{> HeaderInnerPlatform}}
+
+    <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/relative.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Brokers List  <button onclick="addUser()" class="btn btn-info btn-fill" style="float: right;">Add Broker</button>   </h4>
+                <label>List of Brokers of company</label>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+                <table class="table table-striped">
+                    <thead>
+                        <th>Name</th>
+                        <th>Active</th>
+                        <th>User Name</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {{#each DataRows}}
+                        <tr>
+                            <td style="width: 30%">{{this.FirstName}} {{this.LastName}}</td>
+                            <td style="width: 10%">
+                                {{#if this.isActive}}
+                                <img src="/img/greendot.png" width="22px" />
+                                {{else}}
+                                <img src="/img/reddot.png" width="20px" />                                                {{/if}} 
+                            </td>
+                            <td style="width: 30%">{{this.Username}}</td>
+                            <td>
+                                <button onclick="return viewClicked({{this.ID}})" class="btn btn-info btn-fill btn-sm">View</button>
+                            </td>                                                                                    
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <img src="/img/greendot.png" width="22px" />&nbsp;Active    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    <img src="/img/reddot.png" width="20px" />&nbsp;Disabled Login
+
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

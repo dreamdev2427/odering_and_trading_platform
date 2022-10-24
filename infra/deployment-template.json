@@ -1,0 +1,7 @@
+{
+  "id": "MUST NOT BE CHANGED ONCE SET",
+  "apiHostname": "default",
+  "frontendHostname": "default",
+  "multistoHostname": "default",
+  "version": "staging or production or version number"
+}

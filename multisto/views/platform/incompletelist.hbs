@@ -1,0 +1,394 @@
+{{> Header}}
+
+<script>
+    let link = "";
+
+    const searchElementIds = ['searchName', 'searchId', 'searchEmail', 'searchCountry', 'searchIsKyc', 'searchStoId'];
+    const orderElementIds = ['orderName', 'orderId', 'orderEmail', 'orderCountry', 'orderStoId'];
+
+    const totalRecords = {{RecordCount}};
+    const totalNumberOfRecordsOnPages = {{RecordsPerPaging}};
+    $(document).ready(function() {
+        $("#investors").addClass('active');
+
+        initializePageNumberValue();
+        initializeStosDropdown();
+        initializeCountryDropdown();
+        initializeSearchAndOrderElementValues(searchElementIds);
+        initializeSearchAndOrderElementValues(orderElementIds);
+    })
+    function initializeSearchAndOrderElementValues(elementIdArray) {
+        for(i=0; i<elementIdArray.length; i++) {
+            const element = document.getElementById(elementIdArray[i]);
+            if (element) {
+                element.addEventListener("keyup", function(event) {
+                    event.preventDefault();
+                    if (event.keyCode === 13) {
+                        document.getElementById("searchBtn").click();
+                    }
+                });
+            }
+            const param = getParameterByName(elementIdArray[i]);
+            if (param) {
+                if (elementIdArray[i] === 'searchIsKyc') {
+                    if (param === String(0)) {
+                        element.value = `Incomplete`;
+                    } else {
+                        element.value = 'Done';
+                    }
+                } else if (elementIdArray[i] === 'searchStoId') {
+                    const options = document.getElementById('stosDropdown').options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value.includes(param)) {
+                            element.value = options[i].value;
+                        }
+                    }
+                } else if (elementIdArray[i] === 'searchCountry') {
+                    const options = document.getElementById('countryDropdown').options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value.includes(param)) {
+                            element.value = options[i].value;
+                        }
+                    }
+                } else {
+                    element.value = param;
+                }
+                if (elementIdArray[i].includes('order')) {
+                    if (param==='asc') {
+                        element.className = 'ti-arrow-up';
+                    } else {
+                        element.className = 'ti-arrow-down';
+                    }
+                }
+            }
+        }
+    }
+    function initializePageNumberValue() {
+        let currentPage = 1;
+        if(getParameterByName("recordsPage") != null)
+            currentPage = parseInt(getParameterByName("recordsPage"));
+        let pages = Math.floor(totalRecords/totalNumberOfRecordsOnPages);
+        let remainder = totalRecords % totalNumberOfRecordsOnPages;
+        if(remainder > 0)
+            pages = pages + 1;
+        if (!pages)
+            pages = 1;
+
+        let beggining = 0;
+        let length = 0;
+        switch (currentPage) {
+            case 1: beggining = currentPage; length = currentPage + 10; break;
+            case pages: beggining = currentPage - 5; length = pages; break;
+            default: beggining = Math.max(currentPage - 5, 1); length = Math.min(currentPage + 5, pages); break;
+        }
+        if (beggining > 1) {
+            $("#pages").append(`<option value='${1}'>${1}</option>`);
+            $("#pages").append(`<optgroup label="..."></optgroup>`);
+        }
+        for(a=beggining;a<=length && a <= pages;a++)
+        {
+            if(currentPage == a)
+                $("#pages").append(`<option selected value='${a}'>${a}</option>`)
+            else
+                $("#pages").append(`<option value='${a}'>${a}</option>`)
+        }
+        if (length < pages) {
+
+            $("#pages").append(`<optgroup label="..."></optgroup>`);
+            $("#pages").append(`<option value='${pages}'>${pages}</option>`);
+        }
+    }
+    function initializeStosDropdown() {
+        // select default sto
+        const defaultStosSelected = `All`;
+
+        const stosInput = document.getElementById('searchStoId');
+        stosInput.value = defaultStosSelected;
+        stosInput.onfocus = function() {
+            stosInput.name = stosInput.value;
+            stosInput.value ='';
+        }; // on focus - clear input
+        stosInput.onblur = function() {
+            if (stosInput.value === ''){
+                stosInput.value = stosInput.name;
+            }
+        };
+    }
+    function initializeCountryDropdown() {
+        // select default sto
+        const defaultStosSelected = `All`;
+
+        const stosInput = document.getElementById('searchCountry');
+        stosInput.value = defaultStosSelected;
+        stosInput.onfocus = function() {
+            stosInput.name = stosInput.value;
+            stosInput.value ='';
+        }; // on focus - clear input
+        stosInput.onblur = function() {
+            if (stosInput.value === ''){
+                stosInput.value = stosInput.name;
+            }
+        };
+    }
+    function deleteRec(id, stoid) {
+        link = "deleteInvestorSto?id=" + id;
+        link = `deleteInvestorSto?id=${id}&stoid=${stoid}`;
+        showModelGeneralYesNoDialogBox("Investor record will be deleted from system and he has to start registration process again. Are you sure you want to delete ?", "Yes Delete", "Cancel")
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = link;
+        return false;
+    }
+    function dataPageChanged() {
+        let page = '';
+        if(page != "")
+            page = page + "&";
+        const pag = document.getElementById("pages").value;
+        page = page + "recordsPage=" + pag;
+        const search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        window.location.href = composeLink('investors', page, search, order);
+        return false;
+    }
+    function composeLink(base, page, search, order, exportFields) {
+        let link = `${base}?`;
+        if (page) {
+            link += `${page}`;
+        }
+        if (search && search.length > 0) {
+            link += `&${search}`;
+        }
+        if (order && order.length > 0) {
+            link += `&${order}`;
+        }
+        if (exportFields && exportFields.length > 0) {
+            link += `&${exportFields}`;
+        }
+        return link;
+    }
+    function getPageCriteria(elementIdArray) {
+        let query = '';
+        for (i=0; i < elementIdArray.length; i++) {
+            const element = document.getElementById(elementIdArray[i]);
+            if (element !== null && element.value !== undefined && element.value !== '') {
+                if (element.id === 'searchStoId') {
+                    query = addToQuery(query, 'searchStoId', element.value.substr(0, element.value.indexOf(' ')));
+                } else if (element.id === 'searchIsKyc') {
+                    if (element.value === 'Incomplete') {
+                        query = addToQuery(query, 'searchIsKyc', 0);
+                    }else if (element.value === 'Done') {
+                        query = addToQuery(query, 'searchIsKyc', 1);
+                    }
+                } else if(element.id === 'searchCountry') {
+                    if (element.value !== 'All') {
+                        query = addToQuery(query, elementIdArray[i], element.value);
+                    }
+                } else {
+                    query = addToQuery(query, elementIdArray[i], element.value);
+                }
+            }
+        }
+        return query;
+    }
+
+    function addToQuery(query, toAddName, toAddValue) {
+        if (query !== '' && toAddValue !== '') {
+            query += '&';
+        }
+        if (toAddValue !== '') {
+            query += `${toAddName}=${toAddValue}`;
+        }
+        return query;
+    }
+    function searchInvestors() {
+        let search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        window.location.href = composeLink('investors', null, search, order);
+    }
+    function exportToCsv() {
+        let search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        const fields = getCheckboxFields();
+        window.location.href = composeLink('exportIncompleteKycToCsv', null, search, order, fields);
+    }
+    function getCheckboxFields() {
+        const checkboxList = document.querySelectorAll('input[type=checkbox]:checked');
+        let query = '';
+        for(i=0; i<checkboxList.length; i++) {
+            query = addToQuery(query, checkboxList[i].id, 'true');
+        }
+        return query;
+    }
+    function updateOrder(element) {
+        const iTag = element.getElementsByTagName('i')[0];
+        if (iTag.value==='asc') {
+            iTag.value = 'desc';
+            iTag.className = 'ti-arrow-down';
+        } else {
+            iTag.value = 'asc';
+            iTag.className = 'ti-arrow-up';
+        }
+        searchInvestors();
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title"> <img src="/img/relative.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Investor profiles </h4>
+                    </div>
+                    <div class="col-md-2">
+                        <br>
+                        <button type="button" onclick="return exportToCsv()" class="btn btn-info btn-fill btn-wd">
+                            Export To Csv
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <b>Go To Page</b>
+                        <select onchange="dataPageChanged()" id="pages" name="pages" class="form-control border-input"  ></select>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-1">
+                        <label>Search ID</label>
+                        <input min="0" id="searchId" class="form-control border-input">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Search Name</label>
+                        <input id="searchName" class="form-control border-input">
+                    </div>
+                    <div class="col-md-2">
+                        <label>Search Country</label>
+                        <input id="searchCountry" class="form-control border-input" list="countryDropdown">
+                        <datalist id="countryDropdown">
+                            <option>All</option>
+                            {{#each countryList}}
+                                <option value="{{this.[0]}}">  {{this.[1]}}  </option>
+                            {{/each}}
+                        </datalist>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Search Email</label>
+                        <input min="0" id="searchEmail" class="form-control border-input">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-3">
+                        {{#if stoList.length}}
+                            <label>Sto</label>
+                            <input id="searchStoId" class="form-control border-input" list="stosDropdown">
+                            <datalist id="stosDropdown">
+                                <option>All</option>
+                                {{#each stoList}}
+                                    <option>{{this.ID}} - {{this.title}}</option>
+                                {{/each}}
+                            </datalist>
+                        {{/if}}
+                    </div>
+                    <div class="col-md-3">
+                        <label>KYC</label>
+                        <select id="searchIsKyc" name="KYCStatus" class="form-control border-input">
+                            <option>All</option>
+                            <option>Incomplete</option>
+                            <option>Done</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <br>
+                        <button type="button" id="searchBtn" onclick="return searchInvestors()" class="btn btn-info btn-fill btn-wd">
+                            Search
+                        </button>
+                    </div>
+                </div>
+                <br>
+
+            </div>
+
+            <div class="content">
+
+                {{#if DataRows.length}}
+                    <label>Check which fields to be exported in the CSV</label>
+                            <b><div class="row">
+                                <div style="cursor: pointer" class="col-md-1">
+                                    <input style="float:left;" type="checkbox" id="exportIdCheckbox" checked>
+                                    <div onclick="updateOrder(this)">
+                                        Id
+                                        <i id="orderId" value="0"></i>
+                                    </div>
+                                </div>
+                                <div style="cursor: pointer" class="col-md-1">
+                                    <input style="float:left;" type="checkbox" id="exportStoIdCheckbox" checked>
+                                    <div onclick="updateOrder(this)">
+                                        StoId
+                                        <i id="orderStoId" value="0"></i>
+                                    </div>
+                                </div>
+                                <div style="cursor: pointer" class="col-md-2">
+                                    <input style="float:left;" type="checkbox" id="exportNameCheckbox" checked>
+                                    <div onclick="updateOrder(this)">
+                                        Name
+                                        <i id="orderName" value="0"></i>
+                                    </div>
+                                </div>
+                                <div style="cursor: pointer" class="col-md-2">
+                                    <input style="float:left;" type="checkbox" id="exportCountryCheckbox" checked>
+                                    <div onclick="updateOrder(this)">
+                                        Country
+                                        <i id="orderCountry" value="0"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="checkbox" id="exportContactCheckbox" checked>
+                                    Contact
+                                </div>
+                                <div style="cursor: pointer" class="col-md-3">
+                                    <input style="float: left;" type="checkbox" id="exportEmailCheckbox" checked>
+                                    <div onclick="updateOrder(this)">
+                                        Email
+                                        <i id="orderEmail" value="0"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div></b><br />
+
+                            {{#each DataRows}}
+                              <div class="row">
+                                  <div class="col-md-1" style="word-wrap:break-word">{{this.id}}</div>
+                                  <div class="col-md-1" style="word-wrap:break-word">{{this.stoid}}</div>
+                                  <div class="col-md-2" style="word-wrap:break-word">{{this.FirstName}} {{this.LastName}} </div>
+                                  <div class="col-md-2" style="word-wrap:break-word">
+                                    {{#if this.taxResidencyCountry}}
+                                      {{this.taxResidencyCountry}}
+                                    {{else}}
+                                      {{this.country}}
+                                    {{/if}}
+                                  </div>
+                                  <div class="col-md-2" style="word-wrap:break-word">{{this.phone}} {{this.cell}}  </div>
+                                  <div class="col-md-3" style="word-wrap:break-word">{{this.Email}}</div>
+                                  <div class="col-md-1">
+                                          <button type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal" onclick="deleteRec({{this.id}}, {{this.stoid}})" > Delete </button>
+                                  </div>
+                              </div>
+                              <br />
+                            {{/each}}
+                            <br /><br />
+                {{else}}
+                        <label>No Records Found</label>
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{> Footer}}

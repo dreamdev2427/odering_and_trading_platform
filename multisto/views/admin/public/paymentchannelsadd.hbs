@@ -1,0 +1,399 @@
+{{> Header}}
+
+<script>
+
+	{{#if op}}
+		const conversionEnabled  = {{Record.conversionEnabled}};
+		const currencyToConvert  = {{Record.currencyToConvert}};
+	{{/if}}
+
+	$(document).ready(function() {
+		//$("#inbox").addClass('active');
+    SummernoteBasicDataInitialize('details', 'Enter Payment Details', 400);
+    SummernoteBasicDataInitialize('depositInstructionText', 'Enter Email Content Text', 160);
+    SummernoteBasicDataInitialize('adminEmailBody', 'Enter Email Content Text', 160);
+
+		 {{#if op}}
+			if( conversionEnabled == 1 ) {
+				$("#currencyToConvert").val( currencyToConvert );
+				$("#divCurrencyConvert").show();
+			}
+		{{/if}}
+        initiateSwitches();
+	})
+
+    function initiateSwitches() {
+      const chkCurrencyConversion = JSON.parse('{{{Record.conversionEnabled}}}');
+      if (chkCurrencyConversion === 1) {
+        $("#divCurrencyConvert").show();
+        document.getElementById('chkCurrencyConversion').setAttribute("checked", "true");
+      } else {
+        $("#divCurrencyConvert").hide();
+        document.getElementById('chkCurrencyConversion').removeAttribute("checked");
+      }
+      const canWithdrawFunds = JSON.parse('{{{Record.canWithdrawFunds}}}');
+      if (canWithdrawFunds === 1) {
+        document.getElementById('canWithdrawFunds').setAttribute("checked", "true");
+      } else {
+        document.getElementById('canWithdrawFunds').removeAttribute("checked");
+      }
+      const shouldSendInstructionalEmail = JSON.parse(`{{{Record.sendInstructionalDepositEmail}}}`);
+      if (shouldSendInstructionalEmail === 1) {
+        $("#depositInstructionContent").show();
+        document.getElementById('chkInstructionalDepositEmail')?.setAttribute("checked", "true");
+      } else {
+        $("#depositInstructionContent").hide();
+        document.getElementById('chkInstructionalDepositEmail')?.removeAttribute("checked");
+      }
+      const shouldSendAdminEmail = JSON.parse(`{{{Record.sendAdminEmail}}}`);
+      if (shouldSendAdminEmail === 1) {
+        $("#depositInstructionContentAdmin").show();
+        document.getElementById('chkAdminEmail')?.setAttribute("checked", "true");
+      } else {
+        $("#depositInstructionContentAdmin").hide();
+        document.getElementById('chkAdminEmail')?.removeAttribute("checked");
+      }
+    }
+
+    function cancelcall() {
+        window.location.href = "/admin/paymentchannels";
+        return false;
+    }
+
+    function savecchannel() {
+        if(document.getElementById("title").value === "") {
+            showModelGeneralOKDialogBox("Please enter title");
+            return;
+        }
+
+        if(document.getElementById("details").value === "") {
+            showModelGeneralOKDialogBox("Please enter details");
+            return;
+        }
+
+		if ($('#chkCurrencyConversion').is(":checked")) {
+
+			if( document.getElementById("conversionRate").value === "" ) {
+				showModelGeneralOKDialogBox("Please enter conversion rate");
+				return;
+			}
+
+			if( document.getElementById("conversionRate").value === "0" ) {
+				showModelGeneralOKDialogBox("Conversion rate cannot be 0");
+				return;
+			}
+
+
+			 if(  isNaN(   document.getElementById("conversionRate").value )  ){
+				showModelGeneralOKDialogBox("Conversion rate is not a valid number");
+				return;
+			 }
+		}
+
+    if ($('#chkInstructionalDepositEmail').is(":checked")){
+      if( !document.getElementById("depositInstructionEmailHeader").value) {
+				showModelGeneralOKDialogBox("Please enter Deposit Instruction Email Header");
+				return;
+			}
+
+			if( !document.getElementById("depositInstructionText").value ) {
+				showModelGeneralOKDialogBox("Please enter Deposit Instruction Email Body");
+				return;
+			}
+    }
+
+    if ($('#chkAdminEmail').is(":checked")){
+      if( !document.getElementById("adminEmailHeader").value) {
+				showModelGeneralOKDialogBox("Please enter Admin Alert Email Header");
+				return;
+			}
+
+			if( !document.getElementById("adminEmailBody").value ) {
+				showModelGeneralOKDialogBox("Please enter Admin Alert Email Body");
+				return;
+			}
+    }
+
+        document.getElementById("addpayment").submit();
+    }
+
+	function currencyConvert() {
+		if ($('#chkCurrencyConversion').is(":checked"))
+		     $("#divCurrencyConvert").show();
+		else
+		     $("#divCurrencyConvert").hide();
+	}
+
+  function changeInstructionalEmailVisibility() {
+    if ($('#chkInstructionalDepositEmail').is(":checked"))
+      $("#depositInstructionContent").show();
+    else
+      $("#depositInstructionContent").hide();
+  }
+  function changeAdminEmailVisibility() {
+    if ($('#chkAdminEmail').is(":checked"))
+      $("#depositInstructionContentAdmin").show();
+    else
+      $("#depositInstructionContentAdmin").hide();
+  }
+
+  function updateEmailText() {
+    document.getElementById("depositInstructionForm").submit();
+  }
+
+</script>
+
+
+{{> HeaderInnerSto}}
+
+    {{#if errorMessage}}
+        <span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+        <br /><br />
+    {{/if}}
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+          <div class="row">
+            <div class="col-md-9">
+              <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" alt='email' /> &nbsp; Add New Payment Channel</h4>
+            </div>
+          </div>
+				</div>
+
+				<div class="content">
+          <h5>Enter Manual Payments Details</h5>
+          <form id="addpayment" name="addpayment" action="addeditpaymentchannel" method="post">
+            <div class="row">
+              <div class="col-md-10">
+                <div class="form-group">
+                  <label>Title</label>
+                  <input maxlength="300" type="text" id="title" name="title" class="form-control border-input" placeholder="Enter Payment Channel Title" value="{{Record.title}}"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-5">
+                <div class="form-group">
+                  {{#if op}}
+                    <label>Channel Currency</label>
+                    {{currencySymbol Record.currencyID}}
+                    &nbsp;&nbsp; {{#if blockchainName}} {{blockchainName}} {{/if}}
+                  {{else}}
+                    <label>Select Currency of Account</label>
+                    <select id="currency" name="currency"  class="form-control border-input" >
+                      {{#each currencies}}
+                            <option value="{{this.ID}}">
+                                {{this.Abbreviation}}
+                                &nbsp;&nbsp;
+                                ({{this.Symbol}})
+                                &nbsp;&nbsp;
+                                {{#if this.isBlockchainBased}}
+                                    {{this.title}}
+                                {{/if}}
+                          </option>
+                      {{/each}}
+                    </select>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Account Details</label>
+                      <textarea id="details" name="details" maxlength="3500" rows="5" placeholder="Enter Payment Details"
+                                class="form-control border-input" style="width:100%;">{{Record.paymentDetails}}</textarea>
+                    </div>
+                </div>
+            </div>
+						<hr />
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="switch mini-switch">
+                            <input class="input-sm" id="canWithdrawFunds" name="canWithdrawFunds" type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                        Allow Investors to withdraw funds from this channel
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col-md-10">
+                <div class="form-group">
+                  <h5>Convert and settle payments from this channel to another currency</h5>
+                  <label class="switch mini-switch">
+                      <input onchange="currencyConvert()" class="input-sm" id="chkCurrencyConversion" name="chkCurrencyConversion" type="checkbox">
+                      <span class="slider round"></span>
+                  </label>
+                  &nbsp;
+                  Auto-Convert Payment into Another Currency
+                  <br /><br />
+
+                  <div class="row"  style="display:none" id="divCurrencyConvert" >
+                    <div class="col-md-5">
+                        <label>Select Currency to Convert</label>
+                        <select id="currencyToConvert" name="currencyToConvert"  class="form-control border-input" >
+                          {{#each currencies}}
+                            <option value="{{this.ID}}">
+                                {{this.Abbreviation}}
+                                &nbsp;&nbsp;
+                                ({{this.Symbol}})
+                                &nbsp;&nbsp;
+                                {{#if this.isBlockchainBased}}
+                                    {{this.title}}
+                                {{/if}}
+                          </option>
+                          {{/each}}
+                        </select>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4">
+                      <label>Enter Exchange Rate</label>
+                      <input maxlength="36" type="text" id="conversionRate" name="conversionRate" class="form-control border-input" placeholder="Enter Conversion Rate" value="{{Record.conversionRate}}"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+						<hr />
+
+            {{#if instructionalEmailsForPaymentChannelDeposits}}
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="header">
+                      <div class="row">
+                        <div class="col-md-2">
+                          <label class="switch switch">
+                            <input onchange="changeInstructionalEmailVisibility()" class="input-sm" id="chkInstructionalDepositEmail"
+                                   name="sendInstructionalDepositEmails" type="checkbox">
+                            <span class="slider round"></span>
+                          </label>
+                        </div>
+                        <div class="col-md-10">
+                          <h4 class="title">Investor Deposit Alert Instruction Email Details</h4>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <label>When an investor submits their Deposit Alert to the admins for considerations then this text will be
+                            sent to them via an email.</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="content" id="depositInstructionContent">
+                      <div class="row">
+                        <div class="col-md-12">
+
+                          <div class="form-group">
+                            <label>Email Header</label>
+                            <input maxlength="300" type="text" id="depositInstructionEmailHeader"
+                                   name="depositInstructionEmailHeader" class="form-control border-input"
+                                   value="{{Record.depositInstructionEmailHeader}}"/>
+                          </div>
+                          <br/>
+                          <div class="form-group">
+                            <label>Email Contents</label>
+                            <textarea id="depositInstructionText" name="depositInstructionText" maxlength="3500" rows="5"
+                                      class="form-control border-input">{{Record.depositInstructionText}}</textarea>
+                          </div>
+                          <br/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr/>
+            {{/if}}
+            {{#if instructionalEmailsForPaymentChannelDeposits}}
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="header">
+                      <div class="row">
+                        <div class="col-md-2">
+                          <label class="switch switch">
+                            <input onchange="changeAdminEmailVisibility()" class="input-sm" id="chkAdminEmail"
+                                   name="sendAdminEmail" type="checkbox">
+                            <span class="slider round"></span>
+                          </label>
+                        </div>
+                        <div class="col-md-10">
+                          <h4 class="title">Admin Alert Email Details</h4>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <label>When an investor submits their Deposit Alert to the admins for considerations then this text will be
+                            sent to them via an email.</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="content" id="depositInstructionContentAdmin">
+                      <div class="row">
+                        <div class="col-md-12">
+
+                          <div class="form-group">
+                            <label>Admin Email Header</label>
+                            <input maxlength="300" type="text" id="adminEmailHeader"
+                                   name="adminEmailHeader" class="form-control border-input"
+                                   value="{{Record.adminEmailHeader}}"/>
+                          </div>
+                          <br/>
+                          <div class="form-group">
+                            <label>Admin Email Contents</label>
+                            <textarea id="adminEmailBody" name="adminEmailBody" maxlength="3500" rows="5"
+                                      class="form-control border-input">{{Record.adminEmailBody}}</textarea>
+                          </div>
+                          <br/>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr/>
+            {{/if}}
+            {{#if op}}
+                <input type="hidden" name="op" value="1" />
+                <input type="hidden" name="id" value="{{Record.ID}}" />
+            {{else}}
+                <input type="hidden" name="op" value="0" />
+            {{/if}}
+
+            <input type="hidden" name="paymentType" value="{{Record.paymentType}}" />
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+          </form>
+            <br />
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <button onclick="savecchannel()" class="btn btn-info btn-fill btn-wd">Save</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button onclick="cancelcall()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+				</div>
+
+			</div>
+
+      <hr />
+      {{#if op}}
+        <div class="row">
+          {{> PaymentChannelMode}}
+        </div>
+      {{/if}}
+		</div>
+	</div>
+
+{{> Footer}}

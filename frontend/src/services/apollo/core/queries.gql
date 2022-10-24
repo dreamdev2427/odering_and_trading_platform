@@ -1,0 +1,264 @@
+query me {
+  investorUser {
+    sto {
+      ID
+      title
+      details
+      isActive
+      logo
+      ethereumContractAddress
+      ethereumWhitelistAddress
+      disclaimer
+      stolink
+      stolinkfull
+      stoType
+      stoInvestorTypes
+      registrationText
+      stoInvestorTypesNotOnShareRegister
+      companyType
+      registrationSuccessText
+      fullDetails
+      exchangeOpenDate
+      propertyPicture
+      externalSystemID
+      projectAddress
+      legalDetails
+      picture
+      verifyInvestorComHostToken
+      parsedSettings {
+        investorCategories {
+          value
+          label
+        }
+        favicon
+        tabTitle
+      }
+      images {
+        ID
+        title
+        url
+      }
+      documents {
+        ID
+        title
+        url
+      }
+    }
+    investor {
+      ID
+      firstName
+      lastName
+      address
+      country
+      phone
+      cell
+      zip
+      town
+      state
+      email
+      passportNumber
+      nationalID
+      driversLicenseID
+      kinname
+      kinphone
+      kinemail
+      investorType
+      companyName
+      titleWithinCompany
+      powerToBindCompany
+      birthDate
+      isTwoFactorEnabled
+      language
+      middleName
+      socialSecurity
+      mailingAddress
+      faxNumber
+      maritalStatus
+      occupation
+      employerName
+      employerAddress
+      retirementAccount
+      trustOrBusinessEntity
+      dateIncorporation
+      taxID
+      govtID
+      isTax
+      secondaryContactName
+      secondaryContactPhone
+      secondaryContactEmail
+      primaryContactName
+      primaryContactPhone
+      primaryContactEmail
+      countryBusiness
+      countryCitizenship
+      taxCountry
+      userName
+      investmentLimitUpdateDate
+      allowedTotalInvestment
+      yearlyTotalInvestment
+      #      PrincipalCountryOfBusiness
+    }
+    investorSto {
+      ID
+      isAccountClosed
+      investorID
+      stoID
+      expectedShares
+      expectedInvestment
+      isKYC
+      applied
+      status
+      usufructuaryFirstName
+      usufructuaryLastName
+      usufructuaryAddress
+      usufructuaryCity
+      usufructuaryCountry
+      usufructuaryEmail
+      beneficialFirstName
+      beneficialLastName
+      beneficialAddress
+      beneficialCity
+      beneficialCountry
+      beneficialEmail
+      beneficialBirth
+      beneficialNationality
+      isUsufructuary
+      isActive
+      notes
+    }
+  }
+}
+
+query info($_id: Int!) {
+  publicSto(stoID: $_id) {
+    settings {
+      investorCategories {
+        value
+        label
+      }
+      favicon
+      tabTitle
+    }
+    stolinkfull
+    logo
+    registrationText
+    title
+    #    isBimountEnabled
+  }
+}
+
+query investorPublicKeys {
+  investorPublicKeys {
+    ID
+    title
+  }
+}
+
+query investorActiveSto($_id: Int) {
+  investorSto(stoID: $_id) {
+    ID
+    isAccountClosed
+    investorID
+    stoID
+    expectedShares
+    expectedInvestment
+    isKYC
+    applied
+    status
+    usufructuaryFirstName
+    usufructuaryLastName
+    usufructuaryAddress
+    usufructuaryCity
+    usufructuaryCountry
+    usufructuaryEmail
+    beneficialFirstName
+    beneficialLastName
+    beneficialAddress
+    beneficialCity
+    beneficialCountry
+    beneficialEmail
+    beneficialBirth
+    beneficialNationality
+    isUsufructuary
+    isActive
+    notes
+  }
+}
+
+query Countries {
+  countries
+}
+
+query investorAppData {
+  investorAppParameters {
+    IsMarketSpace
+    IsDocuSignActive
+    IsHelloSignActive
+    areSTOHostnamesEnabled
+    KycProvider
+    IsDarwSignatureActive
+    IsCheckMarkSignatureActive
+    web3Address
+    polygonWeb3Address
+    binanceWeb3Address
+    IsInternalWalletStoSpecific
+    IsInternalWalletGlobal
+    IsInternalWalletDisabled
+    poweredByLabel
+    isSSOModeEnabled
+    clientKYC
+    SSORedirectFrontEnd
+    KycRequirementStep
+    IsMoonpayEnabled
+    is2FAEnabledByDefault
+    doAutomaticBlockchainTransactionChecks
+    doAutomaticPurchase
+    isInvoicingEnabled
+    atomicSwapContractAddress
+    isAccreditationEnabled
+    AccreditationProvider
+    AccreddRedirectLink
+    isCloudStorageEnabled
+    is2FAForcedForAll
+    isPropertySortingEnabled
+    isWalletManagementModuleEnabled
+    isMyPortfolioModuleEnabled
+    isActiveOfferingsModuleEnabled
+    isNewsModuleEnabled
+    isContractsModuleEnabled
+    isCorporateActionsModuleEnabled
+    isTradingModuleEnabled
+    isChatModuleEnabled
+    isSupportModuleEnabled
+    isInvestorOwnershipModuleEnabled
+    isSettingsModuleEnabled
+    isTellAFriendModuleEnabled
+    isAccreditationModuleEnabled
+    isContactTheSponsorFontSwitchEnabled
+    isSellBackEnabled
+    isBankDetailsSwitchEnabled
+    isBlockchainAddressSwitchEnabled
+    toggleThemeEditor
+    accreditationRequirementStep
+    accreditationRequiringCountries
+    skipDocumentSignScreen
+    allowInvestorsToRegister
+    hideContractsTilPostPurchase
+    isInvestmentReturnCalculationEnabled
+    isDriversLicenseEnabled
+    isInternalTokenizedPurchaseEnabled
+    termsAndConditionsConfig {
+      link
+      text
+    }
+    isAllDocumentsSignedPopUpEnabled
+    isMergingPaymentsSharesRequestsEnabled
+  }
+}
+
+query getInvestorTypes {
+  getInvestorTypes {
+    ID
+    type
+  }
+}

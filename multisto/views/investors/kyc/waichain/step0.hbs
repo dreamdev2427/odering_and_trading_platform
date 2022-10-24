@@ -1,0 +1,574 @@
+<script language="javascript">
+    var CurrentCountry = "{{InvestorRecord.country}}";
+    var PrincipalCountryOfBusiness = "{{InvestorRecord.PrincipalCountryOfBusiness}}";
+    var TrustOrBusinessEntity = "{{InvestorRecord.TrustOrBusinessEntity}}";
+    var investorType =  "{{InvestorRecord.investorType}}";
+    
+    $(document).ready(function() {        
+
+        if(CurrentCountry !== '') {
+            var element = document.getElementById("country");
+            element.value = CurrentCountry;
+        }
+
+        if(PrincipalCountryOfBusiness != "") {
+            var element = document.getElementById("PrincipalCountryOfBusiness");
+            element.value = PrincipalCountryOfBusiness;
+        }
+        
+        var element = document.getElementById("TrustOrBusinessEntity");
+        if(TrustOrBusinessEntity != "" && TrustOrBusinessEntity != "0" ) {
+            element.value = TrustOrBusinessEntity;
+        } else
+            element.value = "1";
+
+        $('#notes').keypress(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+            }
+        });        
+
+        $(".mainScreenSectionsOfThePage1122").show();
+        
+    })
+    
+    function nextpage(){
+            window.location.href = "/wizard?step=1";
+            return false;        
+    }
+      
+    function submitForm() {
+
+        var errMessages = "";
+
+        if(investorType == 0)  {
+                // individual investor
+
+                if(document.getElementById("FirstName").value == "")
+                     errMessages = errMessages + "<li>First Name required</li>";
+                if(document.getElementById("LastName").value == "")
+                     errMessages = errMessages + "<li>Last Name required</li>";
+                if(document.getElementById("PassportNumber").value == "" && document.getElementById("NationalID").value == "")
+                    errMessages = errMessages + "<li>Both Passport Number and National ID cannot be empty. Please either enter Passport Number or National ID</li>";
+                if(document.getElementById("dob").value == "")
+                    errMessages = errMessages +  "<li>Date of birth required</li>";
+                if(document.getElementById("phone").value == "")
+                     errMessages = errMessages + "<li>Phone required</li>";              
+            
+            
+                if(document.getElementById("Address").value == "")
+                     errMessages = errMessages + "<li>Address is required</li>";      
+                if(document.getElementById("town").value == "")
+                     errMessages = errMessages + "<li>City/Town is required</li>";
+                if(document.getElementById("zip").value == "")
+                     errMessages = errMessages + "<li>Zip is required</li>";            
+                if(document.getElementById("state").value == "")
+                     errMessages = errMessages + "<li>State is required</li>";                        
+
+        } else {
+                //company investor
+            
+                    if(document.getElementById("companyName").value == "")
+                        errMessages = errMessages + "<li>Company name required</li>";                
+            
+                if(document.getElementById("DateIncorporation").value == "")
+                     errMessages = errMessages + "<li>Date Incorporation is Required</li>";
+            
+                if(document.getElementById("Address").value == "")
+                     errMessages = errMessages + "<li>Address is required</li>";
+                if(document.getElementById("zip").value == "")
+                     errMessages = errMessages + "<li>Zip is required</li>";        
+                if(document.getElementById("town").value == "")
+                     errMessages = errMessages + "<li>City/Town is required</li>";
+                if(document.getElementById("state").value == "")
+                     errMessages = errMessages + "<li>State is required</li>";
+                if(document.getElementById("GovtIDNo").value == "")
+                    errMessages = errMessages + "<li>Government issued Identification Number is required</li>";
+                if(document.getElementById("NamePrimaryContact").value == "")
+                     errMessages = errMessages + "<li>Name of Primary Contact is required</li>";
+                if(document.getElementById("PhonePrimaryContact").value == "")
+                     errMessages = errMessages + "<li>Phone of Primary Contact is required</li>";
+                if(document.getElementById("EmailPrimaryContact").value == "")
+                     errMessages = errMessages + "<li>Email of Primary Contact is required</li>";            
+                
+                
+                
+        }
+
+
+
+        if(errMessages != ""){ 
+            $("#ErrorMessage").html(errMessages);
+            $('html,body').scrollTop(100);
+        }
+        else {
+            
+            
+            if(investorType == 1) {
+                    document.getElementById("DateIncorporation").value = commonGetMySQLDateFormat(document.getElementById("DateIncorporation").value);
+            } else  if(investorType == 0) { 
+                    document.getElementById("dob").value = commonGetMySQLDateFormat(document.getElementById("dob").value);
+            }
+            
+                                           
+            document.getElementById("investorForm").submit();
+        }
+    }
+
+
+</script>
+
+<style>
+    .required {
+        color:red; 
+        font-size:10px;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                        {{#if InvestorRecord.investorType}}
+                                Company Information
+                        {{else}}
+                            {{{__ "Personal Information"}}}
+                        {{/if}}
+                </h4>
+
+                <b><ul><span style="color:red;" id="ErrorMessage">{{message}}</span></ul></b>
+
+            </div>
+            <div class="content">
+                Waichain makes every effort to protect personal information we collect.  For more details, please see our privacy policy.
+                <br /><br />
+                
+                    <form id="investorForm" name="investorForm" action="wizardPost" method="post">    
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{{__ "My Investor ID"}}}</label> &nbsp;&nbsp;&nbsp; {{InvestorRecord.ID}}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{{__ "I am registered as a"}}}</label> &nbsp;&nbsp;&nbsp; {{investorTypeText}}
+                                </div>
+                            </div>                                        
+                        </div>
+                        
+                            {{#if InvestorRecord.investorType}}
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                            <label>Do you want to register as a trust or a business entity (a corporation, partnership, or LLC) ? <span class="required"> &nbsp;&nbsp; (Required) </span>  </label>
+                                    </div>
+                                </div>
+                        
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                                <select class="form-control border-input" id="TrustOrBusinessEntity" name="TrustOrBusinessEntity">
+                                                        <option value="1">Corporation</option>    
+                                                        <option value="2">Trust</option>    
+                                                        <option value="3">Limited Partnership, LLC, etc.</option>    
+                                                        <option value="4">U.S.-Based Employee Benefit Plan under ERISA</option>    
+                                                        <option value="5">Other</option>    
+                                                </select>
+                                        </div>
+                                    </div>
+                                </div>                        
+                        
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Entity name <span class="required"> &nbsp;&nbsp; (Required) </span>  &nbsp;&nbsp;&nbsp;</label>
+                                            <input type="text" maxLength="67" id="companyName" name="companyName" class="form-control border-input" placeholder="Company Name" value="{{InvestorRecord.CompanyName}}">
+                                        </div>
+                                    </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label> Date of Incorporation/Formation <span class="required"> &nbsp;&nbsp; (Required) </span>  </label>
+                                                    <input type="text" maxLength="120" id="DateIncorporation" name="DateIncorporation" class="form-control border-input datepicker-here" data-language='en' value="{{InvestorRecord.DateIncorporation}}"  data-date-format="MM dd yyyy" type=text autocomplete="off" placeholder="Enter Date of Birth" value=""  onkeydown="return false;"  >
+                                            </div>
+                                        </div>                                      
+                                </div>
+
+                                <div class="row">                                
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Country the organization is resident for tax ?   </label>
+                                                        <select class="form-control border-input" id="country" name="country">
+                                                                {{#if ListCountry}}
+                                                                    <option value="{{ListCountry}}">{{ListCountry}}</option>
+                                                                {{/if}}
+
+                                                                {{#each countryList}}
+                                                                        <option value="{{this.[0]}}">  {{this.[1]}}  </option>
+                                                                {{/each}}    
+                                                        </select>  
+                                        </div>
+                                    </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Tax Identification Number</label>
+                                                <input type="text" maxLength="45" id="TaxIDNo" name="TaxIDNo" class="form-control border-input" placeholder="Tax Identification Number" value="{{InvestorRecord.TaxIDNo}}">
+                                            </div>
+                                        </div>                                    
+                                </div>
+
+                        
+                                <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Government identification number <span class="required">&nbsp;&nbsp; (Required) </span></label>
+                                                <input type="text"  maxlength="60" id="GovtIDNo" name="GovtIDNo" class="form-control border-input" placeholder="Government-issued Identification Number" value="{{InvestorRecord.GovtIDNo}}">
+                                            </div>
+                                        </div>                                    
+                                        
+                                        <div class="col-md-6">
+                                                <label> Government identification number is your tax identification number</label>
+                                                <br />
+                                                <input type="checkbox" id="GovtIDNoIsTaxNo" name="GovtIDNoIsTaxNo"  style="height:20px; width:20px;"  
+                                                    {{#if InvestorRecord.GovtIDNoIsTaxNo}}
+                                                         checked="checked"
+                                                    {{/if}}
+                                                >
+                                        </div>
+                                </div>
+                        
+                                <hr />
+                                <span style="font-size:20px;">Principal Place of Business</span>
+                                <br />
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label> {{{__ "Street Address"}}} <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                            <input type="text" maxLength="150" id="Address"  name="Address" class="form-control border-input" placeholder="Home Address" value="{{InvestorRecord.Address}}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{{__ "Zip"}}} <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                            <input type="text" maxLength="28" id="zip" name="zip" class="form-control border-input" placeholder="Zip" value="{{InvestorRecord.zip}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{{__ "City"}}} <span class="required"> &nbsp;&nbsp; (Required) </span>  </label>
+                                            <input type="text" maxLength="50" id="town" name="town" class="form-control border-input" placeholder="City/Town" value="{{InvestorRecord.town}}">
+                                        </div>
+                                    </div>                                        
+                                </div>                                    
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{{__ "State"}}}  <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                            <input type="text" maxLength="50" id="state" name="state" class="form-control border-input" placeholder="State" value="{{InvestorRecord.state}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>{{{__ "Country"}}} <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+
+                                                    <select class="form-control border-input" id="PrincipalCountryOfBusiness" name="PrincipalCountryOfBusiness">
+                                                                {{#if ListCountry}}
+                                                                    <option value="{{ListCountry}}">{{ListCountry}}</option>
+                                                                {{/if}}
+
+                                                                {{#each countryList}}
+                                                                        <option value="{{this.[0]}}">  {{this.[1]}}  </option>
+                                                                {{/each}}    
+                                                    </select>          
+                                        </div>
+                                    </div> 
+                                </div>                                    
+                        
+
+                                <hr />
+                                <span style="font-size:20px;">Primary Contact</span>
+                                <br />
+                                <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label> Name <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                                <input type="text" maxLength="60" id="NamePrimaryContact" name="NamePrimaryContact" class="form-control border-input" placeholder="Name" value="{{InvestorRecord.NamePrimaryContact}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Phone <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                                <input type="text" maxLength="60" id="PhonePrimaryContact" name="PhonePrimaryContact" class="form-control border-input" placeholder="Phone" value="{{InvestorRecord.PhonePrimaryContact}}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label > Email <span class="required"> &nbsp;&nbsp; (Required) </span>  </label>
+                                                <input type="text" maxLength="90" id="EmailPrimaryContact" name="EmailPrimaryContact" class="form-control border-input" placeholder="Email" value="{{InvestorRecord.EmailPrimaryContact}}">
+                                            </div>
+                                        </div>
+                                </div>
+                        
+                                <hr />
+                                <span style="font-size:20px;">Secondary Contact</span>
+                                <br />
+                                <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label> Name </label>
+                                                <input type="text" maxLength="60" id="NameSecondaryContact" name="NameSecondaryContact" class="form-control border-input" placeholder="Name" value="{{InvestorRecord.NameSecondaryContact}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Phone</label>
+                                                <input type="text" maxLength="60" id="PhoneSecondaryContact" name="PhoneSecondaryContact" class="form-control border-input" placeholder="Phone" value="{{InvestorRecord.PhoneSecondaryContact}}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label> Email </label>
+                                                <input type="text" maxLength="90" id="EmailSecondaryContact" name="EmailSecondaryContact" class="form-control border-input" placeholder="Email" value="{{InvestorRecord.EmailSecondaryContact}}">
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                        
+                        
+                        
+                            {{else}}
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{{__ "First-Name"}}}  <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                                <input type="text" maxLength="60" id="FirstName" name="FirstName" class="form-control border-input" placeholder="First Name" value="{{InvestorRecord.FirstName}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Middle Name </label>
+                                                <input type="text" maxLength="60" id="MiddleName" name="MiddleName" class="form-control border-input" placeholder="Middle Name" value="{{InvestorRecord.MiddleName}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{{__ "Last-Name"}}} <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                                <input type="text" maxLength="60" id="LastName" name="LastName" class="form-control border-input" placeholder="Last Name" value="{{InvestorRecord.LastName}}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>{{{__ "Passport Number"}}} &nbsp;&nbsp;&nbsp;  <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                                <input type="text" maxLength="45" id="PassportNumber" name="PassportNumber" class="form-control border-input" placeholder="Passport Number" value="{{InvestorRecord.PassportNumber}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>{{{__ "National ID"}}} / Driver’s License *</label>
+                                                <input type="text" maxLength="60" id="NationalID" name="NationalID" class="form-control border-input" placeholder="National ID Number" value="{{InvestorRecord.NationalID}}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                         <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Marital Status</label>
+                                                        <select class="form-control border-input" id="MaritalStatus" name="MaritalStatus">
+                                                                <option value="1">Single</option>    
+                                                                <option value="2">Married</option>    
+                                                        </select>
+                                            </div>
+                                        </div>    
+                                        <div class="col-md-3"></div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>{{{__ "Date of Birth"}}} <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                                    <input type="text" maxLength="120" id="dob" name="dob" class="form-control border-input datepicker-here" data-language='en' value="{{InvestorRecord.DOB}}"  data-date-format="MM dd yyyy" type=text autocomplete="off" placeholder="Enter Date of Birth" value=""  onkeydown="return false;"  >
+                                            </div>
+                                        </div>                                           
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{{__ "Phone Number"}}} <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                                <input type="text" maxLength="30" id="phone" name="phone" class="form-control border-input" placeholder="Phone Number" value="{{InvestorRecord.phone}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Telegram Handle</label>
+                                                <input type="text" maxLength="30" id="FaxNumber" name="FaxNumber" class="form-control border-input" placeholder="Telegram Handle" value="{{InvestorRecord.FaxNumber}}">
+                                            </div>
+                                        </div>
+                                    </div>                                    
+
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Social Security Number (US citizens and residents only)</label>
+                                                <input type="text" maxLength="45" id="SocialSecurity" name="SocialSecurity" class="form-control border-input" placeholder="Social Security Number" value="{{InvestorRecord.SocialSecurity}}">
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="row">
+                                         <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Will the investment be made through your individual retirement account ?                        </label>
+                                            &nbsp;&nbsp;
+                                            <input type="checkbox" maxLength="60" id="RetirementAccount" name="RetirementAccount"  style="height:20px; width:20px;"  
+                                                {{#if InvestorRecord.RetirementAccount}}
+                                                     checked="checked"
+                                                {{/if}}
+                                            >
+                                                        
+                                            </div>
+                                        </div>                                           
+                                    </div>
+
+                                    <hr />
+                                    <span style="font-size:20px;">Occupation</span>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Occupation</label>
+                                                <input type="text" maxLength="30" id="Occupation" name="Occupation" class="form-control border-input" placeholder="Occupation" value="{{InvestorRecord.Occupation}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Employer Name</label>
+                                                <input type="text" maxLength="90" id="EmployerName" name="EmployerName" class="form-control border-input" placeholder="Employer Name" value="{{InvestorRecord.EmployerName}}">
+                                            </div>
+                                        </div>
+                                    </div>                                    
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Employer Address</label>
+                                                <input type="text" maxLength="150" id="EmployerAddress" name="EmployerAddress" class="form-control border-input" placeholder="Occupation" value="{{InvestorRecord.EmployerAddress}}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <hr />
+                                    <span style="font-size:20px;">Residence Address</span>
+                                    <br />
+                        
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label> {{{__ "Street Address"}}}  <span class="required"> &nbsp;&nbsp; (Required) </span></label>
+                                                <input type="text" maxLength="150" id="Address"  name="Address" class="form-control border-input" placeholder="Home Address" value="{{InvestorRecord.Address}}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>{{{__ "Zip"}}}  <span class="required"> &nbsp;&nbsp; (Required) </span></label>
+                                                <input type="text" maxLength="28" id="zip"  name="zip" class="form-control border-input" placeholder="Zip" value="{{InvestorRecord.zip}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>{{{__ "City"}}} <span class="required"> &nbsp;&nbsp; (Required) </span></label>
+                                                <input type="text" maxLength="50" id="town" name="town" class="form-control border-input" placeholder="City/Town" value="{{InvestorRecord.town}}">
+                                            </div>
+                                        </div>                                        
+                                    </div>                                    
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>{{{__ "State"}}} <span class="required"> &nbsp;&nbsp; (Required) </span> </label>
+                                                <input type="text" maxLength="50" id="state" name="state" class="form-control border-input" placeholder="State" value="{{InvestorRecord.state}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>{{{__ "Country"}}} &nbsp;&nbsp; ( Nationality ) <span class="required"> &nbsp;&nbsp; (Required) </span></label>
+
+                                                        <select class="form-control border-input" id="country" name="country">
+                                                                {{#if ListCountry}}
+                                                                    <option value="{{ListCountry}}">{{ListCountry}}</option>
+                                                                {{/if}}
+
+                                                                {{#each countryList}}
+                                                                        <option value="{{this.[0]}}">  {{this.[1]}}  </option>
+                                                                {{/each}}                                                            
+                                                        </select>
+                                            </div>
+                                        </div>                                        
+                                    </div>                                    
+
+                        
+                        
+                                    <hr />
+                                    <span style="font-size:20px;">Mailing Address</span>
+                                    <br /> <label>( If different than residence )</label>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <input type="text" maxLength="150" id="MailingAddress" name="MailingAddress" class="form-control border-input" placeholder="Mailing Address" value="{{InvestorRecord.MailingAddress}}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                                
+                            {{/if}}
+                        
+                        
+                        
+                            <hr />                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd"> 
+                                        &nbsp;&nbsp;&nbsp;&nbsp; {{{__ "Save and Next Page"}}} > &nbsp;&nbsp;&nbsp;&nbsp;</button>
+                                        
+                                        &nbsp;&nbsp;&nbsp;
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                            <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                            <input type="hidden" id="investorType" name="investorType" value="{{InvestorRecord.investorType}}">
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                            <div class="clearfix"></div>
+                    </form>
+
+                <div class="footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

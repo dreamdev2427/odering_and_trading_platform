@@ -1,0 +1,319 @@
+{{> Header}}
+
+<script language="javascript">
+    var currentIsUsufructuary  = {{investorRec.isUsufructuary}};
+
+    $(document).ready(function() {
+        $("#ownership").addClass('active');        
+        setUsefluctAreaToDefaultValue();
+    })
+    function checkNextOfKinInfo() {
+        if(document.getElementById("kinname").value != "") {
+            if(document.getElementById("kinname").value.length < 2) {
+                showModelGeneralOKDialogBox('{{{__ "Next of Kin Name should be atleast 2 character long"}}}');
+                return;                
+            }
+        }            
+        if(document.getElementById("kinphone").value != "") {
+            if(document.getElementById("kinphone").value.length < 5) {
+                showModelGeneralOKDialogBox('{{{__ "Next of Kin Phone should be atleast 5 character long"}}}');
+                return;                
+            }
+        }            
+        if(document.getElementById("kinemail").value != "") {
+            if(!checkemailformat( document.getElementById("kinemail").value )) {
+                showModelGeneralOKDialogBox('{{{__ "Next of Kin Email address is not correct"}}}');
+                return;                
+            }
+        }            
+
+        document.getElementById("changeNextOfKin").submit();
+    }
+    function sendUsufructuariesInfo() {
+        if(document.getElementById('userUnFlucture0').checked == true) {
+            document.getElementById("UsufructuariesFirstName").value = "";
+            document.getElementById("UsufructuariesLastName").value = "";  
+            document.getElementById("UsufructuariesAddress").value = ""; 
+            document.getElementById("UsufructuariesCity").value = ""; 
+            document.getElementById("UsufructuariesCountry").value = ""; 
+            document.getElementById("UsufructuariesEmail").value = "";
+        }
+        
+        document.getElementById("changeUsufructuaries").submit();
+    }
+    function sendBeneificalInfo() {
+        if(document.getElementById("BeneificalDOB").value != "") {
+            document.getElementById("BeneificalDOB").value = commonGetMySQLDateFormat(document.getElementById("BeneificalDOB").value);
+        }
+        
+        document.getElementById("changebeneficial").submit();
+    }
+
+    function editNextOfKinInfo() {
+        $(".nextOfKinSection1").show();
+        $(".nextOfKinSection2").hide();
+    }
+    function cancelNextOfKinSection() {
+        $(".nextOfKinSection2").show();
+        $(".nextOfKinSection1").hide();        
+    }
+    function cancelUsFucturSection() {
+        $(".usfructSection1").hide();
+        $(".usfructSection2").show();
+        
+        setUsefluctAreaToDefaultValue();
+    }
+    function editUsFucturSection() {
+        $(".usfructSection1").show();
+        $(".usfructSection2").hide();
+    }
+    function cancelBeneficalSection() {
+        $(".beneficalSection2").show();
+        $(".beneficalSection1").hide();
+    }
+    function editBeneficalSection() {
+        $(".beneficalSection1").show();
+        $(".beneficalSection2").hide();
+    }
+    function changeUserfluctSection() {
+        if(document.getElementById('userUnFlucture0').checked == true) {
+            $("#usfructSectionSPan").hide();
+        }
+        
+        if(document.getElementById('userUnFlucture1').checked == true) {
+            $("#usfructSectionSPan").show();
+        }
+    }
+    function setUsefluctAreaToDefaultValue() {
+        if(currentIsUsufructuary == 0) {
+            $("#usfructSectionSPan").hide();
+            document.getElementById('userUnFlucture0').checked = true;
+            document.getElementById('userUnFlucture1').checked = false;
+        } else {
+            $("#usfructSectionSPan").show();
+            document.getElementById('userUnFlucture0').checked = false;
+            document.getElementById('userUnFlucture1').checked = true;
+        }        
+    }
+
+</script>
+
+{{> HeaderInner}}
+
+    <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b> 
+
+{{> stolistselection}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/user.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Usufructuary"}}}</h4>
+                    <label>{{{__ "who-is-legal-owner-of-shares"}}} </label>                    
+                </div>
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{{__ "Whether-you-are-the-legal-owner-or-usufructuary"}}}
+                        </div>
+                    </div>
+                    
+                    <form id="changeUsufructuaries" action="/changeUsufructuaries" method="post">
+
+                    <br /> 
+                    <span class="usfructSection1" style="display:none; font-size:18px;">
+                        <input type="radio" name="userUnFlucture" id="userUnFlucture0" value="0" onchange="changeUserfluctSection()" /> &nbsp; <b>{{{__ "I-am-the-legal-owner-of-the-shares"}}}</b>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" name="userUnFlucture" id="userUnFlucture1" value="1" onchange="changeUserfluctSection()" /> &nbsp; <b>{{{__ "I-am-the-usufructuary-of-the-shares"}}}</b>
+                    </span>    
+                    
+                    <span class="usfructSection2" style="color:green; font-size:18px;">
+                        <img src="/img/graydot.png" width="20px;" > &nbsp;&nbsp;
+                        {{#if investorRec.isUsufructuary}}
+                            {{{__ "I-am-the-usufructuary-of-the-shares"}}}
+                        {{else}}
+                            {{{__ "I-am-the-legal-owner-of-the-shares"}}}
+                        {{/if}}
+                    </span>
+
+                    <br /><br />
+
+                    <span id="usfructSectionSPan" style="display:none;" >    
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>{{{__ "First-Name"}}}</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="textbox" maxlength="70" style="display:none" class="form-control border-input usfructSection1" id="UsufructuariesFirstName" name="UsufructuariesFirstName" placeholder="Enter Legal Owner’s First Name" value="{{investorRec.UsufructuariesFirstName}}">
+                                <span class="usfructSection2">{{investorRec.UsufructuariesFirstName}}</span>
+                            </div>
+
+                            <div class="col-md-2" style="text-align: right;">
+                                <label>{{{__ "Last-Name"}}}</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="textbox" maxlength="70" style="display:none"  class="form-control border-input usfructSection1" id="UsufructuariesLastName" name="UsufructuariesLastName" placeholder="Enter Legal Owner’s Last Name" value="{{investorRec.UsufructuariesLastName}}">
+                                <span class="usfructSection2">{{investorRec.UsufructuariesLastName}}</span>
+                            </div>                        
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>{{{__ "Address"}}}</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="textbox" maxlength="90" style="display:none"  class="form-control border-input usfructSection1" id="UsufructuariesAddress" name="UsufructuariesAddress" placeholder="Enter Legal Owner’s Address"  value="{{investorRec.UsufructuariesAddress}}">
+                                <span class="usfructSection2">{{investorRec.UsufructuariesAddress}}</span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>{{{__ "City"}}}</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="textbox" maxlength="70" style="display:none"  class="form-control border-input usfructSection1" id="UsufructuariesCity" name="UsufructuariesCity" placeholder="Enter Legal Owner’s City" value="{{investorRec.UsufructuariesCity}}">
+                                <span class="usfructSection2">{{investorRec.UsufructuariesCity}}</span>
+                            </div>
+
+                            <div class="col-md-2"  style="text-align: right;">
+                                <label>{{{__ "Country"}}}</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="textbox" maxlength="70" style="display:none"  class="form-control border-input usfructSection1" id="UsufructuariesCountry" name="UsufructuariesCountry" placeholder="Enter Legal Owner’s Country" value="{{investorRec.UsufructuariesCountry}}">
+                                <span class="usfructSection2">{{investorRec.UsufructuariesCountry}}</span>
+                            </div>                        
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>{{{__ "Email"}}}</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="textbox" maxlength="70" style="display:none"  class="form-control border-input usfructSection1" id="UsufructuariesEmail" name="UsufructuariesEmail" placeholder="Enter Legal Owner’s Email Address"  value="{{investorRec.UsufructuariesEmail}}">
+                                <span class="usfructSection2">{{investorRec.UsufructuariesEmail}}</span>
+                            </div>
+                        </div>
+                    </span>
+                        
+                    <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" style="display:none" onclick="sendUsufructuariesInfo()" class="btn btn-info btn-fill usfructSection1">{{{__ "Save"}}}</button>
+                                 &nbsp;&nbsp; 
+                                <button type="button" style="display:none" onclick="cancelUsFucturSection()" class="btn btn-info btn-fill usfructSection1">{{{__ "Cancel"}}}</button>                                                                           
+
+                                <button type="button" onclick="editUsFucturSection()" class="btn btn-info btn-fill usfructSection2">{{{__ "Edit"}}}</button>
+                            </div>
+                        </div>
+                        
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/user.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Beneficial-Owner"}}}</h4>
+                    <label>{{{__ "Provide-information-on-the-beneficial-owner-of-your-shares"}}}</label>
+                </div>
+                <div class="content">
+
+                    <form id="changebeneficial" action="/changeBeneifical" method="post">
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>{{{__ "First-Name"}}}</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="textbox" maxlength="70" class="form-control border-input beneficalSection1" id="BeneificalFirstName" name="BeneificalFirstName" style="display:none"  placeholder="Enter Beneifical's Full Name" value="{{investorRec.BeneificalFirstName}}">
+                            <span class="beneficalSection2">{{investorRec.BeneificalFirstName}}</span>
+                        </div>
+
+                        <div class="col-md-2" style="text-align: right;">
+                            <label>{{{__ "Last-Name"}}}</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="textbox" maxlength="70" class="form-control border-input beneficalSection1" id="BeneificalLastName" name="BeneificalLastName" style="display:none"  placeholder="Enter Beneifical's Full Name" value="{{investorRec.BeneificalLastName}}">
+                            <span class="beneficalSection2">{{investorRec.BeneificalLastName}}</span>
+                        </div>                        
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>{{{__ "Address"}}}</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="textbox" maxlength="90" class="form-control border-input beneficalSection1" id="BeneificalAddress" name="BeneificalAddress" style="display:none"  placeholder="Enter Beneifical's Address"  value="{{investorRec.BeneificalAddress}}">
+                            <span class="beneficalSection2">{{investorRec.BeneificalAddress}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>{{{__ "City"}}}</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="textbox" maxlength="70" class="form-control border-input beneficalSection1" id="BeneificalCity" name="BeneificalCity" style="display:none"  placeholder="Enter Beneifical's City" value="{{investorRec.BeneificalCity}}">
+                            <span class="beneficalSection2">{{investorRec.BeneificalCity}}</span>
+                        </div>
+
+                        <div class="col-md-2"  style="text-align: right;">
+                            <label>{{{__ "Country"}}}</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="textbox" maxlength="70" class="form-control border-input beneficalSection1" id="BeneificalCountry" style="display:none"  name="BeneificalCountry" placeholder="Enter Beneifical's Country" value="{{investorRec.BeneificalCountry}}">
+                            <span class="beneficalSection2">{{investorRec.BeneificalCountry}}</span>
+                        </div>                        
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>{{{__ "Email"}}}</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="textbox" maxlength="70" class="form-control border-input beneficalSection1" id="BeneificalEmail" name="BeneificalEmail" style="display:none"  placeholder="Type Beneifical's Email"  value="{{investorRec.BeneificalEmail}}">
+                            <span class="beneficalSection2">{{investorRec.BeneificalEmail}}</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>{{{__ "Date-of-Birth"}}}</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="textbox" onkeydown="return false;" class="form-control border-input datepicker-here beneficalSection1" style="display:none"  id="BeneificalDOB" name="BeneificalDOB" placeholder="Enter Beneifical's DOB" value="{{investorRec.BeneificalDOBFormat}}" type=text data-language="en"   data-date-format="MM dd yyyy" autocomplete="off">
+                            <span class="beneficalSection2">{{investorRec.BeneificalDOBFormat}}</span>
+                        </div>
+
+                        <div class="col-md-2"  style="text-align: right;">
+                            <label>{{{__ "Nationality"}}}</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="textbox" style="display:none"  maxlength="70" class="form-control border-input beneficalSection1" id="BeneificalNationality" name="BeneificalNationality" placeholder="Enter Beneifical's Nationality" value="{{investorRec.BeneificalNationality}}">
+                            <span class="beneficalSection2">{{investorRec.BeneificalNationality}}</span>
+                        </div>                        
+                    </div>
+                        
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" style="display:none"  onclick="sendBeneificalInfo()" class="btn btn-info btn-fill beneficalSection1">{{{__ "Save"}}}</button> &nbsp;&nbsp; 
+                            <button type="button" style="display:none" onclick="cancelBeneficalSection()" class="btn btn-info btn-fill beneficalSection1">{{{__ "Cancel"}}}</button>                                                                           
+                            
+                            <button type="button" onclick="editBeneficalSection()" class="btn btn-info btn-fill beneficalSection2">{{{__ "Edit"}}}</button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

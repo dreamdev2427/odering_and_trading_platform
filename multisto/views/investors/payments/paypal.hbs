@@ -1,0 +1,93 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function() {
+
+		})
+
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">
+                         <img src="/img/email.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;
+                    </h4>
+                </div>
+
+                <div class="content">
+
+                            <div class="row"> 
+                                  <div class="col-md-3"> 
+                                  </div> 
+                                  <div class="col-md-6"> 
+                                        <div class = "main">
+                                            <div class="row padder"> 
+                                                <div class="col-md-3 cover"> 
+                                                    <img src="cover.png" class="img img-responsive" alt="book" > </img> 
+                                                </div> 
+                                                <div class="col-md-9"> 
+                                                    <h2> An introduction to mean stack </h2> 
+                                                    <hr> 
+                                                    <b> Description: </b> Start learning mean stack today with this book that is optimized 
+                                                    for experiential learning. 
+                                                    <hr> 
+                                                    <h2> Only for $$ 39.00 </h2> 
+                                                    <hr> 
+                                                    <a href="/buy"> 
+                                                    <a href="sendPayPalPayment" class="btn btn-warning btn-lg"> Buy now for $39 </a> 
+                                                    </a> 
+                                                </div> 
+                                            </div> 
+
+                                         </div>
+                                  </div> 
+                                  <div class="col-md-2"> 
+                                          <script src="https://www.paypal.com/sdk/js?client-id=ATle5_WKgbZQEWtIXJem6tZEuhJGbjlfci4edfz4kCDUTItaEC7TfxutPmSbelaKxhUccYhQRTC5hQ4o"></script>
+                                      
+                                                <div id="paypal-button-container"></div>
+                                      
+                                                    <script>
+                                                      paypal.Buttons({
+                                                        createOrder: function(data, actions) {
+                                                          return actions.order.create({
+                                                            purchase_units: [{
+                                                              amount: {
+                                                                value: '1'
+                                                              }
+                                                            }]
+                                                          });
+                                                        },
+                                                        onApprove: function(data, actions) {
+                                                          return actions.order.capture().then(function(details) {
+                                                            alert('Transaction completed by ' + details.payer.name.given_name);
+                                                            // Call your server to save the transaction
+                                                            return fetch('/paypal-transaction-complete', {
+                                                              method: 'post',
+                                                              headers: {
+                                                                'content-type': 'application/json'
+                                                              },
+                                                              body: JSON.stringify({
+                                                                orderID: data.orderID
+                                                              })
+                                                            });
+                                                          });
+                                                        }
+                                                      }).render('#paypal-button-container');
+                                                    </script>                                   
+                                  </div>                     
+                            </div>
+
+                    <br /><br />
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

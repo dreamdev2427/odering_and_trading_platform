@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+    <link rel="shortcut icon" href="img/site/{{Data.favicon}}" type="image/x-icon" />
+
+	<title>{{Data.SiteParameter_PageTitle}}</title>
+
+
+
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>-->
+    <script src="/assets/js/jquery.min.js" type="text/javascript"></script>
+
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+    <link href="/assets/css/themify-icons.css" rel="stylesheet">
+
+    <script src="/libs/common.js"></script>
+
+    <!--   Core JS Files   -->
+	<script src="/assets/js/bootstrap.min.js" type="text/javascript"></script>
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="/libs/validations.js"></script>
+    <link href="/css/style.css" rel="stylesheet">
+
+
+    {{{Data.CustomPlatformCSSStyles}}}
+
+
+    <script src="/assets/js/paper-dashboard.js"></script>
+    <link href="/assets/css/paper-dashboard.css" rel="stylesheet"/>
+
+    <!-- airdatepicker -->
+    <script src="/libs/airdatepicker.js"></script>
+    <script language="javascript">
+        (function ($) { $.fn.datepicker.language['en'] = {
+            days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+            months: ['January','February','March','April','May','June', 'July','August','September','October','November','December'],
+            monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            today: 'Today',
+            clear: 'Clear',
+            dateFormat: 'mm/dd/yyyy',
+            timeFormat: 'hh:ii aa',
+            firstDay: 0
+        }; })(jQuery);
+    </script>
+	<link href="/css/airdatepicker.css" rel="stylesheet">
+
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css">    -->
+    <script src="/libs/chart.js"></script>
+    <link href="/css/chart.css" rel="stylesheet">
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.css"> -->
+    <script src="/libs/summernotes.js"></script>
+    <link href="/css/summernotes.css" rel="stylesheet">
+
+    <script language="javascript">
+        //this script will remove image download error icon form pages
+        document.addEventListener("DOMContentLoaded", function(event) {
+           document.querySelectorAll('img').forEach(function(img){
+                img.onerror = function(){this.style.display='none';};
+           })
+        });
+
+        function generatePDF (divid) {
+          const contents = document.getElementById(divid).innerHTML;
+          const charts = document.getElementsByTagName('canvas');
+          const frame1 = document.createElement('iframe');
+          frame1.name = "frame1";
+          frame1.style.position = "absolute";
+          frame1.style.top = "-1000000px";
+          document.body.appendChild(frame1);
+          const frameDoc = frame1.contentWindow ? frame1.contentWindow : frame1.contentDocument.document ? frame1.contentDocument.document : frame1.contentDocument;
+          frameDoc.document.open();
+          for(let i = 0; i < charts.length; i++) {
+            const chartDataUrl = charts[i].toDataURL("image/png");
+            frameDoc.document.write('<img src="'+chartDataUrl+'"/>');
+          }
+          frameDoc.document.write(contents);
+          frameDoc.document.close();
+          setTimeout(function () {
+            window.frames["frame1"].focus();
+            window.frames["frame1"].print();
+            document.body.removeChild(frame1);
+          }, 500);
+          return false;
+        }
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+

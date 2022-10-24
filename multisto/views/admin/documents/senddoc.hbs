@@ -1,0 +1,226 @@
+{{> Header}}
+
+{{> HeaderInnerSto}}
+
+<script language="javascript">
+    var investorCount = 0;
+    
+    $(document).ready(function() {
+        $("#documents").addClass('active');
+        SummernoteMiniDataInitialize("details", "Enter Details", 100);
+        
+        {{#if isEditing}}
+            InvestorSearchModule_setControlsParams("{{record.isactiveforinvestorsNames}}", {{record.isactiveforinvestorsType}}, "", "");
+        {{/if}}
+
+        InvestorSearchModule_submitForm();
+    })
+
+    function submitForm() {
+        if( document.getElementById("title").value == "") {
+           showModelGeneralOKDialogBox("Please enter title");   
+           return null;   
+        }
+
+        if( document.getElementById("txtOpenDate").value == ""){
+           showModelGeneralOKDialogBox("Please enter Open Date"); 
+           return;   
+        }
+        if(commonGetMySQLDateFormat(document.getElementById("txtOpenDate").value) == "") {
+            showModelGeneralOKDialogBox("date formate not correct");
+            return;
+        }else
+            document.getElementById("openDate").value = commonGetMySQLDateFormat(document.getElementById("txtOpenDate").value);
+
+        if( document.getElementById("txtCloseDate").value == "") {
+           showModelGeneralOKDialogBox("Please enter Close Date"); 
+           return;   
+        }
+        if(commonGetMySQLDateFormat(document.getElementById("txtCloseDate").value) == "") {
+            showModelGeneralOKDialogBox("date formate not correct");
+            return;
+        } else
+            document.getElementById("closeDate").value = commonGetMySQLDateFormat(document.getElementById("txtCloseDate").value);
+
+
+        if( document.getElementById("details").value == ""){
+           showModelGeneralOKDialogBox("Please enter Campaign Details"); 
+           return;   
+        }
+
+        var d1 = Date.parse(document.getElementById("openDate").value);
+        var d2 = Date.parse(document.getElementById("closeDate").value);
+        var curDate = Date.parse(Date());
+        
+        if(d1 < curDate && d2 < curDate) {
+            if(d1 < curDate) {
+                alert ("Both opening and close date cannot be in past");
+                return;            
+            }
+        }
+
+        if (d1 > d2) {
+            alert ("Opening date cannot be greater than closing date");
+            return;
+        }
+
+        if (d1 === d2) {
+            alert ("Opening and Closing dates cannot be same");
+            return;
+        }
+
+        {{#unless isEditing}}
+            var param = InvestorSearchModule_getPageSearchCriteriaJSON();
+            if(param.hasOwnProperty('name')) 
+                document.getElementById("InvestorsName").value = param.name;
+            if(param.hasOwnProperty('type'))
+                document.getElementById("investorStatusID").value = param.type;
+            else
+                document.getElementById("investorStatusID").value = "0";        
+        {{/unless}}
+        
+        document.getElementById("frmDocumentSend").submit();
+    }
+    
+    function InvestorSearchModule_callbackJsonCallData(data) {
+        investorCount = data.count;
+        $("#investorcount").html(investorCount);
+    }
+    
+    function backtodir() {
+        window.location.href = "directorylist?id={{dirid}}";
+        return false;
+    }
+    
+</script>
+
+    {{#unless isEditing}}
+        {{> investorSearchModule  targetServerSideEndpointAutoPost='searchInvestorcountjson' HelperMessage="Search investors to whom contract will be send for review" ShowViewSelectedButton=1 JSONRemoteCallWithoutRedirect=1}}
+    {{/unless}}
+    
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title"> <img src="/img/documents2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; 
+                                {{#if isEditing}}
+                                    Edit Offer Details
+                                {{else}}
+                                    Offer Document as Contract to Investors
+                                {{/if}}
+                            &nbsp; </h4>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <button onclick="return backtodir()" class="btn btn-info btn-fill">  Back to Directory  </button> 
+                        </div>
+                    </div>
+                    {{#unless isEditing}}
+                        <label>Offer document as contract to investors to review and sign</label>
+                    {{/unless}}
+                </div>
+                
+                <div class="content">
+
+                    <form id="frmDocumentSend" action="senddocpost" method="post">
+
+                        {{#unless isEditing}}
+                            <h4>Selected Investors &nbsp;&nbsp;&nbsp; <span id="investorcount"></span> </h4> 
+                                                
+                            <br />
+                            <br />
+                        {{/unless}}
+                            <div class="row">
+                                <div class="col-md-2">                                
+                                    <span style="font-size:15px;"> <label> Contract Title </label>
+                                        </span>
+                                </div>				
+
+                                <div class="col-md-8">                                
+                                    <input  id="title" name="title" value="{{Record.title}}" class="form-control border-input" type=text />
+                                </div>                        
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-2">                                
+                                    <span style="font-size:15px;"> <label> Open Date </label>
+                                        </span>
+                                </div>
+
+                                <div class="col-md-3">  
+                                    {{#ifEqual open 1}}
+                                        <input  id="txtOpenDate" name="txtOpenDate"  value="{{Record.datefrom}}" class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" />
+                                    {{else}}
+                                        {{Record.datefrom}}
+                                        <input type="hidden" id="txtOpenDate" name="txtOpenDate"  value="{{Record.datefrom}}" />
+                                    {{/ifEqual}}
+                                    
+                                </div>                        
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-2">                                
+                                    <span style="font-size:15px;"> <label> Close Date </label>
+                                        </span>
+                                </div>				
+
+                                <div class="col-md-3">       
+                                    {{#if open}}
+                                        <input  id="txtCloseDate" name="txtCloseDate" value="{{Record.datato}}" class="form-control border-input datepicker-here" type=text data-language="en"   data-date-format="MM dd yyyy" autocomplete="off" />
+                                    {{else}}
+                                         <input type="hidden" id="txtCloseDate" name="txtCloseDate" value="{{Record.datato}}" />
+                                    {{/if}}
+                                </div>                        
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-2">                                
+                                    <span style="font-size:15px;"> <label> Details </label>
+                                        </span>
+                                </div>				
+
+                                <div class="col-md-10">  
+                                    <label>Enter some details of the contract</label>
+                                    <textarea class="form-control border-input" id="details" name="details" rows="10" cols="93">{{Record.contents}}</textarea>
+                                </div>
+                            </div>
+                            <br />
+
+                            <input type="hidden" id="isEditing" name="isEditing" value="{{isEditing}}" />
+                            {{#if isEditing}}
+                                <input type="hidden" id="id" name="id" value="{{id}}" />
+                            {{/if}}
+                            
+                            <input type="hidden" id="investorStatusID" name="typesearch" value="" />
+                            <input type="hidden" id="InvestorsName" name="namesearch" value="" />
+                            <input type="hidden" id="docid" name="docid" value="{{docid}}" />
+                            <input type="hidden" id="openDate" name="openDate" value="" />
+                            <input type="hidden" id="closeDate" name="closeDate" value="" />
+                            <input type="hidden" id="dirid" name="dirid" value="{{dirid}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>                    
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8"> </div>                                
+
+                    <div class="col-md-4">
+                        <button onclick="submitForm()" class="btn btn-info btn-fill"> {{#if isEditing}} Save Changes {{else}} Save and Send Contract {{/if}} </button> 
+                        &nbsp;&nbsp;
+ 
+                        <button onclick="backtodir()" class="btn btn-info btn-fill">  Cancel  </button> 
+ 
+                    </div>								
+
+                </div>  
+
+                <br/>&nbsp;
+            </div>
+        </div>
+        
+        
+    </div>
+
+{{> Footer}}

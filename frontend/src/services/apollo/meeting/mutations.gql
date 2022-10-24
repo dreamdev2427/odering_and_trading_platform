@@ -1,0 +1,3 @@
+mutation InvestorRegisterVote($data: RegisterVoteInput!) {
+    investorRegisterVote(data: $data)
+}

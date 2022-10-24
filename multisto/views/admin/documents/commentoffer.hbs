@@ -1,0 +1,159 @@
+{{> Header}}
+
+<script language="javascript">
+    
+	$(document).ready(function() {
+        {{#if record.isactiveforinvestors}}
+            InvestorSearchModule_setControlsParams("{{record.isactiveforinvestorsNames}}", {{record.isactiveforinvestorsType}}, "", "");
+        {{/if}}
+
+        InvestorSearchModule_submitForm();
+	})
+    function postForm() {
+        var param = InvestorSearchModule_getPageSearchCriteriaJSON();
+        
+        if(param.hasOwnProperty('name')) 
+            document.getElementById("namesearch").value = param.name;
+        if(param.hasOwnProperty('type'))
+            document.getElementById("typesearch").value = param.type;
+        else
+            document.getElementById("typesearch").value = "0";
+     
+        document.getElementById("act").value = "1";
+        
+        if( (!param.hasOwnProperty('name')) && (!param.hasOwnProperty('type')) ) {
+            showModelGeneralYesNoDialogBox("Are you sure you want to send document to all investors for review and comments ?", "Yes", "Cancel");   
+        } else 
+            submitForm();
+
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        submitForm();
+    }
+    function submitForm() {
+        document.getElementById("docoffer").submit();
+    }
+    function InvestorSearchModule_callbackJsonCallData(data) {
+        investorCount = data.count;
+        $(".investorcount").html(investorCount);
+    }
+    function deactivatedoc() {
+        document.getElementById("act").value = "0";
+        document.getElementById("namesearch").value = "";
+        document.getElementById("typesearch").value = "0";
+        document.getElementById("docoffer").submit();
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+
+{{> investorSearchModule  targetServerSideEndpointAutoPost='searchInvestorcountjson' HelperMessage="Select investors to whom document will be offered for comments" ShowViewSelectedButton=1 JSONRemoteCallWithoutRedirect=1 }}
+
+{{>multifileupload}}
+
+<div class="row">
+		<div class="col-md-12 topPaddingBetweenPageSections">
+			<div class="card">
+                
+				<div class="header">
+                    <div class="row">
+                        <div class="col-md-10">                                
+                            <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Documents for Comments</h4>
+                        </div>
+                    </div>
+				</div>
+                
+				<div class="content">
+                    <h4>Selected Investors &nbsp;&nbsp;&nbsp; <span class="investorcount"></span></h4>
+
+                    {{#if record.isactiveforinvestors}}
+                        
+                        <div class="row">
+                            <div class="col-md-1"> 
+                                <center><img src="/img/graydot.png" width="15px" /></center>
+                            </div>
+                            <div class="col-md-11"> 
+                                Document is currently active for <b><span class="investorcount"></span></b> investor(s) who can view and comment according to above search criteria
+                            </div>
+                        </div>                    
+                        <br />
+                        <div class="row">
+                            <div class="col-md-1"> 
+                                <center><img src="/img/graydot.png" width="15px" /></center>
+                            </div>
+                            <div class="col-md-11"> 
+                                You can make changes in search criteria and document will be activated or deactivated according to search criteria. After selection of new criteria you can click &nbsp; <b>Save New Criteria</b> &nbsp; 
+                            </div>
+                        </div>                    
+                    
+                        <br />
+                        <div class="row">
+                            <div class="col-md-1"> 
+                                <center><img src="/img/graydot.png" width="15px" /></center>
+                            </div>
+                            <div class="col-md-11"> 
+                                To deactivate document for review please click  &nbsp; <b>Deactivate Document</b> &nbsp; 
+                            </div>
+                        </div>     
+                    
+                    
+                    {{else}}
+                        <div class="row">
+                            <div class="col-md-1"> 
+                                <center><img src="/img/graydot.png" width="15px" /></center>
+                            </div>
+                            <div class="col-md-11"> 
+                                Select investor's using above search box 
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-1"> 
+                                <center><img src="/img/graydot.png" width="15px" /></center>
+                            </div>
+                            <div class="col-md-11"> 
+                                <b><span class="investorcount"></span></b> investor(s)  can review and comment the document. If you want to see names of investors please click &nbsp; <b>View Selected</b> &nbsp; in Investor Search box
+                            </div>
+                        </div>                    
+                        <br />
+                        <div class="row">
+                            <div class="col-md-1"> 
+                                <center><img src="/img/graydot.png" width="15px" /></center>
+                            </div>
+                            <div class="col-md-11"> 
+                                After selection of investors, please click  &nbsp; <b> Activate Document </b> &nbsp; button. Document will be activated on investor dashboard(s) who are selected by above criteria
+                            </div>
+                        </div>                    
+
+                    {{/if}}
+                    
+                    <br /><br /><br />
+
+                    {{#if record.isactiveforinvestors}}
+                        <button type="button" onclick="return postForm()" class="btn btn-info btn-fill"> &nbsp; Save New Criteria &nbsp; </button>                    
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <button type="button" onclick="return deactivatedoc()" class="btn btn-info btn-fill"> &nbsp; Deactivate Document &nbsp; </button>
+                    {{else}}
+                        <button type="button" onclick="return postForm()" class="btn btn-info btn-fill"> &nbsp; Activate Document &nbsp; </button>
+                    {{/if}}
+
+					<br />&nbsp;
+				</div>
+
+			</div>
+		</div>
+</div>
+
+
+<form id="docoffer" name="docoffer" action="documentoffersubmit"  method="post">
+    <input type="hidden" id="id" name="id" value="{{docid}}">
+    <input type="hidden" id="dirid" name="dirid" value="{{dirid}}">
+    <input type="hidden" id="act" name="act" value="{{activate}}">
+    <input type="hidden" id="namesearch" name="namesearch" value="">
+    <input type="hidden" id="typesearch" name="typesearch" value="">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>  
+
+
+{{> Footer}}

@@ -1,0 +1,108 @@
+<html>
+<head>
+    <title>{{SiteParameter_PageTitle}}</title>
+    <link rel="shortcut icon" href="../img/site/{{favicon}}" type="image/x-icon" />        
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+    <link href="/css/login-big.css" rel="stylesheet" />
+
+    <style>
+        {{!-- Configurable style --}}
+        {{#if bgGradient2}}
+        body#LoginForm{ 
+            background-image:linear-gradient({{bgGradient1}}, {{bgGradient2}}); 
+        }
+        {{/if}}
+        {{#if greetingTextColor}}
+        .logo-container {
+            color: {{greetingTextColor}};
+        }
+        {{/if}}
+    </style>
+    
+    
+    <script type="text/javascript">
+
+         function login() {
+                if(document.getElementById("iusername").value === "") {
+                    alert("Username required");
+                    return false;
+                }
+             
+                if(document.getElementById("ipassword").value === "") {
+                    alert("Password required");
+                    return false;
+                }
+
+                document.getElementById("iusername").value = document.getElementById("iusername").value.trim();
+                document.getElementById("Login").submit();
+         }
+
+     </script>
+</head>
+
+<body id="LoginForm">
+<br /><br />
+    
+<div class="login-form">
+    <div class="container">
+        <div class="row" >
+            <div class="logo-container col-md-7 col-sm-12 col-xs-12">
+
+                {{#if noLogo}}
+                {{else}}
+                    <img src="/img/stologo/{{logo}}" class="logo-img" alt="Platform Logo" /> 
+                {{/if}}
+                
+                {{#if greetingHeading}}
+                    <h1>{{greetingHeading}}</h1>
+                {{/if}}
+                
+                <br />
+                <p>
+                    {{#if greetingSubHeading}}
+                        {{greetingSubHeading}}
+                    {{else}}
+                        Please register or sign in to get started.
+                    {{/if}}
+                </p>
+
+            </div>
+
+            <div class="main-div col-md-5 pull-md-right col-sm-12 col-xs-12">
+
+                <div class="login-header">
+                    <label class="action-label">
+                        <a href="#" class="abtn active-label">Sign in</a>
+                    </label>
+                    <label class="action-label">
+                        <a href="/register" class="abtn">Register</a>
+                    </label>
+                </div>
+
+                <form id="Login" action="/platform/signin" method="post">
+
+                    <div class="form-group">
+                        <input type="text"  maxLength="70" class="form-control" id="iusername" name="iusername" placeholder="Email Username">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" maxlength="100" class="form-control" id="ipassword" name="ipassword" placeholder="Password">
+                    </div>
+                    
+                    <br>
+                    <button onclick="return login()" class="btn btn-primary">Login</button>
+                    
+                </form>
+                
+                <a href='/forgotpassword'>Forgot Password</a>
+                
+                <br />
+                <span style="color:red;"> <b>{{UserMessage}}</b> </span>
+            </div>
+        </div>
+    </div>
+</div>
+    
+</body>
+</html>

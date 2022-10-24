@@ -1,0 +1,256 @@
+{{> Header}}
+
+<script language="javascript">
+      $(document).ready(function () {
+           sharesTokenList();
+        });
+
+    var link = "";
+    const projectID = getParameterByName("id");
+    
+    function newshare() {
+        window.location.href = "newshare?cid={{id}}";
+        return false;
+    }
+    function editshare(id) {
+        window.location.href = "newshare?cid={{id}}&id=" + id;
+        return false;
+    }
+    function resetShareType(id) {
+        link = "resetsharetypes?id=" + id;
+        showModelGeneralYesNoDialogBox("Are you share you want to reset this share class ?  <br /><br />   Be-aware that all transaction related to this share class will be deleted from platform and will not be restored. <br /><br /> Are you sure you want to proceed ?", "Yes", "Cancel");
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = link;
+        return false;
+    }
+    function deleteInvestorTransactions(id) {
+        window.location.href = "resetInvestorShareType?id=" + id;
+        return false;
+    }
+    function viewDetails(id) {
+        window.location.href = "viewshare?id=" + id;
+    }
+    function viewLinkedDocuments(id) {
+        window.location.href = "viewlinkeddocuments?id=" + id;
+        return false;
+	}
+	function enabledDIsabledShareType(id, enable) {
+		var tmp = 0;
+
+		if(enable == 1)
+			tmp = 0;
+		else
+			tmp = 1;
+
+        window.location.href = "enableDisableShareType?cid={{id}}&sid=" + id + "&enable=" + tmp;
+        return false;
+	}
+    function ethereumStudio() {      
+        window.location.href = "tokenstudio?id=" + projectID;
+
+    }
+	function ravenStudio() {
+        window.location.href = "ravencoinstudio?id=" + projectID;
+
+	}
+	function polymeshtokenStudio() {
+        window.location.href = "polymeshtokenstudio?id=" + projectID;
+	}
+    function polymeshConfigurations(id) {
+        window.location.href = "polymeshConfigurations?id=" + id;
+    }
+
+    function sharesTokenList(){
+        let domQuery = document.getElementById('sharesTokenList')
+        const blockchains = {{{ json blockchains }}}
+        const sto = {{{ json sto }}}
+        let html = `<button onclick="return newshare()" class="btn btn-info btn-fill pull-right" style="margin-right:5px;">Add Digital Share Class</button >`;
+        domQuery.innerHTML = ''
+        blockchains.forEach(element => {
+            if(element.id == sto.defualtTokenStudio){
+                if(element.title == "Ethereum"){
+                    html += `  <button onclick="return ethereumStudio()" class="btn btn-info btn-fill pull-right"
+                            style="margin-right:5px;">Ethereum Token Studio</button>`
+                } else if(element.title == 'Ravencoin'){
+                    html += `   <button onclick="return ravenStudio()" class="btn btn-info btn-fill pull-right" style="margin-right:5px;">Raven
+                            Token Studio</button>`
+                } else if(element.title == 'PolyMesh'){
+                    html += `<button onclick="return polymeshtokenStudio()" class="btn btn-info btn-fill pull-right"
+                            style="margin-right:5px;">Polymesh Token Studio</button>`
+                }
+
+            }
+        })
+        domQuery.innerHTML = html
+    }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h4 class="title">Company Shares</h4>
+                    </div>
+                    <div class="col-md-8" id="sharesTokenList">
+                        {{!-- {{#each}}
+                        {{#ifIn this.id currentTokenStudion}}
+                        {{#ifEqual this.id 1}}
+                        <button onclick="return ethereumStudio()" class="btn btn-info btn-fill pull-right"
+                            style="margin-right:5px;">Ethereum Token Studio</button>
+                        {{/ifEqual}}
+                        {{#ifEqual this.id 5}}
+                        <button onclick="return ravenStudio()" class="btn btn-info btn-fill pull-right" style="margin-right:5px;">Raven
+                            Token Studio</button>
+                        {{/ifEqual}}
+                        {#ifEqual this.id 6}}
+                        <button onclick="return polymeshtokenStudio()" class="btn btn-info btn-fill pull-right"
+                            style="margin-right:5px;">Polymesh Token Studio</button>
+                        {{/ifEqual}}
+                        {{/ifIn}}
+                        {{/each}}
+                        <button onclick="return newshare()" class="btn btn-info btn-fill pull-right" style="margin-right:5px;">Add Digital
+                            Share Class</button> --}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                
+                {{#if message}}
+                    <span style="color:red">{{message}}</span>
+                    <br />
+                    <br />
+                {{/if}}
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src='/img/stologo/{{sto.logo}}' style="max-width:180px; max-height:100px;">
+                    </div>
+                    <div class="col-md-8">
+                        <span style="font-size:22px;">{{sto.title}}</span>
+                        <br />
+                        {{sto.stolink}}
+                    </div>
+                </div>
+
+                <br /><br />
+
+                {{#if recs.length}}
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-3"></div>
+                        <div class="col-md-2">Total Shares</div>
+                        <div class="col-md-2">Company Shares</div>
+                        <div class="col-md-2">Nominal</div>
+                        <div class="col-md-2">Market</div>
+                    </div>
+                    <br />
+                    {{#each recs}}
+                       <div class="row">
+                           <div class="col-md-1">
+                                {{this.ID}}
+                                &nbsp;
+                                {{#if this.isblockchain}}
+                                    <img src="/img/blockchainwallet.png" title="Tokenized Shares" width="22px;" />
+                                {{else}}
+                                    <img src="/img/nonblockchain.png"  title="Non-tokenized Shares" width="25px;" />
+                                {{/if}}
+                           </div>
+                           <div class="col-md-3">
+                               {{this.title}}
+                            </div>
+                           <div class="col-md-2">
+                                {{numberFormat this.totalShares decimalLength="ShareCountInFractions"}}
+                            </div>
+                           <div class="col-md-2">
+                               {{numberFormat this.companyShares decimalLength="ShareCountInFractions"}}
+                            </div>
+                           <div class="col-md-2">
+                                {{currencySymbol this.currencyid}}    {{numberFormat this.nominalValue decimalLength="2"}}
+                            </div>
+                           <div class="col-md-2">
+                                {{#if this.premimum}}
+                                     {{currencySymbol this.currencyid}}  {{numberFormat this.premimum decimalLength="2"}}
+                                {{/if}}
+                           </div>
+                        </div>
+
+                        {{#if this.keyStoreFileAutoPayments}}
+
+                            <div class="row"><div class="col-md-1"></div><div class="col-md-9">                            
+                                <span style="color: red;"> 
+                                    <img src="/img/reddot.png" width="15px" /> &nbsp; 
+                                    Automatic Share Transfer with Private Key is set for this share class 
+                                </span>
+                            </div></div>
+                        {{/if}}
+
+                        <br />                        
+                        <div class="row"><div class="col-md-1"></div><div class="col-md-9">
+                                <button onclick="return editshare({{this.ID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Edit &nbsp; </button>
+
+                               {{#unless this.isblockchain}}
+                                    &nbsp;&nbsp;
+                                    <button onclick="return deleteInvestorTransactions({{this.ID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Delete &nbsp; </button>
+                                    &nbsp;&nbsp;
+                                    <button onclick="return resetShareType({{this.ID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Reset &nbsp; </button>
+                               {{/unless}}
+
+								&nbsp;&nbsp;
+								<button onclick="return viewDetails({{this.ID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; View Details &nbsp; </button>
+
+                                &nbsp;&nbsp;
+                                <button onclick="return viewLinkedDocuments({{this.ID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; View Files &nbsp; </button>
+
+
+                                &nbsp;&nbsp;
+                                {{#ifEqual this.blockchainProtocol 7}}
+                                    <button onclick="return polymeshConfigurations({{this.ID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Configurations &nbsp; </button>
+                                {{/ifEqual}}
+
+
+
+
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<button onclick="return enabledDIsabledShareType({{this.ID}}, {{this.isEnabled}})" class="btn btn-info btn-fill btn-sm"> &nbsp;
+									{{#if this.isEnabled}}
+										Disable
+									{{else}}
+										Enable
+									{{/if}}
+								&nbsp; </button>
+
+
+
+
+								&nbsp;
+								{{#if this.isEnabled}}
+									<img width="20px" src="/img/greendot.png">
+									Enabled
+								{{else}}
+									<img width="20px" src="/img/reddot.png">
+									DIsabled
+								{{/if}}
+
+
+                        </div></div>
+
+
+                        <hr />
+                    {{/each}}
+                {{else}}
+                    <label>No Company Shares Found</label>
+                    <br />&nbsp;
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

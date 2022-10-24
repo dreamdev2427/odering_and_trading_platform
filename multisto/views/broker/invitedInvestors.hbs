@@ -1,0 +1,98 @@
+{{> Header}}
+
+<style>
+    .message {
+        border: 2px solid gray;
+        background-color: #EEE;
+        color: #555;
+        border-radius: 8px;
+        padding: 16px;
+        font-size: large;
+    }
+    .error {
+        border-color: #FAA;
+        background-color: #FEE;
+        color: #A33;
+    }
+    .success {
+        border-color: #AFA;
+        background-color: #EFE;
+        color: #3A3;
+    }
+    .thead {
+        position: sticky;
+        top: 0;
+    }
+    .btn-custom {
+        border-radius: 8px;
+        margin: 18px;
+    }
+    .has-error .form-control {
+        background-color: #fffcf5 !important;
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.11.0/af-2.3.7/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/b-print-2.0.0/cr-1.5.4/date-1.1.1/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.2.0/sp-1.4.0/sl-1.3.3/datatables.min.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.11.0/af-2.3.7/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/b-print-2.0.0/cr-1.5.4/date-1.1.1/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.2.0/sp-1.4.0/sl-1.3.3/datatables.min.js"></script>
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#invitedInvestors").addClass('active');
+        $('#datatable').DataTable();
+    });
+</script>
+
+{{> HeaderInnerBroker}}
+
+<div class="row">
+  <div class="col-md-12">
+    {{#if errorMessage}}
+      <p class="message error">{{errorMessage}}</p>
+    {{/if}}
+    {{#if successMessage}}
+      <p class="message success">{{successMessage}}</p>
+    {{/if}}
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="title"><img src="/img/invited_investors.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Investors Invited (<mark style="color: green;">{{invitedInvestorsCount}}</mark>)</h4>
+          </div>
+          <div class="col-md-6">
+          </div>
+        </div>
+      </div>
+      <div class="content" style="overflow: auto;">
+        {{#if invitedInvestorsCount}}
+        <div class="row">
+          <div class="col-xs-12">
+            <br/>
+            <table id="datatable" class="table table-striped" style="overflow: auto;">
+              <thead class="thead">
+                <th class="thead">First Name</th>
+                <th class="thead">Last Name</th>
+                <th class="thead">Country</th>
+                <th class="thead">Email</th>
+              </thead>
+              <tbody>
+                {{#each invitedInvestors}}
+                <tr>
+                  <td>{{this.FirstName}}</td>
+                  <td>{{this.LastName}}</td>
+                  <td>{{this.country}}</td>
+                  <td>{{this.email}}</td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {{else}}
+          <label>No Records Found</label>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> Footer}}

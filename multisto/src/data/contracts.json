@@ -1,0 +1,34 @@
+{
+  "file1": {
+    "ContractFile": "SubscriptionForm.pdf",
+    "Title": "Subscription Form",
+
+    "pages": [
+      {
+        "page": 2,
+        "fields": [
+          { "field": "FirstName LastName", "X": 295, "Y": 205 },
+          { "field": "Address", "X": 295, "Y": 220 },
+          { "field": "zip state town", "X": 295, "Y": 235 },
+          { "field": "country", "X": 295, "Y": 250 },
+          { "field": "phone", "X": 295, "Y": 265 },
+          { "field": "email", "X": 295, "Y": 280 },
+          { "field": "_Date", "X": 295, "Y": 295 }
+        ]
+      },
+      {
+        "page": 1,
+        "fields": [
+          { "field": "_Shares", "X": 175, "Y": 305, "page": 1 },
+          { "field": "_Shares", "X": 185, "Y": 330, "page": 1 },
+          { "field": "_DateToPay", "X": 448, "Y": 465, "page": 1 },
+          { "field": "_DateToPay", "X": 55, "Y": 506, "page": 1 },
+          { "field": "_TotalEuro", "X": 333, "Y": 396, "page": 1 },
+          { "field": "_TotalEuro", "X": 333, "Y": 437, "page": 1 }
+        ]
+      }
+    ],
+
+    "signature": { "X": 295, "Y": 315, "page": 2 }
+  }
+}

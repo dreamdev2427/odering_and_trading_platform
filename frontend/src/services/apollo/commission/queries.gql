@@ -1,0 +1,3 @@
+query getInvestorCommissionsSum($status: PAYMENT_STATUS) {
+  getInvestorCommissionsSum(status: $status)
+}

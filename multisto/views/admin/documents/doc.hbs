@@ -1,0 +1,473 @@
+{{> Header}}
+
+{{> HeaderInnerSto}}
+
+<style>
+    .ViewingMode {
+        display:none;
+    }
+
+    .EditingMode {
+        display:none;
+    }
+</style>
+
+<script language="javascript">
+    var deleteFieldLink = "";
+
+    $(document).ready(function() {
+            $("#documents").addClass('active');
+
+            SummernoteBasicDataInitialize('docText', 'Enter Document Text', 1000);
+            initializeMultiCountrySelect();
+            initializeMultiInvestorTypeSelect();
+
+            if(commonGetQueryStringValue("id") == null) {
+                $(".ViewingMode").hide();
+                $(".EditingMode").show();
+            } else {
+                //editing mode
+                $(".ViewingMode").show();
+                $(".EditingMode").hide();
+                var field = document.querySelector('[name="fldid"]');
+                if (field) {
+                    field.addEventListener('keypress', function ( event ) {
+                        var key = event.keyCode;
+                        if (key === 32) {
+                            event.preventDefault();
+                        }
+                    });
+                }
+            }
+
+    })
+    function initializeMultiCountrySelect() {
+        let dataListInnerHtml = '';
+        try {
+            const countries = [...new Set("{{{countryList}}}".split(','))];
+            const countriesWhitelist = {{#if Record.countriesWhitelist}} {{{Record.countriesWhitelist}}} {{else}} '' {{/if}};
+            console.log(`whitelist: ${countriesWhitelist}`);
+            countries.forEach(element => {
+                if (countriesWhitelist.indexOf(element) > -1 || countriesWhitelist == 'ALL') {
+                    dataListInnerHtml += `<option value="${element}" selected="selected">${element}</option>`;
+                }else {
+                    dataListInnerHtml += `<option value="${element}">${element}</option>`;
+                }
+            });
+            const copyStosDropdown = document.getElementById('countryWhitelist');
+            copyStosDropdown.innerHTML = dataListInnerHtml;
+        }catch (e) {
+            console.log(e);
+        };
+        $('#countryWhitelist').multiselect({
+            enableCaseInsensitiveFiltering: true,
+            includeSelectAllOption: true,
+            inheritClass: true,
+            buttonContainer: '<div class="btn btn-info btn-fill" />',
+            buttonWidth: '500px',
+            numberDisplayed: 20,
+            delimiterText: ' | ',
+        });
+    }
+    function initializeMultiInvestorTypeSelect() {
+      let dataListInnerHtml = '';
+      try {
+        const investorTypes = [...new Set("{{{investorTypes}}}".split(','))];
+        const investorTypesWhitelist = {{#if Record.investorTypesWhitelist}} {{{Record.investorTypesWhitelist}}} {{else}} '' {{/if}};
+        investorTypes.forEach(element => {
+          if (investorTypesWhitelist.indexOf(element) > -1  || investorTypesWhitelist == 'ALL') {
+            dataListInnerHtml += `<option value="${element}" selected="selected">${element}</option>`;
+          }else {
+            dataListInnerHtml += `<option value="${element}">${element}</option>`;
+          }
+        });
+        const investorTypeDropdown = document.getElementById('investorTypeWhitelist');
+        investorTypeDropdown.innerHTML = dataListInnerHtml;
+      }catch (e) {
+        console.log(e);
+      };
+      $('#investorTypeWhitelist').multiselect({
+        enableCaseInsensitiveFiltering: true,
+        includeSelectAllOption: true,
+        inheritClass: true,
+        buttonContainer: '<div class="btn btn-info btn-fill" />',
+        buttonWidth: '500px',
+        numberDisplayed: 20,
+        delimiterText: ' | ',
+      });
+    }
+
+    {{#ifIn 33 Data.AdminRights}}
+        function editDocument() {
+            $(".ViewingMode").hide();
+            $(".EditingMode").show();
+            $("#docText").css('height', '5000px');
+        }
+        function cancelSave() {
+            $(".ViewingMode").show();
+            $(".EditingMode").hide();
+        }
+        function saveDocument() {
+            document.getElementById("doctextForm").submit();
+        }
+        function saveSharePurchaseSettings() {
+            document.getElementById("sharePurchaseForm").submit();
+        }
+        function saveCountryWhitelistSettings() {
+            console.log(document.getElementById("countryWhitelist").value);
+            document.getElementById("countryWhitelistForm").submit();
+        }
+        function saveInvestorTypeWhitelistForm() {
+          document.getElementById("investorTypeWhitelistForm").submit();
+        }
+        function savefield() {
+            document.getElementById("docfield").submit();
+        }
+        function deleteDocumentField(id, docid, dirid) {
+            deleteFieldLink = "deletedocfield?id=" + id + "&docid=" + docid + "&dirid=" + dirid;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete field ?", "Yes", "Cancel");
+        }
+        function generalModelOKButtonClickedClientEvent() {
+            window.location.href = deleteFieldLink;
+        }
+    {{/ifIn}}
+    function backtodir() {
+        window.location.href = "directorylist?id={{dirid}}";
+        return false;
+    }
+    function viewInvestorsSigned() {
+        window.location.href = "senddoccontracts?docid={{Record.ID}}&id={{Record.offerID}}&dirid={{dirid}}"
+        return false;
+    }
+
+</script>
+
+<div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Document</h4>
+                        </div>
+                        <div class="col-md-4">
+                            <a onclick="generatePDF('report')"  class="btn btn-info btn-fill btn-wd">Generate PDF</a>
+                            &nbsp;&nbsp;
+                            <a onclick="backtodir()"  class="btn btn-info btn-fill btn-wd">Back to Directory</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <form id="doctextForm" name="doctextForm" action="docpost" method="post">
+
+                            {{#if Record.isactiveforinvestors}}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <img src="/img/greendot.png" width="20px" /> &nbsp;&nbsp;
+                                        <b>Document is active for investor review, comments and suggestions</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </div>
+                                </div>
+                            {{/if}}
+
+                            {{#if commentsCount}}
+                                <a href="viewdocdocumentcomment?id={{Record.ID}}"  class="btn btn-info btn-fill btn-sm">View  Comments / Suggestions</a>
+                                <br />&nbsp;
+                            {{/if}}
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Document Title</label> <br />
+                                    <span class="ViewingMode">{{Record.title}}</span>
+                                    <span class="EditingMode"><input type="text" id="title" name="title" class="form-control border-input" value="{{Record.title}}"/></span>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Document</label> <br />
+                                    <span class="ViewingMode">{{{Record.contents}}}</span>
+                                    <span class="EditingMode"><textarea id="docText" name="docText" rows="5" class="form-control border-input" >{{Record.contents}}</textarea></span>
+                                </div>
+                            </div>
+                            <br />
+
+                            {{#if id}}
+                                <input type="hidden" name="id" id="id" value="{{id}}" />
+                            {{/if}}
+                            <input type="hidden" name="dirid" value="{{dirid}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                            {{#ifIn 33 Data.AdminRights}}
+                                {{#unless Record.offerID}}
+                                    <span class="ViewingMode">
+                                        <button type="button" onclick="editDocument()" class="btn btn-info btn-fill btn-wd">Edit Document</button>
+                                    </span>
+
+
+                                    <span class="EditingMode">
+                                        <button type="button" onclick="saveDocument()" class="btn btn-info btn-fill btn-wd">Save Document</button>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <button type="button" onclick="cancelSave()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+                                    </span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                {{/unless}}
+                            {{/ifIn}}
+                            <br />
+                    </form>
+
+                </div>
+
+                <br/>
+            </div>
+        </div>
+    </div>
+
+{{#unless Record.offerID}}
+    {{#if id}}
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                      <h4 class="title"> <img src="/img/fields.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Document Field List</h4>
+                </div>
+
+                <div class="content">
+                        <br />
+                        <div class="row">
+                            <div class="col-md-8">
+
+                                {{#if fieldRecords.length}}
+                                     {{#each fieldRecords}}
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <a >
+                                                    <img onclick="deleteDocumentField({{ID}}, {{../id}}, {{../dirid}})" src="/img/cross.png" width="15px;" />
+                                                </a>
+                                                &nbsp;&nbsp;&nbsp;
+                                                {{#ifEqual this.fieldtype 1}}Text{{/ifEqual}}
+                                                {{#ifEqual this.fieldtype 2}}Number{{/ifEqual}}
+                                                {{#ifEqual this.fieldtype 3}}Date{{/ifEqual}}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <b>Field ID</b>&nbsp;&nbsp; {{this.fieldid}}
+                                                <br />
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                {{this.title}}
+                                                <br />
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label>{{this.fieldhelpertext}}</label>
+
+                                            </div>
+                                        </div>
+                                        <hr />
+                                     {{/each}}
+                                {{else}}
+                                    No Records Found
+                                {{/if}}
+                            </div>
+
+                            {{#ifIn 33 Data.AdminRights}}
+                                <div class="col-md-4">
+                                    <b> Add New Field </b>
+                                    <br />
+                                    <br />
+
+                                    <form id="docfield" name="docfield" action="docfieldpost" method="post">
+                                        <label>Field ID</label>
+                                        <input type="text" id="fldid" name="fldid" class="form-control border-input" />
+                                        <br />
+                                        <label>Field Title</label>
+                                        <input type="text" id="title" name="title" class="form-control border-input" />
+                                        <br />
+                                        <label>Field Type</label>
+                                        <select style="font-size:16px;" id="activityType" name="activityType" class="form-control border-input" style="padding:3px; width:250px;">
+                                            <option value="1"> Text </option>
+                                            <option value="2"> Number </option>
+                                            <option value="3"> Date </option>
+                                        </select>
+                                        <br />
+                                        <label>Helper Text</label>
+                                        <textarea  id="helpertext" name="helpertext" class="form-control border-input" ></textarea>     <br />
+
+                                        <button type="button" onclick="savefield()" class="btn btn-info btn-fill btn-wd">Add Field</button>
+                                        <input type="hidden" name="id" id="id" value="{{id}}" />
+                                        <input type="hidden" name="dirid" value="{{dirid}}" />
+                                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                    </form>
+
+                                    <br />
+                                    <br />
+                                </div>
+                            {{/ifIn}}
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{{/if}}
+{{else}}
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                  <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Offer Details</h4>
+            </div>
+
+            <div class="content">
+                <label>This contract has been offered to investors and here are the details</label>
+
+                <br /><br />
+                <label>Following are the dates when this contract was active for investors to review and sign</label>
+                <br />
+                <label>From</label> &nbsp;&nbsp;&nbsp;&nbsp; <b>{{offerRecord.datefrom}}</b>   &nbsp;&nbsp;&nbsp;&nbsp;  <label>to</label>    &nbsp;&nbsp;&nbsp;&nbsp;   <b>{{offerRecord.datato}}</b>
+                <br /><br />
+                <div class="row" >
+                    <div class="col-md-12">
+                        <h5>  {{offerRecord.title}}</h5>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col-md-12">
+                        {{{offerRecord.contents}}}
+                    </div>
+                </div>
+
+                <br />
+                <h4>Contract is on offer to following investors (search criteria) </h4>
+                <div class="row" >
+                    <div class="col-md-2"><label>Name(s)</label></div>
+                    <div class="col-md-10">{{offerRecord.InvestorsName}}</div>
+                </div>
+
+                <div class="row" >
+                    <div class="col-md-2"><label>Authorization</label></div>
+                    <div class="col-md-10">{{investorTypeText}}</div>
+                </div>
+
+                <br />
+                <button type="button" onclick="viewInvestorsSigned()" class="btn btn-info btn-fill btn-wd">View Investors who signed this offer</button>
+
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+{{/unless}}
+{{#ifEqual sharePurchaseDocumentsMode "internal"}}
+    {{#if Record.ID}}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Share purchasing</h4>
+                                <p>Select if this document needs to be signed during the share purchasing process</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content">
+                        <form id="sharePurchaseForm" name="sharePurchaseForm" action="sharePurchaseDocSettings" method="post">
+                            <input type="checkbox" name="enable"  {{#if enabled}}checked{{/if}}> <b> Enable</b> <p style="margin-left: 15px"> Require this document to be signed when shares are being purchased</p>
+                            <br />
+
+                            <input type="checkbox" name="requireOnce" {{#if requireOnce}}checked{{/if}}> <b> Require once</b> <p  style="margin-left: 15px"> Select if the document should be signed only the first time an investor purchases shares.</p>
+                            <input type="hidden" name="id" id="id" value="{{id}}" />
+                            <input type="hidden" name="dirid" value="{{dirid}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        </form>
+                        <span class="ViewingMode">
+                        <button type="button" onclick="saveSharePurchaseSettings()" class="btn btn-info btn-fill btn-wd">Save</button>
+                    </span>
+                    </div>
+
+                    <br/>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="header">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" />For Investor Type</h4>
+                    <p>This field indicates the type of investors, for which this document should be available for.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="content">
+                <div class="row">
+                  <div class="col-md-12">
+                    <form id="investorTypeWhitelistForm" method="POST" action="setDocumentInvestorTypeWhitelist">
+                      <select id="investorTypeWhitelist" name="investorTypeWhitelist" multiple="multiple"/>
+                      <input type="hidden" name="id" id="id" value="{{Record.ID}}" />
+                      <input type="hidden" name="dirid" value="{{dirid}}" />
+                      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+                  </div>
+                </div>
+                </br>
+                <div class="row">
+                  <div class="col-md-12">
+                        <span class="ViewingMode">
+                            <button type="button" onclick="saveInvestorTypeWhitelistForm()" class="btn btn-info btn-fill btn-wd">Save</button>
+                        </span>
+                  </div>
+                </div>
+              </div>
+
+              <br/>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="header">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" />Country Availabiltiy</h4>
+                    <p>This field indicates the countries of residence of your investors, for which this document should be available for.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="content">
+                <div class="row">
+                  <div class="col-md-12">
+                    <form id="countryWhitelistForm" method="POST" action="setDocumentCountriesWhitelist">
+                      <select id="countryWhitelist" name="countryWhitelist" multiple="multiple"/>
+                      <input type="hidden" name="id" id="id" value="{{Record.ID}}" />
+                      <input type="hidden" name="dirid" value="{{dirid}}" />
+                      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+                  </div>
+                </div>
+                </br>
+                <div class="row">
+                  <div class="col-md-12">
+                      <span class="ViewingMode">
+                          <button type="button" onclick="saveCountryWhitelistSettings()" class="btn btn-info btn-fill btn-wd">Save</button>
+                      </span>
+                  </div>
+                </div>
+              </div>
+
+              <br/>
+            </div>
+          </div>
+        </div>
+    {{/if}}
+{{/ifEqual}}
+<div style="display:none;">
+    <div id="report" style="margin:20px;">
+        <h4>{{Record.title}}</h4>
+        <br /><br />
+        {{{Record.contents}}}
+    </div>
+</div>
+
+{{> Footer}}

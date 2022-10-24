@@ -1,0 +1,2 @@
+insert into params(param, isglobal, datatype, stringValue, intValue) values('docusignViewSignedDocumentsUrl', 1, 1, '', 0);
+insert into params(param, isglobal, datatype, stringValue, intValue) values('testMode', 1, 2, '', 0);

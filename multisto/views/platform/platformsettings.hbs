@@ -1,0 +1,1590 @@
+{{> Header}}
+
+<script language="javascript">
+    let stoinvestortype = {{{ json stoinvestortype }}}
+
+    $(document).ready(function() {
+        initializeParamsDropdown();
+        initalizestoinvestortypes();
+        stoinvestortypesnotonshare();
+    });
+
+    function chancghePassword() {
+            var res = "";
+
+            if(document.getElementById("oldpassword").value == "")
+                res = "<li>Old Password is required</li>";
+            if(document.getElementById("newPassword").value == "")
+                res = res + "<li>New Password is required</li>";
+            if(document.getElementById("retypeNewPassword").value != document.getElementById("newPassword").value)
+                res = res + "<li>Password not re-typed correct</li>";
+
+
+            if(res == "")
+                document.getElementById("retypePasswordForm").submit();
+            else
+            {
+                $(window).scrollTop(0);
+                $("#ErrorMessages").html(res)
+            }
+    }
+    function updateTimeZone(id) {
+        if(isNaN(document.getElementById("timezone" + id).value)) {
+              showModelGeneralOKDialogBox("Value is not numeric");
+              return;
+        }
+
+        window.location.href = "/platform/changetimezone?id=" + id + "&value=" + document.getElementById("timezone" + id).value;
+        return false;
+    }
+    function initializeParamsDropdown() {
+
+        const paramsDropdown = document.getElementById('paramsDropdown');
+        const decodedJson = decodeURIComponent("{{DataRows}}");
+        const jsonObj = JSON.parse(decodedJson);
+
+        // adding the params to the dropdown
+        let dataListInnerHtml = '';
+        jsonObj.forEach(element => {
+            dataListInnerHtml += `<option value="${element.ID} - ${element.param}">`;
+        });
+        paramsDropdown.innerHTML = dataListInnerHtml;
+
+        // selecting the first param as the default for the dropdown
+        const paramsDropdownInput = document.getElementById('paramsInput');
+        const defaultParamSelected = `${jsonObj[0].ID} - ${jsonObj[0].param}`;
+        paramsDropdownInput.value = defaultParamSelected;
+        paramsDropdownInput.onfocus = function() {
+            paramsDropdownInput.name = paramsDropdownInput.value;
+            paramsDropdownInput.value ='';
+        }; // on focus - clear input
+        paramsDropdownInput.onblur = function() {
+          if (paramsDropdownInput.value === ''){
+              paramsDropdownInput.value = paramsDropdownInput.name;
+          }
+        };
+        updateParamFields(defaultParamSelected);
+    }
+    function updateParamFields(value) {
+        value = value.substr(0, value.indexOf(' ')); //get only the ID from the string
+        // convert the handlebars variable to javascript const
+        const decodedJson = decodeURIComponent("{{DataRows}}");
+        const jsonObj = JSON.parse(decodedJson);
+        // reset form fields
+        document.getElementById("setParametersFormDropDown").reset();
+
+        jsonObj.forEach(element => {
+            if (value == element.ID) {
+                document.getElementById('paramId').value = element.ID;
+                document.getElementById('paramName').value = element.param;
+                document.getElementById('paramIsGlobal').value = element.isglobal;
+                document.getElementById('paramDataType').value = element.datatype;
+                /* disregarding datatype for now because there are some params (like steps) which have a
+                JSON as value but are set to int type
+
+                switch (element.datatype) {
+                    case 1: //int only
+                        document.getElementById('paramIntValue').value = element.intValue;
+                        break;
+                    case 2: //string only
+                        document.getElementById('paramStringValue').value = element.stringValue;
+                        break;
+                    case 3: //json
+                        document.getElementById('paramStringValue').value = element.stringValue;
+                        break;
+                    default:
+                        document.getElementById('paramStringValue').value = element.stringValue;
+                        document.getElementById('paramIntValue').value = element.intValue;
+                        break;
+                }
+                */
+                // delete those after clearing that up
+                document.getElementById('paramStringValue').value = jsonBeautifier(element.stringValue);
+                document.getElementById('paramIntValue').value = element.intValue;
+                //
+                updateTextareaSize(document.getElementById('paramStringValue'));
+
+            }
+        });
+    }
+    function updateTextareaSize(textarea) {
+        const scrollLeft = window.pageXOffset ||
+            (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+
+        const scrollTop  = window.pageYOffset ||
+            (document.documentElement || document.body.parentNode || document.body).scrollTop;
+
+        textarea.style.overflow = 'hidden';
+        textarea.style.height = 0;
+        textarea.style.height = textarea.scrollHeight + 'px';
+
+        textarea.style.height = "auto";
+        textarea.style.height = textarea.scrollHeight + 'px';
+
+        window.scrollTo(scrollLeft, scrollTop);
+    }
+    function jsonBeautifier(rawString) {
+        if (rawString !== ''){
+            try {
+                const jsonObject = JSON.parse(rawString);
+                return JSON.stringify(jsonObject, null, "\t");
+            } catch (e) {
+
+            }
+        }
+        return rawString;
+    }
+
+    function reloadParameters() {
+        showModelGeneralYesNoDialogBox("Are you sure you want to update Global Variables of the whole platform. Please be-aware that this operation will affect the working of the whole platform. You must use this option if you 100% knows what are Global Variable. <br /><br /> If you are not sure or not aware of this operation please cancel and consult platform technical team for more information ", "Yes Update", "Cancel");
+    }
+    function goToSpdsModeSettingsPage() {
+      window.location.href = "/platform/sharePurchaseModeSettings";
+    }
+    function goToKycModeSettingsPage() {
+      window.location.href = "/platform/kycProviderModeSettings";
+    }
+    function goToInternalWalletSettingsPage() {
+      window.location.href = "/platform/internalWalletModeSettings";
+    }
+
+    function goToAccreditationSettingsPage() {
+      window.location.href = "/platform/accreditationMode";
+    }
+
+     function goToInvoiceManagmentPage() {
+            window.location.href = "/platform/investorinvoicemanangmentboard";
+        }
+
+    function goToTwoFactorSettingsPage(){
+        window.location.href = "/platform/twoFactorAuthenticationSettings";
+    }
+
+    function goToInvestorModuleSwitchesPage(){
+      window.location.href = "/platform/investorModulesSwitches";
+    }
+    function goToOtherSwitchesPage(){
+      window.location.href = "/platform/otherSwitches";
+    }
+    function goToNavbarHeaderEditorPage(){
+        window.location.href = "/platform/navbarHeaderCustomization";
+    }
+    function goToPlatformConfigurationModePage(){
+      window.location.href = "/platform/platformConfigurationMode";
+    }
+    function goToShareRegisterSettingsPage() {
+      window.location.href = "/platform/shareRegisterSettings";
+    }
+
+    function goToSellBackSettingsPage(){
+      window.location.href = "/platform/sellBackModeSettings";
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+        document.location.href = "updateGloablVariables";
+        return false;
+    }
+    function saveRavencoinPassword() {
+
+        if(document.getElementById("txtRavenPassword").value == "") {
+            showModelGeneralOKDialogBox("Please enter password");
+            return;
+        }
+
+        document.getElementById("setRaven").submit();
+    }
+
+    function saveParametersToDatabase() {
+        const json = {
+            ID: document.getElementById('paramId').value,
+            param: document.getElementById('paramName').value,
+            isglobal: document.getElementById('paramIsGlobal').value,
+            datatype: document.getElementById('paramDataType').value,
+            stringValue: document.getElementById('paramStringValue').value,
+            intValue: document.getElementById('paramIntValue').value,
+        };
+        sendRequest("POST","/platform/setEnvironmentParams",JSON.stringify(json))
+    }
+
+    function saveRavenCoinInfo() {
+        const json = {
+            ravenUrl: document.getElementById('ravencoin_server_url').value,
+            ravenUsername: document.getElementById('ravencoin_username').value,
+            ravenPassword: document.getElementById('ravencoin_password').value,
+        };
+        //document.getElementById('setRavenInfo').submit()
+        sendRequest("POST","/platform/setRavenCoinInfo",JSON.stringify(json));
+
+    }
+
+    function setParamsSeperate(paramName, tagId, valueType) {
+        const json = {
+            param: paramName,
+            value: document.getElementById(tagId).value,
+            typeName: valueType,
+        };
+        sendRequest("POST","/platform/setIndividualParam",JSON.stringify(json));
+    }
+
+    function setTwoChoiceOptions(paramName, tagId, valueType) {
+        const json = {};
+        sendRequest("POST","/platform/setIndividualParam",JSON.stringify(json));
+    }
+    function initalizestoinvestortypes() {
+        let finalhtml = '';
+        let stoinvestortype = {{{ json stoinvestortype }}};
+        let stoinvestortypes = {{{ json stoinvestortypes }}};
+
+        stoinvestortype.map(element => {
+            if(stoinvestortypes.includes(element.id)) {
+                finalhtml += `<div class="form-check"><input class="form-check-input" type="checkbox" value=${element.id} name="investorids" checked><label class="form-check-label" for="defaultCheck1">
+                ${element.id} - ${element.type}</label></div>`
+            } else {
+                finalhtml += `<div class="form-check"><input class="form-check-input" type="checkbox" value=${element.id} name="investorids"><label class="form-check-label" for="defaultCheck1">
+                ${element.id} - ${element.type}</label></div>`
+            }
+        })
+        document.getElementById('stoinvestorlist').innerHTML = finalhtml
+    }
+
+    function stoinvestortypesnotonshare() {
+        let finalhtml = '';
+        let stoinvestortype = {{{ json stoinvestortype }}};
+        let stoinvestortypes = {{{ json stoinvestortypesnotonshareregister }}};
+
+        stoinvestortype.map(element => {
+            if (stoinvestortypes.includes(element.id)) {
+                finalhtml += `<div class="form-check"><input class="form-check-input" type="checkbox" value=${element.id} name="stoinvestortypesnotonsharere" checked><label class="form-check-label" for="defaultCheck1">
+                ${element.id} - ${element.type}</label></div>`
+            } else {
+                finalhtml += `<div class="form-check"><input class="form-check-input" type="checkbox" value=${element.id} name="stoinvestortypesnotonsharere"><label class="form-check-label" for="defaultCheck1">
+                ${element.id} - ${element.type}</label></div>`
+            }
+        })
+        document.getElementById('stoinvestortypesnotonshareregister').innerHTML = finalhtml;
+    }
+
+    function sendBulkChoices(paramName, tagid, valueType) {
+        let idList = []
+        let data = document.querySelectorAll(`input[name=${tagid}]:checked`)
+        for(let i = 0; i < data.length;i++) {
+            idList.push(data[i].defaultValue)
+        }
+        const json = {
+            param: paramName,
+            value: `[${idList}]`,
+            typeName: valueType,
+        }
+        sendRequest("POST","/platform/setIndividualParam",JSON.stringify(json));
+    }
+
+    function setCognitoService() {
+        const json = {
+            CognitoUserPoolId: document.getElementById('CognitoUserPoolId').value,
+            CognitoClientId: document.getElementById('CognitoClientId').value,
+            CognitoPool_region: document.getElementById('CognitoPoolregion').value
+        }
+        sendRequest("POST","/platform/setCognitoService",JSON.stringify(json));
+    }
+
+    function setExternalApi() {
+        const json = {
+            ExternalAPILink: document.getElementById('ExternalAPILink').value,
+            ExternalAPILinkUser: document.getElementById('ExternalAPILinkUser').value,
+            ExternalAPILinkPassword: document.getElementById('ExternalAPILinkPassword').value
+        }
+        sendRequest("POST","/platform/setExternalApi",JSON.stringify(json));
+    }
+
+    function setSSOParams() {
+        const json = {
+            SSOModeEnabled: document.getElementById('SSOModeEnabledtag').value,
+            SSORedirectFrontEnd: document.getElementById('SSORedirectFrontEnd').value
+        }
+        sendRequest("POST","/platform/setSSOParams",JSON.stringify(json));
+    }
+
+    function viewClickedEntityType(typeId=0){
+        if (typeId) window.location.href = `/platform/entityTypeView?id=${typeId}`;
+        else window.location.href = '/platform/entityTypeView';
+    }
+
+    function updateTabDetails() {
+        document.getElementById('setTabDetails').submit();
+    }
+
+
+    function sendRequest(requestType, url ,jsonBody){
+        const xhr = new XMLHttpRequest();
+        xhr.open(requestType, url);
+        xhr.setRequestHeader("X-CSRF-Token", "{{csrfToken}}");
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    location.reload();
+                } else {
+                    document.getElementById('ParamsPostErrorMessage').innerText = xhr.response;
+                }
+            }
+        }
+        xhr.send(jsonBody);
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+    {{#ifEqual message 1}}
+        <b><span id="ErrorMessages" style="color:red"> Password changed </span></b>
+        <br /><br />
+    {{/ifEqual}}
+
+    {{#ifEqual message 2}}
+        <b><span id="ErrorMessages" style="color:red"> Old password is not correct </span></b>
+        <br /><br />
+    {{/ifEqual}}
+
+    {{#ifEqual message 3}}
+        <b><span id="ErrorMessages" style="color:red"> Password cannot be empty </span></b>
+        <br /><br />
+    {{/ifEqual}}
+
+    {{#ifEqual message 4}}
+        <b><span id="ErrorMessages" style="color:red"> Re-type password is not correct </span></b>
+        <br /><br />
+    {{/ifEqual}}
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; Change Password</h4>
+                </div>
+                <div class="content">
+
+                    <form id="retypePasswordForm" action="/platform/changePassword" method="post">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            Enter old password
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="oldpassword" name="oldpassword" placeholder="Enter Old password">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            Enter new password
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="newPassword" name="newPassword" placeholder="Enter new password">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            Re-Type new password
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="retypeNewPassword" name="retypeNewPassword" placeholder="Retype-Password">
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-9">
+                             <button type="button" onclick="chancghePassword()" class="btn btn-info btn-fill">Change Password</button>
+                        </div>
+                    </div>
+
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+
+
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/exchange.png" width="25px;"> &nbsp;  Time Zone Settings</h4>
+                    <label>Please enter difference in minutes with reference to GMT</label>
+                </div>
+                <div class="content">
+
+
+
+                    <b>
+                    <div class="row">
+                        <div class="col-md-4">
+                                {{this.title}}
+                        </div>
+                        <div class="col-md-2">
+                                Timezone
+                        </div>
+                        <div class="col-md-3">
+                                GMT time padding
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                    </div>
+                    </b>
+                    <br />
+
+                    {{#each timezone}}
+                            <div class="row">
+                                <div class="col-md-4">
+                                        {{this.title}}
+                                </div>
+                                <div class="col-md-2">
+                                        {{this.timezone}}
+                                </div>
+                                <div class="col-md-2">
+                                        {{this.timepadding}}
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <input type="text" maxLength="5" id="timezone{{this.ID}}" class="form-control border-input"  value="{{this.timepadding}}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal" onclick="updateTimeZone({{this.ID}})" id="createButton"> Update </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                    {{/each}}
+
+                    <br>
+                    <div class="footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#if platformConfiguration}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; Ravencoin Password</h4>
+                    <label>Change Ravencoin Password</label>
+                </div>
+                <div class="content">
+                    <form id="setRaven" action="/platform/changeRavencoinPassword" method="post">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            Enter Password
+                        </div>
+                        <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="txtRavenPassword" name="txtPassword">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-4">
+                             <button type="button" onclick="saveRavencoinPassword()" class="btn btn-info btn-fill">Save</button>
+                        </div>
+                    </div>
+
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; RavenCoin Setup</h4>
+                </div>
+                <div class="content">
+
+                    <form id="setRavenInfo" action="/platform/setRavenCoinInfo" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                Ravencoin Server URL
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="ravencoin_server_url"
+                                    name="ravencoin_url" placeholder="" value="{{Ravencoin_ServerURL}}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                Ravencoin Username
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="ravencoin_username"
+                                    name="ravencoin_username" placeholder="" value="{{Ravencoin_Username}}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                Ravencoin Password
+                            </div>
+                            <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="ravencoin_password"
+                                    name="ravencoin_password" placeholder="" value="{{Ravencoin_Password}}">
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-9">
+                                <button type="button" onclick="saveRavenCoinInfo()"
+                                    class="btn btn-info btn-fill">Save</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{{/if}}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; STOHostnamesEnabled
+                    </h4>
+                </div>
+                <div class="content">
+                    <form action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="pet-select">Choose a mode:</label>
+                                {{#if areSTOHostnamesEnabled}}
+                                <select class="form-control border-input" id="areSTOHostnamesEnabledtag">
+                                    <option value="0">False</option>
+                                    <option value="1" selected>True</option>
+                                </select>
+                                {{/if}}
+                                {{#unless areSTOHostnamesEnabled}}
+                                <select class="form-control border-input" id="areSTOHostnamesEnabledtag">
+                                    <option value="0" selected>False</option>
+                                    <option value="1">True</option>
+                                </select>
+                                {{/unless}}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setParamsSeperate('areSTOHostnamesEnabled', 'areSTOHostnamesEnabledtag', 'intValue')"
+                                    class="btn btn-info btn-fill">Save</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; CurrentClientID
+                    </h4>
+                </div>
+                <div class="content">
+                    <form id="CurrentClient_id" action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                ClientId
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" class="form-control border-input" id="current_client_id"
+                                    name="currentclient_id" value="{{CurrentClientID}}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setParamsSeperate('CurrentClientID', 'current_client_id', 'intValue')"
+                                    class="btn btn-info btn-fill">Save</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#if platformConfiguration}}
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; Polygon Web3Address
+                    </h4>
+                </div>
+                <div class="content">
+                    <form id="polygon_Web3Address" action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                Polygon Adress
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="polygon_Web3_Address"
+                                    name="polygon_Web3" value="{{polygonWeb3Address}}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setParamsSeperate('polygonWeb3Address', 'polygon_Web3_Address', 'stringValue')"
+                                    class="btn btn-info btn-fill">Save</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; Web3Adress</h4>
+                    <label>Add/Change Web3Adress</label>
+                </div>
+                <div class="content">
+                    <form id="web3Adres" action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                web3Adress
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="web3adress" name="web3adress"
+                                    value="{{web3Address}}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setParamsSeperate('web3Address', 'web3adress', 'stringValue')"
+                                    class="btn btn-info btn-fill">Save</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; Binance Web3Address</h4>
+                    <label>Add/Change Web3Adress</label>
+                </div>
+                <div class="content">
+                    <form id="web3Adres" action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                B-adress
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="binanceWeb3Address" name="binanceWeb3Address"
+                                    value="{{binanceWeb3Address}}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setParamsSeperate('binanceWeb3Address', 'binanceWeb3Address', 'stringValue')"
+                                    class="btn btn-info btn-fill">Save</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; SSO Params</h4>
+                </div>
+                <div class="content">
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="pet-select">SSOMode Enabled</label>
+                                {{#if SSOModeEnabled}}
+                                <select class="form-control border-input" id="SSOModeEnabledtag">
+                                    <option value="0">False</option>
+                                    <option value="1" selected>True</option>
+                                </select>
+                                {{/if}}
+                                {{#unless SSOModeEnabled}}
+                                <select class="form-control border-input" id="SSOModeEnabledtag">
+                                    <option value="0" selected>False</option>
+                                    <option value="1">True</option>
+                                </select>
+                                {{/unless}}
+
+                            </div>
+                            <br/>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="pet-select">SSORedirectFrontEnd</label>
+                                <input type="text" class="form-control border-input" id="SSORedirectFrontEnd" name="SSORedirectFrontEnd1"
+                                    value="{{SSORedirectFrontEnd}}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" onclick="setSSOParams()" class="btn btn-info btn-fill">Update</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; Cognito Params</h4>
+                </div>
+                <div class="content">
+                    <form action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                CognitoUser Pool ID
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="CognitoUserPoolId"
+                                    name="CognitoUserPoolId1" value="{{CognitoUserPoolId}}">
+                            </div>
+
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-md-3">
+                                CognitoClient ID
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="CognitoClientId" name="CognitoClientId"
+                                    value="{{CognitoClientId}}">
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-3">
+                                CognitoPool Region
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="CognitoPoolregion" name="CognitoPool_region"
+                                    value="{{CognitoPool_region}}">
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setCognitoService()"
+                                    class="btn btn-info btn-fill">Update</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; ExternalAPI Params</h4>
+                </div>
+                <div class="content">
+                    <form id="ExternalAPIL" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                ExternalAPILink
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="ExternalAPILink"
+                                    name="ExternalAPILink" value="{{ExternalAPILink}}">
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-md-3">
+                                ExternalAPILinkUser
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="ExternalAPILinkUser" name="ExternalAPILinkUser"
+                                    value="{{ExternalAPILinkUser}}">
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-md-3">
+                                ExternalAPILinkPassword
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="ExternalAPILinkPassword" name="ExternalAPILinkPassword"
+                                    value="{{ExternalAPILinkPassword}}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setExternalApi()"
+                                    class="btn btn-info btn-fill">Update</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; VotingPowerInFractions</h4>
+                </div>
+                <div class="content">
+                    <form id="voitngpow" action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                Value
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control border-input" id="VotingPowerInFractions"
+                                    name="VotingPowerInFractions" value="{{VotingPowerInFractions}}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setParamsSeperate('VotingPowerInFractions', 'VotingPowerInFractions', 'stringValue')"
+                                    class="btn btn-info btn-fill">Update</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; bimountEnabled</h4>
+                </div>
+                <div class="content">
+                    <form action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="pet-select">Choose a mode:</label>
+                                {{#if bimountEnabled}}
+                                <select class="form-control border-input" id="bimountEnabledtag">
+                                    <option value="0">False</option>
+                                    <option value="1" selected>True</option>
+                                </select>
+                                {{/if}}
+                                {{#unless bimountEnabled}}
+                                <select class="form-control border-input" id="bimountEnabledtag">
+                                    <option value="0" selected>False</option>
+                                    <option value="1">True</option>
+                                </select>
+                                {{/unless}}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button"
+                                    onclick="setParamsSeperate('bimountEnabled', 'bimountEnabledtag', 'intValue')"
+                                    class="btn btn-info btn-fill">Update</button>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br>
+                    <div class="footer">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; STO investor types</h4>
+                </div>
+                <div class="content">
+                    <form action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div id="stoinvestorlist" style="padding-left: 10px;">
+
+                            </div>
+
+                        </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" onclick="sendBulkChoices('stoinvestortypes', 'investorids', 'stringValue')"
+                            class="btn btn-info btn-fill">Update</button>
+                    </div>
+                </div>
+
+
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+
+                <br>
+                <div class="footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; STO investor types not on share register</h4>
+                </div>
+                <div class="content">
+                    <form action="/platform/setIndividualParam" method="post">
+
+                        <div class="row">
+                            <div id="stoinvestortypesnotonshareregister" style="padding-left: 10px;">
+
+                            </div>
+
+                        </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" onclick="sendBulkChoices('stoinvestortypesnotonshareregister', 'stoinvestortypesnotonsharere', 'stringValue')"
+                            class="btn btn-info btn-fill">Update</button>
+                    </div>
+                </div>
+
+
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+
+                <br>
+                <div class="footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <div class="row">
+      <div class="col-md-12">
+          <div class="card">
+              <div class="header">
+                  <h4 class="title"><img src="/img/contracts2.png" width="25px;"> &nbsp; Is Deployed with SaaS method?</h4>
+              </div>
+              <div class="content">
+                  <form action="/platform/setIndividualParam" method="post">
+                      <div class="row">
+                          <div class="col-md-4">
+                              <select class="form-control border-input" id="isSaaS">
+                                  {{#if isSaaS}}
+                                  <option value="0">False</option>
+                                  <option value="1" selected>True</option>
+                                  {{else}}
+                                  <option value="0" selected>False</option>
+                                  <option value="1">True</option>
+                                  {{/if}}
+                              </select>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-4">
+                              <button type="button"
+                                  onclick="setParamsSeperate('isSaaS', 'isSaaS', 'intValue')"
+                                  class="btn btn-info btn-fill">Update</button>
+                          </div>
+                      </div>
+                      <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Document Signing Mode</h4>
+        <label>Change the platform on which documents should be signed</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToSpdsModeSettingsPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" />Invoice Managment </h4>
+                <label>Enable/Disable display of Invoices</label>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button onclick="goToInvoiceManagmentPage()" class="btn btn-danger btn-fill">View / Edit
+                            Mode</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> KYC Settings</h4>
+        <label>Change the KYC settings of the platform</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToKycModeSettingsPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/lock.png" width="30px;" style="padding-bottom:4px;" /> Two-Factor Authentication Settings</h4>
+        <label>Change the two-factor authentication settings of the platform</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToTwoFactorSettingsPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#unless disableInvestorWallet}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Internal Wallet Mode</h4>
+        <label>Change the way wallets are managed by the platform</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToInternalWalletSettingsPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{/unless}}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Sell Shares Mode</h4>
+        <label>Change settings related to the process of selling shares back to the platform</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToSellBackSettingsPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Investor Accreditation Mode</h4>
+        <label>Change the way investor accreditation is managed on the platform</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToAccreditationSettingsPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> isPropertySortingSwitch}}
+
+{{> isContactTheSponsorFontSwitch}}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Switches</h4>
+        <label>Further customize the platform settings</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToOtherSwitchesPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Investor Modules</h4>
+        <label>Change the available modules that an investor can interact with</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToInvestorModuleSwitchesPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Platform Configuration</h4>
+        <label>Change the way the platform acts</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToPlatformConfigurationModePage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Navigation Bar customization</h4>
+        <label>Customize the top of the navigation bar with HTML tags</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToNavbarHeaderEditorPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Browser Tab Settings</h4>
+        <label>Change the icon and title shown in the tab</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <form id="setTabDetails" action="/platform/setTabDetails" method="post" >
+              <div class="row">
+                <div class="col-md-12">
+                  <label>Icon Link</label>
+                  <input type="text" class="form-control border-input" id="favicon" name="favicon" form="setTabDetails" value="{{favicon}}"/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <label>Tab Title</label>
+                  <input type="text" class="form-control border-input" id="tabTitle" name="tabTitle" form="setTabDetails" value="{{tabTitle}}"/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <button type="button" onclick="updateTabDetails()"
+                          class="btn btn-info btn-fill">Update</button>
+                </div>
+              </div>
+
+              <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> termsAndConditionsInput}}
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Share Register Settings</h4>
+        <label>Change settings for the STO Administrator's Share Register page</label>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <button onclick="goToShareRegisterSettingsPage()" class="btn btn-danger btn-fill">View / Edit Mode</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Environment Parameters</h4>
+                <label>List of Environment Parameters</label>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input onchange="updateParamFields(this.value)" id="paramsInput" class="form-control border-input" list="paramsDropdown">
+                        <datalist id="paramsDropdown"></datalist>
+                        <b><ul><span style="color:red;" id="ParamsPostErrorMessage"></span></ul></b>
+                    </div>
+                    <div class="col-md-4" style="float: right">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button onclick="reloadParameters()" class="btn btn-danger btn-fill">Reload Server</button>
+                            <button onclick="saveParametersToDatabase()" class="btn btn-info btn-fill">Save to Database</button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+                <form id="setParametersFormDropDown" action="/platform/setEnvironmentParams" method="post" >
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Param ID</label>
+                            <textarea id="paramId" disabled style="width: 100%" name="ID" form="setParametersFormDropDown"></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Param Name</label>
+                            <textarea id="paramName" disabled style="width: 100%" name="param" form="setParametersFormDropDown"></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Param isGlobal</label>
+                            <textarea id="paramIsGlobal" disabled style="width: 100%" name="isGlobal" form="setParametersFormDropDown"></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Param dataType</label>
+                            <textarea id="paramDataType" disabled style="width: 100%" name="dataType" form="setParametersFormDropDown"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Param intValue</label>
+                            <input type="number" id="paramIntValue" style="width: 100%" name="intValue" form="setParametersFormDropDown"></input>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                        <label>Param stringValue</label>
+                        <textarea id="paramStringValue" onkeyup="updateTextareaSize(this)" style="width: 100%" name="stringValue"
+                                  form="setParametersFormDropDown"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#if isInvestorOwnershipModuleEnabled}}
+<div class="row">
+    <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    <img src="/img/relative.png" width="30px;" style="padding-bottom:4px;" />
+                    &nbsp;  Investing Entity Type
+                    <button onclick="return viewClickedEntityType()" class="btn btn-info btn-fill" style="float: right;">
+                        Add Entity
+                    </button>
+                </h4>
+                <label>List of all Investing Entitiy Types</label>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+                <table class="table table-striped">
+                    <thead>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {{#each entityTypes}}
+                        <tr>
+                            <td style="width: 25%">{{this.ID}}</td>
+                            <td style="width: 50%">{{this.title}}</td>
+                            <td>
+                                <button onclick="return viewClickedEntityType({{this.ID}})" class="btn btn-info btn-fill btn-sm">View / Edit</button>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{{/if}}
+
+ {{> Footer}}

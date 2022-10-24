@@ -1,0 +1,103 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function(){
+			//$("#inbox").addClass('active');
+		})
+
+        function activateInvitation(status) {
+            window.location.href = "investorInvitationReaction?id={{record.ID}}&status=" + status;
+        }
+
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row">
+
+            {{#if messages}}
+                <span style="color:red; font-size:18px;">{{messages}}</span>
+                <br /><br />
+            {{/if}}        
+        
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title">  <img src="/img/email.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Invitation</h4>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Company</label>
+                        </div>
+                        <div class="col-md-2">
+                            <h5 style="margin-top:-0px;"> {{stoObj.title}} </h5>
+                        </div>
+                        <div class="col-md-6">
+                            <img src='/img/stologo/{{stoObj.logo}}' style="max-width:160px; max-height:70px; margin-top:-15px;">  
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Web Link</label>
+                        </div>
+                        <div class="col-md-10">
+                            <h5 style="margin-top:-0px;"> <img src="img/link.png" width="25px"> &nbsp; {{stoObj.website}} </h5>
+                        </div>
+                    </div>                 
+                    
+                    <hr />
+
+                    <h5> <img src="img/email.png" width="25px"> &nbsp;&nbsp; Invitation Message from Company</h5>
+                    {{{record.emailtext}}}
+                    <br />
+                    {{{stoObj.emailFooter}}}
+                    
+                    <br /><br /><br />
+                    {{#ifEqual record.currentStatus 0}}
+                        <b> <img src="img/graydot.png" width="15px" /> &nbsp; Caution</b> 
+                        <br />
+                        <label> Be aware that by accepting the invitation, your profile information including documents will be shared with company administration. This information will be required to review and approve your profile  </label>
+
+                        <br /><br />
+                        <button onclick="return activateInvitation(1)" class="btn btn-info btn-fill">&nbsp;&nbsp; Accept Invitation &nbsp;&nbsp;</button>   &nbsp;&nbsp;&nbsp;
+                        <button onclick="return activateInvitation(2)" class="btn btn-info btn-fill">&nbsp;&nbsp; Reject Invitation &nbsp;&nbsp;</button>                      
+                    {{/ifEqual}}
+                    
+                    {{#ifEqual record.currentStatus 1}}
+                        <h3 style="color:green;">Invitation Accepted</h3>
+                        <label>You have accepted the invitation from company. Your profile information has been shared with the company administration. They will review your information and approve your profile. Once approved by administration you will be able to access company dashboard</label>
+                        <br /><br />
+                    
+                        <b>Company administration has not yet approved and activated your profile. You can still reject invitation by clicking the following button</b>
+                        <br /><br />
+                        <button onclick="return activateInvitation(2)" class="btn btn-info btn-fill">&nbsp;&nbsp; Reject Invitation &nbsp;&nbsp;</button>                      
+                    {{/ifEqual}}
+                    
+                    {{#ifEqual record.currentStatus 2}}
+                        <h3 style="color:red;">Invitation Reject</h3>
+                        <label>You have rejected the invitation offer and your profile is not accessible to company administration </label>
+                        
+                        <br /><br />
+                        <b>You can still accept the offer by clicking the following button. This will share your profile information to company administration for review and approval</b>
+                        <br /><br />
+                        <button onclick="return activateInvitation(1)" class="btn btn-info btn-fill">&nbsp;&nbsp; Accept Invitation &nbsp;&nbsp;</button>                      
+                    {{/ifEqual}}
+                    
+                    
+                    
+                    <br />&nbsp;
+                </div>
+
+            </div>
+
+        </div>
+
+{{> Footer}}

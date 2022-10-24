@@ -1,0 +1,510 @@
+{{> Header}}
+
+<script language="javascript">
+    const ERC1404ByteCode = "{{ERC1404ByteCode}}";
+    var isMetaMaskConnected = 0;
+    var metaMaskAddress = "";
+    const ERC1404ByteSize = {{ERC1404ByteSize}};
+    const isBlockchainConnection = {{isBlockchainConnection}};
+    const stoBlockchainID = {{stoBlockchainID}};
+    const selectedSTOID = {{selectedSTOID}};
+    const atomicSwapAddress = "{{swapContractAddress}}";
+
+
+    var platformInvestorDashboardLink = "{{platformInvestorDashboardLink}}";
+
+    $(document).ready(function() {
+        document.getElementById("shareCertificate").value = platformInvestorDashboardLink + "?id=" + selectedSTOID;
+
+        document.getElementById('blockchainType').value = stoBlockchainID;
+
+        /*if(  commonGetQueryStringValue("blockchain")  !=  null ) {
+            var element = document.getElementById("blockchainType");
+            element.value = commonGetQueryStringValue("blockchain");            
+        }*/
+    })
+
+    function deployToken() {
+
+        if( document.getElementById("tokenName").value == "") {
+            showModelGeneralOKDialogBox("Please enter Token Name")
+            return;
+        } else {
+            if( document.getElementById("tokenName").value.length < 3 ) {
+                showModelGeneralOKDialogBox("Token Name should be atleast 3 character long");
+                return;
+            }
+        }
+
+        if( document.getElementById("tokenSymbol").value == "") {
+            showModelGeneralOKDialogBox("Please enter token symbol")
+            return;            
+        } else {
+            if( document.getElementById("tokenSymbol").value.length < 3 ) {
+                showModelGeneralOKDialogBox("Token Symbol should be atleast 3 character long");
+                return;
+            }            
+        }
+
+        if( document.getElementById("initialSupply").value == "") {
+            showModelGeneralOKDialogBox("Please enter the initial supply of token")
+            return;
+        } else {
+            if( isNaN ( document.getElementById("initialSupply").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid number in initial supply");
+                return;
+            }
+        }
+
+        var restrictNumber = document.getElementById("chkRestrictNumber");
+        if (restrictNumber.checked) {
+            if( document.getElementById("txtRestrictNumber").value == "") {
+                showModelGeneralOKDialogBox("Please enter number of investors restriction")
+                return;
+            } else {
+                if( isNaN ( document.getElementById("txtRestrictNumber").value ) ) {
+                    showModelGeneralOKDialogBox("Please enter a valid number in investors to restriction");
+                    return;
+                }
+            }
+        } else 
+            document.getElementById("txtRestrictNumber").value = '0';
+
+        if( document.getElementById("titleToken").value == "") {
+            showModelGeneralOKDialogBox("Enter Token Title")
+            return;
+        } 
+
+        if( document.getElementById("nominalvalue").value == "") {
+            showModelGeneralOKDialogBox("Enter Nominal Value")
+            return;
+        } else {
+            if( isNaN ( document.getElementById("nominalvalue").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid nominal value number");
+                return;
+            }
+        }
+        
+        if( document.getElementById("premiumvalue").value == "") {
+            showModelGeneralOKDialogBox("Enter Premimum Value")
+            return;
+        }else {
+            if( isNaN ( document.getElementById("premiumvalue").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid premimum value number");
+                return;
+            }
+        }
+
+        var selectTyp = document.getElementById('blockchainType');
+        var valueTyp = selectTyp.options[selectTyp.selectedIndex].value;
+        document.getElementById("blockchainID").value = valueTyp;
+
+        //Assign correct blockchain protocols to token deployed
+        if(valueTyp == "1")                                
+            valueTyp = "4"      	// 4 = ERC1404 Ethereum
+        else if(valueTyp == "2")
+            valueTyp = "6"      	// 6 = ERC1404 Binance
+        else if(valueTyp == "3")
+            valueTyp = "5"          // 5 = ERC1404 Polygon
+        document.getElementById("blockchainProtocolType").value = valueTyp;
+
+        if(isMetaMaskConnected == 0) {
+            $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            initializePublicKeyFileObject();
+        } else {
+
+            if( metaMaskAddress.toLowerCase() != document.getElementById("ethereumAddress").value.toLowerCase() ) {
+                showModelGeneralOKDialogBox(`Correct account is not selected in MetaMask. <br /><br /> Current selected MetaMask account is with  public key ${metaMaskAddress} <br /><br /> while you entered different address ( ${ document.getElementById("ethereumAddress").value } ) in Enter Public Address `);
+                return;
+            }
+
+            var tokenDivisible = document.getElementById("chkTokenDivisible");
+            var initialSupply = document.getElementById("initialSupply").value;
+            var chkTokenDivisibleDecimals = ""
+            if (tokenDivisible.checked) {
+                initialSupply = initialSupply + "000000000000000000";
+                chkTokenDivisibleDecimals = "18";
+            } else {
+                chkTokenDivisibleDecimals = "0";
+            }
+
+            deployERC1404TokenMetaMask(
+                initialSupply, 
+                document.getElementById("tokenName").value, 
+                document.getElementById("tokenSymbol").value, 
+                document.getElementById("txtRestrictNumber").value, 
+                chkTokenDivisibleDecimals, 
+                document.getElementById("shareCertificate").value, 
+                document.getElementById("companyHomePage").value, 
+                document.getElementById("companyLegalDocs").value,
+                ERC1404ByteCode,
+                ERC1404ByteSize,
+                atomicSwapAddress
+            )
+        }
+
+        //$("#tokenStudioForm").submit();
+    }
+    function callbackPublicKeyFileAndPasswordCollected(fileContents, password) {
+        document.getElementById("password").value = password;
+        document.getElementById("filecontents").value = fileContents;
+        document.getElementById("tokenStudioForm").submit();
+    }
+    function connectMetaMask() {
+        connectWallet();
+    }
+    function Wallet_BlockchainAccountSelected(account) {
+        $("#metaMaskSection").show();
+        $("#metaMaskAccountAddress").html( account );
+
+        isMetaMaskConnected = 1;
+        metaMaskAddress = account;
+    }
+    function Wallet_TransactionEvent(hash, operation) {
+        document.getElementById("blockchainTransactionID").value = hash;
+        document.getElementById("metaMaskTransaction").value = "1";
+        document.getElementById("tokenStudioForm").submit();
+    }
+    function getBlockchainInfo() {
+
+        var link = "";
+        var select = document.getElementById('blockchainType');
+        var value = select.options[select.selectedIndex].value;
+        link = "tokenstudio?id=" + selectedSTOID + "&blockchain=" + value ;
+
+         if(  checkEthereumAddressIsValid(    document.getElementById("ethereumAddress").value    ) ) {
+            if( document.getElementById("ethereumAddress").value != "" ) 
+                link = link +"&" + "ethereumAddress=" +  document.getElementById("ethereumAddress").value;        
+
+            window.location.href = link;
+            return false; 
+         } else
+            showModelGeneralOKDialogBox("Ethereum address is not valid")
+    }
+
+
+</script>
+
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                 <h3 class="title"><img src="/img/tokenstudio.png" width="35px;"> &nbsp; Token Studio </h3>
+                 <label>Deploy Security token in blockchian</label>
+            </div>
+
+            {{#if message}}
+                <b><span style="color:red;"> {{message}} </span></b>
+            {{/if}}
+
+
+            <div class="content">
+
+                <img src="/img/blockchainbanner.jpg" width="100%" height="180px;">
+                
+                <br /><br />
+                <span style="font-size:20px;"> Using this token studio, issuers can deploy security token in blockchain</span>
+                <br />
+                <label> First select the blockchain you want to deploy to from following dropdown</label>
+                <br /><br />     
+
+                <img src="/img/no1.jpg" width="40px">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span style="font-size:20px;">Selected Blockchain for this project</span>
+                <br />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <br />
+                            <select maxLength="100" disabled id="blockchainType" name="blockchainType" class="form-control border-input" style="font-size:28px; height:60px;" onchange="getBlockchainInfo()" >
+                                <option value=1>Ethereum </option>
+                                <option value=2>Binance </option>                                                                
+                                <option value=3>Polygon </option>
+                            </select>
+                            <br />
+                            {{#unless isBlockchainConnection}}
+                                <span style="color:red"> <b>  Blockchain connection is not yet set. Please contact platform vender  </b></span>
+                            {{/unless}}
+                        </div>
+                    </div> 
+                </div>
+
+                Your selected token from dropdown will be deployed to Ethereum blockchain and the protocol is ERC1404. Make sure your Ethereum wallet is ready with sufficient ETH to make deployment as shown below
+                <br ><br />
+                <img src="/img/ethgas.png" width="30px">
+                &nbsp;&nbsp;&nbsp;
+                <span style="font-size:20px;">Current Gas Price </span>  &nbsp;&nbsp;&nbsp;  <span style="font-size:25px; color:chartreuse"> {{gasPrice}} gwei </span> 
+
+                <br /><br />                    
+                <img src="/img/cryptocost.jpg" width="30px">
+                &nbsp;&nbsp;&nbsp;
+                <span style="font-size:20px;">Deployment Cost </span>  &nbsp;&nbsp;&nbsp;&nbsp;  <span style="font-size:25px; color:chartreuse"> {{ethCost}} 
+                    {{#ifEqual stoBlockchainID 1}} ETH {{/ifEqual}}
+                    {{#ifEqual stoBlockchainID 2}} BNB {{/ifEqual}}
+                    {{#ifEqual stoBlockchainID 3}} MATIC {{/ifEqual}}
+                </span> 
+                <br /> <br />
+
+                <img src="/img/ethereumgas.png" width="38px">
+                &nbsp;&nbsp;&nbsp;
+                <span style="font-size:20px;">Gas Limit </span>  &nbsp;&nbsp;&nbsp;&nbsp;  <span style="font-size:25px; color:chartreuse"> {{gasLimit}} gas </span> 
+                <br /> <br />                
+
+                <br> This token has following capabilities <br /><br />
+               
+                <img src="/img/greendot.png" width="10px">  Full ERC20 functionality <br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Whitelisting</b>    &nbsp;&nbsp;&nbsp;   <label> issuer has full control of whitelisting of investor private wallets.   issuers can whitelist new addresses and can block existing whitelisted addresses. if a address is blocked and it has token then these tokens will be frozen</label><br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Control Buy/Sell dates</b>   &nbsp;&nbsp;&nbsp;  <label>  Issuers can control the dates when investors can sell their shares. issuers can control what date the shares will be locked and the investor cannot sell. Similarly issuer can also put buy date restrictions on a wallet</label><br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Transfer Control</b>  &nbsp;&nbsp;&nbsp;     <label>   Issuer can stop / resume all transfers,      when transfers are stopper then all wallets ( including issuer wallet ) are frozen in blockchain </label><br /><br />
+                <img src="/img/greendot.png" width="10px">  <b>Whilelist authority</b>    &nbsp;&nbsp;&nbsp;   <label>  Issuer can give whitelisting access to external source like an exchange,    so exchange can also whitelist new wallets in the blockchain </label><br /><br />
+                
+
+                <br /><br />
+                <img src="/img/lineseparator.png" width="100%"  height="30px">                                        
+                <br /><br />
+                <img src="/img/no2.png" width="40px">
+                &nbsp;&nbsp;&nbsp;
+                <span style="font-size:20px;">Enter your Ethereum Wallet Address</span>
+                <br /><br />
+                This will be your company account in blockchain. When security token is deployed in the blockchain all initial supply of tokens will be transferred in this blockchain
+                <br /><br />
+                Please make sure your wallet is properly setup and you have full control of this address including private key
+                <br /><br />
+                <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Enter Public Address</label>
+                                <input type="text" maxLength="100" id="ethereumAddress" name="ethereumAddress" class="form-control border-input" placeholder="Ethereum Address" value="{{ethereumAddress}}">
+                            </div>
+                            {{#if linkToInvestorDashboardSet}}
+                                <button type="button" onclick="return getBlockchainInfo()" class="btn btn-info btn-fill">Get Wallet Balance</button>
+                            {{/if}}
+                            <br />
+                        </div> 
+
+                        <div class="col-md-6">
+
+                        {{#if showTokenCreationSection}}
+                            <br ><br />
+                            <img src="/img/ethgas.png" width="30px">
+                            &nbsp;&nbsp;&nbsp;
+                            <span style="font-size:20px;"> Your Current Balance  </span>  &nbsp;&nbsp;&nbsp;  <span style="font-size:25px; color:chartreuse"> {{ethereumAddressValue}} 
+                                {{#ifEqual stoBlockchainID 1}} ETH {{/ifEqual}}
+                                {{#ifEqual stoBlockchainID 2}} BNB {{/ifEqual}}
+                                {{#ifEqual stoBlockchainID 3}} MATIC {{/ifEqual}}
+                            </span> 
+                        {{/if}}
+
+
+                        {{#ifEqual showTokenCreationSection 2}}
+                            <br /> <span style="font-size:15px; color:red;"> This account do not have sufficient ETC to pay the GAS price of deployment  </span>                               
+                        {{/ifEqual}}                            
+
+                        </div>
+                </div>
+
+                {{#if linkToInvestorDashboardSet}}
+                <div style="display:
+                    {{#ifEqual showTokenCreationSection 1}} block;  {{else}}  none; {{/ifEqual}} ">
+
+                        <br /><br />
+                        <img src="/img/lineseparator.png" width="100%"  height="30px"> 
+                        <br /><br />                                       
+                        <img src="/img/no3.png" width="50px">
+                        &nbsp;&nbsp;&nbsp;
+                        <span style="font-size:20px;">Enter Token Information</span>
+                        <br /><br />
+
+                        Please enter following token information. Make sure the information is correct as some of the information will be permanent and cannot be changed. Details are given below with each field
+                        <br />
+                        
+                        <form id="tokenStudioForm" name="tokenStudioForm" action="tokenStudioPost" method="post">
+                            <br />
+
+                            <img src="/img/greendot.png" width="10px"> &nbsp;&nbsp;                    
+                            Token name and symbol will identify your token in the blockchain. Please enter a unique name and symbol that identify your business and also be unique in Ethereum blockchain. Please research on <b>etherscan.io</b> and make sure your token name and symbol is unique. You can search on token name on etherscan.io to find out if there is any token already deployed with similar name
+                            This information cannot be changed once token is deployed to blockchain
+                                <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Token Name</label>
+                                        <input type="text" maxLength="10" id="tokenName" name="tokenName" class="form-control border-input" placeholder="Enter Token Name" value="">
+                                    </div>
+                                </div> 
+                                <div class="col-md-2"></div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Token Symbol</label>
+                                        <input type="text" maxLength="10" id="tokenSymbol" name="tokenSymbol" class="form-control border-input" placeholder="Enter Token Symbol" value="">
+                                    </div>
+                                </div>                                                                
+                            </div>  
+
+                            <br /><br />
+                            <img src="/img/greendot.png" width="10px"> &nbsp;&nbsp;                    
+                            Please enter the initial supply of tokens. These tokens will be created in blockchain and all of them will be transferred for your Ethereum public address that you selected above.
+                            You can mint new tokens or burn existing tokens from company account in future
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Enter Initial Supply of Tokens</label>
+                                        <input type="text" maxLength="100" id="initialSupply" name="initialSupply" class="form-control border-input" placeholder="Enter Initial Supply" value="">
+                                    </div>
+                                </div>                                                                                    
+                            </div> 
+
+
+                            <br /><br />
+                            <img src="/img/greendot.png" width="10px"> &nbsp;&nbsp;                    
+                            Please select if you want to control the total number of investors who can hold tokens in blockchain. For example if you enter 2000 then only 2000 investors can hold tokens. This rule is enforced in blockchain but after token deployment, either number of investors can be changed or rule can be disabled. If you do not select this checkbox there there will be no restrictions on number of investors who can receive or hold tokens in blockchain
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input type="checkbox" id="chkRestrictNumber" name="chkRestrictNumber" value="1"/> 
+                                        &nbsp;&nbsp;
+                                        <label>Restrict number of investors Yes / No </label>                                 
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" maxLength="100" id="txtRestrictNumber" name="txtRestrictNumber" class="form-control border-input" placeholder="Investor Count" value="">
+                                </div>                                                                                    
+                            </div>                      
+
+                            <br /><br />
+                            <img src="/img/greendot.png" width="10px"> &nbsp;&nbsp;      
+                            Do you want your tokens divisible or not. By default checkbox is enabled which means tokens are divisible. Divisibility means that tokens can be transferred in fractions
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="checkbox" id="chkTokenDivisible" name="chkTokenDivisible" checked value="1"/> &nbsp;&nbsp;&nbsp; <label> Token Divisible </label>
+                                </div>
+                            </div>
+
+
+                            <br /><br />
+                            <span style="font-size:20px;">On-Chain Information</span>
+                            <br />
+                            Following information will be added onchain with smart contract. Issuer can change this information through platform any number of time later                        <br /><br />
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Share Certificate Link</label>
+                                        <input type="text" maxLength="60" id="shareCertificate" name="shareCertificate" class="form-control border-input" ReadOnly=true placeholder="Share Certificate Link" value="{{platformInvestorDashboardLink}}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Company Home Page Link (optional) </label>                                                                        
+                                        <input type="text" maxLength="60" id="companyHomePage" name="companyHomePage" class="form-control border-input" placeholder="Company Home Page" value="">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Company Legal Docs Link (optional)</label>
+                                        <input type="text" maxLength="60" id="companyLegalDocs" name="companyLegalDocs" class="form-control border-input" placeholder="Company Legal Docs Link" value="">
+                                    </div>
+                                </div>
+                            </div>                                                
+
+
+
+                            <br /><br />
+                            <span style="font-size:20px;">Additional Token Information</span>
+                            <br /><br />
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Selected Project</label>
+                                        <br />
+                                        {{stoTitle}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Share Title</label>
+                                        <input type="text" maxLength="150" id="titleToken" name="titleToken" class="form-control border-input" placeholder="Title of the share class" value="">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Nominal Value </label>
+                                        <input  type="text" maxLength="10" id="nominalvalue" name="nominalvalue" class="form-control border-input" placeholder="Nominal Value" value="">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2"></div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Market Value</label>
+                                        <input type="text"    maxLength="10" id="premiumvalue" name="premiumvalue" class="form-control border-input" placeholder="Market Value" value="">
+                                    </div>
+                                </div>
+                            </div>
+                                                        
+                            <input type="hidden" id="stoid" name="stoid" value="{{selectedSTOID}}" />                            
+                            <input type="hidden" id="blockchainID" name="blockchainID" value="" />
+                            <input type="hidden" id="blockchainProtocolType" name="blockchainProtocolType" value="" />
+                            <input type="hidden" id="blockchainTransactionID" name="blockchainTransactionID" value="" />
+                            <input type="hidden" id="metaMaskTransaction" name="metaMaskTransaction" value="0" /> 
+                            <input type="hidden" id="password" name="password" />
+                            <input type="hidden" id="filecontents" name="filecontents" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        </form>
+
+                        <br /><br />
+                        <img src="/img/lineseparator.png" width="100%" height="30px">  
+                        <br /><br />                                      
+                        <img src="/img/no4.png" width="50px">
+                        &nbsp;&nbsp;&nbsp;
+                        <span style="font-size:20px;">All Set - Deploy Security Token</span>
+                        <br /><br />
+                        You are ready to make deployment of token in blockchain. Please click button. Once deployment is complete which should take around a minutes then the platform will be automatically configured with your new token in blockchain 
+                        <hr />
+                            <button type="button" class="btn btn-info btn-fill btn-wd" onclick="connectMetaMask()">Connect MetaMask</button> 
+                            &nbsp;&nbsp;&nbsp;
+                            <span id="metaMaskSection" style="display:none;">
+                                <img src="/img/greendot.png" width="20px;"> Meta Mask is connected
+
+                                <br /><br />
+
+                                <span id="metaMaskAccountAddress"></span> 
+                                &nbsp;&nbsp;&nbsp;
+                                ( Please make sure this is the correct address to send transaction )
+                            </span>
+                        <hr />                          
+                        <button type="button" onclick="return deployToken()" class="btn btn-info btn-fill">Start Deployment in Blockchain</button>
+                        <br />  
+                </div>
+                {{else}}
+                    <br /><br /><br />
+                    <span style="color:red"> <b>Default share certificate link is not yet set. Please contact platform vender</b> </span>
+                    <br /><br />
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+ 
+{{> atomicswap}}
+{{> privateKeySelectorDialog}}
+{{> Footer}}

@@ -1,0 +1,178 @@
+
+	<script language="javascript">
+        function logout(){
+            window.location.href = "/logout";
+            return false;
+        }
+        function myprofile() {
+            window.location.href = "/wizard?step=0";
+            return false;
+        }
+    </script>
+
+</head>
+<body>
+
+
+
+<div class="wrapper">
+
+
+    <div class="sidebar" data-background-color="black" data-active-color="danger">
+    <!--
+		Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+		Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+	-->
+    	<div class="sidebar-wrapper" style="overflow-x: hidden; overflow-y: auto;">
+            <div class="logo">
+                 <a href="dashboard" class="simple-text" >
+                    <img src="/img/stologo/{{Data.logo}}" style="max-height: 100px; max-width: 120px;" />
+
+                </a>
+            </div>
+
+            <ul class="nav">
+
+                <li id="ActiveProperies">
+                    <a href="activeproperties">
+                        <i class="ti-control-record"></i>
+                            {{#ifEqual Data.CurrentClientID 9}}
+                                <p>Active Opportunities</p>
+                            {{else}}
+                                <p>Active Projects</p>
+                            {{/ifEqual}}
+                    </a>
+                </li>
+
+                <li id="Portfolio">
+                    <a href="mycombineportfolio">
+                        <i class="ti-layout-grid3"></i>
+                        <p>My Portfolio</p>
+                    </a>
+                </li>
+
+
+                <li id="InvestorWallet">
+                    <a href="depositfundsinwallet">
+                        <i class="ti-wallet"></i>
+                        <p>Wallet</p>
+                    </a>
+                </li>
+
+
+                <li id="updates">
+                    <a href="updates">
+                        <i class="ti-volume"></i>
+                        <p>{{{__ "Company-Updates"}}}</p>
+                    </a>
+                </li>
+
+                <li id="settlements">
+                    <a href="settlements">
+                        <i class="ti-agenda"></i>
+                        <p>{{{__ "Contracts-Documents"}}}</p>
+                    </a>
+                </li>
+
+                {{#ifGreater (addTovalue Data.pastMeetings (addTovalue Data.isVotingForThisInvestorEnabled Data.isMeetingForThisInvestorEnabled)) 0 }}
+                    <li id="votings">
+                        <a href="votings">
+                            <i class="ti-stamp"></i>
+                            <p>{{{__ "Voting"}}}</p>
+                        </a>
+                    </li>
+                {{/ifGreater}}
+
+
+                {{#ifEqual Data.isInternalExchangeEnabled 1}}
+                    <li id="Trading">
+                        <a href="trading">
+                            <i class="ti-fullscreen"></i>
+                            <p>{{{__ "Trading"}}}</p>
+                        </a>
+                    </li>
+                {{/if}}
+
+                <li id="inbox">
+                    <a href="inbox">
+                        <i class="ti-email"></i>
+                        <p>{{{__ "Inbox"}}}</p>
+                    </a>
+                </li>
+
+                <li id="ownership">
+                    <a href="ownership">
+                        <i class="ti-pin2"></i>
+                        <p>{{{__ "Investor-Ownership"}}}</p>
+                    </a>
+                </li>
+
+                <li id="Settings">
+                    <a href="settings">
+                        <i class="ti-settings"></i>
+                        <p>{{{__ "My-Settings"}}}</p>
+                    </a>
+                </li>
+            </ul>
+    	</div>
+    </div>
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar bar1"></span>
+                    <span class="icon-bar bar2"></span>
+                    <span class="icon-bar bar3"></span>
+                </button>
+
+                <div class="navbar-header">
+                    <a class="navbar-brand stopATagLink">{{{__ "Investor-Dashboard"}}}
+                    </a>
+                </div>
+
+                {{#ifGreater Data.investorSTOs.length 1}}
+                     {{#ifEqual Data.InvestorCombinePropertiesMode 0}}
+                        <div class="navbar-header">
+                       &nbsp;&nbsp;&nbsp;&nbsp; <img src='/img/stologo/{{Data.logo}}' style="max-width:130px; max-height:70px;margin-top:5px;"> &nbsp;&nbsp; <button onclick="showInvestoSTOSelectionBox()" style="margin-top:20px;" class="btn btn-info btn-fill btn-sm"> Switch </button>
+                        </div>
+                    {{/ifEqual}}
+                {{/ifGreater}}
+
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li style="padding-top:15px;" >
+                            {{> languageSelection}}
+                        </li>
+                        <li>
+                           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </li>
+
+                        <li>
+                            <a class="stopATagLink"><b>Current User:</b> {{Data.Login_UserName}}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="ti-user"></i>
+                                <span onclick="return myprofile()">{{{__ "My-Profile"}}}</span>
+                            </a>
+                        </li>
+						<li>
+                            <a href="#">
+								<i class="ti-arrow-circle-up"></i>
+								<span onclick="return logout()">{{{__ "Logout"}}}</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+        </nav>
+
+        <div class="content">
+
+		            <div class="container-fluid">

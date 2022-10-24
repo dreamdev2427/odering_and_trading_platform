@@ -1,0 +1,7 @@
+query getThemeConfig {
+    investorAppParameters {
+        investorDashboardTheme
+        leftSideMenuFont
+        poweredByLabel
+    }
+}

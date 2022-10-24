@@ -1,0 +1,190 @@
+{{> Header}}
+
+{{> multifileupload}}
+
+<script src="/libs/signature.js"></script>
+
+	<script language="javascript">
+        const STOContractSigned = {{STOContractSigned}};
+
+		$(document).ready(function(){
+            initlizeSignaturesCanvas("newSignature");
+            {{#if investorRec.investorType}}
+                    initlizeSignaturesCanvas("newSignature2");
+            {{/if}}
+
+		})
+		function getDetails(id) {
+            window.location.href = "/updateDetails?id=" + id;
+            return false;
+		}
+        function signContract() {
+
+            if( document.getElementById("DateIncorporation").value == "" ) {
+                showModelGeneralOKDialogBox("Please enter date")
+                return;
+            }
+
+            if ( isSignatureAreaIsEmpty("newSignature") ) {
+                showModelGeneralOKDialogBox("Please sign the contract.")
+                return;
+            }
+
+
+            {{#if investorRec.investorType}}
+                if ( isSignatureAreaIsEmpty("newSignature2") ) {
+                    showModelGeneralOKDialogBox("Please sign the contract.")
+                    return;
+                }
+            {{/if}}
+
+
+                var data = `<h4>Subscription Agreement</h4>
+
+                                        By executing this Signature Page, the undersigned hereby executes, adopts and agres to all terms, conditions and representations of this Subscription Agreement and acknowledges all requirements are met by the purchases to purchase shares in the Series.
+                                        <br /><br />
+                                        Number of Tokens &nbsp;&nbsp;&nbsp; <b> {{buyRequest.Shares}} </b>
+
+                                        <br /><br />
+                                        Aggregate Purchase Price &nbsp;&nbsp;&nbsp; <b>{{currencySymbol shareRec.currencyid}}    {{purchasePrice}}</b>
+
+                                        <br /><br />
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                The undersigned purchaser has executed this Signature Page on this `;
+
+                    data = data + "&nbsp;&nbsp;&nbsp;&nbsp;" + document.getElementById("DateIncorporation").value;
+
+                    data = data + `</div>
+                                            </div>
+                                                <br /><br />
+                                                {{investorRec.FirstName}} {{investorRec.MiddleName}} {{investorRec.LastName}}   <br /><br />`;
+
+                    data =  data  +  "<img src=" + getSignatureImageData("newSignature")  + " /><br />";
+
+
+                    {{#if investorRec.investorType}}
+                            data =  data  +  "<br /><br />";
+                            data =  data  +  "Signature of Authorized Co-Signatory, if required<br />";
+                            data =  data  +  "<img src=" + getSignatureImageData("newSignature2")  + " />";
+                    {{/if}}
+
+
+                    document.getElementById("contents").value = data;
+
+                    $("#signContractForm").submit();
+        }
+
+        function callMultiFileUpdate(id) {
+                if(id == 1) {
+                    checkAndUpdateMultiFileUpload('photos222', 'upload-file1',  /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf)$/i, "Select only selected extensions", 2, 1, 4)
+                }
+            }
+        function multipleFilesUploadingDoneEvent(data) {
+                document.getElementById("contentstype").value = "file";
+                document.getElementById("contents").value = JSON.stringify(data);
+                document.getElementById("signContractForm").submit();
+            }
+
+        function signInternalForm(requestID, documentID, requireOnce) {
+            const id = requireOnce + 1;
+            if ('{{{internalMode}}}' === 'true') {
+                window.location.href = 'sharePurchaseDocument?sharePurchaseID='+requestID+'&documentID='+documentID;
+            } else {
+                window.location.href =  `sharePurchaseDocumentSignDocusignDocument?id=${'{{buyRequest.ID}}'}&formid=${id}&sharePurchaseID=${requestID}&documentID=${documentID}`;
+            }
+            return false;
+        }
+
+	</script>
+
+{{> HeaderInner}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title"> <img src="/img/contracts.png" width="30px">Contracts Signing</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+            You are purchasing shares for a project.
+            {{#each documents}}
+            <br /><br /><br />
+            <div class="row">
+                <div class="col-md-1"> <img src="/img/graydot.png" width="10px">
+                    <span class="title">
+
+                    </span>
+                </div>
+                    <div class="col-md-10">
+                        <h4 class="title">
+                            <img src="/img/document2.png" width="30px">
+                            {{this.title}}
+                        </h4>
+                        <br />
+                        {{#if this.requireOnce}}
+                            This contract only needs to be signed for the first purchase of shares.
+                        {{else}}
+                            This contract  needs to be signed for every purchase of shares.
+                        {{/if}}
+                        <br />
+                        <br />
+                        {{#if this.status}}
+                            {{#ifGreater this.status 1}}
+                                <img src="/img/greendot.png" width="20px">
+                                You have signed the subscription agreement
+                            {{else}}
+                                <button type="button" class="btn btn-info btn-fill btn-sm"
+                                        onclick="signInternalForm(
+                                            {{../buyRequest.ID}},
+                                            {{this.ID}},
+                                            {{this.requireOnce}}
+                                        )">
+                                    Sign Contract
+                                </button>
+                            {{/ifGreater}}
+                        {{else}}
+                            <button type="button" class="btn btn-info btn-fill btn-sm"
+                                    onclick="signInternalForm(
+                                        {{../buyRequest.ID}},
+                                        {{this.ID}},
+                                        {{this.requireOnce}}
+                                        )">
+                                Sign Contract
+                            </button>
+                        {{/if}}
+                    </div>
+            </div>
+            {{/each}}
+            <br />
+            {{#if buyRequest.isBuySharesFormSigned}}
+                <div class="row">
+                    <div class="col-md-1">
+                        <img src="/img/done.png" width="50px">
+                    </div>
+                    <div class="col-md-10">
+                        <br />
+                        <br />
+                        Thank you for signing contracts to purchase project shares.
+                        Administration is reviewing your request and will update you soon
+                    </div>
+                </div>
+            {{/if}}
+        </div>
+        <br />
+        <br />
+        </div>
+    </div>
+</div>
+
+<!--<form id="signContractForm" name="signContractForm" action="/signSubscriptonFormsSubmit" method="post" >
+    <input type="hidden" id="id" name="id" value={{buyRequest.ID}} />
+    <input type="hidden" id="contentstype" name="contentstype" value="html" />
+    <input type="hidden" id="contents" name="contents" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>!-->
+{{> Footer}}

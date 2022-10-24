@@ -1,0 +1,96 @@
+<script src="https://cdn.blockpass.org/widget/scripts/release/3.0.0/blockpass-kyc-connect.prod.js"></script>
+<script>
+    function populateFields(){
+        document.getElementById("blockPassContent").style = `display:show`;
+        document.getElementById("blockPassStatusId").innerHTML = `BlockPass status: `;
+        switch ('{{blockPassResponseJson}}') {
+            case 'waiting':
+                document.getElementById("blockPassStatusId").innerHTML +=
+                    `<img src="/img/yellowdot.png" width="10px" > Waiting For Review`;
+                break;
+            case 'inreview':
+                document.getElementById("blockPassStatusId").innerHTML +=
+                    `<img src="/img/bluedot.png" width="10px" > In Review`;
+                break;
+            case 'resubmit':
+                document.getElementById("blockPassStatusId").innerHTML +=
+                    `<img src="/img/reddot.png" width="10px" > Resubmision Required`;
+                break;
+            case 'approved':
+                document.getElementById("blockPassStatusId").innerHTML +=
+                    `<img src="/img/greendot.png" width="10px" > Approved`;
+                break;
+            default:
+                document.getElementById("blockPassStatusId").innerHTML +=
+                    `<img src="/img/graydot.png" width="10px" > Not Signed in`;
+        }
+    }
+
+    window.onload = function(){
+        switch ({{kycProvider}}){
+            case 0:
+                break;
+            case 1:
+                populateFields();
+                break;
+        }
+    }
+
+    function summonBlockPass(){
+        const blockpass = new BlockpassKYCConnect(
+            '{{blockPassClientId}}',
+            {
+                refId: '{{InvestorRecord.ID}}-{{stoId}}',
+                email: '{{InvestorRecord.email}}'
+            })
+
+        blockpass.startKYCConnect()
+
+        blockpass.on('KYCConnectSuccess', () => {
+            //add code that will trigger when data have been sent. ex:
+            location.reload();
+        })
+
+        blockpass.on('KYCConnectClose', () => {
+            //add code that will trigger when the workflow is finished. ex
+            location.reload();
+        })
+
+        blockpass.on('KYCConnectCancel', () => {
+            location.reload();
+        })
+    }
+</script>
+
+
+<div id="externalKyc" class="row ">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+
+            </div>
+            <div id="blockPassContent" style="display:none" class="content">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{{__ "My Investor ID"}}}</label> &nbsp;&nbsp;&nbsp; {{InvestorRecord.ID}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content">
+                        <div>
+                            <b>{{{__ "Verify with one of the Platform's supported services"}}}</b>
+                            <br /><br />
+                            <button onclick="return summonBlockPass()" id="blockpass-kyc-connect" class="btn btn-info btn-fill btn-wd">Connect with Blockpass</button>
+                            <br /><br />
+                        </div>
+                        <p id="blockPassStatusId"></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

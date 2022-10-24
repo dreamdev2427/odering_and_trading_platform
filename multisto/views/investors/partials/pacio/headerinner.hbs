@@ -1,0 +1,243 @@
+<!-- <style type="text/css">
+
+  .container {
+      width: 1000px;
+      margin: 0px auto; 
+  }
+  .progressbar {
+      counter-reset: step;
+  }
+  .progressbar li {
+      list-style-type: none;
+      width: 25%;
+      float: left;
+      font-size: 14px;
+      position: relative;
+      text-align: center;
+      text-transform: uppercase;
+      color: #7d7d7d;
+  }
+  .progressbar li:before {
+      width: 40px;
+      height: 40px;
+      content: counter(step);
+      counter-increment: step;
+      line-height: 37px;
+      border: 2px solid #7d7d7d;
+      display: block;
+      text-align: center;
+      margin: 0 auto 10px auto;
+      border-radius: 70%;
+      background-color: white;
+  }
+  .progressbar li:after {
+      width: 100%;
+      height: 3px;
+      content: '';
+      position: absolute;
+      background-color: #7d7d7d;
+      top: 17px;
+      left: -50%;
+      z-index: -1;
+  }
+  .progressbar li:first-child:after {
+      content: none;
+  }
+  .progressbar li.active {
+      color: #7d7d7d;
+  }
+  .progressbar li.active:before {
+      border-color: #7d7d7d;
+      background-color:#7d7d7d;
+      color:	#F5F5DC;
+  }    
+  .progressbar li.active + li:after {
+      background-color: #7d7d7d;
+  }
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header"></div>            
+              <div class="container">
+                  <ul class="progressbar">
+                      <li>Personal Info</li>
+                      <li class="active">Investment</li>
+                      <li>Upload / Submit</li>
+                </ul>
+             </div>  
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header"></div>
+            <div class="container">
+                <ul class="progressbar">
+                    <li>Personal Info</li>
+                    <li>Investment</li>
+                    <li class="active">Upload / Submit</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</style>-->
+
+
+<script language="javascript">
+
+        $(document).ready(function(){
+            //moveScroller();
+        })
+        function logout() {
+            window.location.href = "/logout";
+            return false;                
+        }        
+        function backToDashboard() {
+            window.location.href = "/dashboard";
+            return false;                            
+        }
+        
+</script>        
+
+</head>
+<body>
+
+<div class="wrapper">
+
+
+    <div class="sidebar" data-background-color="white" data-active-color="danger">
+    <!--
+		Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+		Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+	-->
+    	<div class="sidebar-wrapper">
+            <div class="logo">
+                <a href="wizard?step=0" class="simple-text"  >
+                    <img src="/img/stologo/{{Data.logo}}" style="max-height: 100px; max-width: 120px;" /> 
+                </a>
+            </div>
+
+            <ul class="nav" style="overflow-x: hidden; overflow-y: auto; " >
+
+                
+                
+                <li id="DashboardLink">
+                    <a href="dashboard">
+                        <button onclick="return backToDashboard()" class="btn btn-info btn-fill btn-wd">Dashboard</button>
+                    </a>
+                </li>
+
+                
+                {{#each sideTitles}}
+                    <li id="{{this.liID}}">
+                        <a href="{{this.stepLink}}">
+                            <i class="{{this.icon}}"></i>
+                            <p>{{this.sideTitle}}</p>
+                        </a>
+                    </li>
+                {{/each}}
+            </ul>
+            
+    	</div>
+    </div>
+
+	
+	
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header stopATagLink">
+                    <a class="navbar-brand">
+                        {{#if InvestorRecord.isKYC}}
+                            My Profile
+                        {{else}}
+                            {{{__ "New investor onboarding – verification process"}}}
+                        {{/if}}
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        
+                        <li style="padding-top:15px;" >
+                            {{> languageSelection}}
+                        </li>                        
+                        
+                        <li>
+                            <a class="stopATagLink">Welcome &nbsp;&nbsp; {{Data.Login_UserName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        </li>
+						<li>
+                            <a href="#">
+								<i class="ti-arrow-circle-up"></i>
+								<span onclick="return logout()">{{{__ "Logout"}}}</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+
+		
+        <div class="content">
+		      <div class="container-fluid">
+
+            {{#if InvestorRecord.KYCApplied}}
+                  {{#unless InvestorRecord.isKYC}}
+                        <div style="position: sticky; top: 0px; z-index:1000000"  class="row">
+                            <div id="scroller-anchor"></div>
+                            <div id="scroller" class="col-md-12">
+                                <div class="card">
+                                    <div class="header">
+
+                                    </div>
+                                    <div class="content">
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <span style="color:green">{{{__ "You submitted your profile previously. We are still evaluating your profile. Please contact our support for more details"}}} </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                  {{/unless}}
+            {{/if}}                  
+                  
+                  
+                  
+            {{#if InvestorRecord.isKYC}}
+                <div style="position: sticky; top: 0px; z-index:1000000"  class="row">
+                    <div id="scroller-anchor"></div>
+                    <div id="scroller" class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+                                
+                            </div>
+                            <div class="content">
+                                
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {{{__ "Your current investor status is"}}} &nbsp;&nbsp;&nbsp; <b>{{authType}}</b>  &nbsp;&nbsp;&nbsp;  {{{__ "Below you can change or upgrade your profile"}}}
+                                    </div>
+
+                                </div>
+                                
+                                <div class="row">
+                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/if}}

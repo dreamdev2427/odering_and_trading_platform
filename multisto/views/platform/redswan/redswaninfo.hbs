@@ -1,0 +1,104 @@
+{{> Header}}
+
+	<script language="javascript">
+        const id = {{id}};
+        const linkid = {{linkid}};
+
+        $(document).ready(function() {
+                let element = document.getElementById("selproperty");
+                element.value = id;
+
+                if(linkid != 0) {
+                    element = document.getElementById("apidata");
+                    element.value = linkid;
+                }
+
+				$("#redswan").addClass('active');
+        })
+        function changeProperty() {
+            window.location.href = "redswaninfo?id=" + $("#selproperty").val();
+            return false;
+        }
+        function saveProperty() {
+            window.location.href = "setExternalCompanyLink?id=" + $("#selproperty").val() + "&linkid=" + $("#apidata").val();
+            return false;
+        }
+        function unlinkproperty() {
+            window.location.href = "redswaninfo?id=" + $("#selproperty").val() + "&unlink=1";
+            return false;
+        }
+
+	</script>
+
+{{> HeaderInnerPlatform}}
+
+    {{#if message}}
+        <span style="color:red;">{{message}}</span>
+        <br /><br />
+    {{/if}}
+
+<div class="row">
+    <div class="col-lg-12 col-md-7">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/document2.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  RedSwan Information Settings</h4>
+            </div>
+            <div class="content">
+
+                <br />
+                    <h4  class="title"> <img src="/img/greendot.png" width="20px" /> &nbsp; Connect with RedSwan Projects </h4>
+                        <br />
+                       <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                            <label>List of Platform Projects</label>
+                                            <select id="selproperty" name="selproperty"  onchange="changeProperty()"   class="form-control border-input" >
+                                                {{#each Records}}
+                                                    <option value="{{this.id}}" > {{this.title}} </option>
+                                                {{/each}}
+                                            </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+
+                        {{#if linkid}}
+                                <img src="/img/greendot.png" width="20px" /> &nbsp; <span style="color:green"> Project is currently connect with <b>RedSwan Project ID {{linkid}}</b>. </span>
+                        {{else}}
+                                <img src="/img/reddot.png" width="20px" /> &nbsp; <span style="color:red"> Project is not yet connected with any RedSwan Project ID. Please select one of the following ID and save.</span>
+                        {{/if}}
+                        <br /><br />
+                        <label>Select another ID from following list and click Save to connect with anohter RedSwan Project</label>
+
+                        <br /><br />
+
+                       <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                        <label>RedSwan Project ID</label>
+                                        <select id="apidata" name="apidata" class="form-control border-input" >
+                                                {{#each apidata}}
+                                                        <option value="{{this.id}}" > {{this.tickerField}} </option>
+                                                {{/each}}
+                                        </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <button onclick="return saveProperty()"  class="btn btn-info btn-fill">Save</button>
+                        &nbsp;
+                        {{#if linkid}}
+                                <button onclick="return unlinkproperty()"  class="btn btn-info btn-fill">Unlink with RedSwan</button>
+                        {{/if}}
+
+                        <br/><br/><br/>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

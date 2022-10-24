@@ -1,0 +1,160 @@
+{{#if isAvailable}}
+    {{> Header}}
+
+    <script language="javascript">
+        $(document).ready(function() {
+            $("#doclinks").addClass('active');                
+        })
+
+        function fileValidation() {
+            checkAndUpdateMultiFileUpload("files", "upload-file",  MultifileMultifileExtensions2, MultifileMultifileExtensions2msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);
+        }
+        function uploadFiles() {
+            if(  document.getElementById("title").value == "" ) {
+                showModelGeneralOKDialogBox("Please enter file title");
+                return;
+            }
+            uploadMultiplefilesToServer("files", "fileUplodProgressUpload", 1, '/platform/uploadFiles');
+        }
+
+        function multipleFilesUploadingDoneEvent(data) {
+            document.getElementById("filetitle").value = document.getElementById("title").value;
+            document.getElementById("fileupload").value = JSON.stringify(data);
+            document.getElementById("frmuploadfiles").submit();
+        }
+
+        function showModelGeneralOKDialogBox(msg) {
+            $("#modelGeneralOKMessageArea").html(msg);
+            $('#modelGeneralOKMessageModelBox').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            return false;        
+        }
+        
+    </script>
+
+{{else}}
+    <html><head></head>
+{{/if}}
+
+<body>
+        
+    {{#if isAvailable}}
+        {{>multifileupload}}    
+    {{/if}}
+    
+    <br /><br /><br /><br />
+    
+    <div class="row">
+        <div  class="col-md-1"></div>
+        <div  class="col-md-10">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            {{#if isAvailable}}
+                                <h4 class="title"> <img src="/img/documents2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Upload Documents</h4>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content">
+                    
+                    {{#if message}}
+                        <span style="color:red; font-size:18px;">{{{message}}}</span>
+                        <br /><br />
+                    {{/if}}
+                    
+                    {{#if isAvailable}}
+                        <br />
+                        <label>
+                            This is the special link open by platform administrator to share files with the company. &nbsp; You can upload documents, images or excel sheets 
+                        </label>
+                        
+                        <br /><br /><br />
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <label>1. Enter title of the file being uploaded</label>
+                                    <input type="text" id="title" name="title" class="form-control border-input" placeholder="Enter Document Title" maxlength="120" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="upload-btn-wrapper">
+                                    <label>2. Select file to upload</label><br />
+                                    <button class="btnfile">Select File</button>
+                                    <input id="files" name="files" type="file" onchange="fileValidation()" >
+                                    &nbsp;&nbsp;
+                                    <span style="color: green; font-size: 12px; " id="upload-file">No File Selected</span>
+                                </div>
+                            </div>
+                        </div>
+                        <br /><br />
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label>3. Click upload to upload the file to platform</label><br />
+                                <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="uploadFiles()" id="createButton"> Upload File </button>
+                            </div>       
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div id="fileUplodProgressUpload" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                            </div>
+                        </div>
+
+                    {{else}}
+                        <br /><br />
+                        <center>
+                            <h1> <img src="/img/error.jpg" /> <br /><br /><br /> Link is not available</h1>
+                        </center>     
+                        <br /><br />
+                    {{/if}}
+                    <br /><br />&nbsp;
+                </div>
+            </div>
+        </div>	
+        <div  class="col-md-1"></div>
+    </div>
+    
+    
+        
+    {{#if isAvailable}}
+        <div class = "modal fade" id="modelGeneralOKMessageModelBox" tabindex = "-1" role = "dialog" aria-labelledby = "modelGeneralOKMessageModelBox" aria-hidden = "true">
+
+            <div class = "modal-dialog">
+              <div class = "modal-content">
+
+                 <div class="modal-header">
+                    <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+                    <h4 class = "modal-title" id = "myModalLabel">{{Data.SiteParameter_PageTitle}}</h4>
+                 </div>
+
+                 <div class="modal-body">
+                     <span style="font-size:18px;" id="modelGeneralOKMessageArea"> </span>
+                     <br /> &nbsp;&nbsp;<br /> &nbsp;&nbsp;
+
+                    <button type = "button" class = "btn btn-info btn-fill pull-right" data-dismiss = "modal"> &nbsp; OK &nbsp; </button>             
+                     <br /> &nbsp;&nbsp;<br /> &nbsp;&nbsp;
+
+                 </div><!-- /.modal-content -->         
+
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+        </div>
+    
+    
+
+        <form id="frmuploadfiles" name="frmuploadfiles" action="/platform/linkupload"  method="post">
+            <input type="hidden" id="code" name="code" value="{{code}}" />
+            <input type="hidden" id="filetitle" name="filetitle" value="" />
+            <input type="hidden" id="fileupload" name="fileupload" value="" />
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+    {{/if}}
+    
+</body>
+</html>

@@ -1,0 +1,96 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function()
+    {
+        $("#ShareRegister").addClass('active');
+    })
+
+    function switchShareRegister() {
+        window.location.href = "shares";
+        return false;
+    }
+
+    function switchHistory() {
+        window.location.href = "shareshistory";
+        return false;
+    }
+</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row"  id="report" >
+	<div class="col-md-12 topPaddingBetweenPageSections">
+		<div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="title">
+                            <img src="/img/report.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Share Summary
+                        </h4>
+                    </div>
+                    <div class="col-md-4" data-html2canvas-ignore="true">
+                        {{#ifIn 10 Data.AdminRights}}
+                            <button onclick="return switchShareRegister()"  class="btn btn-info btn-fill">Share Register</button>
+                        {{/ifIn}}
+                        &nbsp;
+                        {{#ifIn 23 Data.AdminRights}}
+                            <button onclick="return switchHistory()"  class="btn btn-info btn-fill">History</button>
+                        {{/ifIn}}
+
+
+                    </div>
+                    <div class="col-md-2" data-html2canvas-ignore="true">
+                        <button type="button" onclick="generatePDF('report')" class="btn btn-info btn-fill">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+
+			<div class="content">
+
+				<br />
+				<table class="table">
+					<thead  class="listingHeaderFontSize">
+						<th style="width:20%">Instrument</th>
+            <th style="width:20%">Nominal Value</th>
+            <th style="width:20%">Market Value</th>
+						<th style="width:10%">Shares Issued</th>
+            <th style="width:10%">Nominal Capital</th>
+            <th style="width:10%">Market Capital</th>
+            <th style="width:10%">Capital Raised</th>
+            <th style="width:10%">Voting Power</th>
+            <th style="width:10%">Dividend Right</th>
+					</thead>
+					<tbody>
+
+                    {{#each records}}
+                        <tr>
+                          <td style="vertical-align: top;">
+                              {{this.title}}
+                          </td>
+                          <td style="vertical-align: top;">
+                            {{currencySymbol this.currencyid}} {{this.nominalValue}}
+                          </td>
+                          <td style="vertical-align: top;">
+                            {{#if this.premimum}}
+                              {{currencySymbol this.currencyid}} {{this.premimum}}
+                            {{/if}}
+                          </td>
+                          <td style="vertical-align: top;"> {{numberFormat this.sums decimalLength="VotingPowerInFractions"}}  </td>
+                          <td style="vertical-align: top;"> {{currencySymbol this.currencyid}}{{numberFormat this.nominalCapital decimalLength="VotingPowerInFractions"}}  </td>
+                          <td style="vertical-align: top;"> {{currencySymbol this.currencyid}}{{numberFormat this.premimumCapital decimalLength="VotingPowerInFractions"}}  </td>
+                          <!--user to be totalCapital = nominal + premium-->
+                          <td style="vertical-align: top;"> {{numberFormat this.totalCapital decimalLength="VotingPowerInFractions"}}  </td>
+                          <td style="vertical-align: top;"> {{numberFormat this.VotingPower decimalLength="VotingPowerInFractions"}}  </td>
+                          <td style="vertical-align: top;"> {{numberFormat this.dividendRights decimalLength="VotingPowerInFractions"}} </td>
+                        </tr>
+                    {{/each}}
+
+					</tbody>
+				  </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

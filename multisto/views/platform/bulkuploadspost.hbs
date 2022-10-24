@@ -1,0 +1,176 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {
+        $("#bulkupload").addClass('active');
+    })
+
+    function submitForm() {
+        document.getElementById('sendPasswordEmail').value = document.getElementById('sendEmailCheckBox').checked;
+        showModelGeneralYesNoDialogBox("{{totalLines}} new Investor profile(s) will be created in STO {{stotitle}} and company shares will be transferred <br /><br /> Please note that this process cannot be reversed <br /><br /> Are you sure you want to proceed ?", "Yes Upload", "Cancel");
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+        document.getElementById("frmuploads").submit();
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div>
+                    <h4 class="title">Bulk Uploads Result</h4>
+                </div>
+            </div>
+
+            <div class="content">
+
+                    <label>Total Records Found in file</label> &nbsp;&nbsp;  {{totalLines}}
+                    <hr />
+
+                    {{#ifEqual allDataIsCorrect 0}}
+                        <img src="/img/reddot.png" width="22px"> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span style="color:red; font-size:18px;">All Data is not correct. Please review the report below. This file cannot be processed</span>
+                        <hr />
+                    {{/ifEqual}}
+
+                    {{#if recordsNotComplete}}
+                                <span style="font-size:18px;"> Records Not Complete</span>
+                                <br />
+                                These errors occured because <br >
+                                - &nbsp; Record does not have minimum fields <br >
+                                - &nbsp; Date of birth is not correct format <br >
+                                - &nbsp; investorType field is not 0 or 1  <br >
+                                - &nbsp; PowerToBindCompany field is not 0 or 1  <br >
+
+                                <br /><br />
+                                <label>Number of lines</label> &nbsp;&nbsp;&nbsp; <b> {{recordsNotComplete}} </b>
+                                <br />
+                                <label>Lines found with problems</label>  &nbsp;&nbsp;&nbsp; {{{recordsNotCompleteLines}}}
+
+                        <br /><hr />
+                    {{/if}}
+
+                    {{#if emailNotFoundOrNotCorrectFormat}}
+                        <span style="font-size:18px;">  Emails Not Found / Not Correct format</span><br />
+                        - &nbsp; Investor Email is not specified <br >
+                        - &nbsp; Email is not correct format <br >
+
+                        Email is missing or is not of correct format<br /><br />
+                         <label>Number of lines</label> &nbsp;&nbsp;&nbsp; <b> {{emailNotFoundOrNotCorrectFormat}} </b>
+                        <br />
+                         <label>Lines found with problems</label>  &nbsp;&nbsp;&nbsp; {{{emailNotFoundOrNotCorrectFormatLines}}}
+                        <br /><hr />
+                    {{/if}}
+
+                    {{#if AllFieldsNotFound}}
+                        <span style="font-size:18px;">  All Fields not found</span><br />
+                        - &nbsp; Investor record does not have 16 fields as specified in format <br >
+                        <label>Number of lines</label> &nbsp;&nbsp;&nbsp; <b> {{AllFieldsNotFound}} </b>
+                        <br />
+                        <label>Lines found with problems</label>  &nbsp;&nbsp;&nbsp; {{{AllFieldsNotFoundLines}}}
+                        <br /><hr />
+                    {{/if}}
+
+                    {{#if EmailsFound.length}}
+                        <span style="font-size:18px;">  Following emails has already a profile in platform </span><br />
+                        <br />
+                        {{#each EmailsFound}}
+                            {{this.FirstName}} {{this.LastName}} &nbsp;&nbsp;&nbsp;&nbsp; {{this.Email}}
+                            <br />
+                        {{/each}}
+                        <br /><hr />
+                    {{/if}}
+
+                    {{#if DuplicateEmailsFound}}
+                         <span style="font-size:18px;"> Duplicate emails found in upload file </span><br />
+                         <label>Number of lines</label> &nbsp;&nbsp;&nbsp; <b> {{DuplicateEmailsFound}} </b>
+                        <br />
+                         <label>Lines found with problems</label>  &nbsp;&nbsp;&nbsp; {{{DuplicateEmailsFoundLines}}}
+                        <br /><hr />
+                    {{/if}}
+
+                    {{#if ShareValuesAreNotComplete}}
+                         <span style="font-size:18px;">  Following Records Contains share values not fully defined </span> <br />
+                         <label>Number of lines</label> &nbsp;&nbsp;&nbsp; <b> {{ShareValuesAreNotComplete}} </b>
+                         <br />
+                         <label>Lines found with problems</label>  &nbsp;&nbsp;&nbsp; {{{ShareValuesAreNotCompleteLines}}}
+                         <br /><hr />
+                    {{/if}}
+
+                    {{#if ShareValuesAreNotCorrectlyDefined}}
+                         <span style="font-size:18px;">  Following records contains share values not defined correctly</span> <br />
+                        - &nbsp; Each Share type transfer must have 4 fields defined in the layout <br >
+                        - &nbsp; Share Type ID is incorrect <br >
+                        - &nbsp; Have you selected the correct STO from previous screen <br >
+
+                        <br /><br />
+                         <label>Number of lines</label> &nbsp;&nbsp;&nbsp; <b> {{ShareValuesAreNotCorrectlyDefined}} </b>
+                         <br />
+                         <label>Lines found with problems</label>  &nbsp;&nbsp;&nbsp; {{{ShareValuesAreNotCorrectlyDefinedLines}}}
+                         <br /><hr />
+                    {{/if}}
+
+                    <img src="/img/graydot.png" width="16px"> &nbsp;&nbsp; <span style="font-size:18px;"> Shares being transferred </span>
+                    <br /><br />
+                    {{#ifEqual companySharesLessthanBeingTransferred 1}}
+                        <img src="/img/reddot.png" width="14px"> &nbsp;&nbsp; <span style="color:red;font-size:14px;">  Some of the share being trnasferred are not available in company share balance </span> <br />
+                        <br /><br />
+                    {{/ifEqual}}
+
+                    <b><div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-1">ID</div>
+                        <div class="col-md-4">Share Type</div>
+                        <div class="col-md-2">Company Shares</div>
+                        <div class="col-md-2">Required Shares</div>
+                    </div></b><br />
+
+                    {{#each shareTypes}}
+                        {{#ifGreater this.count 0}}
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-1">{{@key}}</div>
+                                <div class="col-md-4">{{this.title}} </div>
+                                <div class="col-md-2">{{numberFormat this.shares decimalLength="ShareCountInFractions"}} </div>
+                                <div class="col-md-2">{{this.count}}</div>
+                            </div>
+                            <br />
+                        {{/ifGreater}}
+                    {{/each}}
+                    <br /><br />
+
+
+                    {{#ifEqual companySharesLessthanBeingTransferred 0}}
+                        {{#ifEqual allDataIsCorrect 1}}
+                            <div style="white-space: nowrap;">
+                                <label>
+                                    <input id="sendEmailCheckBox" type="checkbox" checked>
+                                    Send an email for passwords setup
+                                </label>
+                                <br>
+                                <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Upload Investors</button>
+                            </div>
+                        {{/ifEqual}}
+                    {{/ifEqual}}
+
+                    <br /><br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="frmuploads" name="frmuploads" action="processUploadInvestors" method="post">
+    <input type="hidden" id="sendPasswordEmail" name="sendPasswordEmail" value="true" />
+    <input type="hidden" id="fileName" name="fileName" value="{{fileName}}" />
+    <input type="hidden" id="stoid" name="stoid" value="{{stoid}}" />
+    <input type="hidden" id="shareTypes" name="shareTypes" value="{{shareTypesString}}" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

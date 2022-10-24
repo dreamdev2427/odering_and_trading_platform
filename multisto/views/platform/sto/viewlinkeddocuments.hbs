@@ -1,0 +1,93 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+
+    })
+
+    function deleteFile(id, shareTypesId) {
+        link = "deletedocumentrelatedtoshareclass?id=" + id + "&shareTypesId={{id}}";
+        showModelGeneralYesNoDialogBox("Do you want to remove this document from share class?", "Delete", "Cancel");
+    }
+
+        function generalModelOKButtonClickedClientEvent() {
+        window.location.href = link;
+        return false;
+    }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-12">
+                            <h4 class="title">Property Images</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                    {{#if images.length}}
+                        {{#each images}}
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="/img/stobanners/{{this.Link}}" width="80px;" >
+                                </div>
+                                <div class="col-md-4">
+                                    <a class="btn btn-info btn-fill btn-sm" href="/img/stobanners/{{this.Link}}" download>Download</a>  
+                                    <button  onclick="deleteFile({{this.stdid}}, {{id}})" type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"> Remove from Share Class </button>    
+                                </div>
+                            </div>
+                            <hr/>
+                        {{/each}}
+                    {{else}}
+                            <label>No Images Found</label>
+                    {{/if}}                
+            </div>
+        </div>
+    </div>								
+</div>
+
+<br />
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-12">
+                            <h4 class="title">Property Documents</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                    {{#if docs.length}}
+                            {{#each docs}}
+                                <div class="row">
+                                   <div class="col-md-4">
+                                            <img src="/img/document2.png" width="25px" >  &nbsp;&nbsp;  {{this.Title}}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <form>
+                                            <a class="btn btn-info btn-fill btn-sm" href="/img/stobanners/{{this.Link}}" download>Download</a>                    
+                                            <button onclick="deleteFile({{this.stdid}})" type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"> Remove from Share Class </button>    
+                                        </form>
+                                    </div>                            
+                                </div>
+                                <br />
+                            {{/each}}
+                            
+                    {{else}}
+                            <label>No Documents Found</label>
+                    {{/if}}
+            </div>
+        </div>
+    </div>								
+</div>
+
+
+
+{{> Footer}}

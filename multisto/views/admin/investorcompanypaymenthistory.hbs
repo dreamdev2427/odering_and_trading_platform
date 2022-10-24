@@ -1,0 +1,80 @@
+{{> Header}}
+
+    <script language="javascript">
+
+		$(document).ready(function() {
+			//$("#inbox").addClass('active');            
+		})
+		
+		function backtoinv() {
+            window.location.href = "investorsViewSto?id={{id}}";
+            return false;
+        }
+        
+	</script>
+
+{{> HeaderInnerSto}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">
+                        <div class="row">
+                            <div class="col-md-9">                          
+                                    <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Investor Deposit History
+                            </div>
+                            <div class="col-md-3">        
+                                 <button onclick="return backtoinv()"  class="btn btn-info btn-fill ">Back to Investor Profile</button>
+                            </div>
+                        </div>
+                    </h4>
+                </div>
+
+                <div class="content">
+
+                    
+                        {{#if records.length}}
+                                <div class="row">
+                                    <div class="col-md-2"> Date Received </div>
+                                    <div class="col-md-1"> Channel </div>
+                                    <div class="col-md-3"> Payment Details</div>
+                                    <div class="col-md-1"> Amount </div>
+                                    <div class="col-md-3"> Details </div>
+                                    <div class="col-md-2"> Approve </div>
+                                </div>
+                                <br  />
+
+                                {{#each records}}
+                                        <div class="row">
+                                            <div class="col-md-2"> {{this.DateReceived}} </div>
+                                            <div class="col-md-1"> {{#ifIn this.isApproved '[1, 2]'}} {{this.title}} {{/ifIn}}  </div>
+                                            <div class="col-md-3"> {{#ifIn this.isApproved '[1, 2]'}}  {{this.paymentDetails}} {{/ifIn}} </div>
+                                            <div class="col-md-1"> {{currencySymbol this.CurrencyIDDeposit}}  {{this.Amount}} </div>
+                                            <div class="col-md-3"> {{this.Details}} </div>
+                                            <div class="col-md-2"> 
+                                                {{this.DateApproved}} <br />
+                                                {{#ifEqual this.isApproved 1}} <span style="color:green"><b>Approved</b></span> <br /> Added in Investor Balance {{/ifEqual}}
+                                                {{#ifEqual this.isApproved 2}} <span style="color:red"><b>Declined</b></span> {{/ifEqual}}
+                                                
+                                                {{#ifEqual this.isApproved 3}} <span style="color:green"><b>Increased by Admin</b></span> {{/ifEqual}}
+                                                {{#ifEqual this.isApproved 4}} <span style="color:red"><b>Reduced by Admin</b></span> {{/ifEqual}}
+                                                {{#ifEqual this.isApproved 5}} <span style="color:green"><b>Shares Transferred</b></span> {{/ifEqual}}                                                
+                                            </div>
+                                        </div>                    
+                                        <br  />
+                                {{/each}}
+
+
+                        {{else}}
+                                <label>No Records Founds</label>                    
+                        {{/if}}
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}
+

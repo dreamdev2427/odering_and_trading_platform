@@ -1,0 +1,37 @@
+<script>
+    function postIsAutomaticShareClassSettingsEnabled(isChecked) {
+        document.getElementById('isAutomaticShareClassSettingsEnabled-intValue').value = +isChecked;
+        document.getElementById('isAutomaticShareClassSettingsEnabled-redirectUrl').value = window.location.href;
+        document.getElementById('postisAutomaticShareClassSettingsEnabled').submit();
+    }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;"
+                        alt='add more' /> Automatic Share Class Settings </h4>
+                <label>Enable/Disable Settings</label>
+            </div>
+            <div class="content">
+                <form method="post" id="postisAutomaticShareClassSettingsEnabled" action="postParamUpdateToApi">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="switch">
+                                <input type="checkbox" onclick="postIsAutomaticShareClassSettingsEnabled(this.checked)" {{#if
+                                    isAutomaticShareClassSettingsEnabled}} checked {{/if}} />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="isAutomaticShareClassSettingsEnabled-intValue" name="intValue" />
+                    <input type="hidden" id="isAutomaticShareClassSettingsEnabled-stringValue" name="stringValue" value="" />
+                    <input type="hidden" id="isAutomaticShareClassSettingsEnabled-param" name="param" value="isAutomaticShareClassSettingsEnabled" />
+                    <input type="hidden" id="isAutomaticShareClassSettingsEnabled-redirectUrl" name="redirectUrl"
+                        value="/platform/otherSwitches" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

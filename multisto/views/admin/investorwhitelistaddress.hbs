@@ -1,0 +1,100 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#InvestorsMenu").addClass('active');                
+    })    
+    var url = "";
+
+    function backtoinvestor() {
+        window.location.href = "manageinvestorwallet?investorid={{id}}&sid={{sid}}";
+        return false;
+    }    
+    function getBalanceOfInvestorAddress() {
+
+        if( document.getElementById("address").value == "")
+             showModelGeneralOKDialogBox("Please enter address")
+        
+        window.location.href = "addNewInvestorWhitelistAddress?id={{id}}&sid={{sid}}&address=" + document.getElementById("address").value;
+        return false;
+    }    
+    function activateWhiatelistforInvestor(address, id) {
+        url = "addNewInvestorWhitelistAddressPost?address=" + address + "&id=" + id + "&sid=" + {{sid}};
+        showModelGeneralYesNoDialogBox("Are you sure you want to add " + address + " to investor's wallet", "Yes", "Cancel");
+    }
+    function generalModelOKButtonClickedClientEvent() {
+         window.location.href = url;
+         return false;
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+
+{{#if errorMessage}}
+    <span style="color:red;">{{errorMessage}}</span>
+    <br /><br />
+{{/if}}
+
+<div class="row">		
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title"> <img src="/img/add.png" width="30px;"  /> &nbsp; Add New Whitelist Address</h4>
+                        <label>Add a new address to investor wallet. System will automatically update investor balances and system account statistics</label>
+                    </div>                                   
+
+                    <div class="col-md-3">
+                        <button onclick="return backtoinvestor()"  class="btn btn-info btn-fill">Back to Investor Profile</button>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="content">
+                
+                        <label>Enter Public Address </label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                    <input id="address" name="address" class="form-control border-input" type=text placeholder="Enter Address" value="{{address}}" /> 
+                            </div>
+                        </div>
+
+                        <br />
+                        <button onclick="return getBalanceOfInvestorAddress()"  class="btn btn-info btn-fill">Get Current Blockchain Balance and Status</button>
+                
+                        <br /><br />
+
+
+						{{#if showAddAddressSection}}
+				
+								{{#if accountAlreadyTaken}}
+										<img src="/img/reddot.png" width="20px;" />  <span style="color:red;"> &nbsp;&nbsp;   <b>  Address is already been registered in the platform for current or other investor<br /> &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; An address can only be whitelisted once for a single investor </b>   </span>  <br /><br />
+								{{/if}}
+
+								{{#ifEqual balance 0}}
+                                    <h4 class="title"> No balance found of this address in blockchain </h4>
+                                    <br />
+                                    <button onclick="return activateWhiatelistforInvestor('{{address}}', '{{id}}')"  class="btn btn-info btn-fill">Whitelist Address and Update Investor Wallet</button> 
+
+                                    <br /><br />
+								{{else}}
+                                    <h4 class="title"> Token Balance from Blockchain &nbsp;&nbsp;&nbsp; {{balance}} </h4>
+                                    <br /><br />
+                                    {{#unless accountAlreadyTaken}}
+                                            <button onclick="return activateWhiatelistforInvestor('{{address}}', '{{id}}')"  class="btn btn-info btn-fill">Whitelist Address and Update Investor Wallet</button>
+                                    {{/unless}}
+                                    <br /><br />
+								{{/ifEqual}}
+
+						{{/if}}
+                
+                        
+            </div>
+
+       </div>
+    </div>
+</div>
+
+{{> Footer}}

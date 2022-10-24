@@ -1,0 +1,490 @@
+{{> Header}}
+
+<script language="javascript">
+    var tempBlockchainOperation = 0;
+    var OffChainBalance = {{OffChainWalletBalance}};
+    var blockchainProtocol = {{shareType.blockchainProtocol}};
+    var smartContractAddress = "{{shareType.ethereumContractAddress}}";
+    var blockchainPublicAddress = "{{shareType.ethereumBlockchainPublicAddress}}"
+    var blockchainDecimals = {{shareType.blockchainDecimals}};
+
+    var isMetaMaskConnected = 0;
+    var metaMaskAddress = "";
+
+    var tmpID = 0;
+
+    var metaMaskOperation = 0;
+
+	var walletCustodayType = {{shareType.walletCustodayType}};
+
+    {{#if investorWallet}}
+        var isInvestorApprovedWalletAddressesAvailable = 1;
+    {{else}}
+        var isInvestorApprovedWalletAddressesAvailable = 0;
+    {{/if}}
+
+    $(document).ready(function() {
+        $("#InvestorsMenu").addClass('active');
+    })
+    function whitelistInvestorAddress(id, auth, isCurrentWallet, publicAddress) {
+
+        document.getElementById("recID").value = id;
+        document.getElementById("auth").value = auth;    //true whitelist    false block
+
+        //true = recID of shareswallet         false = recID of investorpublickeys
+        document.getElementById("isCurrentWallet").value = isCurrentWallet;
+
+        if(isEthereumBasedProtocolID(blockchainProtocol) ) {
+            if(isMetaMaskConnected == 0) {
+                tempBlockchainOperation = 1;
+                $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+                initializePublicKeyFileObject();      
+                return false; 
+            } else if(isMetaMaskConnected == 1) {
+                if( blockchainPublicAddress.toLowerCase() != metaMaskAddress.toLowerCase() ) {
+                    showModelGeneralOKDialogBox("Please select company address from MetaMask. Company Address is " + blockchainPublicAddress);
+                    return;
+                } 
+
+                metaMaskOperation = 1;
+                if(auth == "false")
+                    whitelistInvestorPublicAddressMetaMask(publicAddress, smartContractAddress, 9639926704);
+                else
+                    whitelistInvestorPublicAddressMetaMask(publicAddress, smartContractAddress, 1);
+            }
+        } else if( blockchainProtocol == 3 || blockchainProtocol == 7) {
+            // Ravencoin
+            document.getElementById("whitelistPassword").value = "";
+            document.getElementById("whitelistFilecontents").value = "";
+            document.getElementById("whitelistInvestorNewAddress").submit();
+        } 
+    }
+    function callbackPublicKeyFileAndPasswordCollected(file, pass) {
+        if(tempBlockchainOperation == 1) {
+            document.getElementById("whitelistPassword").value = pass;
+            document.getElementById("whitelistFilecontents").value = file;
+            document.getElementById("whitelistInvestorNewAddress").submit();
+        }
+
+        if(tempBlockchainOperation == 2) {
+            document.getElementById("password").value = pass;
+            document.getElementById("filecontents").value = file;
+            document.getElementById("offchaincompanytransfer").submit();
+        }
+
+    }
+    function backtoinvestor() {
+        window.location.href = "investorsViewSto?id={{investorRec.ID}}";
+        return false;
+    }
+    function refreshWallet(investorID, shareID) {
+        window.location.href = "refreshwalleblockchain?id={{investorRec.ID}}&sid={{sid}}";
+        return false;
+    }
+    function sendTokensToCompany() {
+        $("#captionOffChainTrnasfer").html("Transfer Shares to Company Account");
+        $("#InvestorPrivateWalletAddressSelectionArea").hide();
+        document.getElementById("offChainTransferOrOnChain").value = "0";
+        document.getElementById("txtNUmberOfOffChainShares").value = "";
+        $('#modelSendTokensToCompany').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+    }
+    function sendTOkensToPrivateWallet() {
+        if( isInvestorApprovedWalletAddressesAvailable == 0) {
+             showModelGeneralOKDialogBox("Investor do not have any approved crypto wallet addresses");
+             return;
+        }
+
+        $("#captionOffChainTrnasfer").html("Transfer Shares to Investor Private Wallet");
+        tempBlockchainOperation = 2;
+        $("#InvestorPrivateWalletAddressSelectionArea").show();
+        document.getElementById("offChainTransferOrOnChain").value = "1";
+        document.getElementById("txtNUmberOfOffChainShares").value = "";
+        $('#modelSendTokensToCompany').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+    }
+    function sendTransferSharesRequesPost() {
+
+        if(document.getElementById("txtNUmberOfOffChainShares").value == "") {
+            showModelGeneralOKDialogBox("Please Enter number of shares to transfer");
+            return;
+        }
+
+        if( isNaN( document.getElementById("txtNUmberOfOffChainShares").value  )  ) {
+            showModelGeneralOKDialogBox("Please Enter a Valid number");
+            return;
+        }
+
+        if( parseInt( document.getElementById("txtNUmberOfOffChainShares").value  )  >  OffChainBalance) {
+            showModelGeneralOKDialogBox("Please enter value less than " + OffChainBalance);
+            return;
+        }
+
+        document.getElementById("shares").value = document.getElementById("txtNUmberOfOffChainShares").value;
+
+        document.getElementById("publicaddress").value = document.getElementById("ivestorPrivateWallet").value;
+
+        if( document.getElementById("offChainTransferOrOnChain").value == "1")
+            showModelGeneralYesNoDialogBox("Are you sure you want to transfer shares to investor's Private Wallet ?", "Yes Transfer", "Cancel");
+        else
+            showModelGeneralYesNoDialogBox("Are you sure you want to transfer shares back to company account ?", "Yes Transfer", "Cancel");
+
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        if( document.getElementById("offChainTransferOrOnChain").value == "0" || walletCustodayType == 1 ) {
+            document.getElementById("offchaincompanytransfer").submit();
+	    } else {
+            $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            initializePublicKeyFileObject();
+        }
+    }
+    function addNewInvestorWhitelistAddress(investorID, shareID) {
+        window.location.href = "addNewInvestorWhitelistAddress?id={{investorRec.ID}}&sid={{sid}}";
+        return false;
+    }
+    function connectMetaMask() {
+        connectWallet();
+    }    
+    function Wallet_BlockchainAccountSelected(account) {
+        $("#metaMaskSection").show();
+        $("#metaMaskAccountAddress").html( account );
+
+        isMetaMaskConnected = 1;
+        metaMaskAddress = account;
+
+        //getAccountBalanceFromBlockchain(account, smartContractAddress).then((data)=> {
+            //alert(data)
+        //})
+
+    }
+    function Wallet_TransactionEvent(hash, data) {
+        if(metaMaskOperation == 1) {
+            document.getElementById("blockchainTransactionID").value = hash;   
+            document.getElementById("metaMaskTransaction").value = "1";
+            document.getElementById("whitelistInvestorNewAddress").submit();
+        }
+        if(metaMaskOperation == 2) {
+            document.getElementById("idPri").value = tmpID;
+            document.getElementById("amountPri").value = document.getElementById("burnToken" + tmpID).value;
+            document.getElementById("transactionIDPri").value = hash;
+            document.getElementById("formBurnToken").submit();
+            //showModelGeneralOKDialogBox("Transaction is send to blockchain. MetaMask will generate an alert and then please refresh screen");
+        }
+    }
+    function burnInvestorTokens(id, publicKey, currentTokens) {
+
+        if(document.getElementById("burnToken" + id).value == "") {
+            showModelGeneralOKDialogBox("Please enter number of tokens to burn")
+            return;
+        } else {
+            if( isNaN (document.getElementById("burnToken" + id).value )) {
+                showModelGeneralOKDialogBox("Please enter numeric value")
+                return;
+            }
+        }
+
+        if( parseFloat(document.getElementById("burnToken" + id).value) == 0 ) {
+            showModelGeneralOKDialogBox("Value cannot be zero")
+            return;        }
+
+        if( currentTokens <  parseFloat(document.getElementById("burnToken" + id).value) ) {
+            showModelGeneralOKDialogBox("Investor has less shares / tokens")
+            return;
+        }
+
+        if( isMetaMaskConnected == 1) {
+            if( blockchainPublicAddress.toLowerCase() != metaMaskAddress.toLowerCase() ) {
+                showModelGeneralOKDialogBox("Please select company address from MetaMask. Company Address is " + blockchainPublicAddress);
+                return;
+            } 
+            
+            metaMaskOperation = 2;
+            tmpID = id;
+            //alert(smartContractAddress + " " + document.getElementById("burnToken" + id).value + " " + smartContractAddress + " " + blockchainDecimals)
+            createBurnTokensMetaMask(publicKey, document.getElementById("burnToken" + id).value, smartContractAddress, blockchainDecimals, 0);
+        } else {
+            showModelGeneralOKDialogBox ("Please connect with your MetaMask for this transaction");
+            //window.location = "burnPrivateWalletTokens?id=" + id + "&amount=" + document.getElementById("burnToken" + id).value;
+            //return true;
+        }
+
+    }
+    function addToBulkWhitelist(id, address) {
+        window.location.href = "addAddressToWhitelistedList?id=" + id + "&address=" + address;
+        return false;
+    }
+</script>
+
+{{> HeaderInnerSto}}
+{{> privateKeySelectorDialog}}
+
+{{#if errorMessage}}
+    <span style="color:red;">{{errorMessage}}</span>
+    <br /><br />
+{{/if}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title"> <img src="/img/wallet.png" width="30px;"  /> &nbsp; Wallet Management</h4>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button onclick="return backtoinvestor()"  class="btn btn-info btn-fill">Back to Investor Profile</button>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{investorRec.FirstName}} {{investorRec.LastName}}
+                        </div>
+                        <div class="col-md-3">
+                            <label>ID</label> &nbsp; &nbsp; &nbsp;
+                            {{investorRec.ID}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{investorRec.town}} {{investorRec.state}} {{investorRec.country}}
+                        </div>
+                        <div class="col-md-3">
+                            {{investorRec.email}}
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Share Class</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{shareType.title}}
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Total Shares investor is holding</label>
+                        </div>
+                        <div class="col-md-9">
+                         <b> {{#if investorShare.shares}}
+                        {{numberFormat investorShare.shares decimalLength="2"}}
+                        {{else}} 0 {{/if}}</b>
+                        </div>
+                    </div>
+
+
+                    {{#if OffChainWalletBalance}}
+                        <hr />
+                        <h4 class="title"><img src="/img/lock2.png" width="30px;"  /> &nbsp;  Off-Chain Investor Share Balance</h4>
+                        <br />
+                        <label>Current Off-Chain Balance </label>  &nbsp;&nbsp;&nbsp;&nbsp;
+
+                            {{numberFormat OffChainWalletBalance decimalLength="2"}}
+
+                            &nbsp;  <label>Shares</label>
+                                <br /><br />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <button  title="Whitelist investor wallet address" onclick="return sendTokensToCompany()" class="btn btn-info btn-fill btn-sm">Transfer to Company Account</button>
+                                    </div>
+                                    <div class="col-md-9">
+                                            <b>Scenario 1 - Transfer back to company account</b> <br/> <label>Admin can transfer back these shares back to company accounts. Later these shares will be available to transfer to investors </label>
+                                            <br /><br />
+                                            <b>Scenario 2 - Reduce balance after external blockchain transfer</b> <br/> <label> If admin has transferred some of these shares using external custodian account then this balance must be reduce.  </label>
+
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <button  title="Whitelist investor wallet address" onclick="return sendTOkensToPrivateWallet()" class="btn btn-info btn-fill btn-sm">Transfer to Investor Private Wallet</button>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <label>Direct transfer of these shares to investor private wallet if platform is the custodian of the shares and can make a direct blockchain transaction operation</label>
+                                    </div>
+                                </div>
+
+                    {{/if}}
+
+
+                    <hr />
+
+                    <button type="button" class="btn btn-info btn-fill btn-wd" onclick="connectMetaMask()">Connect MetaMask</button> 
+                    &nbsp;&nbsp;&nbsp;
+                    <span id="metaMaskSection" style="display:none;">
+                        <img src="/img/greendot.png" width="20px;"> Meta Mask is connected
+
+                        <br /><br />
+
+                        <span id="metaMaskAccountAddress"></span> 
+                        &nbsp;&nbsp;&nbsp;
+                        ( Please make sure this is the correct address to send transaction )
+                        
+                    </span>
+
+                    <hr />
+
+                    <h4 class="title"> <img src="/img/shares.png" width="30px;"  /> &nbsp;  Investor Whitelisted Wallet Addresses and Balances</h4>
+                    <br />
+
+                        <button  title="Whitelist investor wallet address" onclick="return addNewInvestorWhitelistAddress({{investorRec.ID}}, {{sid}})" class="btn btn-info btn-fill btn-sm">Add New Whitelist Address</button>
+
+                        {{#if investorWallet.length}}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <button  title="Whitelist investor wallet address" onclick="return refreshWallet({{investorRec.ID}}, {{sid}})" class="btn btn-info btn-fill btn-sm">Refresh From Blockchain</button>
+
+                            <br /><br />
+
+                            <div class="row">
+                                <div class="col-md-7"><label> Public Key </label></div>
+                                <div class="col-md-1"><label> Shares </label></div>
+                                <div class="col-md-2"><label> Whitelisted </label></div>
+                                <div class="col-md-2"></div>
+                            </div>
+                            <br />
+                            {{#each investorWallet}}
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        {{this.publicKey}}
+                                    </div>
+                                    <div class="col-md-1">
+
+                                    {{numberFormat this.shares decimalLength="2"}}
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{#if this.isBlocked}}
+                                            <img src="/img/reddot.png" width="20px" >
+                                            No / In-Active &nbsp;&nbsp;&nbsp;
+                                            <button  title="Whitelist investor wallet address" onclick="return whitelistInvestorAddress('{{this.ID}}', 'true', 'true', '{{this.publicKey}}')" class="btn btn-info btn-fill btn-sm">Activate Wallet</button>
+                                        {{else}}
+                                            <img src="/img/greendot.png" width="20px" >
+                                            Yes / Active &nbsp;&nbsp;&nbsp;
+                                            <button  title="Whitelist investor wallet address" onclick="return whitelistInvestorAddress('{{this.ID}}', 'false', 'true', '{{this.publicKey}}')" class="btn btn-info btn-fill btn-sm">Freeze Wallet</button>
+                                        {{/if}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{#if this.shares}}
+                                            <input  type="text" style="width:160px; " id="burnToken{{this.ID}}"  name="burnToken{{this.ID}}" class="form-control border-input" placeholder="Number of Shares" />
+                                            <button  title="Burn tokens" onclick="return burnInvestorTokens('{{this.ID}}', '{{this.publicKey}}', {{this.shares}})" class="btn btn-info btn-fill btn-sm">Burn Shares</button>
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                <br />
+                            {{/each}}
+                        {{else}}
+                            <br /><br />
+                            <label>Investor does not have any shares in his private wallet</label>
+                        {{/if}}
+
+                    <hr />
+                    <h4 class="title"><img src="/img/list.png" width="30px;"  /> &nbsp; Blockchain Public Keys Shared by Investor</h4>
+                    <br />
+                    {{#if investorKeys.length}}
+                        {{#each investorKeys}}
+                            <div class="row">
+                                <div class="col-md-8">
+                                    {{this.title}}
+                                    {{#ifEqual blockchainID 1}} &nbsp;&nbsp; ( Ethereum )   {{/ifEqual}} 
+                                    {{#ifEqual blockchainID 5}} &nbsp;&nbsp; ( Ravencoin )  {{/ifEqual}} 
+                                    {{#ifEqual blockchainID 6}} &nbsp;&nbsp; ( Polymesh )  {{/ifEqual}}                                     
+                                </div>
+                                <div class="col-md-4">
+                                    <button  title="Whitelist investor wallet address" onclick="return whitelistInvestorAddress('{{this.ID}}', 'true', 'false', '{{this.title}}')" class="btn btn-info btn-fill btn-sm">Whitelist</button>
+                                    {{#ifEqual blockchainID 1}}    
+                                        &nbsp;&nbsp;
+                                        <button  title="Whitelist investor wallet address" onclick="return addToBulkWhitelist('{{../investorRec.ID}}', '{{this.title}}')" class="btn btn-info btn-fill btn-sm">Add Bulk WhiteList</button>
+                                    {{/ifEqual}} 
+                                </div>
+                            </div>
+                            <br />
+                        {{/each}}
+                    {{else}}
+                        <label>No blockchain keys found</label>
+                    {{/if}}
+                    <br />&nbsp;
+            </div>
+
+       </div>
+    </div>
+</div>
+
+<div class = "modal fade" id="modelSendTokensToCompany" tabindex = "-1" role = "dialog" aria-labelledby = "modelSendTokensToCompany" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel"> <span id="captionOffChainTrnasfer"></span> </h4>
+         </div>
+
+         <div  class="modal-body">
+             <b> Investor Currently Holding Off-Chain Shares  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  {{OffChainWalletBalance}} </b>
+             <br /><br />
+             Enter Number of Shares <br />
+             <br />
+             <input type="text" id="txtNUmberOfOffChainShares" name="txtNUmberOfOffChainShares" maxlength="40" class="form-control border-input" placeholder="Enter Number of Shares" value="{{OffChainWalletBalance}}"/> <br />
+
+             <span id="InvestorPrivateWalletAddressSelectionArea"  >
+                 <br />Select Private Wallet Address<br /><br />
+                <select id="ivestorPrivateWallet" name="ivestorPrivateWallet"  class="form-control border-input">
+                        {{#each investorWallet}}
+                                <option value="{{this.publicKey}}">{{this.publicKey}}</option>
+                        {{/each}}
+                 </select>
+             </span>
+
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="sendTransferSharesRequesPost()"> Transfer Shares </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<form id="whitelistInvestorNewAddress" name="whitelistInvestorNewAddress" action="/admin/whitelistInvestorNewAddress?_csrf={{csrfToken}}"  method="post">
+    <input type="hidden" id="investorID" name="investorID" value="{{investorRec.ID}}" />
+    <input type="hidden" id="sid" name="sid" value={{sid}} />
+    <input type="hidden" id="protocol" name="protocol" value={{shareType.blockchainProtocol}} />    
+    <input type="hidden" id="recID" name="recID" />
+    <input type="hidden" id="auth" name="auth" />
+    <input type="hidden" id="isCurrentWallet" name="isCurrentWallet" />
+    <input type="hidden" id="whitelistPassword" name="password" />
+    <input type="hidden" id="whitelistFilecontents" name="filecontents" />
+    <input type="hidden" id="blockchainTransactionID" name="blockchainTransactionID" value="" />
+    <input type="hidden" id="metaMaskTransaction" name="metaMaskTransaction" value="0" />                         
+</form>
+
+<form id="offchaincompanytransfer" name="offchaincompanytransfer" action="/admin/transferInvestorOffChainBalance?_csrf={{csrfToken}}" method="post">
+        <input type="hidden" id="investorID" name="investorID" value="{{investorRec.ID}}" >
+        <input type="hidden" id="ShateTypeID" name="ShateTypeID" value="{{shareType.ID}}" >
+        <input type="hidden" id="shares" name="shares" value="" >
+        <input type="hidden" id="offChainTransferOrOnChain" name="offChainTransferOrOnChain" value="" >
+        <input type="hidden" id="publicaddress" name="publicaddress" value="" >
+        <input type="hidden" id="password" name="password" value="" />
+        <input type="hidden" id="filecontents" name="filecontents"  value="" />
+</form>
+
+<form id="formBurnToken" name="formBurnToken" action="/admin/burnPrivateWalletTokens" method="post">
+    <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" >
+    <input type="hidden" id="idPri" name="idPri" value="" >
+    <input type="hidden" id="amountPri" name="amountPri" value="" >
+    <input type="hidden" id="contractAddress" name="contractAddress" value="{{shareType.ethereumContractAddress}}" >        
+    <input type="hidden" id="protocolPri" name="protocolPri" value="{{shareType.blockchainProtocol}}" >    
+    <input type="hidden" id="transactionIDPri" name="transactionIDPri" value="" >        
+</form>
+ 
+{{> atomicswap}}
+{{> Footer}}
+

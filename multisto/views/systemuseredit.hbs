@@ -1,0 +1,170 @@
+{{> Header}}
+
+	<script language="javascript">
+            
+            var FormOp = {{isEditing}};
+            var userRoleID = {{userRoleID}};
+        
+			$(document).ready(function() {
+				$("#SystemUsers").addClass('active');
+                $('#UserRole option[value='+ userRoleID + ']').attr('selected','selected');
+			})
+              
+            function cancelClicked() {
+                if(FormOp == 0)
+                    window.location.href = `systemuserslist?stoid={{stoid}}`;
+                else
+                    window.location.href = "systemuserView?id=" + document.getElementById('ID').value;
+                
+                return false;
+            }
+
+            function submitForm() {
+                var res = "";
+                
+                if(document.getElementById("FirstName").value == "")
+                    res = "<li>First Name is required</li>";
+                if(document.getElementById("LastName").value == "")
+                    res = res + "<li>Last Name is required</li>";
+
+                if(FormOp == 0) {
+                    if(document.getElementById("Password").value == "")
+                        res = res + "<li>Password is required</li>";
+                                        
+                    if(document.getElementById("Username").value == "")
+                        res = res + "<li>Username is required</li>";  
+                }
+
+                if(res == "")
+                    document.getElementById("systemUserAddEditPost").submit();
+                else
+                {
+                    $(window).scrollTop(0);
+                    $("#ErrorMessages").html(res)
+                }
+                
+            }        
+        
+	</script>
+
+{{> HeaderInnerPlatform}}
+
+    <div class="col-lg-12 col-md-7">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/user.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  User Information</h4>
+            </div>
+            <div class="content">
+                {{#if rolesCount}}
+                    <ul style="color:red;"><span id="ErrorMessages">{{message}}</span></ul>
+
+                    <form id="systemUserAddEditPost" name="systemUserAddEditPost" action="systemUserAddEditPost" method="post">
+
+                    {{#if isEditing}}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>ID</label> &nbsp;&nbsp;&nbsp;
+                                {{userRecord.ID}}
+                            </div>
+                        </div>
+                    </div>
+                    {{/if}}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="FirstName" name="FirstName" class="form-control border-input" placeholder="First Name" value="{{userRecord.FirstName}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">                                    
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="LastName" name="LastName" class="form-control border-input" placeholder="Last Name" value="{{userRecord.LastName}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">                                    
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" id="email" name="email" class="form-control border-input" placeholder="Last Name" value="{{userRecord.email}}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">                                    
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Username</label>
+                                {{#if isEditing}}
+                                    &nbsp;&nbsp;&nbsp;&nbsp; {{userRecord.Username}}
+                                {{else}}
+                                    <input type="text" id="Username" name="Username" class="form-control border-input" placeholder="Last Username" value="{{userRecord.Username}}">
+                                {{/if}}
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">                                    
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>
+                                {{#if isEditing}}
+                                    Change Password
+                                {{else}}
+                                    Enter Password
+                                {{/if}}
+                                </label>
+
+                                <input type="text" id="Password" name="Password" class="form-control border-input" placeholder="Password" value="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">                                    
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select name="UserRole" id="UserRole" class="form-control border-input">
+                                    {{#each Roles}}
+                                        <option value="{{this.ID}}">{{this.Role}}</option>
+                                    {{/each}}
+                                </select>                                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <input type="hidden" name="stoid" value="{{stoid}}" />
+                    <input type="hidden" name="FormOperation" value="{{isEditing}}">
+                    {{#if isEditing}}
+                        <input type="hidden" name="ID" value="{{userRecord.ID}}">
+                    {{/if}}
+
+                    <div class="text-center">
+                        {{#if isEditing}}
+                            <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Save User</button>
+                        {{else}}
+                            <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Add New User</button>
+                        {{/if}}
+
+                        &nbsp;&nbsp;&nbsp; <button onclick="return cancelClicked()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+                {{else}}
+                    <label>No roles are defined. Please define atleast one role</label>
+                    <br /><br />
+                {{/if}}
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

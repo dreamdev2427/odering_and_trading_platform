@@ -1,0 +1,41 @@
+<script language="javascript">
+    const currentLanguage = "{{Data.currentLanguage}}";
+    var isLanguageSwitchngAllowed = 1;
+    
+    
+    $(document).ready(function() {
+        $("#selSelectLanguage").val(currentLanguage);
+    });
+    
+    function disAllowLanguageSwitchingOnThisPage() {
+        isLanguageSwitchngAllowed = 0;
+    }
+
+    function changeLanguage() {
+        //window.location.href = "/ln?ln=" + $("#selSelectLanguage").val();
+        //return false;   
+        if(isLanguageSwitchngAllowed == 1) {
+            document.getElementById("llang").value = $("#selSelectLanguage").val();
+            document.getElementById("lurlto").value = window.location.href;
+            document.getElementById("frmLanguageSelection").submit();
+        }
+    }
+</script> 
+
+{{#ifGreater Data.langauges.length 1 }}
+    <select id="selSelectLanguage" style="padding:10px;" onchange="changeLanguage()" class="form-control">
+        {{#each Data.langauges}}
+            {{#each this}}
+                <option value="{{@key}}">{{this}}</option>
+            {{/each}}
+
+        {{/each}}
+    </select>
+{{/ifGreater}}
+
+<form id="frmLanguageSelection" name="frmLanguageSelection" action="languageChange" method="get">
+    <input type="hidden" id="llang" name="llang" value="" >
+    <input type="hidden" id="lurlto" name="lurlto" value="" >
+    <input type="hidden" name="_csrf" value="{{Data.csrfToken}}" />
+</form>
+

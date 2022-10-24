@@ -1,0 +1,265 @@
+{{> Header}}
+
+<style>
+  .has-error .form-control {
+    background-color: #fffcf5 !important;
+  }
+</style>
+
+<script language="javascript">
+  const sortTable = () => {
+    const tbody = $('#meta-key-table tbody');
+    const array = Array.from($('#meta-key-table tbody tr')).map(item => ({
+      html: item.outerHTML,
+      order: Number(item.dataset.order),
+    }));
+    tbody.html('');
+
+    array.sort((a, b) => a.order - b.order)
+      .forEach(item => tbody.append(item.html));
+  };
+
+  $(document).ready(function () {
+    sortTable();
+    const modal = $('#meta-key-modal');
+    const help = $('#tabs-help')
+    const _csrf = '{{csrfToken}}';
+    const keyInput = $('#meta-key-key');
+    const typeInput = $('#meta-key-type');
+    const orderInput = $('#meta-key-order');
+    const displayInput = $('#meta-key-display');
+
+    keyInput.on('focus', () => {
+      if (keyInput.parent().hasClass('has-error')) {
+        keyInput.parent().removeClass('has-error');
+      }
+    });
+
+    orderInput.on('focus', () => {
+      if (orderInput.parent().hasClass('has-error')) {
+        orderInput.parent().removeClass('has-error');
+      }
+    });
+
+    typeInput.on('change', (e) => {
+      if (typeInput.val() === 'tabs') {
+        help.removeClass('hidden');
+      } else {
+        help.addClass('hidden');
+      }
+    });
+
+    $('.js-add').on('click', () => {
+      modal.modal({ backdrop: 'static', keyboard: true });
+    });
+
+    $(document).on('click', '.js-edit', (e) => {
+      const data = $(e.currentTarget).data();
+      keyInput.val(data.key);
+      typeInput.val(data.type).change();
+      orderInput.val(data.order);
+      displayInput.prop('checked', !!data.display);
+      if (data.type === 'tabs') {
+        help.removeClass('hidden');
+      }
+      modal.modal({ backdrop: 'static', keyboard: true });
+    });
+
+    $(document).on('click', '.js-remove', (e) => {
+      const { key } = $(e.currentTarget).data();
+      if (confirm('Are you sure you want to remove meta key? WARNING: This action will remove all meta values with this meta key.')) {
+        $.post('/platform/removeStosMetaKeys', { key, _csrf })
+          .done(() => {
+            $(`#${key}`).remove();
+            sortTable();
+          });
+      }
+    });
+
+    modal.on('hidden.bs.modal', () => {
+      keyInput.val('');
+      typeInput.val('text');
+      orderInput.val('');
+      if (!help.hasClass('hidden')) {
+        help.addClass('hidden');
+      }
+      displayInput.prop('checked', false);
+    });
+
+    $('.js-save').on('click', () => {
+      let hasError = false;
+      const key = keyInput.val();
+      const type = typeInput.val();
+      const order = orderInput.val();
+      const display = displayInput.prop('checked') ? 1 : 0;
+      if (!key) {
+        keyInput.parent().addClass('has-error');
+        hasError = true;
+      }
+      if (!type) {
+        typeInput.parent().addClass('has-error');
+        hasError = true;
+      }
+      if (!order) {
+        orderInput.parent().addClass('has-error');
+        hasError = true;
+      }
+
+      if (hasError) {
+        return;
+      }
+
+      $.post('/platform/postStosMetaKeys', { key, type, order, display, _csrf })
+        .done(() => {
+          modal.modal('hide');
+          const tr = $(`#${key}`);
+          if (tr.length) {
+            tr.remove();
+          }
+          const newTr = `
+            <tr id="${key}" data-order="${order}">
+                <td>${key}</td>
+                <td>${type}</td>
+                <td>${order}</td>
+                <td>${display ? 'Yes' : 'No'}</td>
+                <td>
+                  <button
+                    class="btn btn-default js-edit"
+                    data-key="${key}"
+                    data-type="${type}"
+                    data-order="${order}"
+                    data-display="${display}"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-danger js-remove"
+                    data-key="${key}"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            `;
+          $('#meta-key-table tbody').append(newTr);
+          sortTable();
+        });
+    });
+  });
+</script>
+
+{{> HeaderInnerPlatform}}
+
+{{#if message}}
+  <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b>
+  <br /><br />
+{{/if}}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="title">Sto Meta keys</h4>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-primary pull-right js-add">Add meta key</button>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <table class="table" id="meta-key-table">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Type</th>
+              <th>Order</th>
+              <th>Display on detail page</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each keysList}}
+              <tr id="{{this.key}}" data-order="{{this.order}}">
+                <td>{{this.key}}</td>
+                <td>{{this.type}}</td>
+                <td>{{this.order}}</td>
+                <td>{{#if this.display}}Yes{{else}}No{{/if}}</td>
+                <td>
+                  <button
+                    class="btn btn-default js-edit"
+                    data-key="{{this.key}}"
+                    data-type="{{this.type}}"
+                    data-order="{{this.order}}"
+                    data-display="{{this.display}}"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-danger js-remove"
+                    data-key="{{this.key}}"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="meta-key-modal" tabindex="-1" role="dialog" aria-labelledby="meta-key-modal"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+          aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Meta key modal</h4>
+      </div>
+      <div class="modal-body">
+        <form id="meta-key-form">
+          <div class="form-group">
+            <label for="meta-key-key" class="control-label">Key</label>
+            <input name="key" type="text" class="form-control border-input" id="meta-key-key"
+                   placeholder="Enter a key" required>
+          </div>
+          <div class="form-group">
+            <label for="meta-key-type" class="control-label">Type</label>
+            <select id="meta-key-type" class="form-control border-input" name="type" required>
+              <option value="text">text</option>
+              <option value="richtext">richtext</option>
+              <option value="checkbox">checkbox</option>
+              <option value="chart">chart</option>
+              <option value="tabs">tabs</option>
+            </select>
+          </div>
+          <span id="tabs-help" class="help-block hidden">
+            Notice: to create a tab you have to create a new meta key which key begins with this key.
+            <br>
+            e.g. tabs: <b>the_overview</b> and the first tab: <b>the_overview_first_tab</b>
+          </span>
+          <div class="form-group">
+            <label for="meta-key-order" class="control-label">Order</label>
+            <input name="order" type="number" class="form-control border-input" id="meta-key-order" required>
+          </div>
+          <div class="form-group">
+            <input type="checkbox" id="meta-key-display" name="display">
+            <label for="meta-key-display">Display on detail page</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary js-save">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+{{> Footer}}

@@ -1,0 +1,398 @@
+{{> Header}}
+
+<style>
+    .message {
+        border: 2px solid gray;
+        background-color: #EEE;
+        color: #555;
+        border-radius: 8px;
+        padding: 16px;
+        font-size: large;
+    }
+    .error {
+        border-color: #FAA;
+        background-color: #FEE;
+        color: #A33;
+    }
+    .success {
+        border-color: #AFA;
+        background-color: #EFE;
+        color: #3A3;
+    }
+    .thead {
+        position: sticky;
+        top: 0;
+    }
+    .btn-custom {
+        border-radius: 8px;
+        margin: 18px;
+    }
+</style>
+
+{{!-- Load DataTables with all extensions --}}
+<link rel="stylesheet" type="text/css"
+    href="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.11.0/af-2.3.7/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/b-print-2.0.0/cr-1.5.4/date-1.1.1/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.2.0/sp-1.4.0/sl-1.3.3/datatables.min.css" />
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript"
+    src="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.11.0/af-2.3.7/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/b-print-2.0.0/cr-1.5.4/date-1.1.1/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.2.0/sp-1.4.0/sl-1.3.3/datatables.min.js"></script>
+
+<script language="javascript">
+
+    $(document).ready(function() {
+        $("#affiliatepayouts").addClass('active');
+    })
+
+    function getQueryParams() {
+        var queryParameters = {};
+        var queryString = location.search.substring(1);
+        var re = /([^&=]+)=([^&]*)/g, m;
+        while (m = re.exec(queryString)) {
+            queryParameters[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+        return queryParameters;
+    }
+    function setQueryParamsAndReload(queryParameters) {
+        location.search = $.param(queryParameters);
+    }
+    function setQueryParam(queryParam, value) {
+        var query = [];
+        query = getQueryParams();
+        query[queryParam] = value;
+        setQueryParamsAndReload(query);
+    }
+    function removeQueryParam(queryParam) {
+        var query = [];
+        query = getQueryParams();
+        query = query.filter((param) => param !== queryParam);
+        setQueryParamsAndReload(query);
+    }
+    function showTotal() {
+        removeQueryParam("v");
+    }
+    {{!-- This effectively enables commissionsMode after a page reload --}}
+    function showIndividual() {
+        setQueryParam("v", "commissions");
+    }
+
+    $(document).ready(() => {
+        var query = getQueryParams();
+
+        $('#datatable').DataTable();
+        $('#datatable2').DataTable();
+        $('#datatable3').DataTable();
+    });
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        {{#if errorMessage}}
+            <p style="message error">{{errorMessage}}</p>
+        {{/if}}
+        {{#if successMessage}}
+            <p style="message error">{{successMessage}}</p>
+        {{/if}}
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/dividends.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Affiliate Payouts</h4>
+            </div>
+
+            <div class="content" style="overflow: auto;">
+
+                        {{!-- <b><div class="row">
+                            <div class="col-md-1">#</div>
+                            <div class="col-md-1">Investor ID</div>
+                            <div class="col-md-4">Name</div>
+                            <div class="col-md-1">Amount in EUR</div>
+                            <div class="col-md-1">Tokens</div>
+                            <div class="col-md-4">Remark</div>
+                        </div></b><br />
+
+                        {{#each incomes}}
+                                <div class="row">
+                                    <div class="col-md-1">{{this.id}}</div>
+                                    <div class="col-md-1">{{this.investorId}} {{this.LastName}} </div>
+                                    <div class="col-md-4">---</div>
+                                    <div class="col-md-1">{{this.amount}} </div>
+                                    <div class="col-md-1">{{this.tokens}}</div>
+                                    <div class="col-md-4">{{this.remark}}</div>
+                                </div>
+                                <br />
+                        {{/each}} --}}
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <h5 class="title">
+                            {{#if commissionsMode}}
+                                This is a list of all individual commissions
+                            {{else}}
+                                This is a list of all total personal incomes in {{selectedProject.name}} that were not yet marked as awarded.
+                            {{/if}}
+                        </h5>
+                    </div>
+                    <div class="col-md-2">
+                            {{!-- {{#if commissionsMode}}
+                                <button style="btn btn-default" onclick="showTotal()">
+                                    Show Total Commissions
+                                </button>
+                            {{else}}
+                                <button style="btn btn-default" onclick="showIndividual()">
+                                    Show Individual Commissions
+                                </button>
+                            {{/if}} --}}
+                    </div>
+                    <div class="col-md-3">
+                        <select id="projectId" name="projectId" class="form-control border-input" onchange="setQueryParam('project', this.value);">
+                            {{#each projects}}
+                                <option
+                                    value="{{this.ID}}"
+                                    {{#if this.selected}}
+                                        selected
+                                    {{/if}}
+                                >
+                                    {{this.name}}
+                                </option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+                {{#if incomes.length}}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <br/>
+                            <table id="datatable" class="table table-striped" style="overflow: auto;">
+                                <thead class="listingHeaderFontSize thead">
+                                    <th class="thead">ID</th>
+                                    <th class="thead">Project</th>
+                                    <th class="thead">First Name</th>
+                                    <th class="thead">Last Name</th>
+                                    <th class="thead">E-Mail</th>
+                                    <th class="thead">Phone</th>
+                                    <th class="thead">Address</th>
+                                    <th class="thead">Country</th>
+                                    <th class="thead">Eligibility</th>
+                                    <th class="thead">{{#unless commissionsMode}}Total {{/unless}}Tokens</th>
+                                    <th class="thead">{{#unless commissionsMode}}Total {{/unless}}{{affiliateCurrencyName}}</th>
+                                    {{!-- <th class="thead">B. Account Name</th>
+                                    <th class="thead">IBAN</th>
+                                    <th class="thead">SWIFT/BIC</th>
+                                    <th class="thead">Token Wallet</th> --}}
+                                </thead>
+                                <tbody>
+                                    {{#each incomes}}
+                                        {{#unless this.awarded}}
+                                            <tr>
+                                                <td>{{this.investorId}}</td>
+                                                <td>{{this.stoTitle}}</td>
+                                                <td>{{this.firstName}}</td>
+                                                <td>{{this.lastName}}</td>
+                                                <td>{{this.email}}</td>
+                                                <td>{{this.phone}}</td>
+                                                <td>{{this.address}}</td>
+                                                <td>{{this.country}}</td>
+                                                <td>{{this.eligibility}}</td>
+                                                <td>{{this.totalTokens}}</td>
+                                                <td>{{this.totalFiat}}</td>
+                                                {{!-- <td>{{this.accountName}}</td>
+                                                <td>{{this.iban}}</td>
+                                                <td>{{this.routingNumber}}</td>
+                                                <td>{{this.tokensWallet}}</td> --}}
+
+                                                {{!-- <td>N/A</td>
+                                                <td>N/A</td>
+                                                <td>N/A</td>
+                                                <td>N/A</td> --}}
+                                            </tr>
+                                        {{/unless}}
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{#ifEqual selectedProject.ID 0}}
+                                {{!-- Disable awarding of all projects at once --}}
+                            {{else}}
+                                <div class="row">
+                                    <div clas="col-xs-12">
+                                        <form id="affiliatePayoutsForm" name="affiliatePayoutsForm" action="awardAffiliateIncomes" method="post">
+                                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                            <input type="hidden" name="stoid" value="{{selectedProject.ID}}" />
+                                            <input type="submit" name="award" class="btn btn-default btn-custom" value="Award these tokens" />
+                                            <label for="award" style="margin: 12px;">
+                                                This action will transfer the tokens from the company to the investors'
+                                                portfolios in the project "{{selectedProject.name}}" and mark them as awarded.
+                                                <br/>
+                                                The token type that will be awarded is the affiliate share class chosen in the
+                                                current selected project's <a href="newsto?id={{selectedProject.ID}}">settings</a>.
+                                            </label>
+                                        </form>
+                                    </div>
+                                </div>
+                            {{/ifEqual}}
+                        </div>
+                    </div>
+                {{else}}
+                    <label>No Records Found</label>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/nonblockchain.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Awarded Commissions</h4>
+            </div>
+
+            <div class="content" style="overflow: auto;">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h5 class="title">
+                            This is a list of already awarded incomes in {{selectedProject.name}}. The values are summed per person.
+                        </h5>
+                    </div>
+                </div>
+                {{#if awardedIncomes.length}}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <br/>
+                            <table id="datatable2" class="table table-striped" style="overflow: auto;">
+                                <thead class="listingHeaderFontSize thead">
+                                    <th class="thead">ID</th>
+                                    <th class="thead">Project</th>
+                                    <th class="thead">First Name</th>
+                                    <th class="thead">Last Name</th>
+                                    <th class="thead">E-Mail</th>
+                                    <th class="thead">Phone</th>
+                                    <th class="thead">Address</th>
+                                    <th class="thead">Country</th>
+                                    <th class="thead">Eligibility</th>
+                                    <th class="thead">{{#unless commissionsMode}}Total {{/unless}}Tokens</th>
+                                    <th class="thead">{{#unless commissionsMode}}Total {{/unless}}{{affiliateCurrencyName}}</th>
+                                    {{!-- <th class="thead">B. Account Name</th>
+                                    <th class="thead">IBAN</th>
+                                    <th class="thead">SWIFT/BIC</th>
+                                    <th class="thead">Token Wallet</th> --}}
+                                </thead>
+                                <tbody>
+                                    {{#each awardedIncomes}}
+                                        {{#if this.awarded}}
+                                            <tr>
+                                                <td>{{this.investorId}}</td>
+                                                <td>{{this.stoTitle}}</td>
+                                                <td>{{this.firstName}}</td>
+                                                <td>{{this.lastName}}</td>
+                                                <td>{{this.email}}</td>
+                                                <td>{{this.phone}}</td>
+                                                <td>{{this.address}}</td>
+                                                <td>{{this.country}}</td>
+                                                <td>{{this.eligibility}}</td>
+                                                <td>{{this.totalTokens}}</td>
+                                                <td>{{this.totalFiat}}</td>
+                                                {{!-- <td>{{this.accountName}}</td>
+                                                <td>{{this.iban}}</td>
+                                                <td>{{this.routingNumber}}</td>
+                                                <td>{{this.tokensWallet}}</td> --}}
+
+                                                {{!-- <td>N/A</td>
+                                                <td>N/A</td>
+                                                <td>N/A</td>
+                                                <td>N/A</td> --}}
+                                            </tr>
+                                        {{/if}}
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{else}}
+                    <label>No Records Found</label>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/time.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Pending Payments</h4>
+            </div>
+
+            <div class="content" style="overflow: auto;">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h5 class="title">
+                            This is a list of commissions where the tokens have been awarded but the payments are still pending.
+                        </h5>
+                    </div>
+                </div>
+                {{#if pendingIncomes.length}}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <br/>
+                            <table id="datatable3" class="table table-striped" style="overflow: auto;">
+                                <thead class="listingHeaderFontSize thead">
+                                    <th class="thead">ID</th>
+                                    <th class="thead">Project</th>
+                                    <th class="thead">First Name</th>
+                                    <th class="thead">Last Name</th>
+                                    <th class="thead">E-Mail</th>
+                                    <th class="thead">Phone</th>
+                                    <th class="thead">Address</th>
+                                    <th class="thead">Country</th>
+                                    <th class="thead">Eligibility</th>
+                                    <th class="thead">{{#unless commissionsMode}}Total {{/unless}}Tokens</th>
+                                    <th class="thead">{{#unless commissionsMode}}Total {{/unless}}{{affiliateCurrencyName}}</th>
+                                    {{!-- <th class="thead">B. Account Name</th>
+                                    <th class="thead">IBAN</th>
+                                    <th class="thead">SWIFT/BIC</th>
+                                    <th class="thead">Token Wallet</th> --}}
+                                </thead>
+                                <tbody>
+                                    {{#each pendingIncomes}}
+                                        {{#ifEqual this.awarded 2}}
+                                            <tr>
+                                                <td>{{this.investorId}}</td>
+                                                <td>{{this.stoTitle}}</td>
+                                                <td>{{this.firstName}}</td>
+                                                <td>{{this.lastName}}</td>
+                                                <td>{{this.email}}</td>
+                                                <td>{{this.phone}}</td>
+                                                <td>{{this.address}}</td>
+                                                <td>{{this.country}}</td>
+                                                <td>{{this.eligibility}}</td>
+                                                <td>{{this.totalTokens}}</td>
+                                                <td>{{this.totalFiat}}</td>
+                                                {{!-- <td>{{this.accountName}}</td>
+                                                <td>{{this.iban}}</td>
+                                                <td>{{this.routingNumber}}</td>
+                                                <td>{{this.tokensWallet}}</td> --}}
+
+                                                {{!-- <td>N/A</td>
+                                                <td>N/A</td>
+                                                <td>N/A</td>
+                                                <td>N/A</td> --}}
+                                            </tr>
+                                        {{/ifEqual}}
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{else}}
+                    <label>No Records Found</label>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

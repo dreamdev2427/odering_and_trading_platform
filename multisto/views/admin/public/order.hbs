@@ -1,0 +1,224 @@
+{{> Header}}
+
+<script language="javascript">
+	$(document).ready(function() {
+		//$("#inbox").addClass('active');
+	})
+
+    function viewPurchaseRequestFromInvestor(id) {
+                window.location.href = "purchasePropertiesRequestFromInvestor?id=" + id;
+                return false;
+        }
+
+    function viewSellRequestFromInvestor(id) {
+                window.location.href = "sellPropertiesRequestFromInvestor?id=" + id;
+                return false;
+        }
+
+</script>
+
+
+{{> HeaderInnerSto}}
+
+    {{#if newPropertyReceivedAlerts.length}}
+	       <div class="row">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title"> <img src="/img/nonblockchain.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Shares Purchase Requests </h4>
+                        </div>
+                    </div>
+				</div>
+
+				<div class="content">
+
+                                       <label> Below are the pending requests for the transfer of project shares. Please review the investor's request before transfering shares</label>
+
+                                        <table class="table table-striped">
+                                            <thead class="listingHeaderFontSize">
+                                                <th>Date</th>
+                                                <th>Investor</th>
+                                                <th>Type</th>
+                                                <th>Shares</th>
+                                                <th></th>
+                                            </thead>
+                                            <tbody>
+
+                                                {{#each newPropertyReceivedAlerts }}
+                                                        <tr>
+                                                            <td style="width: 15%; vertical-align: top;"> {{this.DateReceived}} </td>
+                                                            <td style="width: 20%; vertical-align: top;"> {{this.FirstName}} {{this.LastName}} </td>
+                                                            <td style="width: 35%; vertical-align: top;"> {{this.title}} </td>
+                                                            <td style="width: 15%; vertical-align: top;"> {{numberFormat this.Shares decimalLength="ShareCountInFractions"}}</td>
+                                                            <td style="width: 15%; vertical-align: top;"> <button onclick="return viewPurchaseRequestFromInvestor({{this.ID}})"  class="btn btn-info btn-fill btn-sm">View</button> </td>
+                                                        </tr>
+                                                    {{/each}}
+
+                                            </tbody>
+                                        </table>
+
+
+					       <br />&nbsp;
+				</div>
+
+			</div>
+		</div>
+	</div>
+    {{/if}}
+
+
+    {{#if newPropertyReceivedAlertsBlockchain.length}}
+	       <div class="row">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title"> <img src="/img/blockchainwallet.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Blockchain Shares Purchase Requests</h4>
+                        </div>
+                    </div>
+				</div>
+
+				<div class="content">
+
+
+                                       <label> Below are the pending requests for the transfer of project shares. Please review the investor's request and wallet information before transfering shares</label>
+
+                                        <table class="table table-striped">
+                                            <thead class="listingHeaderFontSize">
+                                                <th>Date</th>
+                                                <th>Investor</th>
+                                                <th>Type</th>
+                                                <th>Public Key</th>
+                                                <th>Shares</th>
+                                                <th></th>
+                                            </thead>
+                                            <tbody>
+
+                                                {{#each newPropertyReceivedAlertsBlockchain }}
+                                                        <tr>
+                                                            <td style="width: 15%; vertical-align: top;"> {{this.DateReceived}} </td>
+                                                            <td style="width: 15%; vertical-align: top;"> {{this.FirstName}} {{this.LastName}} </td>
+                                                            <td style="width: 25%; vertical-align: top;"> {{this.title}} </td>
+                                                            <td style="width: 35%; vertical-align: top;"> {{this.publickey}} </td>
+                                                            <td style="width: 5%; vertical-align: top;"> {{numberFormat this.Shares decimalLength="ShareCountInFractions"}}</td>
+                                                            <td style="width: 5%; vertical-align: top;"> <button onclick="return viewPurchaseRequestFromInvestor({{this.ID}})"  class="btn btn-info btn-fill btn-sm">View</button> </td>
+                                                        </tr>
+                                                    {{/each}}
+
+                                            </tbody>
+                                        </table>
+
+
+					       <br />&nbsp;
+				</div>
+
+			</div>
+		</div>
+	</div>
+    {{/if}}
+
+    {{#if isSellBackEnabled}}
+      {{#if newPropertySellReceivedAlerts.length}}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+
+              <div class="header">
+                <div class="row">
+                  <div class="col-md-10">
+                    <h4 class="title"> <img src="/img/nonblockchain.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Shares Sell Requests </h4>
+                  </div>
+                </div>
+              </div>
+
+              <div class="content">
+                <label>
+                  Below are the pending requests for the transfer of project shares. Please review the investor's request before transfering shares
+                </label>
+                <table class="table table-striped">
+                  <thead class="listingHeaderFontSize">
+                  <th>Date</th>
+                  <th>Investor</th>
+                  <th>Type</th>
+                  <th>Shares</th>
+                  <th></th>
+                  </thead>
+                  <tbody>
+                  {{#each newPropertySellReceivedAlerts }}
+                    <tr>
+                      <td style="width: 15%; vertical-align: top;"> {{this.DateReceived}} </td>
+                      <td style="width: 20%; vertical-align: top;"> {{this.FirstName}} {{this.LastName}} </td>
+                      <td style="width: 35%; vertical-align: top;"> {{this.title}} </td>
+                      <td style="width: 15%; vertical-align: top;"> {{numberFormat this.Shares decimalLength="ShareCountInFractions"}}</td>
+                      <td style="width: 15%; vertical-align: top;"> <button onclick="return viewSellRequestFromInvestor({{this.ID}})"  class="btn btn-info btn-fill btn-sm">View</button> </td>
+                    </tr>
+                  {{/each}}
+                  </tbody>
+                </table>
+                <br />
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/if}}
+    {{/if}}
+
+    {{#if newPropertySellReceivedAlertsBlockchain.length}}
+	       <div class="row">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title"> <img src="/img/blockchainwallet.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Blockchain Shares Sell Requests</h4>
+                        </div>
+                    </div>
+				</div>
+
+				<div class="content">
+
+
+                                       <label> Below are the pending requests for the transfer of project shares. Please review the investor's request and wallet information before transfering shares</label>
+
+                                        <table class="table table-striped">
+                                            <thead class="listingHeaderFontSize">
+                                                <th>Date</th>
+                                                <th>Investor</th>
+                                                <th>Type</th>
+                                                <th>Public Key</th>
+                                                <th>Shares</th>
+                                                <th></th>
+                                            </thead>
+                                            <tbody>
+
+                                                {{#each newPropertySellReceivedAlertsBlockchain }}
+                                                        <tr>
+                                                            <td style="width: 15%; vertical-align: top;"> {{this.DateReceived}} </td>
+                                                            <td style="width: 15%; vertical-align: top;"> {{this.FirstName}} {{this.LastName}} </td>
+                                                            <td style="width: 25%; vertical-align: top;"> {{this.title}} </td>
+                                                            <td style="width: 35%; vertical-align: top;"> {{this.publickey}} </td>
+                                                            <td style="width: 5%; vertical-align: top;"> {{numberFormat this.Shares decimalLength="ShareCountInFractions"}}</td>
+                                                            <td style="width: 5%; vertical-align: top;"> <button onclick="return viewSellRequestFromInvestor({{this.ID}})"  class="btn btn-info btn-fill btn-sm">View</button> </td>
+                                                        </tr>
+                                                    {{/each}}
+
+                                            </tbody>
+                                        </table>
+
+
+					       <br />&nbsp;
+				</div>
+
+			</div>
+		</div>
+	</div>
+    {{/if}}
+
+
+{{> Footer}}

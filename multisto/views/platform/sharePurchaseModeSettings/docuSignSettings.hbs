@@ -1,0 +1,148 @@
+<script>
+  function saveDocuSIgn() {
+    document.getElementById("setDocuSign").submit();
+  }
+
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-10">
+            <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt="addMore" /> DocuSign Parameters</h4>
+            <label>Please follow the instructions and make sure all fields are filled in:</label>
+          </div>
+          <div class="col-md-1">
+            <button onclick="saveDocuSIgn()" class="btn btn-info btn-fill">Save All</button>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="header">
+                <h4 class="title"><img src="/img/contracts2.png" width="25px;" alt="contract"> DocuSign Integration</h4>
+                <label>If your deployment is configured for DocuSign integration, please enter the correct integration information, otherwise keep these textboxes empty</label>
+              </div>
+              <div class="content">
+                <b>Note: the RSA Key can be seen only while adding an app/integration key within docusign's admin pages. Please take a look
+                at all of the following fields and indications before starting the process</b>
+                <br/>
+                <br/>
+                <b>
+                  Note2: don't forget to set the Redirect URIs on the docusign platform with:
+                  <br/>
+                  https://{{DocuSignRedirectUriRegister}}
+                  <br/>
+                  http://{{DocuSignRedirectUriRegister}}
+                </b>
+                <hr/>
+                <form id="setDocuSign" action="/platform/postChangeDocuSignSettings" method="post">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <b>User ID</b>
+                      <br/>
+                      <label>The User ID can be found in your docusign admin panel under /apps-and-keys
+                      </label>
+                      <br/>
+                      <input  name="DocuSignUserID" class="form-control border-input" value="{{DocuSignUserID}}">
+                    </div>
+                  </div>
+                  <hr/>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <b>Integration Key</b>
+                      <br/>
+                      <label>The Integration Key can be found in your docusign admin panel under /apps-and-keys
+                      </label>
+                      <br/>
+                      <input name="DocuSignIntegrationKey" class="form-control border-input" value="{{DocuSignIntegrationKey}}">
+                    </div>
+                  </div>
+                  <hr/>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <b>RSA Key</b>
+                      <br/>
+                      <label>
+                        The RSA Key can be found in your docusign admin panel under /apps-and-keys
+                        <br/>
+                        When creating a new app/key, please scroll down to "Service Integration" and click on "Generate RSA". Then Copy the "Private Key" and place it in the field bellow.
+                      </label>
+                      <br/>
+                      <input id="DocuSignRsaKey" name="DocuSignRsaKey" class="form-control border-input">
+                      <label>Saved RSA Key will not be shown. If you do not want to change the currently saved key, please keep the textbox empty</label>
+                    </div>
+                  </div>
+                  <hr/>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <b>Viewing document url</b>
+                      <br/>
+                      <label>
+                        This field is used in order to allow STO admins to see the documents signed by investors directly from this platform.
+                        Please go through a signing process, navigate to /documents?label=completed in your docusign admin panel, click on a finished document and copy the base URL from your search bar.
+                        <br/>
+                        e.g. from: https://appdemo.docusign.com/documents/details/b7d38579-e623-4e39-8afc-4c1361538d74
+                        <br/>
+                        copy only the: https://appdemo.docusign.com/documents/details/
+                      </label>
+                      <br/>
+                      <input name="DocusignViewSignedDocumentsUrl" class="form-control border-input" value="{{DocusignViewSignedDocumentsUrl}}">
+                    </div>
+                  </div>
+                  <hr/>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <b>Consent Uri</b>
+                      <br/>
+                      <label>
+                        This field is used in order to allow signer and impersonation privileges to the platform.
+                        These don't change that often, and come frome here:
+                        <a href="https://developers.docusign.com/platform/auth/consent/obtaining-admin-consent-external/">
+                          https://developers.docusign.com/platform/auth/consent/obtaining-admin-consent-external/
+                        </a>
+                        <br/>
+                        <b>
+                          If the platform is in staging mode, please use: https://account-d.docusign.com
+                          <br/>
+                          If the platform is in production mode, please use: https://account.docusign.com/oauth/auth
+                        </b>
+                      </label>
+                      <br/>
+                      <input name="DocuSignConsentUri" class="form-control border-input" value="{{DocuSignConsentUri}}">
+                    </div>
+                  </div>
+                  <hr/>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <b>Oauth Base Path</b>
+                      <br/>
+                      <label>
+                        The Oauth Base Path doesn't change that often, unless the DocuSign team suggests changes, please leave it as is:
+                      </label>
+                      <br/>
+                      <input name="DocuSignOauthBasePath" class="form-control border-input" value="{{DocuSignOauthBasePath}}">
+                    </div>
+                  </div>
+                  <hr/>
+
+                  <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

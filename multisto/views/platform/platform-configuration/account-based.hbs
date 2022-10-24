@@ -1,0 +1,46 @@
+<div class="card col"
+  {{#ifEqual platformConfiguration 2}}
+     style="
+  border-style: solid;
+  border-color: green;
+"
+  {{/ifEqual}}
+>
+  <div>
+    {{#ifEqual platformConfiguration 2}}
+      <span class="checkmark">
+        <div class="checkmark_circle"></div>
+        <div class="checkmark_stem"></div>
+        <div class="checkmark_kick"></div>
+      </span>
+    {{/ifEqual}}
+    <h2 class="mx-auto px-4 py-1 rounded-bottom shadow-sm">Account Based</h2>
+    <hr/>
+    <h3 class="card-title pricingTable-header">
+      <ul>
+        <li>External accounts</li>
+        <li>No running balances</li>
+        <li>Only for fiat</li>
+      </ul>
+    </h3>
+    <hr/>
+    <ul >
+      <li class="li-separator">
+        Customer funds in their own accounts (they don’t have a wallet)
+      </li>
+      <li class="li-separator">
+        Customers’ security tokens within system
+        (System can run without tokens)
+      </li>
+      <li class="li-separator">
+        Issuer funds in issuer’s own account
+        (If in Mercury, then automation of purchase and dividends works)
+      </li>
+      <li class="li-separator">
+        Issuer’s security tokens within system
+        (System can run without tokens)
+      </li>
+    </ul>
+    <button class="btn btn-info btn-fill btn-wd" onclick=changePlatformConfigurationMode(2)>Select</button>
+  </div>
+</div>

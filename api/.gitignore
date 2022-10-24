@@ -1,0 +1,14 @@
+build
+build-ts
+node_modules
+.env
+.idea
+log
+uploads
+.vscode
+types.graphql
+ds-sa.json
+
+.DS_Store
+.AppleDouble
+.LSOverride

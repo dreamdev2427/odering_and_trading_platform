@@ -1,0 +1,41 @@
+<script>
+    function postIsBankDetailsSwitchEnabled(isChecked) {
+      document.getElementById('isBankDetailsSwitchEnabled-intValue').value = +isChecked;
+      document.getElementById('isBankDetailsSwitchEnabled-redirectUrl').value = window.location.href;
+      document.getElementById('postIsBankDetailsSwitchEnabled').submit();
+    }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:0.5rem; margin-right:1rem;" alt='add more'/>Bank details management</h4>
+        <label>Allow the investor to manage their personal bank details.</label>
+      </div>
+      <div class="content">
+        <form method="post" id="postIsBankDetailsSwitchEnabled" action="postParamUpdateToApi">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="switch">
+                <input id="isBankDetailsSwitchEnabled"
+                       onclick=postIsBankDetailsSwitchEnabled(this.checked) type="checkbox"
+                  {{#if isBankDetailsSwitchEnabled}}
+                       checked
+                  {{/if}}
+                >
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" id="isBankDetailsSwitchEnabled-intValue" name="intValue"/>
+          <input type="hidden" id="isBankDetailsSwitchEnabled-stringValue" name="stringValue" value=""/>
+          <input type="hidden" id="isBankDetailsSwitchEnabled-param" name="param" value="isBankDetailsSwitchEnabled" />
+          <input type="hidden" id="isBankDetailsSwitchEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

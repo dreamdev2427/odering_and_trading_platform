@@ -1,0 +1,66 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        //$("#sto").addClass('active');                
+    })        
+    
+    function cancelclick() {
+        window.location.href = "/platform/shareslist?id={{record.stoid}}";
+        return false;
+    }
+    function resetShares(id) {
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete all transaction in this share class ? <br /><br /> These transaction cannot be recovered back", "Yes Delete", "Cancel");
+    }
+    
+    function generalModelOKButtonClickedClientEvent() {
+         window.location.href = "/platform/resetsharetypespost?id={{record.ID}}&cid={{record.stoid}}";
+        return false;
+    }
+    
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-10">
+                        <h4 class="title">Reset Shares Class</h4>
+                        <label>Delete all transactions of this share class</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <h4> You are about to delete all transaction of following share type/class </h4>
+                
+                <label>Share Class</label> &nbsp;&nbsp;&nbsp;&nbsp; {{record.title}}
+                <br />
+                <label>Nominal</label>  &nbsp;&nbsp;&nbsp;&nbsp; {{currencySymbol record.currencyid}}  {{record.nominalValue}}  
+                 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                <label>Market</label>  &nbsp;&nbsp;&nbsp;&nbsp; {{currencySymbol record.currencyid}}  {{record.premimum}}    
+                <br /><br />
+                <label>Total Company Shares in this Share Class </label> &nbsp;&nbsp;&nbsp;&nbsp; {{numberFormat record.totalShares decimalLength="ShareCountInFractions"}}
+                <br /><br />
+                <label>Shares Transferred to Investors </label> &nbsp;&nbsp;&nbsp;&nbsp; {{numberFormat shareTransferred decimalLength="ShareCountInFractions"}}
+
+                <br /><br /><br />
+                <span style="color:red;" > 
+                    Please note that all share transfer transaction from company to investors and between investors will be deleted and this cannot be recovered. All shares held by investors will be transferred back to the company.  
+                </span>
+                
+                <br /><br />
+                <button onclick="return resetShares()" class="btn btn-info btn-fill "> &nbsp; Yes Delete All Shares &nbsp; </button>
+                &nbsp;&nbsp;&nbsp;
+                <button onclick="return cancelclick()" class="btn btn-info btn-fill "> &nbsp; Cancel &nbsp; </button>
+                
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>								
+</div>
+
+{{> Footer}}

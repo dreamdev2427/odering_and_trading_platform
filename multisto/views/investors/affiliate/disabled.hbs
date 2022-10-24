@@ -1,0 +1,30 @@
+{{> Header}}
+{{> HeaderInner}}
+
+<style>
+    .toast {
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    }
+</style>
+
+<script lang="javascript">
+    $(document).ready(() => {
+        $("#affiliate").addClass('active');
+    });
+</script>
+
+<div class="row">
+    <main class="col-md-12 alert alert-info toast">
+        <p>
+            <i class="ti-info-alt"></i>
+            {{#if message}}
+                {{message}}
+            {{else}}
+                Sorry, this page has been disabled by administration.
+            {{/if}}
+        </p>
+    </main>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,423 @@
+{{> Header}}
+
+{{> HeaderInnerSto}}
+
+<style>
+    .ViewingMode {
+        display:none;
+    }
+
+    .EditingMode {
+        display:none;
+    }
+  select {
+    z-index: 1;
+  }
+</style>
+
+<script language="javascript">
+    var deleteFieldLink = "";
+
+    $(document).ready(function() {
+            $("#documents").addClass('active');
+
+            SummernoteBasicDataInitialize('docText', 'Enter Document Text', 1000);
+
+            if(commonGetQueryStringValue("id") == null) {
+                $(".ViewingMode").hide();
+                $(".EditingMode").show();
+            } else {
+                //editing mode
+                $(".ViewingMode").show();
+                $(".EditingMode").hide();
+            }
+        initializeMultiCountrySelect();
+        initializeMultiInvestorTypeSelect();
+
+    })
+    function initializeMultiCountrySelect() {
+        let dataListInnerHtml = '';
+        try {
+            const countries = [...new Set("{{{countryList}}}".split(','))];
+            const countriesWhitelist = {{#if Record.countriesWhitelist}} {{{Record.countriesWhitelist}}} {{else}} '' {{/if}};
+            countries.forEach(element => {
+                if (countriesWhitelist.indexOf(element) > -1 || countriesWhitelist == 'ALL') {
+                    dataListInnerHtml += `<option value="${element}" selected="selected">${element}</option>`;
+                }else {
+                    dataListInnerHtml += `<option value="${element}">${element}</option>`;
+                }
+            });
+            const countryDropdown = document.getElementById('countryWhitelist');
+          countryDropdown.innerHTML = dataListInnerHtml;
+        }catch (e) {
+            console.log(e);
+        };
+        $('#countryWhitelist').multiselect({
+            enableCaseInsensitiveFiltering: true,
+            includeSelectAllOption: true,
+            inheritClass: true,
+            buttonContainer: '<div class="btn btn-info btn-fill" />',
+            buttonWidth: '500px',
+            numberDisplayed: 20,
+            delimiterText: ' | ',
+        });
+    }
+    function initializeMultiInvestorTypeSelect() {
+      let dataListInnerHtml = '';
+      try {
+        const investorTypes = [...new Set("{{{investorTypes}}}".split(','))];
+        const investorTypesWhitelist = {{#if Record.investorTypesWhitelist}} {{{Record.investorTypesWhitelist}}} {{else}} '' {{/if}};
+        investorTypes.forEach(element => {
+          if (investorTypesWhitelist.indexOf(element) > -1 || investorTypesWhitelist == 'ALL') {
+            dataListInnerHtml += `<option value="${element}" selected="selected">${element}</option>`;
+          }else {
+            dataListInnerHtml += `<option value="${element}">${element}</option>`;
+          }
+        });
+        const investorTypeDropdown = document.getElementById('investorTypeWhitelist');
+        investorTypeDropdown.innerHTML = dataListInnerHtml;
+      }catch (e) {
+        console.log(e);
+      };
+      $('#investorTypeWhitelist').multiselect({
+        enableCaseInsensitiveFiltering: true,
+        includeSelectAllOption: true,
+        inheritClass: true,
+        buttonContainer: '<div class="btn btn-info btn-fill" />',
+        buttonWidth: '500px',
+        numberDisplayed: 20,
+        delimiterText: ' | ',
+      });
+    }
+
+    {{#ifIn 33 Data.AdminRights}}
+        function editDocument() {
+            $(".ViewingMode").hide();
+            $(".EditingMode").show();
+            $("#docText").css('height', '5000px');
+        }
+        function cancelSave() {
+            $(".ViewingMode").show();
+            $(".EditingMode").hide();
+        }
+        function saveDocument() {
+            document.getElementById("postExternalDocument").submit();
+        }
+        function saveSharePurchaseSettings() {
+            document.getElementById("sharePurchaseForm").submit();
+        }
+        function saveCountryWhitelistSettings() {
+            document.getElementById("countryWhitelistForm").submit();
+        }
+        function saveInvestorTypeWhitelistForm() {
+          document.getElementById("investorTypeWhitelistForm").submit();
+        }
+        function savefield() {
+            document.getElementById("docfield").submit();
+        }
+        function deleteDocumentField(id, docid, dirid) {
+            deleteFieldLink = "deletedocfield?id=" + id + "&docid=" + docid + "&dirid=" + dirid;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete field ?", "Yes", "Cancel");
+        }
+        function generalModelOKButtonClickedClientEvent() {
+            window.location.href = deleteFieldLink;
+        }
+    {{/ifIn}}
+    function backtodir() {
+        window.location.href = "directorylist?id={{dirid}}";
+        return false;
+    }
+    function viewInvestorsSigned() {
+        window.location.href = "senddoccontracts?docid={{Record.ID}}&id={{Record.offerID}}&dirid={{dirid}}"
+        return false;
+    }
+
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" />{{externalPlatformName}} Document</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <a onclick="backtodir()"  class="btn btn-info btn-fill btn-wd">Back to Directory</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <form id="postExternalDocument" name="postExternalDocument" action="postExternalDocument" method="post">
+
+                    {{#if Record.isactiveforinvestors}}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="/img/greendot.png" width="20px" /> &nbsp;&nbsp;
+                                <b>Document is active for investor review, comments and suggestions</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </div>
+                        </div>
+                    {{/if}}
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Document Title</label> <br />
+                            <span class="ViewingMode">{{Record.title}}</span>
+                            <span class="EditingMode"><input type="text" id="title" name="title" class="form-control border-input" value="{{Record.title}}"/></span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label>{{externalPlatformName}} Document ID</label> <br />
+                        {{#ifEqual externalPlatformName 'DocuSign'}}
+                          <span class="ViewingMode">{{Record.docusignDocumentID}}</span>
+                          <span class="EditingMode">
+                            <input type="text" id="docusignDocumentID" name="docusignDocumentID"
+                                   class="form-control border-input" value="{{Record.docusignDocumentID}}"/>
+                          </span>
+                        {{else}}
+                          <span class="ViewingMode">{{Record.helloSignDocumentID}}</span>
+                          <span class="EditingMode">
+                            <input type="text" id="helloSignDocumentID" name="helloSignDocumentID"
+                                   class="form-control border-input" value="{{Record.helloSignDocumentID}}"/>
+                          </span>
+                        {{/ifEqual}}
+                      </div>
+                    </div>
+                    <br/>
+
+                    {{#if id}}
+                        <input type="hidden" name="id" id="id" value="{{id}}" />
+                    {{/if}}
+                    <input type="hidden" name="dirid" value="{{dirid}}" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                    {{#ifIn 33 Data.AdminRights}}
+                        {{#unless Record.offerID}}
+                            <span class="ViewingMode">
+                                <button type="button" onclick="editDocument()" class="btn btn-info btn-fill btn-wd">Edit Document</button>
+                            </span>
+
+
+                            <span class="EditingMode">
+                                <button type="button" onclick="saveDocument()" class="btn btn-info btn-fill btn-wd">Save Document</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" onclick="cancelSave()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+                            </span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                        {{/unless}}
+                    {{/ifIn}}
+                    <br />
+                </form>
+
+            </div>
+
+            <br/>
+        </div>
+    </div>
+</div>
+    {{#if id}}
+        <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"> <img src="/img/fields.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Document Field List</h4>
+                    </div>
+
+                    <div class="content">
+                        <br />
+                        <div class="row">
+                            <div class="col-md-8">
+
+                                {{#if fieldRecords.length}}
+                                    {{#each fieldRecords}}
+
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <a >
+                                                    <img onclick="deleteDocumentField({{ID}}, {{../id}}, {{../dirid}})" src="/img/cross.png" width="15px;" />
+                                                </a>
+                                                {{#ifEqual this.fieldtype 1}}Text{{/ifEqual}}
+                                                {{#ifEqual this.fieldtype 2}}Number{{/ifEqual}}
+                                                {{#ifEqual this.fieldtype 3}}Date{{/ifEqual}}
+                                            </div>
+                                            <div class="col-md-3">
+                                                <b>Internal Field ID</b>
+                                                <br/>
+                                                {{this.fieldid}}
+                                            </div>
+                                            <div class="col-md-7">
+                                                <b>{{externalPlatformName}} Data Label</b>
+                                                <br/>
+                                                {{this.externalFileDataLabel}}
+                                            </div>
+                                        </div>
+                                        <hr />
+                                    {{/each}}
+                                {{else}}
+                                    No Fields Found
+                                {{/if}}
+                            </div>
+
+                            {{#ifIn 33 Data.AdminRights}}
+                                <div class="col-md-4">
+                                    <b> Add New Field </b>
+                                    <br />
+                                    <br />
+
+                                    <form id="docfield" name="docfield" action="docfieldpost" method="post">
+                                        <label>Internal Field ID</label>
+                                        <input type="text" id="fldid" name="fldid" class="form-control border-input" />
+                                        <br />
+                                        <label>{{externalPlatformName}} Data Label</label>
+                                        <input type="text" id="externalFileDataLabel" name="externalFileDataLabel" class="form-control border-input" />
+                                        <br />
+                                        <label>Field Type</label>
+                                        <select style="font-size:16px;" id="activityType" name="activityType" class="form-control border-input" style="padding:3px; width:250px;">
+                                            <option value="1"> Text </option>
+                                            <option value="2"> Number </option>
+                                            <option value="3"> Date </option>
+                                        </select>
+                                        <br />
+
+                                        <button type="button" onclick="savefield()" class="btn btn-info btn-fill btn-wd">Add Field</button>
+                                        <input type="hidden" name="id" id="id" value="{{id}}" />
+                                        <input type="hidden" name="dirid" value="{{dirid}}" />
+                                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                    </form>
+
+                                    <br />
+                                    <br />
+                                </div>
+                            {{/ifIn}}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+
+{{#if Record.ID}}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Share purchasing</h4>
+                            <p>Select if this document needs to be signed during the share purchasing process</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <form id="sharePurchaseForm" name="sharePurchaseForm" action="sharePurchaseDocSettings" method="post">
+                        <div class="form-group">
+                            <label class="switch mini-switch">
+                                <input class="input-sm" id="enable" name="enable" type="checkbox" {{#if enabled}}checked{{/if}}>
+                                <span class="slider round"></span>
+                            </label>
+                            Enable
+                            <br /><label> Require this document to be signed when shares are being purchased</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="switch mini-switch">
+                                <input class="input-sm" id="enable" name="requireOnce" type="checkbox" {{#if requireOnce}}checked{{/if}}>
+                                <span class="slider round"></span>
+                            </label>
+                            Require once
+                            <br /><label> Select if the document should be signed only the first time an investor purchases shares.</label>
+                        </div>
+
+                        <input type="hidden" name="id" id="id" value="{{id}}" />
+                        <input type="hidden" name="dirid" value="{{dirid}}" />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+                    <span class="ViewingMode">
+                    <button type="button" onclick="saveSharePurchaseSettings()" class="btn btn-info btn-fill btn-wd">Save</button>
+                </span>
+                </div>
+
+                <br/>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="header">
+            <div class="row">
+              <div class="col-md-12">
+                <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" />For Investor Type</h4>
+                <p>This field indicates the type of investors, for which this document should be available for.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="content">
+            <div class="row">
+              <div class="col-md-12">
+                <form id="investorTypeWhitelistForm" method="POST" action="setDocumentInvestorTypeWhitelist">
+                  <select id="investorTypeWhitelist" name="investorTypeWhitelist" multiple="multiple"/>
+                  <input type="hidden" name="id" id="id" value="{{Record.ID}}" />
+                  <input type="hidden" name="dirid" value="{{dirid}}" />
+                  <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+              </div>
+            </div>
+            </br>
+            <div class="row">
+              <div class="col-md-12">
+                        <span class="ViewingMode">
+                            <button type="button" onclick="saveInvestorTypeWhitelistForm()" class="btn btn-info btn-fill btn-wd">Save</button>
+                        </span>
+              </div>
+            </div>
+          </div>
+
+          <br/>
+        </div>
+      </div>
+      <div class="col-md-6">
+          <div class="card">
+              <div class="header">
+                  <div class="row">
+                      <div class="col-md-12">
+                          <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" />Country Availabiltiy</h4>
+                          <p>This field indicates the countries of residence of your investors, for which this document should be available for.</p>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="content">
+                  <div class="row">
+                      <div class="col-md-12">
+                          <form id="countryWhitelistForm" method="POST" action="setDocumentCountriesWhitelist">
+                              <select id="countryWhitelist" name="countryWhitelist" multiple="multiple"/>
+                              <input type="hidden" name="id" id="id" value="{{Record.ID}}" />
+                              <input type="hidden" name="dirid" value="{{dirid}}" />
+                              <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                          </form>
+                      </div>
+                  </div>
+                  </br>
+                  <div class="row">
+                      <div class="col-md-12">
+                      <span class="ViewingMode">
+                          <button type="button" onclick="saveCountryWhitelistSettings()" class="btn btn-info btn-fill btn-wd">Save</button>
+                      </span>
+                      </div>
+                  </div>
+              </div>
+
+              <br/>
+          </div>
+      </div>
+    </div>
+{{/if}}
+
+{{> Footer}}

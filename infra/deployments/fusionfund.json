@@ -1,0 +1,7 @@
+{
+    "id": "fusionfund",
+    "version": "staging",
+    "apiHostname": "api.fusionfund.io",
+    "frontendHostname": "app.fusionfund.io",
+    "multistoHostname": "platform.fusionfund.io"
+}

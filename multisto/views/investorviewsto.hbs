@@ -1,0 +1,1431 @@
+{{> Header}}
+
+<script language="javascript">
+        //var investorCurrentHoldingShares = {{investorRec.Shares}};
+        var isEmailSending = 0;
+        var ConfirmationMessageLink = "";
+        var currentOp  = 0;
+        var currentop = 0; // temp fix for increase / decrease balances as this isn't ever declared anywhere
+        var currentInvestorBalanceAmount = 0;
+        var currentCurrencyID = 0;
+        var totalSharesInSTO = {{totalSharesInSTO}};
+
+        $(document).ready(function() {
+            $("#InvestorsMenu").addClass('active');
+
+            // do not let space in new password
+            $('#txtNewPassword').on('keypress', function(e) {
+                if (e.which == 32)
+                    return false;
+            });
+
+            SummernoteBasicDataInitialize('emailTextLocalForm', 'Enter Text', 300);
+        })
+        function editInvestor() {
+            window.location.href = "editInvestor?id={{investorRec.ID}}";
+            return false;
+        }
+        function sendTokens(id) {
+            window.location.href = "transactionTransferShares?id={{investorRec.ID}}&sid=" + id;
+            return false;
+        }
+        function resetPassword() {
+            document.getElementById("txtNewPassword").value = "";
+            document.getElementById("txtReNewPassword").value = "";
+            $('#modelGeneratePassword').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        }
+        function sendResetPasswordReques() {
+
+            if(document.getElementById("txtNewPassword").value === "") {
+                showModelGeneralOKDialogBox("Password cannot be empty");
+                return true;
+            }
+            if(document.getElementById("txtReNewPassword").value === "") {
+                showModelGeneralOKDialogBox("Reenter Password");
+                return true;
+            }
+            if(document.getElementById("txtNewPassword").value.length < 5) {
+                showModelGeneralOKDialogBox("Password must be 5 character long");
+                return true;
+            }
+            if(document.getElementById("txtNewPassword").value !== document.getElementById("txtReNewPassword").value) {
+                showModelGeneralOKDialogBox("Passwords do not match");
+                return true;
+            }
+
+            window.location.href = "resetInvestorPassword?email=" + document.getElementById("chkSendEmaillInvestor").checked + "&password=" + document.getElementById("txtNewPassword").value + "&ID={{investorRec.ID}}";
+            return false;
+        }
+        function investorOrders() {
+            window.location.href = "investororders?id={{investorRec.ID}}&publicKey={{investorRec.PublicKey}}";
+            return false;
+        }
+        function legalTakeOver() {
+            window.location.href = "takeoverassets?id={{investorRec.ID}}";
+            return false;
+        }
+        function enableDisableInvestor(op) {
+            if(op == 0)
+                showModelGeneralYesNoDialogBox("Are you sure you want to disable investor dashboard login? <br /><br /> Investor will not be able to login his dashboard", "Yes Disable Investor Login", "Cancel");
+            else if(op == 1)
+                showModelGeneralYesNoDialogBox("Are you sure you want to enable investor dashboard login? ", "Yes Enable Investor Login", "Cancel");
+
+            ConfirmationMessageLink=  "enableDisableInvestorLogin?op=" + op + "&ID={{investorRec.ID}}";
+        }
+        function viewcontract(id) {
+            window.location.href = "contractview?investorID={{investorRec.ID}}&id=" + id;
+            return false;
+        }
+        function uploadDocument() {
+            window.location.href = "uploadDocument?id={{investorRec.ID}}";
+            return false;
+        }
+        function downloadDocument(docid) {
+            window.location.href = "downloadDocument?id={{investorRec.ID}}&docid=" + docid;
+            return false;
+        }
+        function transferSharesToAnotherInvestor(id) {
+            window.location.href = "transferShares?id=" + id;
+        }
+        function viewdocumentcontract(id) {
+            window.location.href = "viewcontract?id=" + id;
+        }
+        function sendEmailToInvestor() {
+            $('#modelSendEmailToInvestor').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        }
+        function sendEmailToInvestorInbox() {
+            if(isEmailSending == 1)
+                return;
+
+            if(document.getElementById("emailTextLocalForm").value == "") {
+                showModelGeneralOKDialogBox("Enter email text");
+                return true;
+            } else {
+                if(  document.getElementById("photos222").files.length > 0 ) {
+                    isEmailSending = 1;
+                    uploadMultiplefilesToServer('photos222', 'fileUplodProgressUpload2', 3, '/admin/uploadFiles');
+                } else
+                    sendFormToServer();
+            }
+        }
+        function fileValidation() {
+            checkAndUpdateMultiFileUpload('photos222', 'upload-file2',  MultifileMultifileExtensions1, MultifileMultifileExtensions1msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);
+        }
+        function multipleFilesUploadingDoneEvent(data) {
+            document.getElementById("files").value = JSON.stringify(data);
+            sendFormToServer();
+        }
+        function sendFormToServer() {
+            document.getElementById("emailTextForInvestor").value = document.getElementById("emailTextLocalForm").value;
+            document.getElementById("frmSendEmailToInvestor2").submit();
+        }
+        function deleteDocument(docid) {
+            ConfirmationMessageLink = "deleteDocument?id={{investorRec.ID}}&docid=" + docid;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete document ?", "Yes Delete", "Cancel");
+        }
+        function showAssignEailDialog() {
+            document.getElementById("emailAssignToInvestor").value = "";
+            $('#assignNewEmailAddress').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        }
+        function assignEmail() {
+            var v = checkemailformat( document.getElementById("emailAssignToInvestor").value.trim() );
+
+            if( v == false) {
+                showModelGeneralOKDialogBox("Email address is not valid");
+                return;
+            }
+
+            window.location.href = "assignEmailToInvestorAccount?id={{investorRec.ID}}&email=" + document.getElementById("emailAssignToInvestor").value;
+            return false;
+        }
+        function addpayment() {
+            window.location.href = "addsendinvestorpayment?id={{investorRec.ID}}";
+            return false;
+        }
+        function viewPaymentRec(id) {
+            window.location.href = "viewInvestorPaymemtDetails?id=" + id;
+            return false;
+        }
+        function deletePaymentRec(id) {
+            ConfirmationMessageLink = "deletePatmentAlert?id={{investorRec.ID}}&pid=" + id;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete Payment Alert ?", "Yes Delete", "Cancel");
+        }
+        function doneBulkUploads() {
+            ConfirmationMessageLink = "doneBulkUploadInvestor?id={{investorRec.ID}}";
+            showModelGeneralYesNoDialogBox("Are you sure investor information is verified ?", "Yes Verified", "Cancel");
+        }
+        function changeType() {
+            if( $("#optChangeTextType").is(":checked") == true ) {
+                document.getElementById("txtNewPassword").type="text";
+                document.getElementById("txtReNewPassword").type="text";
+            } else {
+                document.getElementById("txtNewPassword").type="password";
+                document.getElementById("txtReNewPassword").type="password";
+            }
+        }
+        function whitelistinvestorpublicaddresses(id) {
+            window.location.href = "manageinvestorwallet?investorid={{investorRec.ID}}&sid=" + id;
+            return false;
+        }
+        function updateInvestorBalance(op, balance, currencyID) {
+
+             currentOp = op;
+             currentInvestorBalanceAmount = balance;
+             currentCurrencyID = currencyID;
+
+            if(op == 1) {
+                $("#invextorBalanceButtonUpdateID").html("Increase Balance");
+                $("#spanCurrencySelectionAccounts").show();
+                $("#spanUpdateInvestorBalanceCaption").html("Increase Investor Balance");
+            } else {
+                $("#invextorBalanceButtonUpdateID").html("Decrease Balance");
+                $("#spanCurrencySelectionAccounts").hide();
+                $("#spanUpdateInvestorBalanceCaption").html("Decrease Investor Balance");
+            }
+
+             $('#modelUpdateBalance').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        }
+        function increaseDecreaseInvestorBalance() {
+
+            var currencyid = 0;
+            if(currentOp == 1) {
+                var e = document.getElementById("selCurrencySelectionAccounts");
+                var currencyid = e.options[e.selectedIndex].value;
+            } else
+                currencyid = currentCurrencyID;
+
+
+            if(document.getElementById("txtBalanceUpdateAmount").value == "") {
+                      showModelGeneralOKDialogBox("Please enter some amount");
+                     return;
+            }
+
+            if(document.getElementById("textAreaAccountBalanceUpdate").value == "") {
+                      showModelGeneralOKDialogBox("Please enter some description");
+                     return;
+            }
+
+             if(isNaN(document.getElementById("txtBalanceUpdateAmount").value)) {
+                  showModelGeneralOKDialogBox("Please enter a numeric value");
+                 return;
+             }
+
+            if(currentOp == 0) {
+                if( parseInt(document.getElementById("txtBalanceUpdateAmount").value) > currentInvestorBalanceAmount ) {
+                      showModelGeneralOKDialogBox("Amount to decrease cannot be greater than investor current balance " + currentInvestorBalanceAmount );
+                      return;
+                }
+            }
+
+            if(currentOp == 1) {
+                ConfirmationMessageLink = "investorIncreaseDecreaseBalanceLink?cid=" + currencyid + "&invid={{investorRec.ID}}&op=1&amt=" + document.getElementById("txtBalanceUpdateAmount").value + "&desc=" + document.getElementById("textAreaAccountBalanceUpdate").value;
+                showModelGeneralYesNoDialogBox(" <h4>Increase Balance</h4> <br />  Are you sure you want to <b>increase</b> investor account balance by " + document.getElementById("txtBalanceUpdateAmount").value, "Yes Increase Balance", "Cancel");
+            } else {
+                ConfirmationMessageLink = "investorIncreaseDecreaseBalanceLink?cid=" + currencyid + "&invid={{investorRec.ID}}&op=0&amt=" + document.getElementById("txtBalanceUpdateAmount").value + "&desc=" + document.getElementById("textAreaAccountBalanceUpdate").value;
+                showModelGeneralYesNoDialogBox("<h4>Decrease Balance</h4> <br />    Are you sure you want to <b>decrease</b> investor account balance by " + document.getElementById("txtBalanceUpdateAmount").value, "Yes Decrease Balance", "Cancel");
+            }
+
+
+        }
+        function viewinvestordeposithistory() {
+            alert("dddddd")
+        }
+        function viewinvestordeposithistory() {
+            window.location.href = "showinvestorcompanypaymenthistory?id={{investorRec.ID}}";
+            return false;
+        }
+        function viewdepositreport(currencyid) {
+            window.location.href = "showinvestorbalancereport?currencyid=" + currencyid + "&id={{investorRec.ID}}";
+            return false;
+        }
+        function deactivateInvestorFromSystem() {
+            if(totalSharesInSTO > 0) {
+                showModelGeneralOKDialogBox("This investor cannot be deactivated from system because he is holding shares in the company ");
+                return;
+            } else {
+
+                    ConfirmationMessageLink = "/admin/rejectInvestorUpgradeRequest?id={{investorRec.ID}}";
+                    showModelGeneralYesNoDialogBox("Are you sure you want to deactivate investor from this Company / STO ? Deactivation means investor will not be visible in Investors List, Investor can still login and access his profle and he has to again submit his KYC profile to get reactivate", "Yes Deactivate", "Cancel");
+
+            }
+
+        }
+        function goToDocuSign(link) {
+            window.location.href = `{{docusignBaseUrl}}${link}`;
+        }
+        function viewcontract2(id) {
+            window.location.href = "viewcontract?id=" + id;
+        }
+        function goToHelloSign(link) {
+            window.location.href = link;
+        }
+        function deleteDocumentUser(id) {
+            currentop = 5;
+            currentid = id;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete the file ?", "Delete", "Cancel");
+        }
+        function generalModelOKButtonClickedClientEvent() {
+            if (currentop == 1)
+                window.location.href = "docdelete?id=" + currentid + "&dirid=" + currentdir;
+            else if (currentop == 2)
+                window.location.href = "deletedir?id=" + currentid + "&dirid=" + currentdir;
+            else if (currentop == 3)
+                window.location.href = "activatedirectoryforinvestoreview?id=" + currentid + "&dirid=" + currentdir + "&act=" + docdata;
+            else if (currentop == 4)
+                window.location.href = "deleteFileFromDirectory?id=" + currentDirID + "&filid=" + currentid;
+            else if (currentop == 5)
+                window.location.href = `deleteDocumentUser?id=${currentid}`;
+                
+            if (currentOp) {
+                window.location.href = ConfirmationMessageLink;
+                return false;
+            }
+        }
+
+        /*var tempBlockchainOperation = 0;   // 0=freez/unfreez assets    1=whitelist investor new address    2=delete investor new address
+        function deleteInvestorNewAddress() {
+            tempBlockchainOperation = 2;
+            $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            initializePublicKeyFileObject();
+            return false;
+        }
+        function authorizeInvestor(flag, op) {
+            tempBlockchainOperation = 0;
+            document.getElementById("op").value = op;
+            document.getElementById("boolFlag").value = flag;
+            $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            initializePublicKeyFileObject();
+        }
+        function changeOverInvestorNewAddress() {
+            tempBlockchainOperation = 3;
+            $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            initializePublicKeyFileObject();
+            return false;
+        } */
+</script>
+
+{{> HeaderInnerSto}}
+{{> multifileupload}}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="progress" style="display: none;">
+          <div id="fileUplodProgressUpload2" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+        </div>
+    </div>
+</div>
+
+{{#if investorRec.isAccountClosed}}
+<div class="row">
+    <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 style="color:red;font-weight:bold;" class="title">Account is closed </h4>
+                </div>
+
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-2"> <b> Shares recovered </b> </div>
+                        <div class="col-md-4"> <b>{{closeAccountRec.tokens}}</b> </div>
+                        <div class="col-md-2"> <b> Date Closed </b> </div>
+                        <div class="col-md-4"> {{closeAccountRec.DateClosed}} </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12"> <b> {{closeAccountRec.CaseTitle}} </b> </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">  Details  </div>
+                        <div class="col-md-10">  {{closeAccountRec.CaseDetails}}  </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">  Notes  </div>
+                        <div class="col-md-10">{{closeAccountRec.CaseNotes}}  </div>
+                    </div>
+                    <br />&nbsp;
+                </div>
+           </div>
+    </div>
+</div>
+{{/if}}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+          <div class="row">
+              <div class="col-md-4">
+                  <h4 class="title">
+                      <img src="/img/details2.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;   Investor Details
+                  </h4>
+              </div>
+              <div class="col-md-8 text-right">
+                  {{#ifIn 38 Data.AdminRights}}
+                      {{#if investorRec.email}}
+                          <button onclick="return sendEmailToInvestor()"  class="btn btn-info btn-fill">Send Email</button>&nbsp;
+                      {{/if}}
+                  {{/ifIn}}
+
+                  {{#ifIn 2 Data.AdminRights}}
+                      &nbsp;
+                      <button onclick="return showAssignEailDialog()"  class="btn btn-info btn-fill ">Change Email</button>
+                  {{/ifIn}}
+
+                  {{#ifIn 2 Data.AdminRights}}
+                      {{#if investorRec.email}}
+                          &nbsp;
+                          <button onclick="return resetPassword()"  class="btn btn-info btn-fill ">Reset Password</button>
+                      {{/if}}
+                      {{#unless investorRec.isAccountClosed}}
+                          {{#ifEqual Data.KYCPersonalInfoScreen 1}}
+                              &nbsp; <button onclick="return editInvestor()" class="btn btn-info btn-fill">Edit Investor</button>
+                          {{/ifEqual}}
+                      {{/unless}}
+                  {{/ifIn}}
+              </div>
+          </div>
+      </div>
+      <hr/>
+        <div class="content">
+          {{#if errorMessage}}
+              <span style="color:red; font-size:18px; ">{{errorMessage}}</span>
+              <br >&nbsp;
+          {{/if}}
+          <div class="row">
+              <div class="col-md-6">
+                <img src="/img/investorstotypesicons/i{{investorRec.KYCCurrentStatus}}.png"  width="25px;" /> &nbsp;
+                <span style="font-size:20px;"> {{AuthorizationType}} Investor ( <label> {{InvestorTypeText}} </label> )</span>
+              </div>
+              {{#if investorRec.investorBulkUploadStatus}}
+                <div class="col-md-6">
+                  <b>Upload Time:</b> {{investorRec.uploadDate}}
+                </div>
+              {{/if}}
+          </div>
+            <br />
+
+            {{#if investorRec.investorBulkUploadStatus}}
+                <span style="color:red;">Investor profile has been added through Bulk Uploads. Please review information, make changes, upload documents, change password, inform / email to Investor to review information and upload KYC documents if needed and click &nbsp;&nbsp;&nbsp; <button onclick="return doneBulkUploads()" class="btn btn-info btn-fill btn-sm"> Done </button>  </span>
+                <hr />
+            {{/if}}
+
+            {{> InvestorView}}
+            <br /><hr /><br />
+
+                {{#if investorRec.isActive}}
+                    <img src="/img/greendot.png" width="22px" /> &nbsp;&nbsp;
+                    <label>Investor is currently enabled and can login to the dashboard</label> &nbsp;&nbsp;&nbsp;&nbsp;
+
+                    {{#ifIn 2 Data.AdminRights}}
+                        <button onclick="return enableDisableInvestor(0)" class="btn btn-info btn-fill btn-sm">Disable Investor Login</button>
+                        <br /><br />
+                        <label>Deactivate Investor from this STO / Project</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <button onclick="return deactivateInvestorFromSystem()" class="btn btn-info btn-fill btn-sm">Deactivate Investor </button>
+                    {{/ifIn}}
+                {{else}}
+                    <img src="/img/reddot.png" width="22px" /> &nbsp;&nbsp;
+                    <label>Investor is disabled and cannot login his dashboard</label> &nbsp;&nbsp;&nbsp;&nbsp;
+                    {{#ifIn 2 Data.AdminRights}}
+                        <button onclick="return enableDisableInvestor(1)" class="btn btn-info btn-fill btn-sm">Enable Investor Login</button>
+                    {{/ifIn}}
+                {{/if}}
+
+            <br />&nbsp;
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    {{> investingEntityPartialView}}
+  </div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+   <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title">
+                                <img src="/img/shares.png" width="25px;" style="padding-bottom:7px;" />  &nbsp;  Current Holdings
+                            </h4>
+                        </div>
+                    </div>
+            </div>
+            <div class="content">
+
+                    <table class="table" >
+                        <thead style="font-size:12px;">
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th><img width="20px" src="/img/nominalvalue.png" /></th>
+                            <th><img width="20px" src="/img/premimum.png" /></th>
+                            <th></th>
+                        </thead>
+                        <tbody style="font-size:14px;">
+                            {{#each HoldingRecords}}
+                                <tr>
+                                    <td style="width: 1%; vertical-align: top;">
+                                        {{#if this.isblockchain}}
+                                            <img src="/img/blockchainwallet.png" title="Tokenized Shares" width="22px;" />
+                                        {{else}}
+                                            <img src="/img/nonblockchain.png"  title="Non-tokenized Shares" width="25px;" />
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 39%; vertical-align: top;">
+                                        {{this.title}}
+                                    </td>
+                                    <td style="width: 30%; vertical-align: top;">
+                                        {{#if this.shares}}
+                                            <b>
+                                              Shares Owned:
+                                            {{numberFormat this.shares decimalLength="ShareCountInFractions"}}
+                                            </b>
+                                        {{else}}
+                                          <b>
+                                            Shares Owned: None
+                                          </b>
+                                        {{/if}}
+                                      <br/>
+                                        {{#ifIn 19 ../Data.AdminRights}}
+                                            &nbsp;&nbsp;&nbsp;
+                                            {{#if this.isblockchain}}
+                                                <button  title="View / Whitelist Investor Public Address" onclick="return whitelistinvestorpublicaddresses({{this.shareTypeID}})" class="btn btn-info btn-fill btn-sm">Investor Wallet</button>
+                                            {{else}}
+                                                <button  title="Transfer investor shares ( {{numberFormat this.shares decimalLength="ShareCountInFractions"}} ) to other investor or back to company" onclick="return transferSharesToAnotherInvestor({{this.investorShareID}})" class="btn btn-info btn-fill btn-sm">Transfer Investor Shares</button>
+                                            {{/if}}
+                                        {{/ifIn}}
+
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{currencySymbol this.currencyid}}  {{numberFormat this.nominalValue decimalLength="-"}}
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{#if this.premimum}}
+                                            {{currencySymbol this.currencyid}}  {{numberFormat this.premimum decimalLength="-"}}
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{#ifIn 3 ../Data.AdminRights}}
+                                            <button title="Transfer company shares to investor" onclick="return sendTokens({{this.shareTypeID}})" class="btn btn-info btn-fill btn-sm">Transfer Company Shares</button>
+                                        {{/ifIn}}
+                                    </td>
+                            {{/each}}
+
+                            {{#each ZeroHoldingShareRecords}}
+                                <tr>
+                                    <td style="width: 1%; vertical-align: top;">
+                                        {{#if this.isblockchain}}
+                                            <img src="/img/blockchainwallet.png" title="Tokenized Shares" width="22px;" />
+                                        {{else}}
+                                            <img src="/img/nonblockchain.png"  title="Non-tokenized Shares" width="25px;" />
+                                        {{/if}}
+
+                                    </td>
+                                    <td style="width: 39%; vertical-align: top;">
+                                        {{this.title}}
+                                    </td>
+                                    <td style="width: 30%; vertical-align: top;">
+
+                                        {{#ifIn 19 ../Data.AdminRights}}
+                                            {{#if this.isblockchain}}
+                                                &nbsp;&nbsp;&nbsp;
+                                                <button  title="View / Whitelist Investor Public Address" onclick="return whitelistinvestorpublicaddresses({{this.ID}})" class="btn btn-info btn-fill btn-sm">Investor Wallet</button>
+                                            {{/if}}
+                                        {{/ifIn}}
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{currencySymbol this.currencyid}} {{numberFormat this.nominalValue decimalLength="-"}}
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{#if this.premimum}}
+                                            {{currencySymbol this.currencyid}}  {{numberFormat this.premimum decimalLength="-"}}
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{#ifIn 3 ../Data.AdminRights}}
+                                                <button  title="Transfer company shares to investor" onclick="return sendTokens({{this.ID}})" class="btn btn-info btn-fill btn-sm">Transfer Company Shares</button>
+                                        {{/ifIn}}
+                                    </td>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
+                <div class="row"><div class="col-md-12">
+
+                    <img width="20px" src="/img/nominalvalue.png" style="margin-left:20px;"/>   Nominal Value
+                    <img width="23px" src="/img/premimum.png" style="margin-left:20px;"/>  Market Value
+                </div></div>
+
+            </div>
+       </div>
+    </div>
+</div>
+{{#if referralNetwork}}
+<div class="row topPaddingBetweenPageSections">
+   <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title">
+                                <img src="/img/relative2.png" width="25px;" style="padding-bottom:7px;" />  &nbsp;  Referral Network
+                            </h4>
+                        </div>
+                    </div>
+            </div>
+            <div class="content">
+
+                    <table class="table" >
+                        <thead style="font-size:12px;">
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Purchased Tokens</th>
+                            <th>Dividends</th>
+                            <th>Dividend Period</th>
+                            <th>Affiliate Eligibility</th>
+                            <th>Affiliate Tokens</th>
+                            <th>Affiliate Fiat</th>
+                        </thead>
+                        <tbody style="font-size:14px;">
+                            {{#each referralNetwork}}
+                                <tr>
+                                    <td style="width: 5%; vertical-align: top;">
+                                        {{this.id}}
+                                    </td>
+                                    <td style="width: 20%; vertical-align: top;">
+                                        {{this.name}}
+                                    </td>
+                                    <td style="width: 18%; vertical-align: top;">
+                                        {{this.purhcasedTokens}}
+                                    </td>
+                                    <td style="width: 18%; vertical-align: top;">
+                                        {{this.dividends}}
+                                    </td>
+                                    <td style="width: 9%; vertical-align: top;">
+                                        {{this.dividendPeriod}}
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{#if this.affiliateEligibility}}
+                                            Yes
+                                        {{else}}
+                                            No
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 15%; vertical-align: top;">
+                                        {{this.affiliateTokens}}
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{this.affiliateFiat}}
+                                    </td>
+                            {{/each}}
+                        </tbody>
+                    </table>
+            </div>
+       </div>
+    </div>
+</div>
+{{/if}}
+{{#ifEqual Data.InvestorCombinePropertiesMode 1}}
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <h4 class="title"><img src="/img/events.png" width="25px;" style="padding-bottom:7px;" /> &nbsp; Investor Current Balances</h4>
+                            </div>
+                            <div class="col-md-3">
+
+                                {{#ifIn 40 Data.AdminRights}}
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                         <button onclick="return updateInvestorBalance(1, 0, 0)"  class="btn btn-info btn-fill ">Increase Balance</button>
+                                {{/ifIn}}
+
+                            </div>
+                        </div>
+                </div>
+                <div class="content">
+
+                    {{#if InvestorBalancesInCompanyAccounts.length}}
+                            <table class="table table-striped">
+                                <thead class="listingHeaderFontSize">
+                                    <th>Account</th>
+                                    <th>Balance</th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+
+                                {{#each InvestorBalancesInCompanyAccounts}}
+                                    <tr>
+                                        <td style="width: 15%; vertical-align: top;">{{this.Abbreviation}}</td>
+                                        <td style="width: 15%; vertical-align: top;"> {{this.Symbol}} {{numberFormat this.Amount decimalLength="-"}}  </td>
+                                        <td style="width: 70%; vertical-align: top;">
+                                            {{#ifIn 40 ../Data.AdminRights}}
+                                                    <button onclick="return updateInvestorBalance(0, {{this.Amount}}, {{this.currencyID}})"  class="btn btn-info btn-fill btn-sm">Decrease Balance</button>
+                                            {{/ifIn}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <button onclick="return viewdepositreport({{this.currencyID}})"  class="btn btn-info btn-fill btn-sm ">Balance History </button>
+                                        </td>
+                                    </tr>
+                                {{/each}}
+
+                                </tbody>
+                            </table>
+                    {{else}}
+                        <label>No Balances Found</label>
+                    {{/if}}
+
+                </div>
+           </div>
+        </div>
+    </div>
+{{/ifEqual}}
+
+<div class="row topPaddingBetweenPageSections">
+<div class="col-md-12 topPaddingBetweenPageSections">
+    <div class="card">
+        <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title">
+                            <img src="/img/investment.png" width="25px;" style="padding-bottom:7px;" />  &nbsp;   Investment History
+                        </h4>
+                    </div>
+                </div>
+        </div>
+        <div class="content">
+            {{#if investRecordsSection}}
+                        <table class="table">
+                            <thead  class="listingHeaderFontSize">
+                                <th>Date</th>
+                                <th>Shares</th>
+                                <th>Type</th>
+                                <th>Investment</th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each InvestRecords}}
+                                <tr>
+                                    <td style="width: 18%; vertical-align: top;">{{this.DateTime}}</td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{numberFormat this.TokensTransferred decimalLength="ShareCountInFractions"}}
+                                    </td>
+                                    <td style="width: 28%; vertical-align: top;">
+                                        {{this.title}}
+                                    </td>
+                                    <td style="width: 10%; vertical-align: top;">
+                                        {{currencySymbol this.CurrencyID}}
+                                        {{numberFormat this.AmountInvested decimalLength="BlockchainBalanceInFractions"}}
+                                    </td>
+                                    <td style="width: 44%; vertical-align: top;">{{this.Description}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    {{else}}
+                        <label>No Records Found</label>
+                    {{/if}}
+        </div>
+   </div>
+</div>
+</div>
+
+{{#ifEqual Data.InvestorCombinePropertiesMode 0}}
+    {{#if EnablePaymentModule}}
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+    <div class="card">
+        <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title">
+                            <img src="/img/investment.png" width="25px;" style="padding-bottom:7px;" />  &nbsp;   Payments History
+                        </h4>
+                    </div>
+                    <div class="col-md-3">
+                        <button onclick="return addpayment()"  class="btn btn-info btn-fill">Send Payments Alert</button>
+                    </div>
+                </div>
+        </div>
+        <div class="content">
+            {{#if paymentRecords.length}}
+                <table class="table">
+                    <thead  class="listingHeaderFontSize">
+                        <th>Date Send</th>
+                        <th>Payment</th>
+                        <th>Date Received</th>
+                         <th></th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {{#each paymentRecords}}
+                        <tr>
+                            <td style="width: 15%; vertical-align: top;">{{this.PaymentSendDate}}</td>
+                            <td style="width: 15%; vertical-align: top;">
+                                {{#if this.isSettled}}
+                                    {{currencySymbol this.currencyIDReceived}}  {{numberFormat this.paymentReceived decimalLength="0"}}
+                                {{else}}
+                                    {{currencySymbol this.currencyIDRequested}}  {{numberFormat this.paymentRequested decimalLength="0"}}
+                                {{/if}}
+                            </td>
+                            <td style="width: 15%; vertical-align: top;">
+                                {{#if this.isSettled}}
+                                    {{this.PaymentReceiveDate}}
+                                {{else}}
+                                    <span style="color:red;">Pending</span>
+                                {{/if}}
+                            </td>
+                            <td style="width: 15%; vertical-align: top;">
+                                {{#if this.isSettled}}
+                                    Payment Settled
+                                {{/if}}
+                            </td>
+                            <td style="width: 40%; vertical-align: top;">
+                                <button onclick="return viewPaymentRec({{this.ID}})"  class="btn btn-info btn-fill btn-sm"> &nbsp; View   {{#unless this.isSettled}} / Settle {{/unless}}  &nbsp;  </button>
+
+                                &nbsp;&nbsp;
+
+                                {{#unless this.isSettled}}
+                                    <button onclick="return deletePaymentRec({{this.ID}})"  class="btn btn-info btn-fill  btn-sm">  &nbsp;  Delete  &nbsp; </button>&nbsp;
+                                {{/unless}}
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            {{else}}
+                <label>No Records Found</label>
+            {{/if}}
+            </div>
+       </div>
+    </div>
+</div>
+{{/if}}
+{{/ifEqual}}
+
+{{#ifEqual Data.InvestorCombinePropertiesMode 1}}
+    {{#if DepositRecords.length}}
+        <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <h4 class="title">
+                                    <img src="/img/investment.png" width="25px;" style="padding-bottom:7px;" />  &nbsp;   Investor Deposits
+                                </h4>
+                            </div>
+                        </div>
+                </div>
+                <div class="content">
+
+                        <table class="table">
+                            <thead  class="listingHeaderFontSize">
+                                <th>Account</th>
+                                <th>Received</th>
+                                <th>Deposit</th>
+                            </thead>
+                            <tbody>
+                                {{#each DepositRecords}}
+                                <tr>
+                                    <td style="width: 15%; vertical-align: top;">{{this.title}} </td>
+                                    <td style="width: 15%; vertical-align: top;">{{this.DateReceivedPayment}}</td>
+                                    <td style="width: 15%; vertical-align: top;">
+                                            {{currencySymbol this.depositAlertCurrencyID}}  {{numberFormat this.Amount decimalLength="-"}}
+                                    </td>
+                                    <td style="width: 55%; vertical-align: top;">
+                                        {{this.Details}}
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+               </div>
+            </div>
+        </div>
+    {{/if}}
+{{/ifEqual}}
+
+<div class="row topPaddingBetweenPageSections">
+<div class="col-md-12 topPaddingBetweenPageSections">
+    <div class="card">
+        <div class="header">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title"><img src="/img/relative2.png" width="25px;" style="padding-bottom:7px;" /> &nbsp; Investor Contacts</h4>
+                    </div>
+                </div>
+        </div>
+        <div class="content">
+            <h5><img src="/img/user.png" width="20px;" > &nbsp; Next of Kin</h5>
+            <div class="row">
+                <div class="col-md-5">
+                    <div>
+                        <label>Name</label>  &nbsp;&nbsp;&nbsp;  {{investorRec.kinname}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div>
+                        <label>Phone</label>  &nbsp;&nbsp;&nbsp;  {{investorRec.kinphone}}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div>
+                        <label>Email</label>  &nbsp;&nbsp;&nbsp;  {{investorRec.kinemail}}
+                    </div>
+                </div>
+            </div>
+
+            <h5><img src="/img/user.png" width="20px;" > &nbsp; Beneficial Owner (B.O.)</h5>
+            <div class="row">
+                <div class="col-md-2">
+                    <label>First Name</label>
+                </div>
+                <div class="col-md-3" >
+                    {{investorRec.BeneificalFirstName}}
+                </div>
+
+                <div class="col-md-2" style="text-align: right;">
+                    <label>Last Name</label>
+                </div>
+                <div class="col-md-3">
+                    {{investorRec.BeneificalLastName}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label>Address</label>
+                </div>
+                <div class="col-md-8">
+                    {{investorRec.BeneificalAddress}}
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col-md-2">
+                        <label>City</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{investorRec.BeneificalCity}}
+                    </div>
+
+                    <div class="col-md-2" style="text-align: right;">
+                        <label>Country</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{investorRec.BeneificalCountry}}
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label>Email</label>
+                </div>
+                <div class="col-md-4">
+                    {{investorRec.BeneificalEmail}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label>Date of Birth</label>
+                </div>
+                <div class="col-md-3">
+                    {{investorRec.BeneificalDOBFormat}}
+                </div>
+
+                <div class="col-md-2" style="text-align: right;">
+                    <label>Nationality</label>
+                </div>
+                <div class="col-md-3">
+                    {{investorRec.BeneificalNationality}}
+                </div>
+            </div>
+
+            <h5><img src="/img/user.png" width="20px;" > &nbsp; Usufructuary</h5>
+            <img src="/img/graydot.png" width="15px;" > &nbsp;&nbsp;
+            {{#if investorRec.isUsufructuary}}
+                Investor is usufructuary of the shares
+                <br /><br />
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>First Name</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{investorRec.UsufructuariesFirstName}}
+                    </div>
+
+                    <div class="col-md-2" style="text-align: right;">
+                        <label>Last Name</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{investorRec.UsufructuariesLastName}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Address</label>
+                    </div>
+                    <div class="col-md-8">
+                        {{investorRec.UsufructuariesAddress}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>City</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{investorRec.UsufructuariesCity}}
+                    </div>
+
+                    <div class="col-md-2"  style="text-align: right;">
+                        <label>Country</label>
+                    </div>
+                    <div class="col-md-3">
+                        {{investorRec.UsufructuariesCountry}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-md-4">
+                        {{investorRec.UsufructuariesEmail}}
+                    </div>
+                </div>
+            {{else}}
+                Investor is the legal owner of their shares
+            {{/if}}
+
+        </div>
+
+        <br />&nbsp;
+   </div>
+</div>
+</div>
+
+{{#ifIn 39 Data.AdminRights}}
+<div class="row topPaddingBetweenPageSections">
+<div class="col-md-12">
+    <div class="card">
+        <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title"> <img src="/img/documents.png" width="25px;" style="padding-bottom:7px;" /> &nbsp; Documents</h4>
+                        {{#if DocumentsRecords.length}}<label>Investor KYC and Other Documents</label>{{/if}}
+                    </div>
+
+                    <div class="col-md-3">
+                        {{#ifIn 39 Data.AdminRights}}
+                            {{#unless investorRec.isAccountClosed}}
+                                <button onclick="return uploadDocument()"  class="btn btn-info btn-fill">Upload New Document</button>
+                            {{/unless}}
+                        {{/ifIn}}
+                    </div>
+                </div>
+        </div>
+        <div class="content">
+
+            {{#if DocumentsRecords.length}}
+                <table class="table table-striped">
+                    <tbody>
+                        {{#each DocumentsRecords}}
+                        <tr>
+                            <td style="width: 20%; vertical-align: top;">{{this.UploadDate}} </td>
+                            <td style="width: 60%; vertical-align: top;">{{this.DocumentTitle}}</td>
+                            <td style="width: 20%; vertical-align: top;">
+                                <button onclick="return downloadDocument({{this.ID}})" class="btn btn-info btn-fill btn-sm">Download</button>
+                                &nbsp;&nbsp;&nbsp;
+                                <button onclick="return deleteDocument({{this.ID}})" class="btn btn-info btn-fill btn-sm">Delete</button>
+                            </td>
+
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            {{else}}
+                <label> No Documents Found </label>
+            {{/if}}
+            </div>
+       </div>
+    </div>
+</div>
+{{/ifIn}}
+
+<div class="row topPaddingBetweenPageSections">
+<div class="col-md-12">
+    <div class="card">
+        <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title"> <img src="/img/contracts.png" width="25px;" style="padding-bottom:7px;" />
+                        &nbsp;Signed and Settled Contracts</h4>
+                    </div>
+                </div>
+        </div>
+        <div class="content">
+            {{#if signedContracts}}
+            <div class="col-md-12">
+                <div class="row">
+                    <b>
+                        <div class="col-md-4">
+                            Document Title
+                        </div>
+                        <div class="col-3">
+                            Signature Date
+                        </div>
+                        <div class="col-2">
+                        </div>
+                    </b>
+                </div>
+                <br />
+            </div>
+            {{#each signedContracts}}
+            <div class="row" style="padding-top:10px;">
+                <div class="col-md-12">
+                    {{#if this.docusignDocumentID}}
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{#if ../testMode}}
+                            <a onclick="deleteDocumentUser({{this.duID}}, {{this.parentid}})" class="linkStyle100 hovercolor"><img
+                                    src="/img/cross.png" width="13px;" /></a> &nbsp;
+                            {{/if}}
+                            {{#if this.signaturefilepath}}
+                            <a onclick="goToDocuSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor"
+                                title="View Signed Contract on DocuSign">
+                                <img src="/img/contracts2.png" width="25px;" />
+                                {{this.title}}
+                            </a>
+                            {{else}}
+                            <img src="/img/contracts2.png" width="25px;" />
+                            {{this.title}}
+                            {{/if}}
+                        </div>
+                        <div class="col-md-3">
+                            {{this.signatureDate}}
+                        </div>
+                        <div class="col-md-2">
+                            {{#if this.signaturefilepath}}
+                            <label>View on <b>DocuSign1</b></label>
+                            <a onclick="goToDocuSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor" title="View Signed Contract on DocuSign">
+                                <img src="/img/open.png" width="25px;" />
+                            </a>
+                            {{else}}
+                            <label>
+                                This contract was signed on: <b>DocuSign</b> but has no associated link to it.
+                                <br />
+                                Please check it manually on DocuSign's cockpit.
+                            </label>
+                            {{/if}}
+                        </div>
+                    </div>
+                    {{else}}
+                    {{#if this.helloSignDocumentID}}
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{#if ../testMode}}
+                            <a onclick="deleteDocumentUser({{this.duID}}, {{this.parentid}})" class="linkStyle100 hovercolor"><img
+                                    src="/img/cross.png" width="13px;" /></a> &nbsp;
+                            {{/if}}
+                            {{#if this.signaturefilepath}}
+                            <a onclick="goToHelloSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor"
+                                title="View Signed Contract on DocuSign">
+                                <img src="/img/contracts2.png" width="25px;" />
+                                {{this.title}}
+                            </a>
+                            {{else}}
+                            <img src="/img/contracts2.png" width="25px;" />
+                            {{this.title}}
+                            {{/if}}
+                        </div>
+                        <div class="col-md-2">
+                            {{this.signatureDate}}
+                        </div>
+                        <div class="col-md-3">
+                            {{#if this.signaturefilepath}}
+                            <label>Download from <b>HelloSign</b></label>
+                            <a onclick="goToHelloSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor"
+                                title="View Signed Contract on DocuSign">
+                                <img src="/img/open.png" width="25px;" />
+                            </a>
+                            {{else}}
+                            <label>
+                                This contract was signed on: <b>HelloSign</b> but has no associated link to it.
+                                <br />
+                                Please check it manually on HelloSign's cockpit.
+                            </label>
+                            {{/if}}
+                        </div>
+                    </div>
+                    {{else}}
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{#if ../testMode}}
+                            <a onclick="deleteDocumentUser({{this.duID}}, {{this.parentid}})" class="linkStyle100 hovercolor"><img
+                                    src="/img/cross.png" width="13px;" /></a> &nbsp;
+                            {{/if}}
+                            <a onclick="viewcontract2({{this.duID}})" class="linkStyle100 hovercolor" title="View Signed Contract">
+
+                                <img src="/img/contracts2.png" width="25px;" />
+                                {{this.title}}
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            {{this.signatureDate}}
+                        </div>
+                        <div class="col-md-2">
+                            <a onclick="viewcontract2({{this.duID}})" class="linkStyle100 hovercolor" title="View Signed Contract">
+                                <img src="/img/open.png" width="25px;" />
+                            </a>
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/if}}
+                </div>
+            </div>
+            <hr />
+            {{/each}}
+            {{else}}
+            <label> No Contracts Found </label>
+            {{/if}}
+
+            {{!-- {{#if contractsSection}}
+                <table class="table borderless">
+                    <thead>
+                        <th width="15%"></th>
+                        <th width="55%"></th>
+                        <th width="10%"></th>
+                        <th width="10%"></th>
+                    </thead>
+                    <tbody>
+                        {{#each contracts}}
+                            <tr>
+                                <td>{{this.DateOffered}}</td>
+                                <td>{{this.ContractTitle}} </td>
+                                <td>
+                                    {{#ifEqual this.CurrentStatus 0}}New{{/ifEqual}}
+                                    {{#ifEqual this.CurrentStatus 1}}<span style="color:red;">Signed</span>{{/ifEqual}}
+                                    {{#ifEqual this.CurrentStatus 2}}Settled{{/ifEqual}}
+                                </td>
+                                <td>
+                                    <button onclick="return viewcontract({{this.ID}})" class="btn btn-info btn-fill btn-sm">&nbsp;View &nbsp;</button>
+                                </td>
+                            </tr>
+                        {{/each}}
+
+                        {{#each contractDocuments}}
+                            <tr>
+                                <td>{{this.signaturedate2}}</td>
+                                <td>{{this.title}}</td>
+                                <td>
+                                    {{#ifEqual this.DocumentStatus 1}}New{{/ifEqual}}
+                                    {{#ifEqual this.DocumentStatus 2}}<span style="color:red;">Signed</span>{{/ifEqual}}
+                                    {{#ifEqual this.DocumentStatus 3}}Settled{{/ifEqual}}
+                                </td>
+                                <td>
+                                    <button onclick="return viewdocumentcontract({{this.docid}})" class="btn btn-info btn-fill btn-sm">&nbsp;View &nbsp;</button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+
+            {{else}}
+                <label> No Contracts Found </label>
+            {{/if}} --}}
+
+        </div>
+   </div>
+</div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+<div class="col-md-12">
+    <div class="card">
+        <div class="header">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="title"><img src="/img/events.png" width="25px;" style="padding-bottom:7px;" /> &nbsp; Activities</h4>
+                    </div>
+                </div>
+        </div>
+        <div class="content">
+
+
+            <table class="table table-striped">
+                <thead class="listingHeaderFontSize">
+                    <th>Date</th>
+                    <th>User</th>
+                    <th>Activity</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    {{#each LogRecords}}
+                    <tr>
+                        <td style="width: 20%; vertical-align: top;">{{this.LogDate}} </td>
+                        <td style="width: 15%; vertical-align: top;">{{this.UserFirstName}} {{this.UserLastName}}</td>
+                        <td style="width: 65%; vertical-align: top;">{{this.Description}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+
+        </div>
+   </div>
+</div>
+</div>
+
+
+<div class = "modal fade" id="modelGeneratePassword" tabindex = "-1" role = "dialog" aria-labelledby = "modelGeneratePassword" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">Change Password</h4>
+         </div>
+
+         <div  class="modal-body">
+             <input type="checkbox" name="optChangeTextType" id="optChangeTextType"  onchange="changeType()"  /> Show Password
+             <br /><br />
+             <b>Enter New Password</b> <br />
+             <input type="password" id="txtNewPassword" name="txtNewPassword" maxlength="40" class="form-control border-input" placeholder="Enter New Password" value=""/> <br />
+             <b>Re-enter Password</b> <br />
+             <input type="password" id="txtReNewPassword" name="txtReNewPassword" maxlength="40" class="form-control border-input" placeholder="Reenter Password" value=""/> <br />
+             <input type="checkbox" id="chkSendEmaillInvestor" >  &nbsp; Send new password to Investor in an email
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="sendResetPasswordReques()"> Set New Password </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<div class = "modal fade" id="modelSendEmailToInvestor" tabindex = "-1" role = "dialog" aria-labelledby = "modelSendEmailToInvestor" aria-hidden = "true">
+    <div class = "modal-dialog  modal-lg">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">Send Email to Investor</h4>
+         </div>
+
+         <div  class="modal-body">
+
+            <textarea  id="emailTextLocalForm" rows="8" class="form-control border-input"></textarea>
+
+            <div class="upload-btn-wrapper">
+                <label>Note: &nbsp; Attachments will only be send to investor inbox. Platform will only save email text in inbox</label><br />
+                <button class="btnfile">Select File</button>
+                <input   id="photos222"   name="photos222" multiple="multiple" type="file"  onchange="fileValidation(2)" >
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span style="color: green; font-size: 12px; " id="upload-file2">No File Selected</span>
+            </div>
+
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="sendEmailToInvestorInbox()"> Send Email</button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<div class = "modal fade" id="assignNewEmailAddress" tabindex = "-1" role = "dialog" aria-labelledby = "assignNewEmailAddress" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title">Email Address for Account</h4>
+         </div>
+
+         <div  class="modal-body">
+             Enter new email address below. Platform will check if the email address is already been taken to any other investor. If not then new email will be assigned to this investor
+             <br /><br />
+
+            <div class="row">
+                <div class="col-md-11">
+                    <input type="textbox" maxlength="100" id="emailAssignToInvestor" class="form-control border-input">
+                </div>
+            </div>
+             <br />&nbsp;
+
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="assignEmail()"> Save Email</button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+
+<form id="frmSendEmailToInvestor2" name="frmSendEmailToInvestor2" action="/admin/sendEmailToInvestor" method="post">
+    <input type="hidden" id="files" name="files" value="[]">
+    <input type="hidden" name="emailText" id="emailTextForInvestor" />
+    <input type="hidden" name="id1" value="3" />
+    <input type="hidden" name="id2" value="{{investorRec.ID}}" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+<form id="frmtakebackbonblockchainsharesofinvestor" name="frmtakebackbonblockchainsharesofinvestor" action="/admin/takebackNonBlockchainInvestorShares?_csrf={{csrfToken}}"  method="post">
+    <input type="hidden" name="shares" id="takeBackNonBlockchainSharesOfInvestor" />
+    <input type="hidden" name="investorID" value="{{investorRec.ID}}" />
+</form>
+
+<div class = "modal fade" id="modelUpdateBalance" tabindex = "-1" role = "dialog" aria-labelledby = "modelUpdateBalance" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">  <span id= "spanUpdateInvestorBalanceCaption"></span> </h4>
+         </div>
+
+         <div  class="modal-body">
+            <b><span id="txtInvestorAccountForBalance"></span></b>
+
+            <div class="row">
+                <div id="spanCurrencySelectionAccounts" style="display:none;" class="col-md-4">
+                    <b>Select Currency</b> <br />
+                     <select id="selCurrencySelectionAccounts" name="selCurrencySelectionAccounts" class="form-control border-input">
+                         {{#each currencies}}
+                            <option value="{{this.ID}}">{{this.Abbreviation}}</option>
+                         {{/each}}
+                     </select>
+                </div>
+                <div class="col-md-6">
+                     <b>Enter Amount</b> <br />
+                     <input  id="txtBalanceUpdateAmount" name="txtNewPassword" maxlength="40" class="form-control border-input" placeholder="Enter Amount" value=""/> <br />
+                </div>
+             </div>
+
+             <b>Enter Details</b> <br />
+             <textarea  id="textAreaAccountBalanceUpdate" name="balanceUpdateTextArea" maxlength="500" rows="5" class="form-control border-input" ></textarea>
+
+             <br />
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="increaseDecreaseInvestorBalance()"> <span id="invextorBalanceButtonUpdateID"></span> </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+
+{{> Footer}}

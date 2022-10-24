@@ -1,0 +1,128 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {
+            $("#InvestorsMenu").addClass('active');
+    })
+    
+    function backlist() {
+        window.location.href = "/broker/investors?id={{stoid}}"
+        return false;        
+    }
+
+</script>
+
+{{> HeaderInnerBroker}}
+
+<div class="row">
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title"> <img src="/img/list.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Investor Details</h4>
+                            </div>
+                            <div class="col-md-3">
+                                    <button onclick="return backlist()" class="btn btn-info btn-fill">Back to Investor List</button>
+                            </div>
+                    </div>
+            </div>
+            <br />
+
+            <div class="content">
+
+                    <div class="row">                                      
+                        <div class="col-md-12">                    
+                            <img src="/img/investorstotypesicons/i{{investorRec.KYCCurrentStatus}}.png"  width="25px;" /> &nbsp; 
+                             <span style="font-size:20px;"> {{AuthorizationType}} Investor  &nbsp;&nbsp;&nbsp;  ( <label> {{InvestorTypeText}} </label> )</span> 
+                        </div>
+                    </div>                
+                    
+                <br />
+                
+                    {{> InvestorView}}
+                
+            </div>
+        </div>
+    </div>
+</div>    
+
+
+
+<div class="row">
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title"> <img src="/img/list.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; KYC Documents</h4>
+                            </div>
+                    </div>
+            </div>
+            <br />
+
+            <div class="content">
+                
+                    <h4 class="title"><img src="/img/docsigned2.png" width="25px;" />&nbsp;Proof of Identity</h4>
+                    {{#if kyc.IDDoc.fileID}}
+                            {{#each kyc.IDDoc.fileID}}
+                                <div class="row" style="padding-top:10px;">
+                                    <div class="col-md-7">
+                                        {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                    </div>
+                                    <div class="col-md-5">
+                                        <button onclick="return downloadDocument('IDDoc', 'fileID', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Download</button>  
+                                    </div>
+                                </div>
+                            {{/each}}
+                    {{else}}
+                        <label>No file found</label>
+                    {{/if}}
+
+                    <hr />                
+                    
+                    <h4 class="title"><img src="/img/docsigned2.png" width="25px;" />&nbsp;Proof of Address</h4>
+                    {{#if kyc.IDDoc.fileAddress}}
+                            {{#each kyc.IDDoc.fileAddress}}
+                                <div class="row" style="padding-top:10px;">
+                                    <div class="col-md-7">
+                                        {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                    </div>
+                                    <div class="col-md-5">
+                                        <button onclick="return downloadDocument('IDDoc', 'fileAddress', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Download</button>  
+                                    </div>
+                                </div>
+                            {{/each}}
+                    {{else}}
+                        <label>No file found</label>
+                    {{/if}}
+
+                    <hr />                
+                
+                           {{#if kyc.AccreditedPage.IndDocPri}}                
+                                    <h4 class="title"><img src="/img/docsigned2.png" width="25px;" />&nbsp;Knowledge and expertise to participate in private investment</h4>
+
+                                            {{#each kyc.AccreditedPage.IndDocPri}}
+                                                <div class="row" style="padding-top:10px;">
+                                                    <div class="col-md-7">
+                                                        {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <button onclick="return downloadDocument('AccreditedPage', 'IndDocPri', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Download</button>  
+                                                    </div>
+                                                </div>
+                                            {{/each}}
+                
+                                            <hr />
+                                {{/if}}
+ 
+                
+                    <br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div>    
+
+
+{{> Footer}}

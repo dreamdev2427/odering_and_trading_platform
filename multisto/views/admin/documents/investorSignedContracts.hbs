@@ -1,0 +1,173 @@
+{{> Header}}
+
+<script>
+  function viewcontract2(id) {
+      window.location.href = "viewcontract?id=" + id;
+  }
+  function goToDocuSign(link) {
+    window.location.href = `{{docusignBaseUrl}}${link}`;
+  }
+  function goToHelloSign(link) {
+    window.location.href = link;
+  }
+  function deleteDocumentUser() {
+    showModelGeneralYesNoDialogBox("Are you sure you want to delete the file ?", "Delete" , "Cancel");
+  }
+</script>
+
+<style>
+    .linkStyle100 {
+        cursor: pointer;
+        padding:5px;
+    }
+</style>
+
+{{> HeaderInnerSto}}
+
+<div class="card">
+  <div class="header">
+    <div class="row">
+      <div class="col-md-9">
+        <h4 class="title"> <img src="/img/documents2.png" width="35px;" style="padding-bottom:4px;" />Investor Signed Contracts</h4>
+      </div>
+    </div>
+  </div>
+  <hr/>
+  <div class="body">
+    <div class="content">
+      {{#ifIn 37 Data.AdminRights}}
+        {{#if signedContracts.length}}
+          <div class="col-md-12">
+            <div class="row">
+              <b>
+                <div class="col-md-4">
+                  Document Title
+                </div>
+                <div class="col-md-3">
+                  Investor Name
+                </div>
+                <div class="col-3">
+                  Signature Date
+                </div>
+                <div class="col-2">
+
+                </div>
+              </b>
+            </div>
+            <br/>
+          </div>
+          {{#each signedContracts}}
+            <div class="row"  style="padding-top:10px;">
+              <div class="col-md-12">
+                {{#if this.docusignDocumentID}}
+                  <div class="row">
+                    <div class="col-md-4">
+                      {{#if ../testMode}}
+                        <a onclick="deleteDocumentUser({{this.duID}}, {{this.parentid}})" class="linkStyle100 hovercolor" ><img src="/img/cross.png" width="13px;"  /></a> &nbsp;
+                      {{/if}}
+                      {{#if this.signaturefilepath}}
+                        <a onclick="goToDocuSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor" title="View Signed Contract on DocuSign">
+                          <img src="/img/contracts2.png" width="25px;"  />
+                          {{this.title}}
+                        </a>
+                      {{else}}
+                        <img src="/img/contracts2.png" width="25px;"  />
+                        {{this.title}}
+                      {{/if}}
+                    </div>
+                    <div class="col-md-3">
+                      {{this.firstname}} {{this.lastname}}
+                    </div>
+                    <div class="col-md-3">
+                      {{this.signatureDate}}
+                    </div>
+                    <div class="col-md-2">
+                      {{#if this.signaturefilepath}}
+                        <label>View on <b>DocuSign</b></label>
+                        <a onclick="goToDocuSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor" title="View Signed Contract on DocuSign">
+                          <img src="/img/open.png" width="25px;" />
+                        </a>
+                      {{else}}
+                        <label>
+                          This contract was signed on: <b>DocuSign</b> but has no associated link to it.
+                          <br/>
+                          Please check it manually on DocuSign's cockpit.
+                        </label>
+                      {{/if}}
+                    </div>
+                  </div>
+                {{else}}
+                  {{#if this.helloSignDocumentID}}
+                    <div class="row">
+                      <div class="col-md-4">
+                        {{#if ../testMode}}
+                          <a onclick="deleteDocumentUser({{this.duID}}, {{this.parentid}})" class="linkStyle100 hovercolor" ><img src="/img/cross.png" width="13px;"  /></a> &nbsp;
+                        {{/if}}
+                        {{#if this.signaturefilepath}}
+                          <a onclick="goToHelloSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor" title="View Signed Contract on DocuSign">
+                            <img src="/img/contracts2.png" width="25px;"  />
+                            {{this.title}}
+                          </a>
+                        {{else}}
+                          <img src="/img/contracts2.png" width="25px;"  />
+                          {{this.title}}
+                        {{/if}}
+                      </div>
+                      <div class="col-md-3">
+                        {{this.firstname}} {{this.lastname}}
+                      </div>
+                      <div class="col-md-2">
+                        {{this.signatureDate}}
+                      </div>
+                      <div class="col-md-3">
+                        {{#if this.signaturefilepath}}
+                          <label>Download from <b>HelloSign</b></label>
+                          <a onclick="goToHelloSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor" title="View Signed Contract on DocuSign">
+                            <img src="/img/open.png" width="25px;" />
+                          </a>
+                        {{else}}
+                          <label>
+                            This contract was signed on: <b>HelloSign</b> but has no associated link to it.
+                            <br/>
+                            Please check it manually on HelloSign's cockpit.
+                          </label>
+                        {{/if}}
+                      </div>
+                    </div>
+                  {{else}}
+                    <div class="row">
+                      <div class="col-md-4">
+                        {{#if ../testMode}}
+                          <a onclick="deleteDocumentUser({{this.duID}}, {{this.parentid}})" class="linkStyle100 hovercolor" ><img src="/img/cross.png" width="13px;"  /></a> &nbsp;
+                        {{/if}}
+                        <a onclick="viewcontract2({{this.duID}})" class="linkStyle100 hovercolor" title="View Signed Contract">
+
+                          <img src="/img/contracts2.png" width="25px;"  />
+                          {{this.title}}
+                        </a>
+                      </div>
+                      <div class="col-md-3">
+                        {{this.firstname}} {{this.lastname}}
+                      </div>
+                      <div class="col-md-3">
+                        {{this.signatureDate}}
+                      </div>
+                      <div class="col-md-2">
+                        <a onclick="viewcontract2({{this.duID}})" class="linkStyle100 hovercolor" title="View Signed Contract">
+                          <img src="/img/open.png" width="25px;" />
+                        </a>
+                      </div>
+                    </div>
+                  {{/if}}
+                {{/if}}
+              </div>
+            </div>
+            <hr/>
+          {{/each}}
+        {{/if}}
+      {{/ifIn}}
+    </div>
+  </div>
+</div>
+
+{{> Footer}}

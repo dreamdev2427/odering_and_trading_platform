@@ -1,0 +1,242 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {
+        $("#bulkupload").addClass('active');
+    })
+
+    function fileValidation() {
+        checkAndUpdateMultiFileUpload("files", "upload-file", /(\.csv)$/i, "Please select only Comma Separated Values (csv) file", MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);
+    }
+
+    function uploadFiles() {
+        uploadMultiplefilesToServer("files", "fileUplodProgressUpload", 1, '/platform/uploadFiles');
+    }
+
+    function multipleFilesUploadingDoneEvent(data) {
+        var e = document.getElementById("stoiddropdown");
+        var val = e.options[e.selectedIndex].value;
+
+        document.getElementById("stotitle").value = $( "#stoiddropdown option:selected" ).text();
+        document.getElementById("stoid").value = val;
+        document.getElementById("fileupload").value = JSON.stringify(data);
+        document.getElementById("frmuploadfiles").submit();
+    }
+
+</script>
+
+{{>multifileupload}}
+
+{{> HeaderInnerPlatform}}
+
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  Bulk Uploads</h4>
+            </div>
+
+            <div class="content">
+
+                {{#if currentUploadStatus}}
+
+                    <h3>The platform is in process of processing previous bulk upload file. It will finish soon</h3>
+
+                {{else}}
+
+                    <label>
+                        Select file and upload to platform for bulk uploading of investor records
+                    </label>
+
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-md-5">
+                                <label>Step 1. &nbsp;&nbsp; Select STO</label><br />
+                                <select class="form-control border-input"  id="stoiddropdown" name="stoiddropdown">
+                                    {{#each stos}}
+                                        <option value="{{this.id}}">{{this.title}}</option>
+                                    {{/each}}
+                                </select>
+                        </div>
+                    </div>
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="upload-btn-wrapper">
+                                <label>Step 2. &nbsp;&nbsp; Select file to upload</label><br />
+                                <button class="btnfile">Select File</button>
+                                <input id="files" name="files" type="file" onchange="fileValidation()" >
+                                &nbsp;&nbsp;
+                                <span style="color: green; font-size: 12px; " id="upload-file">No File Selected</span>
+                            </div>
+                        </div>
+                    </div>
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label>Step 3. &nbsp;&nbsp; Click upload to upload the file to platform</label><br />
+                            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="uploadFiles()" id="createButton"> Upload File </button>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div id="fileUplodProgressUpload" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                        </div>
+                    </div>
+                    <br /><br />
+
+                    <hr />
+
+                    <h4>CSV file format</h4>
+                    This module needs CSV(Comma-Separated Values) file which with extension .csv file. These files can be generated using Excel or other spreadsheets. Here is the format of the file
+                    <br /><br />
+
+                    <b><div class="row">
+                        <div class="col-md-2">Column No</div>
+                        <div class="col-md-3">Field</div>
+                        <div class="col-md-4">Description</div>
+                    </div></b><br />
+
+
+                    <div class="row">
+                        <div class="col-md-2">1</div>
+                        <div class="col-md-3">investorType</div>
+                        <div class="col-md-7"> <span style="color:red">Mandatory</span> &nbsp;&nbsp;&nbsp;&nbsp; Must be &nbsp;&nbsp;  0 = Natural Person&nbsp;&nbsp;  or &nbsp;&nbsp;  1 = Legal Entity</div>
+                    </div><br />
+                    <!-- temporary EziStake request -->
+                    {{#ifEqual Data.CurrentClientID 10}}
+                        <div class="row">
+                            <div class="col-md-2">2</div>
+                            <div class="col-md-3">FirstName</div>
+                            <div class="col-md-4"></div>
+                        </div><br />
+                        <div class="row">
+                            <div class="col-md-2">3</div>
+                            <div class="col-md-3">LastName</div>
+                            <div class="col-md-4"></div>
+                        </div><br />
+                    {{else}}
+                        <div class="row">
+                            <div class="col-md-2">2</div>
+                            <div class="col-md-3">FirstName</div>
+                            <div class="col-md-4"><span style="color:red">Mandatory</span></div>
+                        </div><br />
+                        <div class="row">
+                            <div class="col-md-2">3</div>
+                            <div class="col-md-3">LastName</div>
+                            <div class="col-md-4"><span style="color:red">Mandatory</span></div>
+                        </div><br />
+                    {{/ifEqual}}
+                    <div class="row">
+                        <div class="col-md-2">4</div>
+                        <div class="col-md-3">Email</div>
+                        <div class="col-md-4"><span style="color:red">Mandatory</span> &nbsp;&nbsp;&nbsp; </div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">5</div>
+                        <div class="col-md-3">CompanyName</div>
+                        <div class="col-md-4"><span style="color:red">Mandatory</span> &nbsp;&nbsp;only if investorType = 1</div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">6</div>
+                        <div class="col-md-3">TitleWithinCompany</div>
+                        <div class="col-md-4"><span style="color:red">Mandatory</span> &nbsp;&nbsp;only if investorType = 1</div>
+                    </div> <br />
+                    <div class="row">
+                        <div class="col-md-2">7</div>
+                        <div class="col-md-3">PowerToBindCompany</div>
+                        <div class="col-md-7"><span style="color:red">Mandatory</span> &nbsp;&nbsp; only if investorType = 1  &nbsp;&nbsp;   Must be &nbsp;&nbsp;  0 = No&nbsp;&nbsp;  or &nbsp;&nbsp;  1 = Yes</div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">8</div>
+                        <div class="col-md-3">Address</div>
+                        <div class="col-md-4"></div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">9</div>
+                        <div class="col-md-3">country</div>
+                        <div class="col-md-4"></div>
+                    </div>    <br />
+                    <div class="row">
+                        <div class="col-md-2">10</div>
+                        <div class="col-md-3">phone</div>
+                        <div class="col-md-4"></div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">11</div>
+                        <div class="col-md-3">zip</div>
+                        <div class="col-md-4"></div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">12</div>
+                        <div class="col-md-3">city</div>
+                        <div class="col-md-4"></div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">13</div>
+                        <div class="col-md-3">state</div>
+                        <div class="col-md-4"></div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">14</div>
+                        <div class="col-md-3">Passport Number</div>
+                        <div class="col-md-4"></div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">15</div>
+                        <div class="col-md-3">NationalID</div>
+                        <div class="col-md-4"></div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">16</div>
+                        <div class="col-md-3">DOB</div>
+                        <div class="col-md-4">Must be in ISO 8601 format YYYY-MM-DD</div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">17</div>
+                        <div class="col-md-3">Notes</div>
+                        <div class="col-md-4"></div>
+                    </div>
+
+                    <br /><br />
+                    After Column 16 you can specify which shares are being transferred to investor. These are not mandatory but if specified then each share must have 4 column given below. You can specify any number of share transfers in 4 column format
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-md-2">18</div>
+                        <div class="col-md-3"> Share ID</div>
+                        <div class="col-md-4"><span style="color:red">Mandatory</span> &nbsp;&nbsp;</div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">19</div>
+                        <div class="col-md-3"> Shares</div>
+                        <div class="col-md-4"><span style="color:red">Mandatory</span> &nbsp;&nbsp;Must be a number</div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">20</div>
+                        <div class="col-md-3"> Date</div>
+                        <div class="col-md-7"><span style="color:red">Mandatory</span> &nbsp;&nbsp; Must be in ISO 8601 format YYYY-MM-DD </div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-2">21</div>
+                        <div class="col-md-3">Notes</div>
+                        <div class="col-md-4"></div>
+                    </div>
+
+                {{/if}}
+
+                <br /><br /><br />
+            </div>
+        </div>
+    </div>
+
+
+    <form id="frmuploadfiles" name="frmuploadfiles" action="/platform/bulkuploadspost"  method="post">
+        <input type="hidden" id="stoid" name="stoid" value="" />
+        <input type="hidden" id="stotitle" name="stotitle" value="" />
+        <input type="hidden" id="fileupload" name="fileupload" value="" />
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+    </form>
+
+{{> Footer}}

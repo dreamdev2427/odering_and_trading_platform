@@ -1,0 +1,387 @@
+{{> Header}}
+
+<script language="javascript">
+    var UploadFile_Size = 5;         //TODO   set according to server settings 
+    var currentauth = 0;
+    
+    $(document).ready(function() {
+        SummernoteBasicDataInitialize('txtDisclaimer', 'Enter Disclaimer Text', 200); 
+        SummernoteBasicDataInitialize('txtFooter', 'Enter Email Footer Text', 200); 
+        SummernoteBasicDataInitialize('txtregistrationtext', 'Enter Registration Text', 200);       
+        SummernoteBasicDataInitialize('txttellafriend', 'Enter Tell a friend Email Text', 200);       
+        
+    });
+    function chancghePassword() {
+            var res = "";
+
+            if(document.getElementById("oldpassword").value == "")
+                res = "<li>Old Password is required</li>";
+            if(document.getElementById("newPassword").value == "")
+                res = res + "<li>New Password is required</li>";
+            if(document.getElementById("retypeNewPassword").value != document.getElementById("newPassword").value)
+                res = res + "<li>Password not re-typed correct</li>";
+
+            if(res == "")
+                document.getElementById("retypePasswordForm").submit();
+            else
+            {
+                $(window).scrollTop(0);
+                $("#ErrorMessages").html(res)
+            }            
+    }
+    function updateDisclaimer() {
+        if(document.getElementById("txtDisclaimer").value == "") {
+            showModelGeneralOKDialogBox("Please enter some disclaimer text");
+            return;
+        }
+        else
+            document.getElementById("frmDisclaimer").submit();
+    }        
+    function updateEamilFooter() {
+        if(document.getElementById("txtFooter").value == "") {
+            showModelGeneralOKDialogBox("Please enter some text");
+            return;
+        }
+        else
+            document.getElementById("frmFooter").submit();
+    }
+    function updatetxtregistrationtext() {
+        if(document.getElementById("txtregistrationtext").value == "") {
+            showModelGeneralOKDialogBox("Please enter some text");
+            return;
+        }
+        else
+            document.getElementById("frmregistrationtext").submit();
+    }
+	function fileValidation(id) {
+		var fileInput = document.getElementById("file" + id);
+        
+		var filePath = fileInput.value;
+		
+		var error = false;
+
+		var allowedExtensions = /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif)$/i;
+		if( fileInput.files[0].size > UploadFile_Size * 1048576 ) {
+			showModelGeneralOKDialogBox("File size cannot be larger than " + UploadFile_Size + "MB");
+			error = true;
+		}
+		else if(!allowedExtensions.exec(filePath)){
+			showModelGeneralOKDialogBox('Please select image file only');
+			error = true;
+		}
+
+		if(error == true) {
+			fileInput.value = '';
+			$('#upload-file' + id).html("No File Selected");
+			return false;			
+		}
+		else
+			$('#upload-file' + id).html(fileInput.files[0].name)
+	}
+	function submitUploadFile(id) {
+		var fileInput = document.getElementById("file" + id);
+		var filePath = fileInput.value;
+
+        if(filePath == null || filePath == '') {
+            showModelGeneralOKDialogBox('Please select image to upload');
+            return;   
+        }
+        
+        document.getElementById("frmimageupload" + id).submit();
+	}  
+    function refreshpage() {
+        window.location.href = "settings"
+    }
+    function change2factorauth(auth) {
+        currentauth = auth;
+
+        var msg = "";
+        var btn = "";
+        if(auth == 0) {
+            msg = "Are you sure you want to de-activate 2 factor authentification ?";
+            btn = "Yes Disable Authentication";
+        } else {
+            msg = "Are you sure you want to activate 2 factor authentification ?";
+            btn = "Yes Enable Authentication";
+        }
+        showModelGeneralYesNoDialogBox(msg, btn, "Cancel");
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = "/admin/changeinvestorauth?auth=" + currentauth;
+    }   
+    
+    {{#if TemporaryRemoved}}
+    function updatetellafriend() {
+        if(document.getElementById("txttellafriend").value == "") {
+            showModelGeneralOKDialogBox("Please enter some text");
+            return;
+        }
+        else
+            document.getElementById("frmtxttellafriend").submit();
+    }    
+    {{/if}}
+</script>
+
+{{> HeaderInnerSto}}
+
+    {{#ifEqual message 1}}
+        <b><span id="ErrorMessages" style="color:red"> Password changed </span></b>
+        <br /><br />
+    {{/ifEqual}}
+    {{#ifEqual message 2}}
+        <b><span id="ErrorMessages" style="color:red"> Old password is not correct </span></b>
+        <br /><br />
+    {{/ifEqual}}
+    {{#ifEqual message 3}}
+        <b><span id="ErrorMessages" style="color:red"> Password cannot be empty </span></b>
+        <br /><br />
+    {{/ifEqual}}
+    {{#ifEqual message 4}}
+        <b><span id="ErrorMessages" style="color:red"> Re-type password is not correct </span></b>
+        <br /><br />
+    {{/ifEqual}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Change Password</h4>
+                </div>
+                <div class="content">
+                    
+                    <form id="retypePasswordForm" action="/admin/changePassword" method="post">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            Enter old password
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="oldpassword" name="oldpassword" placeholder="Enter Old password">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            Enter new password
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="newPassword" name="newPassword" placeholder="Enter new password">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            Re-Type new password
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="retypeNewPassword" name="retypeNewPassword" placeholder="Retype-Password">
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-9">
+                             <button type="button" onclick="chancghePassword()" class="btn btn-info btn-fill">Change Password</button>
+                             &nbsp;&nbsp;&nbsp;
+                             <button type="button" onclick="refreshpage()" class="btn btn-info btn-fill">Cancel</button>
+                        </div>
+                    </div>
+
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+
+                    <br /><hr />
+                    <div class="row">
+                        <div class="col-md-12">
+                             <b>2-Factor Authentication</b>
+                            <br /> <label>2 factor authentication will enable you to set your account </label> <br />
+                            
+                            {{#if twofactorenable}}
+                                <img src="/img/greendot.png" width="24px" /> &nbsp; 2 Factor authentication is currently enabled. 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" onclick="change2factorauth(0)" class="btn btn-info btn-fill btn-sm"> &nbsp; De-Activate &nbsp;</button>
+                            {{else}}
+                                <img src="/img/emptycircle.png" width="22px" /> &nbsp; 2 Factor authentication is currently disabled. 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" onclick="change2factorauth(1)" class="btn btn-info btn-fill btn-sm"> &nbsp;Activate &nbsp;</button>
+                            {{/if}}
+                        </div>
+                    </div>
+
+                    <br>&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#if Disclaimer}}
+        <div class="row topPaddingBetweenPageSections" style="z-index:1000;position: relative;">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Disclaimer Text</h4>
+                </div>
+                <div class="content">
+
+                    <form id="frmDisclaimer" name="frmDisclaimer" action="/admin/updateDisclaimer" method="post">
+                        <textarea id="txtDisclaimer" name="txtDisclaimer" maxlength="3500" rows="5" class="form-control border-input" style="width:100%;">{{disclaimer}}</textarea>
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        <button type="button" onclick="updateDisclaimer()" class="btn btn-info btn-fill">Update Disclaimer</button>
+                             &nbsp;&nbsp;&nbsp;
+                             <button type="button" onclick="refreshpage()" class="btn btn-info btn-fill">Cancel</button>                        
+                    </form>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    <div class="row topPaddingBetweenPageSections"  style="z-index:900;position: relative;">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Email Footer Text</h4>
+                </div>
+                <div class="content">
+
+                    <form id="frmFooter" name="frmFooter" action="/admin/updateEmailFooter" method="post">
+                        <textarea id="txtFooter" name="txtFooter" maxlength="3500" rows="5" class="form-control border-input" style="width:100%;">{{emailFooter}}</textarea>
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        <button type="button" onclick="updateEamilFooter()" class="btn btn-info btn-fill">Update Email Footer</button>
+                             &nbsp;&nbsp;&nbsp;
+                             <button type="button" onclick="refreshpage()" class="btn btn-info btn-fill">Cancel</button>                          
+                    </form>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#if Registration}}
+        <div class="row topPaddingBetweenPageSections"  style="z-index:800;position: relative;">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Registration Page Opening Text</h4>
+                </div>
+                <div class="content">
+
+                    <form id="frmregistrationtext" name="frmregistrationtext" action="/admin/updateRegistrationText" method="post">
+                        <textarea id="txtregistrationtext" name="txtregistrationtext" maxlength="3500" rows="5" class="form-control border-input" style="width:100%;">{{registrationtext}}</textarea>
+                        <br />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        <button type="button" onclick="updatetxtregistrationtext()" class="btn btn-info btn-fill">Update Text</button>
+                             &nbsp;&nbsp;&nbsp;
+                             <button type="button" onclick="refreshpage()" class="btn btn-info btn-fill">Cancel</button>                          
+                    </form>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    <div class="row topPaddingBetweenPageSections"  style="z-index:700;position: relative;">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Change Logo</h4>
+                </div>
+                <div class="content">
+
+                    <form id="frmimageupload1" name="frmimageupload1" action="/admin/changelogosite?_csrf={{csrfToken}}" enctype="multipart/form-data" method="post">
+
+                        <img src="/img/stologo/{{logo}}" style="max-width:200px;"/>
+                        
+                        
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="upload-btn-wrapper">
+                                    <button class="btnfile btn-sm">Select File to Upload</button>
+                                    <input   id="file1"   name="file1"   type="file"  onchange="return fileValidation('1')">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <span style="color: green; font-size: 18px; " id="upload-file1">No File Selected</span>
+                                </div> 
+                            </div>
+                        </div>                        
+                        
+                        <br />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        <button type="button" onclick="submitUploadFile('1')" class="btn btn-info btn-fill">Update Site Logo</button>
+                        
+                    </form>
+
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#if RegistrationBanner}}
+        <div class="row topPaddingBetweenPageSections"  style="z-index:700;position: relative;">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Change Registration Page Banner</h4>
+                </div>
+                <div class="content">
+
+                    <form id="frmimageupload2" name="frmimageupload2" action="/admin/changebannersite?_csrf={{csrfToken}}" enctype="multipart/form-data" method="post">
+
+                        <img src="/img/stobanners/{{banner}}" style="max-width:600px;"/>
+                        
+                        
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="upload-btn-wrapper">
+                                    <button class="btnfile btn-sm">Select File to Upload</button>
+                                    <input   id="file2"   name="file2"   type="file"  onchange="return fileValidation('2')">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <span style="color: green; font-size: 18px; " id="upload-file2">No File Selected</span>
+                                </div> 
+                            </div>
+                        </div>                        
+                        
+                        <br />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        <button type="button" onclick="submitUploadFile('2')" class="btn btn-info btn-fill">Update Site Logo</button>
+                        
+                    </form>
+
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    
+    <!-- <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Tell a Friend Email Text</h4>
+                    <label>Text in Tell a Friend Email. When an investor invites his friend to invest in the company through email, following text will be added in the email along with the text typed by the investor. Enter company introduction, summary investment details and other necessary information about the company </label>
+                </div>
+                <div class="content">
+
+                    <form id="frmtxttellafriend" name="frmtxttellafriend" action="/admin/changetellafriend" method="post">
+                        <textarea id="txttellafriend" name="txttellafriend" maxlength="3500" rows="5" class="form-control border-input" style="width:100%;">{{tellafriend}}</textarea>
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        <button type="button" onclick="updatetellafriend()" class="btn btn-info btn-fill">Update Text</button>
+                    </form>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>  -->
+    
+{{> Footer}}

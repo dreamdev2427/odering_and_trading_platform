@@ -1,0 +1,3 @@
+mutation SendMercuryInstructionalEmail($stoId: Int!, $note: String!, $routingNumber: String!, $accountNumber: String!) {
+  sendMercuryInstructionalEmail(stoID: $stoId, note: $note, routingNumber: $routingNumber, accountNumber: $accountNumber)
+}

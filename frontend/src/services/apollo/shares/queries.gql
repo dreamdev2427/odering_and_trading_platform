@@ -1,0 +1,75 @@
+query investorShares($stoID: Int) {
+  investorShares(stoID: $stoID) {
+    ID
+    stoID
+    sharesHistoryID
+    investorID
+    shares
+    isBlockchainAuthorized
+    isBlockchainFrozen
+    shareTypeID
+    shareType {
+      ID
+      title
+      stoID
+      totalShares
+      companyShares
+      nominalValue
+      custodianShares
+      isBlockchain
+      premiumValue
+      currencyID
+      sellToCompany
+      sellValue
+      isShareNosApplicable
+      isCertificateNosApplicable
+      currency {
+        ID
+        currency
+        abbreviation
+        symbol
+        isBlockchainBased
+      }
+      minimumSharesToBuyByInvestor
+      availableShare
+      totalPrice
+      blockchaindecimals
+    }
+  }
+}
+
+query getInvestorShare($ID: Int!) {
+  investorShare(ID: $ID) {
+    shareType {
+      ID
+      title
+      stoID
+      nominalValue
+      premiumValue
+      isBlockchain
+      currency {
+        ID
+        symbol
+      }
+    }
+    shares
+  }
+}
+
+query getSharesWallets($shareTypeID: Int!) {
+  getSharesWallets(shareTypeID: $shareTypeID) {
+    ID
+    isBlocked
+    publicKey
+    shares
+  }
+}
+
+query getSwapTokens {
+  getSwapTokens {
+    ID
+    address
+    name
+    symbol
+  }
+}

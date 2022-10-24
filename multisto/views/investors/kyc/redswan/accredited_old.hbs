@@ -1,0 +1,841 @@
+<script language="javascript">    
+	var UploadFile_Size = {{Data.UploadFile_Size}};
+    var tempID = 0;
+    
+    function downloadDocument(fileID, index) {
+        window.location.href = "downloadDocumentFromKYCRecord?stepid=AccreditedPage&fileID=" + fileID + "&index=" + index;
+        return false;                                                      
+    }
+	function submitUploadFile(uploadID) {
+		var fileInput = null;
+		fileInput = document.getElementById('file' +  uploadID);
+        		
+		if(fileInput.value == "")
+			alert("Please select a file to upload");
+		else
+			document.getElementById("FileUpload" + uploadID).submit();
+	}
+	function fileValidation(uploadID) {
+        alert(uploadID)
+		var fileInput = null;
+		fileInput = document.getElementById('file' + uploadID);
+
+		var filePath = fileInput.value;		
+		var error = false;
+		
+		var allowedExtensions = /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf)$/i;
+		if( fileInput.files[0].size > UploadFile_Size * 1048576 ) {
+			alert("File size cannot be larger than " + UploadFile_Size + "MB");
+			error = true;
+		}
+		else if(!allowedExtensions.exec(filePath)){
+			alert('Please select doc, docx, pdf or image file only');
+			error = true;
+		}
+
+		if(error == true) {
+			fileInput.value = '';
+			$('#upload-file' + uploadID).html("No File Selected");
+			return false;			
+		}
+		else
+			$('#upload-file' + uploadID).html(fileInput.files[0].name)
+	}
+    function submitForm(id){
+        document.getElementById('applyFor').value = id;
+        document.getElementById('frmwizardpost').submit();
+        return false;
+    }
+
+    function callMultiFileUpdate(id) {
+            tempID = id;
+            checkAndUpdateMultiFileUpload('file' +id, 'upload-file' + id,  MultifileMultifileExtensions1, MultifileMultifileExtensions1msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);
+    }
+    function multipleFilesUploadingDoneEvent(data) {
+        document.getElementById("filesForID" + tempID).value = JSON.stringify(data);
+        document.getElementById("FileUpload" + tempID).submit();
+    }
+
+    function nextpage(){
+            window.location.href = "/wizard?step=3";
+            return false;        
+    }    
+    function prevpage(){
+            window.location.href = "/wizard?step=1";
+            return false;        
+    }    
+        
+    
+    
+</script>
+
+
+<div class="row">
+    <div class="col-md-12">         
+
+            {{#ifEqual InvestorRecord.investorType 0}}
+        
+                        {{#ifEqual InvestorRecord.country  'United States' }}
+
+                                <div class="row topPaddingBetweenPageSections">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="header">
+                                                <h4 class="title">Documentation For Individual</h4>
+                                            </div>
+                                            <div class="content">
+                                                
+                                                    <b>Please confirm if you meet any one of the following criteria (only for users who wish to be registered as accredited)</b>
+                                                
+                                                    <br />&nbsp;
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+ 
+        
+                                    <div class="row topPaddingBetweenPageSections">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="header">
+                                                    <h4 class="title">1 - Knowledge and expertise to participate in private investment</h4>
+                                                </div>
+                                                <div class="content">
+                                                            <br />
+            Do you have knowledge and expertise to participate in private investment opportunities based on relevant professional certifications, credentials, and designations ? (As of today, individuals with Series 7, Series 65 and/or Series 82 security licenses are considered “Accredited” regardless of net worth and income).
+                <br /><br />
+                    For the knowledgeable investor test, a copy of the unexpired Series 7, Series 65 or Series 82 securities license must be submitted.
+
+                                                            <br /><br />
+
+                                                        {{#if this.stepData.IndDocPri}}
+                                                                {{#each stepData.IndDocPri}}
+                                                                    <div class="row" style="padding-top:10px;">
+                                                                        <div class="col-md-7">
+                                                                            {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <button onclick="return downloadDocument('IndDocPri', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                        </div>
+                                                                    </div>
+                                                                {{/each}}
+                                                            <br />
+                                                            <b>{{{__ "Or upload another file"}}}</b>   <br />
+                                                            <br />
+                                                        {{/if}}
+
+                                                        <div class="upload-btn-wrapper">
+                                                            <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                            <input   id="file2"   name="file2" multiple="multiple" type="file"  onchange="callMultiFileUpdate(2)" >
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <span style="color: green; font-size: 12px; " id="upload-file2">{{{__ "No File Selected"}}}</span>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file2', 'fileUplodProgressUpload2', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="progress" style="display: none;">
+                                                                  <div id="fileUplodProgressUpload2" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                </div>                   
+                                                            </div>
+                                                        </div>
+
+                                                        <form id="FileUpload2" name="FileUpload2"  action="/wizardPostFile" method="post">
+                                                            <input type="hidden" name="files" id="filesForID2" value="" >
+                                                            <input type="hidden" name="fileFieldName" id="IndDocPri" value="IndDocPri">
+                                                            <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                            <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                        </form>
+
+
+                                                        <br />
+
+                                                        <div class="footer">
+
+                                                        </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row topPaddingBetweenPageSections">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="header">
+                                                    <h4 class="title">2 - Income exceed $200,000 in each of the last two years</h4>
+                                                </div>
+                                                <div class="content">
+                                                            <br />
+            Does your income exceed $200,000 in each of the last two years and do you have a reasonable expectation to achieve the same income level in the current year ? 
+                <br /> <br />
+                    For income-based verification, please submit tax returns, W-2, K-1, 1099 or other government documents.  
+
+                                                            <br /><br />
+
+                                                        {{#if this.stepData.IndDoc200}}
+                                                                {{#each stepData.IndDoc200}}
+                                                                    <div class="row" style="padding-top:10px;">
+                                                                        <div class="col-md-7">
+                                                                            {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <button onclick="return downloadDocument('IndDoc200', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                        </div>
+                                                                    </div>
+                                                                {{/each}}
+                                                            <br />
+                                                            <b>{{{__ "Or upload another file"}}}</b>   <br />
+                                                            <br />
+                                                        {{/if}}
+
+                                                        <div class="upload-btn-wrapper">
+                                                            <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                            <input   id="file1"   name="file1" multiple="multiple" type="file"  onchange="callMultiFileUpdate(1)" >
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <span style="color: green; font-size: 12px; " id="upload-file1">{{{__ "No File Selected"}}}</span>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file1', 'fileUplodProgressUpload1', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="progress" style="display: none;">
+                                                                  <div id="fileUplodProgressUpload1" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                </div>                   
+                                                            </div>
+                                                        </div>
+
+                                                        <form id="FileUpload1" name="FileUpload1"  action="/wizardPostFile" method="post">
+                                                            <input type="hidden" name="files" id="filesForID1" value="" >
+                                                            <input type="hidden" name="fileFieldName" id="IndDoc200" value="IndDoc200">
+                                                            <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                            <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                        </form>
+
+                                                        <br />
+
+                                                        <div class="footer">
+                    Alternatively, Download and submit this form letter and get it filled out by either <br /> (1) &nbsp; A licensed attorney  <br /> (2) &nbsp;  A registered financial advisor  <br /> (3) &nbsp;  CPA   <br /> (4) &nbsp;  A registered broker-dealer &nbsp;&nbsp;&nbsp;&nbsp;
+                        https://drive.google.com/file/d/1C7ryRMRSg5kzc7t_ekE4qbHYc_Cs5trm/view?usp=sharing
+                                                        </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row topPaddingBetweenPageSections">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="header">
+                                                    <h4 class="title">3 - Joint income with your spouse exceed $300,000</h4>
+                                                </div>
+                                                <div class="content">
+                                                            <br />
+            Does your joint income with your spouse exceed $300,000 in each of the last two years and do you have a reasonable expectation to achieve the same income level in the current year?
+                    <br /><br />
+                    For income-based verification, please submit tax returns, W-2, K-1, 1099 or other government documents.
+
+                                                            <br /><br />
+
+                                                        {{#if this.stepData.IndDoc300}}
+                                                                {{#each stepData.IndDoc300}}
+                                                                    <div class="row" style="padding-top:10px;">
+                                                                        <div class="col-md-7">
+                                                                            {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <button onclick="return downloadDocument('IndDoc300', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                        </div>
+                                                                    </div>
+                                                                {{/each}}
+                                                            <br />
+                                                            <b>{{{__ "Or upload another file"}}}</b>   <br />
+                                                            <br />
+                                                        {{/if}}
+
+                                                        <div class="upload-btn-wrapper">
+                                                            <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                            <input   id="file3"   name="file3" multiple="multiple" type="file"  onchange="callMultiFileUpdate(3)" >
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <span style="color: green; font-size: 12px; " id="upload-file3">{{{__ "No File Selected"}}}</span>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file3', 'fileUplodProgressUpload3', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="progress" style="display: none;">
+                                                                  <div id="fileUplodProgressUpload3" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                </div>                   
+                                                            </div>
+                                                        </div>
+
+                                                        <form id="FileUpload3" name="FileUpload3"  action="/wizardPostFile" method="post">
+                                                            <input type="hidden" name="files" id="filesForID3" value="" >
+                                                            <input type="hidden" name="fileFieldName" id="IndDoc300" value="IndDoc300">
+                                                            <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                            <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                        </form>
+
+                                                        <br />
+
+                                                        <div class="footer">
+                    Alternatively, Download and submit this form letter and get it filled out by either <br /> (1) &nbsp; A licensed attorney  <br /> (2) &nbsp;  A registered financial advisor  <br /> (3) &nbsp;  CPA   <br /> (4) &nbsp;  A registered broker-dealer &nbsp;&nbsp;&nbsp;&nbsp;
+                        https://drive.google.com/file/d/1C7ryRMRSg5kzc7t_ekE4qbHYc_Cs5trm/view?usp=sharing
+                                                        </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>        
+
+                                    <div class="row topPaddingBetweenPageSections">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="header">
+                                                    <h4 class="title">4 - Your net worth (individual or combined with spouse) exceed $1 million</h4>
+                                                </div>
+                                                <div class="content">
+                                                            <br />
+            Does your net worth (individual or combined with spouse) exceed $1 million, excluding the value of your primary residence?
+            <br /><br />
+                    For net worth verification, please submit any combination of bank statements, brokerage statements, other statements of securities holdings, and appraisal reports to assess the value of your assets. To evidence your liabilities, you must submit a consumer credit report
+
+                                                            <br /><br />
+
+                                                        {{#if this.stepData.IndDoc1Mil}}
+                                                                {{#each stepData.IndDoc1Mil}}
+                                                                    <div class="row" style="padding-top:10px;">
+                                                                        <div class="col-md-7">
+                                                                            {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <button onclick="return downloadDocument('IndDoc1Mil', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                        </div>
+                                                                    </div>
+                                                                {{/each}}
+                                                            <br />
+                                                            <b>{{{__ "Or upload another file"}}}</b>   <br />
+                                                            <br />
+                                                        {{/if}}
+
+                                                        <div class="upload-btn-wrapper">
+                                                            <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                            <input   id="file4"   name="file4" multiple="multiple" type="file"  onchange="callMultiFileUpdate(4)" >
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <span style="color: green; font-size: 12px; " id="upload-file4">{{{__ "No File Selected"}}}</span>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file4', 'fileUplodProgressUpload4', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="progress" style="display: none;">
+                                                                  <div id="fileUplodProgressUpload4" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                </div>                   
+                                                            </div>
+                                                        </div>
+
+                                                        <form id="FileUpload4" name="FileUpload4"  action="/wizardPostFile" method="post">
+                                                            <input type="hidden" name="files" id="filesForID4" value="" >
+                                                            <input type="hidden" name="fileFieldName" id="IndDoc1Mil" value="IndDoc1Mil">
+                                                            <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                            <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                        </form>
+
+                                                        <br />
+
+                                                        <div class="footer">
+                    Alternatively, Download and submit this form letter and get it filled out by either <br /> (1) &nbsp; A licensed attorney  <br /> (2) &nbsp;  A registered financial advisor  <br /> (3) &nbsp;  CPA   <br /> (4) &nbsp;  A registered broker-dealer &nbsp;&nbsp;&nbsp;&nbsp;
+                        https://drive.google.com/file/d/1C7ryRMRSg5kzc7t_ekE4qbHYc_Cs5trm/view?usp=sharing
+                                                        </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>         
+        
+                                    <div class="row topPaddingBetweenPageSections">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="header">
+                                                    <h4 class="title"></h4>
+                                                </div>
+                                                <div class="content">        
+                                                                <button type="button" onclick="return nextpage()" class="btn btn-info btn-fill btn-wd"> 
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; Next &nbsp;&nbsp;&nbsp;&nbsp;</button>
+                                                            <br />&nbsp;
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  
+
+                        {{else}}
+
+                                     <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="header">
+                                                    <h4 class="title"></h4>
+                                                </div>
+                                                <div class="content">
+
+                                                        You cannot apply as accredited investor because you live outside the United States
+                                                        <br /><br />
+                                                    
+                                                        Please proceed to the next step to finalize your profile
+                                                        <br /><br />
+                                                    
+                                                        <button type="button" onclick="return nextpage()" class="btn btn-info btn-fill btn-wd"> 
+                                        &nbsp;&nbsp;&nbsp;&nbsp; Next &nbsp;&nbsp;&nbsp;&nbsp;</button>
+                                                    
+                                                        <br />&nbsp;
+                                                        
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                        {{/ifEqual}}
+        
+            {{else}}
+                        
+                    {{#ifEqual InvestorRecord.country  'United States' }}
+
+                            {{#ifEqual InvestorRecord.TrustOrBusinessEntity 2}}
+
+                                        <div class="row topPaddingBetweenPageSections">
+                                            <div class="col-md-12">
+                                                <div class="card">
+                                                    <div class="header">
+                                                        <h4 class="title">Documents For Trust Entities</h4>
+                                                    </div>
+                                                    <div class="content">
+
+                                                            <b>Can you confirm that the trust meets any one of the following three criteria</b>            
+
+                                                            <br />&nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row topPaddingBetweenPageSections">
+                                                <div class="col-md-12">
+                                                    <div class="card">
+                                                        <div class="header">
+                                                            <h4 class="title">1 - Possesses investments more than $5 million</h4>
+                                                        </div>
+                                                        <div class="content">
+                                                                    <br />
+                                                                    It possesses investments more than $5 million and was NOT formed for the specific purpose of acquiring the investment and is directed by a sophisticated person
+         You can verify the $5 million minimum assets by furnishing a bank statement, brokerage statement and/or appraisal reports of real   estate or other tangible assets held by the entity.
+
+                                                                    <br /><br />
+
+                                                                {{#if this.stepData.TruDoc5Mil}}
+                                                                        {{#each stepData.TruDoc5Mil}}
+                                                                            <div class="row" style="padding-top:10px;">
+                                                                                <div class="col-md-7">
+                                                                                    {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                                </div>
+                                                                                <div class="col-md-5">
+                                                                                    <button onclick="return downloadDocument('TruDoc5Mil', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                                </div>
+                                                                            </div>
+                                                                        {{/each}}
+
+                                                                {{/if}}
+
+                                                                <div class="upload-btn-wrapper">
+                                                                    <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                                    <input   id="file6"   name="file6" multiple="multiple" type="file"  onchange="callMultiFileUpdate(6)" >
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <span style="color: green; font-size: 12px; " id="upload-file6">{{{__ "No File Selected"}}}</span>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file6', 'fileUplodProgressUpload6', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="progress" style="display: none;">
+                                                                          <div id="fileUplodProgressUpload6" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                        </div>                   
+                                                                    </div>
+                                                                </div>
+
+                                                                <form id="FileUpload6" name="FileUpload6"  action="/wizardPostFile" method="post">
+                                                                    <input type="hidden" name="files" id="filesForID6" value="" >
+                                                                    <input type="hidden" name="fileFieldName" id="TruDoc5Mil" value="TruDoc5Mil">
+                                                                    <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                                    <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                                </form>
+
+
+                                                                <br /><br />
+
+                                                                <div class="footer">
+                                Alternatively, download and submit this form letter and get it filled out by either <br /> (1) &nbsp; A licensed attorney<br /> (2) &nbsp; A registered financial advisor<br /> (3) &nbsp; CPA <br /> (4)  &nbsp; A registered broker-dealer. &nbsp;  &nbsp;  &nbsp; 
+                                    https://drive.google.com/file/d/1C7ryRMRSg5kzc7t_ekE4qbHYc_Cs5trm/view?usp=sharing
+                                                                </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        <div class="row topPaddingBetweenPageSections">
+                                                <div class="col-md-12">
+                                                    <div class="card">
+                                                        <div class="header">
+                                                            <h4 class="title">2 - The trust utilizes a bank, insurance company</h4>
+                                                        </div>
+                                                        <div class="content">
+                                                                    <br />
+                                                                    The trust utilizes a bank, insurance company, registered investment company, business development company or small business investment company as a trustee. 
+                                                                    Please submit the trust documents to determine if the trust qualifies based on the type of trustee
+                                                                    <br /><br />
+
+                                                                {{#if this.stepData.TruDocBank}}
+                                                                        {{#each stepData.TruDocBank}}
+                                                                            <div class="row" style="padding-top:10px;">
+                                                                                <div class="col-md-7">
+                                                                                    {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                                </div>
+                                                                                <div class="col-md-5">
+                                                                                    <button onclick="return downloadDocument('TruDocBank', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                                </div>
+                                                                            </div>
+                                                                        {{/each}}
+                                                                {{/if}}
+
+                                                                <div class="upload-btn-wrapper">
+                                                                    <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                                    <input   id="file7"   name="file7" multiple="multiple" type="file"  onchange="callMultiFileUpdate(7)" >
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <span style="color: green; font-size: 12px; " id="upload-file7">{{{__ "No File Selected"}}}</span>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file7', 'fileUplodProgressUpload7', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="progress" style="display: none;">
+                                                                          <div id="fileUplodProgressUpload7" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                        </div>                   
+                                                                    </div>
+                                                                </div>
+
+                                                                <form id="FileUpload7" name="FileUpload7"  action="/wizardPostFile" method="post">
+                                                                    <input type="hidden" name="files" id="filesForID7" value="" >
+                                                                    <input type="hidden" name="fileFieldName" id="TruDocBank" value="TruDocBank">
+                                                                    <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                                    <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                                </form>
+
+
+                                                                <br /><br />
+
+                                                                <div class="footer">
+                                Alternatively, download and submit this form letter and get it filled out by either <br >(1) &nbsp; A licensed attorney, <br >(2) &nbsp;  A registered financial advisor<br > (3) &nbsp;  CPA <br > (4) &nbsp;  A registered broker-dealer  &nbsp;  &nbsp;  &nbsp; 
+                                    https://drive.google.com/file/d/1C7ryRMRSg5kzc7t_ekE4qbHYc_Cs5trm/view?usp=sharing
+                                                                </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>        
+
+                                        <div class="row topPaddingBetweenPageSections">
+                                                <div class="col-md-12">
+                                                    <div class="card">
+                                                        <div class="header">
+                                                            <h4 class="title">3 - The trust is revocable</h4>
+                                                        </div>
+                                                        <div class="content">
+                                                                    <br />
+                                                                    The trust is revocable, and grantor(s) are accredited individual investors. Please contact DigiShares customer service for further processing
+
+                                                                    <br /><br />
+
+                                                                {{#if this.stepData.TruDocReco}}
+                                                                        {{#each stepData.TruDocReco}}
+                                                                            <div class="row" style="padding-top:10px;">
+                                                                                <div class="col-md-7">
+                                                                                    {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                                </div>
+                                                                                <div class="col-md-5">
+                                                                                    <button onclick="return downloadDocument('TruDocReco', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                                </div>
+                                                                            </div>
+                                                                        {{/each}}
+                                                                    <br />
+                                                                    <b>{{{__ "Or upload another file"}}}</b>   <br />                              
+                                                                    <br />
+                                                                {{/if}}
+
+                                                                <div class="upload-btn-wrapper">
+                                                                    <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                                    <input   id="file8"   name="file8" multiple="multiple" type="file"  onchange="callMultiFileUpdate(8)" >
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <span style="color: green; font-size: 12px; " id="upload-file8">{{{__ "No File Selected"}}}</span>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file8', 'fileUplodProgressUpload8', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="progress" style="display: none;">
+                                                                          <div id="fileUplodProgressUpload8" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                        </div>                   
+                                                                    </div>
+                                                                </div>
+
+                                                                <form id="FileUpload8" name="FileUpload8"  action="/wizardPostFile" method="post">
+                                                                    <input type="hidden" name="files" id="filesForID8" value="" >
+                                                                    <input type="hidden" name="fileFieldName" id="TruDocReco" value="TruDocReco">
+                                                                    <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                                    <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                                </form>
+
+
+                                                                <br />
+
+                                                                <div class="footer">
+                                                                                        Alternatively, download and submit this form letter and get it filled out by either <br /> (1) &nbsp; A licensed attorney<br /> (2)  &nbsp; A registered financial advisor <br /> (3) &nbsp; CPA, &nbsp; (4) &nbsp; a registered broker-dealer. &nbsp;&nbsp;&nbsp;
+                                    1. https://drive.google.com/file/d/1C7ryRMRSg5kzc7t_ekE4qbHYc_Cs5trm/view?usp=sharing
+                                                                </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                            {{else}}
+
+                                        <div class="row topPaddingBetweenPageSections">
+                                            <div class="col-md-12">
+                                                <div class="card">
+                                                    <div class="header">
+                                                        <h4 class="title">Documents For Business Entities</h4>
+                                                    </div>
+                                                    <div class="content">
+
+                                                            <b>Can you confirm that the business entity meets any one of the following criteria</b>            
+
+                                                            <br />&nbsp;
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row topPaddingBetweenPageSections">
+                                                <div class="col-md-12">
+                                                    <div class="card">
+                                                        <div class="header">
+                                                            <h4 class="title">1 - Investments of more than $5 million</h4>
+                                                        </div>
+                                                        <div class="content">
+                                                                    <br />
+                                                                    Business possesses investments of more than $5 million and was NOT formed for the specific purposes of acquiring the investment. You can verify the $5 million minimum assets by furnishing a bank statement, brokerage statement and/or appraisal reports of real estate or other tangible assets held by the entity.
+
+                                                                    <br /><br />
+
+                                                                {{#if this.stepData.BizDoc5Mil}}
+                                                                        {{#each stepData.BizDoc5Mil}}
+                                                                            <div class="row" style="padding-top:10px;">
+                                                                                <div class="col-md-7">
+                                                                                    {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                                </div>
+                                                                                <div class="col-md-5">
+                                                                                    <button onclick="return downloadDocument('BizDoc5Mil', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                                </div>
+                                                                            </div>
+                                                                        {{/each}}
+                                                                    <br />
+                                                                    <b>{{{__ "Or upload another file"}}}</b>   <br />                              
+                                                                    <br />
+                                                                {{/if}}
+
+                                                                <div class="upload-btn-wrapper">
+                                                                    <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                                    <input   id="file9"   name="file9" multiple="multiple" type="file"  onchange="callMultiFileUpdate(9)" >
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <span style="color: green; font-size: 12px; " id="upload-file2">{{{__ "No File Selected"}}}</span>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file9', 'fileUplodProgressUpload9', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="progress" style="display: none;">
+                                                                          <div id="fileUplodProgressUpload9" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                        </div>                   
+                                                                    </div>
+                                                                </div>
+
+                                                                <form id="FileUpload9" name="FileUpload9"  action="/wizardPostFile" method="post">
+                                                                    <input type="hidden" name="files" id="filesForID9" value="" >
+                                                                    <input type="hidden" name="fileFieldName" id="BizDoc5Mil" value="BizDoc5Mil">
+                                                                    <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                                    <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                                </form>
+
+
+                                                                <br /><br />
+
+                                                                <div class="footer">
+                                Alternatively, download and submit this form letter and get it filled out by either <br/> (1) &nbsp; A licensed attorney <br/> (2) &nbsp; a registered financial advisor <br /> (3) &nbsp; CPA <br/> (4) &nbsp; A registered broker-dealer.
+                                    &nbsp;&nbsp;&nbsp;&nbsp;  https://drive.google.com/file/d/1C7ryRMRSg5kzc7t_ekE4qbHYc_Cs5trm/view?usp=sharing
+                                                                </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        <div class="row topPaddingBetweenPageSections">
+                                                <div class="col-md-12">
+                                                    <div class="card">
+                                                        <div class="header">
+                                                            <h4 class="title">2 - All equity owners of the entity are accredited individual investors</h4>
+                                                        </div>
+                                                        <div class="content">
+                                                                    <br />
+                                                                    Please contact DigiShares customer service for further processing.
+
+                                                                    <br /><br />
+
+                                                                {{#if this.stepData.BizDocOwner}}
+                                                                        {{#each stepData.BizDocOwner}}
+                                                                            <div class="row" style="padding-top:10px;">
+                                                                                <div class="col-md-7">
+                                                                                    {{addTovalue @index 1}}. &nbsp; {{this}} 
+                                                                                </div>
+                                                                                <div class="col-md-5">
+                                                                                    <button onclick="return downloadDocument('BizDocOwner', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>  
+                                                                                </div>
+                                                                            </div>
+                                                                        {{/each}}
+
+                                                                {{/if}}
+
+                                                                <div class="upload-btn-wrapper">
+                                                                    <button class="btnfile">{{{__ "Select File"}}}</button>
+                                                                    <input   id="file10"   name="file10" multiple="multiple" type="file"  onchange="callMultiFileUpdate(10)" >
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <span style="color: green; font-size: 12px; " id="upload-file10">{{{__ "No File Selected"}}}</span>
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('file10', 'fileUplodProgressUpload10', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="progress" style="display: none;">
+                                                                          <div id="fileUplodProgressUpload10" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                                        </div>                   
+                                                                    </div>
+                                                                </div>
+
+                                                                <form id="FileUpload10" name="FileUpload10"  action="/wizardPostFile" method="post">
+                                                                    <input type="hidden" name="files" id="filesForID10" value="" >
+                                                                    <input type="hidden" name="fileFieldName" id="BizDocOwner" value="BizDocOwner">
+                                                                    <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                                                    <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                                </form>
+
+
+                                                                <br />
+
+                                                                <div class="footer">
+                            Download and submit this form letter and get it filled out by either <br /> (1) &nbsp; A licensed attorney  <br /> (2) &nbsp;  A registered financial advisor  <br /> (3) &nbsp;  CPA   <br /> (4) &nbsp;  A registered broker-dealer &nbsp;&nbsp;&nbsp;&nbsp;
+                                https://drive.google.com/file/d/1C7ryRMRSg5kzc7t_ekE4qbHYc_Cs5trm/view?usp=sharing
+                                                                </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>        
+
+                            {{/ifEqual}}
+        
+        
+                            <div class="row topPaddingBetweenPageSections">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="header">
+                                            <h4 class="title"></h4>
+                                        </div>
+                                        <div class="content">        
+
+                                                        <button type="button" onclick="return prevpage()" class="btn btn-info btn-fill btn-wd"> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; < &nbsp; Previous Page &nbsp;&nbsp;&nbsp;&nbsp;</button>
+
+                                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                                        <button type="button" onclick="return nextpage()" class="btn btn-info btn-fill btn-wd"> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp; Next Page &nbsp; >  &nbsp;&nbsp;&nbsp;&nbsp;</button>
+
+
+                                                    <br >&nbsp;
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+        
+                    {{else}}
+
+                                     <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="header">
+                                                    <h4 class="title"></h4>
+                                                </div>
+                                                <div class="content">
+
+                                                        You cannot apply as accredited investor because company reside outside United States
+                                                        <br /><br />
+                                                    
+                                                        Please complete information on previous tab's and submit your profile
+                                                        <br /><br />
+                                                    
+                                                        <button type="button" onclick="return nextpage()" class="btn btn-info btn-fill btn-wd"> 
+                                        &nbsp;&nbsp;&nbsp;&nbsp; Next &nbsp;&nbsp;&nbsp;&nbsp;</button>
+                                                    
+                                                        <br />&nbsp;
+                                                        
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                    {{/ifEqual}}        
+
+            {{/ifEqual}}
+        
+            {{>multifileupload}}
+    </div>
+</div>

@@ -1,0 +1,129 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			$("#dvidends").addClass('active');
+		})
+
+        function back() {
+            window.location.href = "dividendinvestors";
+            return false;
+        }
+
+	</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+	<div class="col-md-12 ">
+		<div class="card">
+			<div class="header">
+
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title">
+                            <img src="/img/dividends.png" width="30px" >
+                            &nbsp; Investor Details
+                        </h4>
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="return back()"  class="btn btn-info btn-fill ">Back</button>
+                    </div>
+                </div>
+			</div>
+			 <div class="content">
+
+				 First Name:  {{record.firstName}}
+				 <br />
+				 Last Name:  {{record.lastName}}
+
+
+
+				 <br /><br /><br />
+				 <h5>Dividend not yet paid to investor</h5>
+                 {{#if dividendnotpaid.length}}
+						<div class="row">
+							<div class="col-md-5">Dividend</div>
+							<div class="col-md-3">Created</div>
+							<div class="col-md-2">Amount</div>
+				 		</div>
+                        {{#each dividendnotpaid}}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    {{this.title}}
+                                </div>
+                                <div class="col-md-3">
+									{{this.DateReport}}
+								</div>
+                                <div class="col-md-2">
+                                     {{currencySymbol ../DefaultSTOCurreny}}
+                                    {{numberFormat this.amounttopaid decimalLength="-"}}
+                                </div>
+                            </div>
+                            <br />
+                        {{/each}}
+                         <div class="row">
+							 <div class="col-md-6">
+
+							 </div>
+                              <div class="col-md-4">
+								 		<b>Amount not yet paid</b>  &nbsp;&nbsp;&nbsp;  {{currencySymbol DefaultSTOCurreny}}   {{numberFormat totalAmountNotPaid decimalLength="2"}}
+                                </div>
+                          </div>
+                 {{else}}
+                        <label> No Dividends Found </label>
+                 {{/if}}
+
+				 <hr />
+
+
+				 <h5>Dividend Paid To Investor</h5>
+                 {{#if dividendpaid.length}}
+						<div class="row">
+							<div class="col-md-5">Dividend</div>
+							<div class="col-md-2">Created</div>
+							<div class="col-md-2">Paid</div>
+							<div class="col-md-2">Amount</div>
+				 		</div>
+                        {{#each dividendpaid}}
+                            <div class="row">
+                                <div class="col-md-5">
+                                    {{this.title}}
+                                </div>
+                                <div class="col-md-2">
+									{{this.DateReport}}
+								</div>
+                                <div class="col-md-2">
+									{{this.DatePaid}}
+								</div>
+                                <div class="col-md-2">
+                                     {{currencySymbol ../DefaultSTOCurreny}}
+                                    {{numberFormat this.amounttopaid decimalLength="2"}}
+                                </div>
+                            </div>
+                            <br />
+                        {{/each}}
+                         <div class="row">
+							 <div class="col-md-7">
+							 </div>
+                              <div class="col-md-4">
+								 		<b>Amount paid</b>  &nbsp;&nbsp;&nbsp;  {{currencySymbol DefaultSTOCurreny}}   {{numberFormat totalAmountPaid decimalLength="2"}}
+                                </div>
+                          </div>
+                 {{else}}
+                        <label> No Dividends Found </label>
+                 {{/if}}
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+{{> Footer}}
+
+
+
+
+
+

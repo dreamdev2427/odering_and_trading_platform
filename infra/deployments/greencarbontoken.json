@@ -1,0 +1,7 @@
+{
+    "id": "greencarbontoken",
+    "version": "staging",
+    "apiHostname": "api.greencarbontoken.com",
+    "frontendHostname": "investor.greencarbontoken.com",
+    "multistoHostname": "admin.greencarbontoken.com"
+}

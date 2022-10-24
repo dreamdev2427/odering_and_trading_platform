@@ -1,0 +1,145 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			$("#settlements").addClass('active');
+		})
+    function downloadInvestorContractPDF(id) {
+        window.location.href = "downloadInvestorContractPDF?id=" + id + "&file=1";
+        return false;
+    }
+    function viewDocumentContract(id) {
+        alert(id);
+        window.location.href = "/contractview2?id=" + id;
+        return false;
+    }
+    function viewddocumentcontract(id) {
+        window.location.href = "contractview2?id=" + id;
+    }
+    function downloadUploadedFile(id) {
+        window.location.href = "downloadUploadedDocFile?id=" + id;
+        return false;
+    }
+	</script>
+
+    <style>
+        .table-borderless > tbody > tr > td,
+        .table-borderless > tbody > tr > th,
+        .table-borderless > tfoot > tr > td,
+        .table-borderless > tfoot > tr > th,
+        .table-borderless > thead > tr > td,
+        .table-borderless > thead > tr > th {
+            border: none; padding: 0;
+        }
+    </style>
+
+{{> HeaderInner}}
+
+{{> stolistselection}}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title"> <img src="/img/contracts.png" width="28px;" style="padding-bottom:4px;" /> &nbsp; {{__ "Signed-Contracs"}}</h4>
+        {{#if Records.length}}
+            <label>{{{__ "Following-are-your-signed-settled-contracts"}}}</label>
+        {{/if}}
+      </div>
+
+        <div class="content">
+          {{#if Records.length}}
+            <div class="row">
+              <b>
+                <div class="col-md-3">
+                  Project Name
+                </div>
+                <div class="col-md-4">
+                  Document Title
+                </div>
+                <div class="col-3">
+                  Signature Date
+                </div>
+                <div class="col-2">
+
+                </div>
+              </b>
+            </div>
+            {{#each Records}}
+
+              <div class="row">
+                <div class="col-md-3">
+                  {{this.stoName}}
+                </div>
+                <div class="col-md-4">
+                  {{#if this.docusignDocumentID}}
+                    <label title="Please check your email for a copy of the signed document">
+                      <img src="/img/contracts2.png" width="25px;"  />
+                      {{this.title}}
+                    </label>
+                  {{else}}
+                    <a onclick="viewddocumentcontract({{this.duID}})" class="linkStyle100 hovercolor" title="View Signed Contract">
+                      <img src="/img/contracts2.png" width="25px;"  />
+                      {{this.title}}
+                    </a>
+                  {{/if}}
+                </div>
+                <div class="col-md-3">
+                  {{this.signatureDate}}
+                </div>
+                <div class="col-md-2">
+                  {{#if this.docusignDocumentID}}
+                    <label title="Please check your email for a copy of the signed document">Signed with <b>DocuSign</b></label>
+                  {{else}}
+                    <button onclick="return viewddocumentcontract({{this.duID}})" class="btn btn-info btn-fill btn-sm">
+                      {{{../__ "View"}}}
+                    </button>
+                  {{/if}}
+                </div>
+              </div>
+              <br />
+            {{/each}}
+          {{else}}
+              <label>{{{__ "No-Records-Found"}}}</label>
+          {{/if}}
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/document.png" width="28px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Shared-Documents"}}} </h4>
+                {{#if RecordsDocs.length}}
+                    <label>{{{__ "Documents-shared-by-company-Click-download"}}}</label>
+                {{/if}}
+            </div>
+
+            <div class="content">
+                {{#if RecordsDocs.length}}
+                    {{#each RecordsDocs}}
+                        <div class="row">
+                            <div class="col-md-10">
+                                <img src="/img/greendot.png" width="15px;"/> &nbsp;&nbsp;
+                                {{this.title}}
+                            </div>
+
+                            <div class="col-md-2">
+                                <button onclick="return downloadUploadedFile({{this.ID}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;{{{../__ "Download"}}}&nbsp;&nbsp;</button>
+                            </div>
+                        </div>
+                        <br />
+                    {{/each}}
+                {{else}}
+                    <label>{{{__ "No-Records-Found"}}}</label>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}
+
+

@@ -1,0 +1,136 @@
+{{> Header}}
+
+	<script language="javascript">
+
+        $(document).ready(function(){
+            $("#brokerlinks").addClass('active');                
+        })
+        function editUser(){
+            window.location.href = "brokeradd?id={{userRec.ID}}";
+            return false;
+        }
+        function activateUser(flag){
+            window.location.href = "brokerenabledisable?id={{userRec.ID}}&boolFlag=" + flag;
+            return false;
+        }    
+        function addSTO(id) {            
+            window.location.href = "addSTOtoBroker?id={{userRec.ID}}&stoid=" + id;
+            return false;
+        }
+        function removeSTO(id) {
+            window.location.href = "removeSTOfromBroker?id={{userRec.ID}}&stoid=" + id;
+            return false;  
+        }        
+
+	</script>
+
+{{> HeaderInnerPlatform}}
+
+   <div class="col-lg-12 col-md-7">
+        <div class="card">
+            <div class="header">
+                    <div class="row">
+                        <div class="col-md-10">                                
+                            <h4 class="title">  <img src="/img/user.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  User Details</h4>
+                        </div>
+                        <div class="col-md-2">
+                            <button onclick="return editUser()"  class="btn btn-info btn-fill btn-sm">Edit User</button>
+                        </div>                                  
+                    </div>
+            </div>
+            <div class="content">
+                <form action="addnewinvestor" method="get">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Name</label>   &nbsp;&nbsp;&nbsp;   {{userRec.FirstName}} {{userRec.LastName}}
+                            </div>
+                        </div>                                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>ID</label>   &nbsp;&nbsp;&nbsp;   {{userRec.ID}} 
+                            </div>
+                        </div>                                        
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>User Name</label>  &nbsp;&nbsp;&nbsp;  {{userRec.Username}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Email</label>  &nbsp;&nbsp;&nbsp;  {{userRec.email}}
+                            </div>
+                        </div>
+                    </div>                                    
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Active </label>  &nbsp;&nbsp;&nbsp;  
+                                {{#if userRec.isActive}}
+                                    Yes &nbsp;&nbsp;&nbsp;
+                                    <img src="/img/greendot.png" width="20px" />
+                                     &nbsp;&nbsp;&nbsp;
+                                    <button onclick="return activateUser(false)" class="btn btn-info btn-fill btn-sm">De-Activate</button>                                                
+                                {{else}}
+                                    No  &nbsp;&nbsp;&nbsp;
+                                    <img src="/img/reddot.png" width="20px" />
+                                     &nbsp;&nbsp;&nbsp;
+                                    <button onclick="return activateUser(true)" class="btn btn-info btn-fill btn-sm">Activate</button>
+                                {{/if}}                                                
+                            </div>                                           
+                        </div>
+                    </div>
+
+
+                    <br><hr />
+                    <b>STOs with Access</b>
+                    <br />
+                    <label>Broker has access to following STOs</label>
+                    <br />
+                    {{#if brokerstos.length}}
+                            {{#each brokerstos}}    
+                                    <button onclick="return removeSTO({{this.id}})" class="btn btn-info btn-fill btn-sm">Delete</button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    {{this.title}}
+                                    <br /><br />
+                            {{/each}}                    
+                    {{else}}
+                            <label>Broker do not have access to any of the STO. Please click add from following list</label>
+                    {{/if}}
+
+                    <br><hr />
+                    <b>STOs without Access</b>
+                    <br />
+                    <label>Broker do no have access to following STOs. Please click Add</label>
+                    <br />
+                    
+                    {{#if stos.length}}
+                            {{#each stos}}    
+                                    <button onclick="return addSTO({{this.id}})" class="btn btn-info btn-fill btn-sm">Add</button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    {{this.title}}
+                                    <br /><br />
+                            {{/each}}
+                    {{else}}
+                            <label>Broker has access to all STOs </label>
+                    {{/if}}
+                    
+                    
+                    <br /><br />
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+{{> Footer}}
+

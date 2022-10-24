@@ -1,0 +1,254 @@
+{{> Header}}
+
+<script language="javascript">
+
+    var investorCurrentShares = {{investorShares}};
+
+	$(document).ready(function() {
+		//$("#Inbox").addClass('active');
+        $("#divTokens").hide();
+        document.getElementById('partial').value = "false";
+	})
+    function showDialogBox() {
+
+		var res = "";
+
+		if(document.getElementById("title").value == "")
+			res = "<li>Title is required</li>";        
+		if(document.getElementById("details").value == "")
+			res = res + "<li>Case details are required</li>";
+		if(document.getElementById("notes").value == "")
+			res = res + "<li>Notes are required</li>";
+        if (document.getElementById('fileCase').value == '')
+            res = res + "<li>Please select case file to upload</li>";
+        
+        if( document.getElementById('partialTakeover').checked == true) {        
+            if(document.getElementById('txtPartialTokens').value == "")
+                res = res + "<li>Number of shares to transfer are required</li>";
+            if (document.getElementById('txtPartialTokens').value != "" && isNaN(document.getElementById("txtPartialTokens").value)) 
+                res = res + "<li>Number of shares to transfer amount is not numeric</li>";
+            if(document.getElementById('txtPartialTokens').value != "" && document.getElementById('txtPartialTokens').value < 0)
+                res = res + "<li>Number of shares to transfer cannot be negative</li>";
+            if(document.getElementById('txtPartialTokens').value > investorCurrentShares)
+                res = res + "<li>Investor currently holds " + investorCurrentShares + " shares in blockchain. Please enter less than or equal to this value</li>";   
+        }
+        
+		if(res == "") {            
+            if( document.getElementById('partialTakeover').checked == false) 
+                $("#textInfoDialogbox").html("<b>Are you sure you want to takeover all shares ( {{investorShares}} ) owned by investor ? </b> <br /><br /> <b>Caution</b> - All shares owned by investor will be transferred to company account and investor's dashboard and login will be disabled ")
+            else
+                $("#textInfoDialogbox").html("<b>Are you sure you want to takeover " + document.getElementById('txtPartialTokens').value + " shares from investor ? </b> <br /><br /> Investor shares will be transferred to company account and a log will be created")
+
+            $('#modelInvestorTakeover').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        } else {
+			$(window).scrollTop(0);
+			$("#ErrorMessages").html(res)
+		}
+
+    }
+	function submitForm() {
+        $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        initializePublicKeyFileObject();                    
+	}
+    function callbackPublicKeyFileAndPasswordCollected(fileContents, password) {        
+        document.getElementById("password").value = password;
+        document.getElementById("filecontents").value = fileContents;            
+        document.getElementById("frmcase").submit();
+    }    
+	function fileValidation(uploadID) {        
+		var filePath = document.getElementById('fileCase').value;		
+		var error = false;
+		
+		var allowedExtensions = /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf)$/i;
+		/*if( fileInput.files[0].size > UploadFile_Size * 1048576 ) {
+			showModelGeneralOKDialogBox("File size cannot be larger than " + UploadFile_Size + "MB");
+			error = true;
+		}*/
+		if(!allowedExtensions.exec(filePath)){
+			showModelGeneralOKDialogBox('Please select doc, docx, pdf or image file only');
+			error = true;
+		}
+		
+		if(error == true) {
+			 document.getElementById('fileCase').value = '';
+			$('#upload-file').html("No File Selected");
+			return false;			
+		}
+		else
+			$('#upload-file').html(document.getElementById('fileCase').files[0].name)
+	}
+    function partialchackboxchanged() {
+        if( document.getElementById('partialTakeover').checked == true) {
+            $("#divTokens").show();
+            document.getElementById('partial').value = "true";
+        } else {
+            $("#divTokens").hide();
+            document.getElementById('partial').value = "false";
+        }
+    }
+    function cancelClicked12() {
+        window.location.href = "investorsViewSto?id=" + document.getElementById('id').value;
+        return false;        
+    }
+
+/*	function submitUploadFile(uploadID) {
+		var fileInput = null;
+
+		if(uploadID == 1)
+			fileInput = document.getElementById('fileID');
+		else
+			fileInput = document.getElementById('fileAddress');
+		
+		if(fileInput.value == "")
+			showModelGeneralOKDialogBox("Please select a file to upload");
+		else
+			document.getElementById("FileUpload" + uploadID).submit();
+    }    */
+
+</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/recovery.png" width="35px;" style="padding-bottom:4px;" /> &nbsp;  Takeover Investor Assets</h4> <br />
+                <label> Forcefully takeover investor shares through legal action. Enter details of legal case to takeover all or subset of investor's shares. <br /> These shares will be transferred to company's blockchain account </label>
+            </div>
+            <div class="content">
+                    <div style="color:red;" id="ErrorMessages"></div>
+                    <br />
+                    <form id="frmcase" name="frmcase" action="/takeinvestorshares?_csrf={{csrfToken}}" enctype="multipart/form-data" method="post">							
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label> Case Title </label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="textbox" id="title" name="title" class="form-control border-input"/>
+                        </div>
+                    </div>
+
+                    <br />&nbsp;
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label> Case Details </label>
+                        </div>
+                        <div class="col-md-9">
+                            <textarea id="details" name="details" rows="8" cols="250" class="form-control border-input"></textarea>
+                        </div>
+                    </div>
+
+                    <br />&nbsp;
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label> Case Notes </label>
+                        </div>
+                        <div class="col-md-9">
+                            <textarea id="notes" name="notes" rows="8" cols="250" class="form-control border-input"></textarea>
+                        </div>
+                    </div>
+
+                    <br />&nbsp;
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label> Upload Case File </label>
+                        </div>
+                        <div class="col-md-8">					
+
+                            <label>( Select pdf, image or doc/docx file )</label>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="upload-btn-wrapper">
+                                        <button class="btnfile">Select File</button>
+                                        <input   id="fileCase"   name="fileCase"   type="file"  onchange="return fileValidation(1)">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <span style="color: green; font-size: 18px; " id="upload-file">No File Selected</span>
+                                    </div> 
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <br />
+                    <label>Note - If Partial Shares Takeover checkbox is not clicked then all shares ( <b>{{investorShares}}</b> ) owned by investor will be transferred to company account and investor's account will be closed
+                    <br /><br />
+                    To transfer some of the shares owned by investor to company account, click following checkbox and enter shares 
+                    </label>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label> Partial Shares Takeover </label>
+                        </div>
+                        <div class="col-md-8">
+
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <input style="height:20px; width:20px;" type="checkbox" id="partialTakeover" name="partialTakeover" onchange="partialchackboxchanged()">
+                                </div>
+
+                                <div id="divTokens" class="col-md-4">
+                                    <label>Enter Shares. Investor currently owns {{investorShares}} shares</label>
+                                    <input type="textbox" maxlength="6" id="txtPartialTokens" name="txtPartialTokens" class="form-control border-input">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <br />&nbsp;
+                    <div class="row">
+                        <div class="col-md-7"></div>
+                        <div class="col-md-5">
+                                <div class="text-center">
+                                    <button type="button" onclick="return showDialogBox()" class="btn btn-info btn-fill btn-wd">Take Investor Shares  </button>
+                                    &nbsp;&nbsp;&nbsp; 
+                                    <button type="button" onclick="return cancelClicked12()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+                                </div>								
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="partial" name="partial" value="">    
+                    <input type="hidden" id="id" name="id" value="{{investorID}}">
+                    <input type="hidden" id="password" name="password" />
+                    <input type="hidden" id="filecontents" name="filecontents" />                        
+                    </form>
+
+                    <br /><br /><br />
+                <div class="footer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class = "modal fade" id="modelInvestorTakeover" tabindex = "-1" role = "dialog" aria-labelledby = "modelInvestorTakeover" aria-hidden = "true">
+
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class="modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel"> Takeover Investor Shares </h4>
+         </div>
+
+         <div class="modal-body">
+             <span id="textInfoDialogbox"> Are you sure </span>
+             <br /> &nbsp;&nbsp;
+         </div><!-- /.modal-content -->         
+
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="submitForm()"> &nbsp; Yes &nbsp; </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> &nbsp; Cancel &nbsp; </button>                 
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+</div>    
+
+{{> privateKeySelectorDialog}} 
+{{> Footer}}

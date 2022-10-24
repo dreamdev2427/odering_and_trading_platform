@@ -1,0 +1,117 @@
+{{> Header}}
+
+<script language="javascript">
+
+	$(document).ready(function() {
+
+	})
+
+    function openInvestor(id) {
+        window.location.href = "investorsViewSto?id=" + id;
+        return false;
+    }
+    
+</script>
+
+{{> HeaderInnerSto}}
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+                
+				<div class="header">
+                    <div class="col-md-10">                                
+                        <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; New Change Address Requests</h4>
+                    </div>
+				</div>
+                
+				<div class="content">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <br />
+                            {{#if newAddressRequestsRecords}}
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <th><b>Investor</b></th>
+                                            <th></th>
+                                        </thead>
+                                        <tbody>
+                                            {{#each newAddressRequests}}
+                                            <tr>
+                                                <td style="width: 20%">{{this.FirstName}} {{this.LastName}}</td>
+                                                <td><button onclick="return openInvestor({{this.InvestorID}})" class="btn btn-info btn-fill btn-sm">View Investor</button></td>
+                                            </tr>
+                                            {{/each}}
+                                        </tbody>
+                                    </table>
+                            {{else}}
+                                No records found
+                            {{/if}}
+                            
+                            <br />&nbsp;
+                        </div>
+                    </div>
+
+					<div class="footer"></div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="row topPaddingBetweenPageSections">
+		<div class="col-md-12">
+			<div class="card">
+                
+				<div class="header">
+                    <div class="col-md-10">                                
+                        <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Approved Change Address Requests</h4>
+                    </div>
+				</div>
+                
+				<div class="content">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <br />
+                            {{#if oldAddressRequestsRecords}}
+                                
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <th><b>Date</b></th>
+                                            <th><b>Investor</b></th>
+                                            <th><b>Shares in Old Public Key</b></th>
+                                            <th><b>Shares in New Public Key</b></th>
+                                            <th></th>
+                                        </thead>
+                                        <tbody>
+                                            {{#each oldAddressRequests}}
+                                            <tr>
+                                                <td style="width: 15%">{{this.Date}} </td>
+                                                <td style="width: 20%">{{this.FirstName}} {{this.LastName}}</td>
+                                                <td style="width: 25%">{{this.Shares}} </td>
+                                                <td style="width: 25%">{{this.Token}} </td>
+                                                <td><button onclick="return openInvestor({{this.InvestorID}})" class="btn btn-info btn-fill btn-sm">View Investor</button></td>
+                                            </tr>
+                                            {{/each}}
+                                        </tbody>
+                                    </table>
+
+                            {{else}}
+                                No records found
+                            {{/if}}
+                            
+                            
+                            <br />&nbsp;
+                        </div>
+                    </div>
+
+					<div class="footer"></div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+{{> Footer}}

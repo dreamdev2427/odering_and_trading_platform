@@ -1,0 +1,284 @@
+{
+  "RegistrationEmailText": {
+    "Subject": "Your verification code for email verification",
+    "meta": {
+      "tags": ["firstname", "lastname", "link", "code"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>Thank you very much for registering with us. This email contains the verification code for your email verification.<br/><br/>Please open the following link and enter your verification code.<br/><br/><a href=\"{link}\">{link}</a><br/><br/>Your verification code is: {code}"
+  },
+
+  "MessageToInvestor": {
+    "Subject": "Message",
+    "meta": {
+      "tags": ["firstname", "lastname", "message"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We have sent you a message to your dashboard, which you can also find below:<br/><br/>{message}"
+  },
+
+  "BulkInvestorRegistrationPasswordResetEmailText": {
+    "Subject": "Your account is ready for setup",
+    "meta": {
+      "tags": [
+        "firstname",
+        "lastname",
+        "bulkUpload",
+        "hostName",
+        "linkHref",
+        "linkTitle"
+      ]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>{bulkUpload}<br/><br/>Please open the following link to setup a password for your account, and get started on your investment journey: <br/> <a href=\"${linkHref}\" > ${linkTitle}</a>",
+    "Line2": "Dear {firstname} {lastname},<br/><br/>Your investor account for {hostName} is ready for setup.<br/><br/>Please open the following link to setup a password for your account, and get started on your investment journey: <br/> <a href=\"${linkHref}\" > ${linkTitle}</a>"
+  },
+
+  "InvestorMessageNormalConfirm": {
+    "Subject": "Successful Creation of your Profile",
+    "meta": {
+      "tags": ["firstname", "lastname", "stoLink"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We are happy to inform you that we have approved your profile. You will now be able to access the investor dashboard via this link: <br/> {stoLink}"
+  },
+
+  "InvestorRegistration": {
+    "Subject": "New Investor Registered",
+    "SupportEmail": "info@digishares.io",
+    "TestingEmail": "shahzad73@hotmail.com",
+    "meta": {
+      "tags": ["firstname", "lastname", "ID"]
+    },
+    "Line1": "Dear Admin<br/><br/>A new Investor submitted his profile for KYC verification. Please login to your admin dashboard and review his KYC record in the Investor's list: <br/><br/>New Investor: {firstname} {lastname} ( ID {ID})"
+  },
+
+  "PasswordChanged": {
+    "Subject": "New Password",
+    "meta": {
+      "tags": ["firstname", "lastname", "password"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We changed the password of your account. Please find the new one below.<br/><br/> Your new password is {password} <br/><br/>After successfully logging in you can set a personal password in the settings section."
+  },
+
+  "enableAccountEmail": {
+    "Subject": "Login to your Dashboard Enabled",
+    "meta": {
+      "tags": ["firstname", "lastname"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We enabled the login to your investor dashboard. You can now login to your dashboard with your email and password."
+  },
+
+  "disableAccountEmail": {
+    "Subject": "Login to your Dashboard Disabled",
+    "meta": {
+      "tags": ["firstname", "lastname"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We disabled the Login to your Dashboard. You cannot login your dashboard for the time being. Please contact us for assistance."
+  },
+
+  "investorAccountAuthorized": {
+    "Subject": "Successful Registration of your Blockchain Address",
+    "Line1": "We have successfully accepted and registered your address on the Ethereum blockchain. You can now hold shares on the blockchain. Please do not hesitate to contact us if you need more information."
+  },
+
+  "investorAccountFreeze": {
+    "Subject": "Your Shares on the Ethereum Blockchain",
+    "Line1": "We have blocked your wallet on the Ethereum blockchain, and you can currently not receive or send shares. Please contact us for more details."
+  },
+
+  "investorAccountRelease": {
+    "Subject": "Your Shares on the Ethereum Blockchain",
+    "Line1": "We have released your wallet on the Ethereum blockchain. You can now receive or send shares. Please contact us in case you need more information."
+  },
+
+  "investorNewAddressWhitelisted": {
+    "Subject": "Your New Address on the Ethereum Blockchain",
+    "Line1": "We have accepted and registered your new address on the Ethereum blockchain. Please transfer all your shares to the new address within the next 5 days"
+  },
+
+  "partialTakeoverAssetsFromInvestor": {
+    "Subject": "Take-Back of some of your Shares from the Blockchain",
+    "Line1": "This is to inform you that we have taken back some of your shares from blockchain as result of some legal action. Please login to your dashboard and review your shares and status. Please contact us for more information."
+  },
+
+  "InvestorAccountClosed": {
+    "Subject": "Closure of Account",
+    "Line1": "This is to inform you that we have closed your account and taken back all of your shares. Your account has been deactivated and you cannot login to your dashboard. Your account has been closed as result of some legal action etc. Please contact us for more information."
+  },
+
+  "sharesTransferredBlockchain": {
+    "Subject": "Shares Transfer to your Blockchain Account",
+    "meta": {
+      "tags": ["firstname", "lastname", "key", "amount"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We have transferred shares to your account. You will find your new share balance immediately in your wallet.<br/><br/> <b>Your Public Key</b>: {key} <br/><br/> <b>Shares Transferred</b>: {amount}"
+  },
+
+  "sharesTransferredNonBlockchain": {
+    "Subject": "Transfer of Shares to your Account",
+    "meta": {
+      "tags": [
+        "firstname",
+        "lastname",
+        "tokens",
+        "title",
+        "currency",
+        "nominal",
+        "premium"
+      ]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We have transferred some shares to your account. You will find your new share balance immediately in your dashboard.<br/><br/> <b>Shares Transferred</b>: {tokens} {title} &nbsp;&nbsp;&nbsp;&nbsp; Nominal {currency} {nominal} &nbsp;&nbsp;&nbsp;&nbsp; Premium {currency} {premium}"
+  },
+
+  "sharesSoldBackNonBlockchain": {
+    "Subject": "Transfer of Shares from your Account",
+    "meta": {
+      "tags": [
+        "firstname",
+        "lastname",
+        "tokens",
+        "title",
+        "currency",
+        "nominal",
+        "premium"
+      ]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We have transferred some shares from your account. You will find your new balance immediately in your dashboard.<br/><br/> <b>Shares Transferred</b>: {tokens} {title} &nbsp;&nbsp;&nbsp;&nbsp; Nominal {currency} {nominal} &nbsp;&nbsp;&nbsp;&nbsp; Premium {currency} {premium}"
+  },
+
+  "contractReceivedFromAdmin": {
+    "Subject": "New Contract for Review",
+    "Line1": "We have sent you a contract for review. Please login to your dashboard, download and review the contract and sign it if you agree with its contents."
+  },
+
+  "forgotPassword": {
+    "Subject": "Password Reset Link",
+    "meta": {
+      "tags": ["firstname", "lastname", "linkHref", "linkTitle", "code"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>You have requested to change the password to your dashboard. Please click the following link, then enter the Verification Code and the new password.<br/><br/><b>Link </b> : <a href=\"{linkHref}\"> {linkTitle} </a> <br/><br/> <b>Verification Code</b> : {code}"
+  },
+
+  "twoFactorAuthentication": {
+    "Subject": "Your Authentication Code",
+    "meta": {
+      "tags": ["username", "code"]
+    },
+    "Line1": "Dear {username},<br/><br/>You have enabled 2 factor authentication on your dashboard. Below, please find the code to authenticate yourself in the platforms<br/><br/>Your Code: <b>{code}</b>"
+  },
+
+  "newInvestorEmailReceived": {
+    "Subject": "New Email Received from Investor",
+    "meta": {
+      "tags": ["title", "text"]
+    },
+    "Line1": "Hi <br /><br />, You have received a new email from an investor. Please login the dashboard and process to the INBOX to view and reply that message. <br/><br/><b>{title}</b><br/><br/>{text}"
+  },
+
+  "sendInvitationToInvestor": {
+    "Subject": "Invitation to Join our Company for Investment Opportunities",
+    "meta": {
+      "tags": ["firstname", "lastname", "text"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>We would like to connect with you. If you accept the invitation, your address, contact and personal data as well as a copy of your identification documents will be released to us for identification reasons. At no time will any information in direct connection with your other investments be passed on to third parties <br/><br/>An embedded button \"Connect\" which can be clicked by the recipient, which directly confirms his approval (1st prio) or which leads the recipient to a function in his Investor Dashboard on the platform to approve the connection (2nd prio).<br/><br/>{text}"
+  },
+
+  "TellAFriend": {
+    "Subject": "Invitation to join company",
+    "meta": {
+      "tags": ["username", "tell", "invitation"]
+    },
+    "Line1": "Hi,<br/><br/> {username} has invited you to our platform <br/><br/>{tell} Here is the message from {username}<br/>{invitation}",
+    "Line2": "Hi,<br/><br/> {username} has invited you to take a look at the Konsento platform.Konsento offers the easiest way to manage Investor Relations and shareholdings in non-listed companies. Organizing Online meetings, exercising voting rights easily online, exchanging diverse information from company to shareholders and working collaboratively on documents related to investments are just a few of the offered facilitations. <br /><br /> Take a look at their website www.konsento.ch and enable yourself and \"your\" companies to collaborate more easily and generate added value through the Konsento platform. <br/><br/>{tell}{invitation}"
+  },
+
+  "MeetingNotificationToProxy": {
+    "Subject": "Appointment as a Proxy",
+    "meta": {
+      "tags": [
+        "username",
+        "title",
+        "date",
+        "start",
+        "end",
+        "place",
+        "person",
+        "link"
+      ]
+    },
+    "Line1": "Dear {username},<br/><br/> We have appointed you as a proxy in one of our upcoming meetings. Please find the details below. Your dashboard with all instructions given to you by the company’s shareholders will be visible to you when the meeting starts. You can access your dashboard via the below link. <br /><br /> For more details please contact the responsible person <br/><br/> <b>{title}</b> <br/><br/> <b>Date:</b> {date}<br/><br/><b>Time:</b> {start} to {end}<br/><br/> <b>Place:</b> {place}<br/><br/> <b>Responsible Person:</b> {person}<br/><br/> <b>Link:</b> <a href=\"{link}\">{link}</a>"
+  },
+
+  "MeetingInvitationToInvestor": {
+    "Subject": "Invitation to a Meeting of (Company Name)",
+    "Line1": "We have sent you an invitation to a meeting of the company. Please log in to your dashboard in order to see the invitation and reply to it."
+  },
+  "InternalPollInvitationToInvestor": {
+    "Subject": "Invitation to a Poll of (Company Name)",
+    "Line1": "We have sent you an invitation to an recent poll of the company. Please log in to your dashboard in order to see the invitation and reply to it. We thank you in advance for your highly appreciated contribution."
+  },
+  "ExternalPollInvitationToInvestor": {
+    "Subject": "Invitation to a Poll of (Company Name)",
+    "Line1": "(Company Name) invites you to take part in an recent poll of the company. To participate in the poll please open the following link: ",
+    "Line2": "We thank you in advance for your highly appreciated contribution."
+  },
+
+  "paymentAlert": {
+    "Subject": "Payment Alert",
+    "meta": {
+      "tags": ["firstname", "lastname", "details", "amount"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>You have received a payment alert from company administration. Following are the details <br/><br/> {details}<br/><br/> <b>Amount Requested {amount}</b><br/><br/> Please login your dashboard to review details and give your feedback"
+  },
+
+  "depositApproved": {
+    "Subject": "Your deposit has been confirmed / Balance is updated",
+    "meta": {
+      "tags": ["firstname", "lastname", "type", "amount", "balance"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>Your payment / deposit has been reviewed and confirmed by administration. The deposit has been approved and your balance has been updated<br/><br/> {type} <b>{amount}</b> <br/><br/> Your New Balance <b>{balance}</b><br/><br/> Please login your dashboard to review your balance details"
+  },
+
+  "depositDeclined": {
+    "Subject": "Your deposit has been declined",
+    "meta": {
+      "tags": ["firstname", "lastname", "amount"]
+    },
+    "Line1": "Dear {firstname} {lastname},<br/><br/>Your payment / deposit has been declined by administration. Please contact administration for details<br/><br/> Amount Received and declined <b>{amount}</b><br/><br/> Please login your dashboard to review your balance details"
+  },
+
+  "NewCompanyNews": {
+    "Subject": "Company News",
+    "meta": {
+      "tags": ["title"]
+    },
+    "Line1": "We have just published latest company news on the platform. Access your investor dashboard for detailed information. <br/><br/> {title}"
+  },
+
+  "emailFromInvestor": {
+    "subject": "New Email Received from Investor",
+    "text": [
+      "You have received a new email from an investor. Please login the dashboard and process to the INBOX to view and reply that message."
+    ]
+  },
+  "verifyEmail": {
+    "subject": "Your security code for email verification",
+    "text": [
+      "Thank you very much for registering with us. This email contains the verification link for your email verification.",
+      "Please open the following link to verify your email address:"
+    ]
+  },
+  "send2FAEmail": {
+    "subject": "Your 2FA code for sign in verification",
+    "text": ["Your 2FA code is:"]
+  },
+  "newSubmission": {
+    "subject": "New Investor Registered",
+    "text": [
+      "A new Investor submitted his profile for KYC verification. Please login to your admin dashboard and review his KYC record in the Investor's list: "
+    ]
+  },
+  "resetEmail": {
+    "subject": "Password Reset Link",
+    "text": [
+      "You have requested to change the password to your dashboard. Please click the following link, then enter the new password."
+    ]
+  }
+}

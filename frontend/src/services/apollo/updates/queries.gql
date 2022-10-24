@@ -1,0 +1,20 @@
+query updates($_id: Int!, $offset: Int, $limit: Int) {
+  investorUpdates(stoID: $_id, offset: $offset, limit: $limit) {
+    ID
+    stoID
+    title
+    details
+    date
+    coverphoto
+  }
+}
+
+query update($_id: Int!) {
+  investorUpdate(ID: $_id) {
+    ID
+    title
+    stoID
+    details
+    date
+  }
+}

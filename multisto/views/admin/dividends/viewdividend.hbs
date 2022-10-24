@@ -1,0 +1,287 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			$("#dvidends").addClass('active');
+
+            //SummernoteBasicDataInitialize('notes', 'Enter News Text', 100);
+		})
+
+        function dividendDetails(id) {
+          window.location.href = "viewdividenddetails?id={{record.dividendid}}";
+          return false;
+        }
+
+        function submitForm() {
+
+                if(document.getElementById("CryptoPaidDetails").value == "" && document.getElementById("BankPaidDetails").value == "" ) {
+                        showModelGeneralOKDialogBox("Please enter details either investor was paid through bank/cash or crypto");
+                        return;
+                }
+
+
+                if(document.getElementById("DatePaid").value == "") {
+                        showModelGeneralOKDialogBox("Please enter dividend paid date");
+                        return;
+                }
+
+
+                document.getElementById("DatePaid").value = commonGetMySQLDateFormat(document.getElementById("DatePaid").value);
+                document.getElementById("frmpayment").submit();
+        }
+
+		function selectBankEvent() {
+			var e = document.getElementById("selectBank");
+			var strBank = e.value;
+			document.getElementById("BankPaidDetails").value = strBank;
+		}
+
+	</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+	<div class="col-md-12 ">
+		<div class="card">
+			<div class="header">
+
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title">
+                            View Investor Dividend Details
+                        </h4>
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="return dividendDetails()"  class="btn btn-info btn-fill ">Back</button>
+                    </div>
+                </div>
+			</div>
+			 <div class="content">
+
+
+                   <h5> <img src="/img/graydot.png" width="14px"> &nbsp; Dividend Details</h5>
+                   <div class="row">
+                        <div class="col-md-4">
+                            <label>Dividend Tile</label>
+                        </div>
+                        <div class="col-md-8">
+                            {{dividendrec.title}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Date Dividend Report Generated</label>
+                        </div>
+                        <div class="col-md-8">
+                            {{dividendrec.DateReport}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Distribution Mode</label>
+                        </div>
+                        <div class="col-md-8">
+                             {{#ifEqual dividendrec.payouttype 1}}
+                                    Dividend amount divided based on number of shares
+                            {{/ifEqual}}
+                             {{#ifEqual dividendrec.payouttype 2}}
+                                    Dividend amount divided based on share capital
+                            {{/ifEqual}}
+                        </div>
+                    </div>
+
+
+
+                   <h5> <img src="/img/graydot.png" width="14px"> &nbsp; Investor Details</h5>
+
+                   <div class="row">
+                        <div class="col-md-4">
+                            <label>Investor Name</label>
+                        </div>
+                        <div class="col-md-8">
+                            {{record.firstName}} {{record.lastName}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Investor shares at the time of payment</label>
+                        </div>
+                        <div class="col-md-8">
+                            {{record.shares}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Dividend amount paid</label>
+                        </div>
+                        <div class="col-md-8">
+                            {{record.amounttopaid}}
+                        </div>
+                    </div>
+
+
+                    {{#if record.status}}
+                            <br />
+                            <img src="/img/greendot.png" width="18px"> &nbsp; Payment has been made
+                            <br /><br />
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Date of Payment</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{record.DatePaid}}
+                                </div>
+                            </div>
+                            <br />
+
+                            {{#if record.BankPaidDetails}}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Bank / Cash Payment Details</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <b>Payment was made via Bank / Direct Cash. Here are the details</b>
+                                            <br />
+                                            {{record.BankPaidDetails}}
+                                        </div>
+                                    </div>
+                                    <br />
+                            {{/if}}
+                            <br />
+
+                            {{#if record.CryptoPaidDetails}}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label>Crypto Payment Details</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <b>Payment was made via crypto tokens. Here are the details</b>
+                                            <br />
+                                            {{record.CryptoPaidDetails}}
+                                        </div>
+                                    </div>
+                                    <br />
+                             {{/if}}
+                            <br />
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Other Details</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{record.Details}}
+                                </div>
+                            </div>
+
+                    {{else}}
+
+                        <form id="frmpayment" name="frmpayment" action="dividendpayment" method="post">
+                            <br />
+                            <div class="row">
+                                <div class="col-md-8">
+                                     <img src="/img/reddot.png" width="18px"> &nbsp; Dividend payment has not been paid to investor
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Select Date Payment</label>
+                                </div>
+                                <div class="col-md-3">
+                                            <input type="text" maxLength="120" id="DatePaid" name="DatePaid" class="form-control border-input datepicker-here" data-language='en'   data-date-format="MM dd yyyy" type=text autocomplete="off" placeholder="Enter Date Paid" value=""  onkeydown="return false;"  >
+                                </div>
+                            </div>
+                            <br />
+
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                </div>
+                                <div class="col-md-8">
+                                        Either Payment should be made by bank transfer or crypto payment. Please enter details
+                                </div>
+                            </div>
+                            <br />
+
+
+							{{#if banks.length}}
+									<div class="row">
+										<div class="col-md-3">
+										</div>
+										<div class="col-md-6">
+											<select id="selectBank" name="selectBank"  class="form-control border-input">
+													{{#each banks}}
+															<option value="{{this.bankName}} {{this.bankCity}} {{this.bankCountry}}">{{this.bankName}} {{this.bankCity}} {{this.bankCountry}}</option>
+													{{/each}}
+											 </select>
+										</div>
+										<div class="col-md-2">
+												<button type="button" onclick="return selectBankEvent()" class="btn btn-info btn-fill btn-sm">
+                                        		Select Bank</button>
+										</div>
+									</div>
+									<br />
+                            {{/if}}
+
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Payment by Bank Transfer / Cash</label>
+                                </div>
+                                <div class="col-md-8">
+                                        <textarea id="BankPaidDetails" maxlength="2000" name="BankPaidDetails" class="form-control  border-input" placeholder="Enter payment by Bank Transfer / Cash" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <br />
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Payment by Crypto</label>
+                                </div>
+                                <div class="col-md-8">
+                                        <textarea id="CryptoPaidDetails" maxlength="2000" name="CryptoPaidDetails" class="form-control  border-input" placeholder="Enter payment by Crypto" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Enter some Details</label>
+                                </div>
+                                <div class="col-md-8">
+                                        <textarea id="Details" maxlength="2000" name="Details" class="form-control  border-input" placeholder="Enter some Notes" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <br /><br />
+                            <div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-8">
+                                        <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">
+                                        Save</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                            <input type="hidden" name="ID" value="{{record.ID}}" />
+
+                            <div class="clearfix"></div>
+                        </form>
+
+                    {{/if}}
+
+                 <br />
+			</div>
+		</div>
+	</div>
+</div>
+
+{{> Footer}}
+
+
+
+
+
+

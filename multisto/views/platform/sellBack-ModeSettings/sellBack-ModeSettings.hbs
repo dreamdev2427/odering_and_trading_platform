@@ -1,0 +1,87 @@
+{{> Header}}
+
+<script>
+  $(document).ready(function() {
+    const isSellBackEnabled = JSON.parse('{{{isSellBackEnabled}}}');
+    if (isSellBackEnabled === 1) {
+      document.getElementById('isSellBackEnabled').setAttribute("checked", "true");
+    } else {
+      document.getElementById('isSellBackEnabled').removeAttribute("checked");
+    }
+    const doAutomaticSellBack = JSON.parse('{{{doAutomaticSellBack}}}');
+    if (doAutomaticSellBack === 1) {
+      document.getElementById('doAutomaticSellBack').setAttribute("checked", "true");
+    } else {
+      document.getElementById('doAutomaticSellBack').removeAttribute("checked");
+    }
+  })
+
+  function saveSellBackMode() {
+    document.getElementById('setSellBackModeForm').submit();
+  }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more' /> Sell Back Mode</h4>
+      <label>Change settings related to the process of selling shares back to the platform</label>
+    </div>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <form id="setSellBackModeForm" action="/platform/setSellBackMode" method="post">
+            <div class="row">
+              <div class="col-md-1">
+                <label class="switch">
+                  <input class="input-lg" id="isSellBackEnabled" name="isSellBackEnabled" type="checkbox" onclick="saveSellBackMode()">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="col-md-11">
+                <b>Enable Shares Sell Back</b>
+                <br/>
+                <label>This allows will allow the sell of shares on the platform, through the following functionality:</label>
+                <ul>
+                  <b><li>Platform Administrator</li></b>
+                  <ul>
+                    <li>Can select which share types can be sold back to the company</li>
+                    <li>Can set the price at which these shares can be sold at</li>
+                  </ul>
+                  <b><li>Project Administrators</li></b>
+                  <ul>
+                    <li>Can view and handle (approve/reject) sell back requests from the investors</li>
+                  </ul>
+                  <b><li>Investors</li></b>
+                  <ul>
+                    <li>Can requests shares to be sold back to the company</li>
+                    <li>Can delete these requests</li>
+                  </ul>
+                </ul>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-1">
+                <label class="switch">
+                  <input class="input-lg" id="doAutomaticSellBack" name="doAutomaticSellBack" type="checkbox" onclick="saveSellBackMode()">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="col-md-11">
+                <b>Do Automatic Sell Back</b>
+                <br/>
+                <label>This will make the platform automatically handle the investor's request to sell back shares</label>
+              </div>
+            </div>
+
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{> Footer}}

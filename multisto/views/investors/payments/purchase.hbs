@@ -1,0 +1,90 @@
+{{> Header}}
+
+	<script language="javascript">
+
+        $(document).ready(function() {
+            //$("#trading").addClass('active');
+        })
+
+	</script>
+
+{{> HeaderInner}}
+
+    <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b> 
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/buy.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Buy Company Shares</h4>
+                </div>
+                <div class="content">
+
+                    <div class="row"> 
+                        <div class="col-md-3"> 
+                            Nominal Value  &nbsp;&nbsp;  <b>$ 1</b>
+                        </div>
+                        <div class="col-md-3"> 
+                            Market Value  &nbsp;&nbsp;    <b>$ 0</b>
+                        </div>
+                        <div class="col-md-3"> 
+                            Available Shares  &nbsp;&nbsp;   <b> 2000</b>
+                        </div>
+                        
+                    </div>
+                        
+                        <br />
+                        <br />
+                        <h4>Step 1 - How many shares</h4>
+                        <label>Please enter number of share you want to purchase</label>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-3"> 
+                                <input type="text" id="LastName" name="LastName" class="form-control border-input" placeholder="Last Name">    
+                            </div>
+                            
+                            <div class="col-md-1">  </div>
+                            
+                            <div class="col-md-3"> 
+                                Required investment   &nbsp;&nbsp;   <b>$ 0</b>
+                            </div>                            
+                        </div>
+
+                    
+                        <br /><br /><br />  
+                        <h4>Step 2 - Select payment method</h4>
+                        <br />
+                        <br />
+                         <img src="/img/pay/paypal.png"  />
+                    
+                    <hr />
+                    
+                        <br />    
+                        <br />
+                        <img src="/img/pay/ethereum.jpg" width="250px" />
+
+                    <hr />
+
+                        <br />      
+                        <br />
+                        <img src="/img/pay/bitcoin.png" width="250px" />
+                    
+
+                        <hr />
+
+                        <br />    
+                        <b>Direct Bank Payment</b>
+                        <br />
+                        <label>Following are our bank details. Please contact us for more information</label>
+                        <br /><br />
+                        <img src="/img/pay/bank.jpg" />
+                        
+
+                        <br />
+                        <br />                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

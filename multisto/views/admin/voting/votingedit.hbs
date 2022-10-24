@@ -1,0 +1,319 @@
+{{> Header}}
+
+<script language="javascript">
+    var open = {{open}}
+    
+    $(document).ready(function() {
+        $("#voting").addClass('active');   
+        
+        setDeleteEventButton();
+    })
+    function addoption() {
+        $("#divOtions").append('<div class="row"><div class="col-md-10"><input  class="form-control border-input txtOption" type=text /></div><div class="col-md-2"><button class="btn btn-info btn-fill btn-sm deleteButton"> Delete </button> </div><br/>&nbsp;</div>');
+
+        setDeleteEventButton();
+        return false;
+    }
+    function setDeleteEventButton() {
+        $('.deleteButton').on('click', function(){
+            $(this).parent().parent().remove();
+        });        
+    }
+    function submitForm() {
+
+        if( document.getElementById("title").value == "") {
+           showModelGeneralOKDialogBox("Please enter title");   
+           return null;   
+        }
+
+        if( document.getElementById("txtOpenDate").value == ""){
+           showModelGeneralOKDialogBox("Please enter Open Date"); 
+           return;   
+        }
+        if(commonGetMySQLDateFormat(document.getElementById("txtOpenDate").value) == "") {
+            showModelGeneralOKDialogBox("date formate not correct");
+            return;
+        }else
+            document.getElementById("openDate").value = commonGetMySQLDateFormat(document.getElementById("txtOpenDate").value);
+
+        if( document.getElementById("txtCloseDate").value == "") {
+           showModelGeneralOKDialogBox("Please enter Close Date"); 
+           return;   
+        }
+        if(commonGetMySQLDateFormat(document.getElementById("txtCloseDate").value) == "") {
+            showModelGeneralOKDialogBox("date formate not correct");
+            return;
+        } else
+            document.getElementById("closeDate").value = commonGetMySQLDateFormat(document.getElementById("txtCloseDate").value);
+        
+        
+        if( document.getElementById("details").value == ""){
+           showModelGeneralOKDialogBox("Please enter Campaign Details"); 
+           return;   
+        }
+
+        var d1 = Date.parse(document.getElementById("openDate").value);
+        var d2 = Date.parse(document.getElementById("closeDate").value);
+        var curDate = Date.parse(Date());
+
+        if(d1 < curDate && d2 < curDate) {
+            if(d1 < curDate) {
+                alert ("Both opening and close date cannot be in past");
+                return;            
+            }
+        }
+        
+        if (d1 > d2) {
+            alert ("Opening date cannot be greater than closing date");
+            return;
+        }
+         
+        if (d1 === d2) {
+            alert ("Opening and Closing dates cannot be same");
+            return;
+        }
+        
+        if(open == 1) {
+            var result = "";
+            var textBoxes = document.getElementsByClassName('txtOption');
+            if(textBoxes.length < 2)
+            {
+                showModelGeneralOKDialogBox("Please enter atleast 2 items");
+                return;
+            }                
+
+            var values = [];
+            for (var i=0; i<textBoxes.length; i++) {
+                if(textBoxes[i].value == "")
+                {
+                    showModelGeneralOKDialogBox("Please enter Option Value");
+                    return;
+                }
+
+                values.push(textBoxes[i].value);
+            }
+        }
+        
+        document.getElementById("optionValues").value = JSON.stringify(values);
+        document.getElementById("frmVotingCampaigns").submit();
+    }
+    function backTomainpage() {
+        window.location.href = "/admin/voting";
+        return false;
+    }
+    function deleteVotings() {        
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete voting campaign from system ? <br /><br /> <b>Please beaware this will delete all voting date from the system</b>", "Delete", "Cancel")      
+    }    
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = `/admin/deleteVoting?id={{id}}`;
+        return false;
+    }
+    
+</script>
+
+{{> HeaderInnerSto}}
+
+    <div class="row">		
+       <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/polls.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Internal Poll</h4>
+                </div>
+                <div class="content table-responsive table-full-width icon-section">
+
+                    <form id="frmVotingCampaigns" action="createNewVotingCampaign" method="post">                                        
+                            <div class="row">
+                                <div class="col-md-1"> </div>                               
+
+                                <div class="col-md-11">                                
+                                    {{#if isEditing}}
+                                        {{#ifEqual open 1}}
+                                            <label><img src="/img/yellowdot.png" width="22px;"/> &nbsp; Voting scheduled in future</label>
+                                        {{/ifEqual}}
+
+                                        {{#ifEqual open 2}}
+                                            <label><img src="/img/greendot.png" width="25px;"/> &nbsp; Voting has been started. You can only change close date or details of this voting campaign</label>
+                                        {{/ifEqual}}                    
+                                    {{/if}}
+                                </div>
+                            </div>
+                            {{#if companytype}}
+                                <input type="hidden" id="votetype" name="votetype" value="1" />
+                            {{else}} 
+                                <div class="row">
+                                    <div class="col-md-1"> </div>                                
+
+                                        <div class="col-md-2">                                
+                                            <span style="font-size:15px;"> <label> Voting Type </label>  </span>
+                                        </div>	                            
+
+                                        {{#if isEditing}}
+                                            {{#ifEqual Record.votetype 1}}
+                                                Voting power per user 
+                                            {{/ifEqual}}
+                                            {{#ifEqual Record.votetype 2}}
+                                                Voting power according to the number of shares 
+                                            {{/ifEqual}}
+                                            {{#ifEqual Record.votetype 3}}
+                                                Voting power according to the amount invested 
+                                            {{/ifEqual}}
+                                        {{else}}
+                                                <div class="col-md-5">                                
+                                                    <select id="votetype" name="votetype"  class="form-control border-input">
+                                                        <option value="1">Voting power per user</option>
+                                                        <option value="2">Voting power according to the number of shares</option>
+                                                        <option value="3">Voting power according to the amount invested</option>
+                                                    </select>
+                                                </div>
+                                        {{/if}}
+
+                                    </div>
+                            {{/if}}                        
+                        
+                            <br />
+                            <div class="row">
+                                    <div class="col-md-1"> </div>                                
+
+                                    <div class="col-md-2">                                
+                                        <span style="font-size:15px;"> <label> Title </label>
+                                            </span>
+                                    </div>				
+
+                                    <div class="col-md-8">                                
+                                        <input  id="title" name="title" value="{{Record.title}}" class="form-control border-input" type=text />
+                                    </div>                        
+                            </div>
+                            <br />
+                            <div class="row">
+                                    <div class="col-md-1"> </div>                                
+
+                                    <div class="col-md-2">                                
+                                        <span style="font-size:15px;"> <label> Open Date </label>
+                                            </span>
+                                    </div>
+                                    
+                                    <div class="col-md-3">                                
+                                        {{#ifEqual open 2}}
+                                            {{Record.opendate}}
+                                            <input type="hidden" id="txtOpenDate" name="txtOpenDate"  value="{{Record.opendate}}" />
+                                        {{else}}
+                                            <input  id="txtOpenDate" name="txtOpenDate" onkeydown="return false;"  value="{{Record.opendate}}" class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" />
+                                        {{/ifEqual}}
+                                    </div>                        
+                            </div>
+                            <br />
+                            <div class="row">
+                                    <div class="col-md-1"> </div>                                
+
+                                    <div class="col-md-2">                                
+                                        <span style="font-size:15px;"> <label> Close Date </label>
+                                            </span>
+                                    </div>				
+
+
+                                    <div class="col-md-3">                                
+                                        <input  id="txtCloseDate" name="txtCloseDate" value="{{Record.closedate}}" class="form-control border-input datepicker-here" onkeydown="return false;" type=text data-language="en"   data-date-format="MM dd yyyy" autocomplete="off" />
+                                    </div>                        
+                            </div>
+                            <br />
+                            <div class="row">
+                                    <div class="col-md-1"> </div>                                
+
+                                    <div class="col-md-2">                                
+                                        <span style="font-size:15px;"> <label> Details </label>
+                                            </span>
+                                    </div>				
+
+                                    <div class="col-md-8">                                
+                                        <textarea class="form-control border-input" id="details" name="details" rows="10" cols="93">{{Record.contents}}</textarea>
+                                    </div>                        
+                            </div>
+                            <br />
+                            <div class="row">
+                                    <div class="col-md-1"> </div>                                
+
+                                    <div class="col-md-2">                                
+                                        <span style="font-size:15px;">  <label> Options </label>
+                                            </span>
+                                    </div>
+
+                                    <div id="divOtions" class="col-md-6">   
+                                        
+                                        {{#if isEditing}}
+                                            
+                                            {{#each OptionRecord}}
+                                                <div class="row">        
+                                                    {{#ifEqual ../open 2}}
+                                                        <b>{{this.optiontxt}}</b> <br /><br />
+                                                    {{else}}
+                                                        <div class="col-md-10"><input value="{{this.optiontxt}}"  class="form-control border-input txtOption" type=text /></div>
+                                                        <div class="col-md-2"><button  class="btn btn-info btn-fill btn-sm deleteButton"> Delete </button> </div>
+                                                        <br />&nbsp;
+                                                    {{/ifEqual}}
+                                                </div>
+                                            {{/each}}
+                                        
+                                        {{else}}
+                                            <div class="row">
+                                                <div class="col-md-10"><input  class="form-control border-input txtOption" type=text /></div>
+                                                <div class="col-md-2"><button  class="btn btn-info btn-fill btn-sm deleteButton"> Delete </button> </div>
+                                                <br />&nbsp;
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-10"><input  class="form-control border-input txtOption" type=text /></div>
+                                                <div class="col-md-2"><button  class="btn btn-info btn-fill btn-sm deleteButton"> Delete </button> </div>
+                                                <br />&nbsp;
+                                            </div>                                                                
+                                        {{/if}}
+                                        
+                                    </div>
+                            </div>
+                            <div class="row">
+                                    <div class="col-md-1"> </div>                                
+
+                                    <div class="col-md-2">  </div>				
+
+                                    {{#ifEqual open 1}}
+                                        <div class="col-md-6"><button onclick="return addoption()" class="btn btn-info btn-fill btn-sm">Add Option</button>   </div>
+                                    {{/ifEqual}}
+                            </div>
+                            
+                            <input type="hidden" id="isEditing" name="isEditing" value="{{isEditing}}" />
+                            {{#if isEditing}}
+                                <input type="hidden" id="id" name="id" value="{{id}}" />
+                            {{/if}}
+                            <input type="hidden" id="open" name="open" value="{{open}}" />
+                            <input type="hidden" id="openDate" name="openDate" value="" />
+                            <input type="hidden" id="closeDate" name="closeDate" value="" />
+                            <input type="hidden" id="optionValues" name="optionValues" value=""/>
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        
+                        <div class="col-md-7">    
+                            {{#ifEqual isEditing 1}}
+                                &nbsp;&nbsp;&nbsp;<button onclick="deleteVotings()" class="btn btn-info btn-fill">Delete Campaign</button> 
+                                &nbsp;&nbsp;&nbsp;                            
+                            {{/ifEqual}}                        
+                        </div>                                
+
+                        <div class="col-md-4">      
+                            <button onclick="submitForm()" class="btn btn-info btn-fill">Save Campaign</button> 
+                            &nbsp;&nbsp;&nbsp;
+                            <button onclick="backTomainpage()" class="btn btn-info btn-fill"> &nbsp;&nbsp; Cancel  &nbsp;&nbsp; </button> 
+                        </div>								
+                    </div>
+
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}
+            

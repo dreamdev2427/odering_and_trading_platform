@@ -1,0 +1,201 @@
+{{> Header}}
+
+<script language="javascript">
+    
+    var paymentOptions = {
+        {{#each Records}}
+            "{{this.ID}}": "{{textBreakLinesEnters this.paymentDetails}}",
+        {{/each}}
+    }
+    
+	$(document).ready(function() {
+        {{#if Records.length}}
+            var firstKey = Object.keys(paymentOptions)[0];
+            $("#paymentdetailsspan").html(  paymentOptions[firstKey]   )	
+        {{/if}}
+	})
+
+    
+    function cancelcall() {
+        window.location.href = "/admin/investorsViewSto?id={{Investor.ID}}";
+        return false;
+    }
+    
+    
+    function paymentchanged() {
+        var selector = document.getElementById('paymentchannelid');
+        var value = selector[selector.selectedIndex].value;
+        
+         $("#paymentdetailsspan").html(  paymentOptions[value]   )	
+    }
+    
+    
+    function sendpaymentalert() {
+        
+        if(  document.getElementById('details').value == "" ) {
+            showModelGeneralOKDialogBox("Please enter some details / message to investor");
+            return;
+        }
+        
+        if(  document.getElementById('amount').value == "" ) {
+            showModelGeneralOKDialogBox("Please enter amount");
+            return;
+        }
+
+
+        if(  document.getElementById('sharesno').value == "" ) 
+            document.getElementById('sharesno').value = "0";
+        
+        
+        document.getElementById('addpayment').submit();
+    }
+    
+    
+</script>
+
+
+{{> HeaderInnerSto}}
+    
+    {{#if errorMessage}}
+        <span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+        <br /><br />
+    {{/if}}    
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+                
+				<div class="header">
+                    <div class="row">
+                        <div class="col-md-9">                                
+                            <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Send Payment Alert</h4>
+                        </div>
+                    </div>
+				</div>
+
+				<div class="content">
+
+                    
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <span style="font-size:18px;">Investor</span>
+                        </div>
+                        
+                        <div class="col-md-10">
+                            {{Investor.FirstName}} {{Investor.LastName}}
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    {{#if Records.length}}
+
+                        <form id="addpayment" name="addpayment" action="sendpaymentalerttoinvestor" method="post">
+                            <div class="row">
+                                <div class="col-md-10">
+                                        <label>Select Payment Channel</label>
+                                        <select onchange="paymentchanged()" id="paymentchannelid" name="paymentchannelid" class="form-control border-input" >
+                                            {{#each Records}}
+                                                <option value="{{this.ID}}"> {{this.title}} </option>
+                                            {{/each}}
+                                        </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <span style="font-size:22px;">Payment Details</span>
+                                    <br />
+                                    <span id="paymentdetailsspan"></span>
+                                </div>
+                            </div>
+
+                            <hr />
+                            <h4><img src="/img/graydot.png" width="15px" /> &nbsp; Enter Payment Details </h4>      
+                            
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Amount</label>
+                                    <input type="textbox" onkeypress="return allowOnlyNumberInTextBoxes(event)" maxlength="10" id="amount" name="amount" class="form-control border-input" placeholder="Enter Amount" />
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label>Select Currency</label>
+                                    <select id="currencyid" name="currencyid" class="form-control border-input" >
+                                        {{#each currency}}
+                                            <option value="{{this.ID}}"> {{this.Abbreviation}} </option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <h4><img src="/img/graydot.png" width="15px" /> &nbsp; Shares Offered &nbsp; <span style="font-size:12px;">( Optional )</span> </h4>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Number of Shares Offered</label>
+                                    <input type="textbox" onkeypress="return allowOnlyNumberInTextBoxes(event)" maxlength="10" id="sharesno" name="sharesno" class="form-control border-input" placeholder="Enter Number of Shares" />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label>Select Share Type</label>
+                                    <select id="sharetypeid" name="sharetypeid" class="form-control border-input" >
+                                        {{#each sharetypes}}
+                                            <option value="{{this.id}}"> {{this.title}} </option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            </div>                             
+                            
+                            <br /><hr />
+
+                            <div class="row">
+                                <div class="col-md-10">
+                                        <label>Message to investor</label>
+                                        <textarea maxlength="3500"  rows="10" id="details" name="details" class="form-control border-input" placeholder="Enter Details">{{Record.paymentDetails}}</textarea>
+                                </div>
+                            </div>
+
+                            <br />
+
+                            <div class="row">
+                                <div class="col-md-10">
+                                        <label>Internal Notes</label>
+                                        <textarea maxlength="3500"  rows="10" id="internalnotes" name="internalnotes" class="form-control border-input" placeholder="Enter Details">{{Record.paymentDetails}}</textarea>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" name="id" value="{{Investor.ID}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                        </form>
+
+					   
+                    {{else}}
+                        <h5> <img src="/img/reddot.png" width="20px">  &nbsp;&nbsp;  No payment channels found. Please add payment channel first</h5>    
+                    {{/if}}
+
+                    
+                    <br />
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                {{#if Records.length}}
+                                    <button onclick="sendpaymentalert()" class="btn btn-info btn-fill btn-wd">Save</button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                {{/if}}
+                                <button onclick="cancelcall()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <br />&nbsp;
+                </div>
+
+			</div>
+		</div>
+	</div>
+
+{{> Footer}}

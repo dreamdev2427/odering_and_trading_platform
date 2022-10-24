@@ -1,0 +1,431 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {
+        $("#sto").addClass('active');
+        SummernoteBasicDataInitialize('PropertyFullDetails', 'Enter Full Details', 160);
+        SummernoteBasicDataInitialize('LegalDetails', 'Enter Full Details', 160);
+    })
+
+    function cancelClicked() {
+        window.location.href = "/platform/sto";
+    }
+    
+    function submitForm() {
+
+        if(document.getElementById("title").value == "") {
+            showModelGeneralOKDialogBox("Please enter project title / name");
+            return;
+        }
+        if(document.getElementById("stolink").value == "") {
+            showModelGeneralOKDialogBox("Please enter subdomain without http/https");
+            return;
+        }
+        if(document.getElementById("stolinkfull").value == "") {
+            showModelGeneralOKDialogBox("Please enter full domain name with http/https");
+            return;
+        }
+        if(document.getElementById("details").value == "") {
+            showModelGeneralOKDialogBox("Please enter your details");
+            return;
+        }
+        {{#if bimountEnabled}}
+            if(document.getElementById("projectCost").value != "") {
+                if(isNaN(document.getElementById("projectCost").value)) {
+                    showModelGeneralOKDialogBox("Value entered in Project Cost is not a valid number");
+                    return;
+                } else {
+                    if( !Number.isInteger( parseFloat( document.getElementById("projectCost").value ) ) ) {
+                        showModelGeneralOKDialogBox("Value entered in Project Cost is not a whole number. Please enter integer without fractions");
+                        return;
+                    }
+                }
+            } else
+                document.getElementById("projectCost").value = "0";
+        {{/if}}
+
+        document.getElementById("frmSTO").submit();
+    }
+    function stolinkchange() {
+        document.getElementById("stolinkfull").value = "https://" + document.getElementById("stolink").value;
+    }
+    function callMultiFileUpdate(id) {
+            if(id == 1) {
+                checkAndUpdateMultiFileUpload('photos222', 'upload-file1',  /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf)$/i, "Select only selected extensions", 2, 1, 4)
+            }
+        }
+    function multipleFilesUploadingDoneEvent(data) {
+            document.getElementById("fil1").value = JSON.stringify(data);
+            document.getElementById("sendpostfile").submit();
+        }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+{{> multifileupload}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+
+            <div class="header">
+                <h4 class="title">
+                     {{#if op}}
+                        Edit Project
+                     {{else}}
+                        Create New Project
+                     {{/if}}
+                </h4>
+                <label>
+                     {{#if op}}
+                        Edit Project Information
+                     {{else}}
+                        Create New Project
+                     {{/if}}
+                </label>
+            </div>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-9">
+
+                            <form id="frmSTO" name="frmSTO" action="/platform/stoaddition" method="post">
+
+                                {{#if op}}
+
+                                    <b>
+                                    {{#ifEqual record.stoType 0}} Company with Tokenized / Non-Tokenized Share Classes {{/ifEqual}}
+
+                                    {{#ifEqual record.stoType 1}} Company with Tokenized Share Classes {{/ifEqual}}
+
+                                    {{#ifEqual record.stoType 2}} Company with Non-Tokenized Share Classes {{/ifEqual}}
+                                    </b>
+                                    <br />&nbsp;
+
+                                {{else}}
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Project Type</label>
+                                                <select id="stoType" name="stoType" class="form-control border-input">
+                                                    {{#if defaultProjectType}}
+                                                        {{#ifEqual defaultProjectType 1}}
+                                                        <option value="1">Company with Tokenized Share Classes</option>
+                                                        {{/ifEqual}}
+                                                        {{#ifEqual defaultProjectType 2}}
+                                                        <option value="2">Company with Non-Tokenized Share Classes</option>
+                                                        {{/ifEqual}}
+                                                        {{#ifEqual defaultProjectType 3}}
+                                                        <option value="3">Company with Tokenized / Non-Tokenized Share Classes</option>
+                                                        {{/ifEqual}}
+                                                    {{else}}
+                                                        {{#each stoTypes}}
+                                                            <option value="{{this.id}}">{{this.value}}</option>
+                                                        {{/each}}
+                                                    {{/if}}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <label>Base Currency <br /> (Please make sure correct currency is selected for the Project as this setting cannot be change later. All Share Classes created will be associated with currency)</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <select id="stoCurrency" name="stoCurrency" class="form-control border-input">
+                                                    {{#each currency}}
+                                                        <option value="{{this.id}}">{{this.Abbreviation}} &nbsp; ( {{this.Symbol}} )</option>
+                                                    {{/each}}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {{/if}}
+
+
+                                {{#if affiliateEnabled}}
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            {{#if affiliatePlans}}
+                                                <div class="form-group">
+                                                    <label for="affiliatePlanId">Affiliate plan</label>
+                                                    <select id="affiliatePlanId" name="affiliatePlanId" class="form-control border-input">
+                                                        {{#each affiliatePlans}}
+                                                            <option
+                                                                value="{{this.affiliate_plan_id}}"
+                                                                {{#if this.selected}}
+                                                                    selected
+                                                                {{/if}}
+                                                            >
+                                                                {{this.affiliate_plan_name}}
+                                                                {{#if this.selected}}[current]{{/if}}
+                                                            </option>
+                                                        {{/each}}
+                                                    </select>
+                                                </div>
+                                            {{else}}
+                                                <label>Affiliate plan (unavailable)</label>
+                                                <p style="font-style:italic;">
+                                                    No affiliate plans are currently registered in the system.
+                                                    Please check this problem with a system administrator.
+                                                    <br>
+                                                    This project can have <b>no</b> affiliate plan set at this time.
+                                                </p>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            {{#if shareTypes}}
+                                                <div class="form-group">
+                                                    <label for="affiliateShareTypeId">Affiliate share class</label>
+                                                    <select id="affiliateShareTypeId" name="affiliateShareTypeId" class="form-control border-input">
+                                                        {{#each shareTypes}}
+                                                            <option
+                                                                value="{{this.id}}"
+                                                                {{#if this.selected}}
+                                                                    selected
+                                                                {{/if}}
+                                                            >
+                                                                {{this.name}}
+                                                                {{#if this.selected}}[current]{{/if}}
+                                                            </option>
+                                                        {{/each}}
+                                                    </select>
+                                                </div>
+                                            {{else}}
+                                                <label>Affiliate share class (unavailable)</label>
+                                                <p style="font-style:italic;">
+                                                    This project has no share classes currently registered in the system.
+                                                    <br>
+                                                    The affiliate program will automatically pick the first available share class to give out to investors until this field is set.
+                                                    Please review this field after you have created more than one share class in the project.
+                                                </p>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                {{/if}}
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Project Title</label>
+                                            <input type="text" maxLength="100" id="title" name="title" class="form-control border-input" placeholder="Enter Project Title" value="{{record.title}}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{#if areSTOHostnamesEnabled}}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Project Web Link</label>
+                                            <input type="text" onchange="stolinkchange()" maxLength="1000" id="stolink" name="stolink" class="form-control border-input" placeholder="Project Link" value="{{record.stolink}}">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Project Web Full Link</label>
+                                            <input type="text" maxLength="1000" id="stolinkfull" name="stolinkfull" class="form-control border-input" placeholder="Project Full Link" value="{{record.stolinkfull}}">
+                                        </div>
+                                    </div>
+                                </div>
+                                {{else}}
+                                            <input type="hidden" onchange="stolinkchange()" maxLength="1000" id="stolink" name="stolink" class="form-control border-input" placeholder="Project Link" value="{{#if op}}{{record.stolink}}{{else}}{{randomLink}}{{/if}}">
+                                            <input type="hidden" maxLength="1000" id="stolinkfull" name="stolinkfull" class="form-control border-input" placeholder="Project Full Link" value="{{#if op}}{{record.stolinkfull}}{{else}}https://{{randomLink}}{{/if}}">
+                                {{/if}}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Preview Details</label>
+                                            <textarea id="details" maxlength="200"  name="details" class="form-control  border-input" placeholder="Enter Details" rows="3">{{record.details}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Company Type</label>
+                                            <select id="companyType" name="companyType" class="form-control border-input">
+                                                <option value="0" {{#ifEqual record.companytype 0}} selected {{/ifEqual}} >LLC / LLC equivalent</option>
+                                                <option value="1" {{#ifEqual record.companytype 1}} selected {{/ifEqual}} >Corporation</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                {{#ifEqual op 0}}
+
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label>Select Blockchain. (This is blockchain where all share classes will be deployed)</label>
+                                                <select id="blockchainSelectID" name="blockchainSelectID" class="form-control border-input">
+                                                    {{#each blockchains}}
+                                                        <option value="{{this.id}}">{{this.title}}</option>
+                                                    {{/each}}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {{/ifEqual}}
+
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Select default Token Studio</label>
+                                            <select id="stoTokenStudio" name="stoTokenStudio" class="form-control border-input">
+                                                {{#each supportedTokenStudios}}
+                                                <option value="{{this.id}}">{{this.title}}</option>
+                                                {{/each}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Full Details</label>
+                                            <textarea id="PropertyFullDetails"   name="PropertyFullDetails" class="form-control  border-input" placeholder="Enter Project Full Details" rows="14">{{record.PropertyFullDetails}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Legal Address</label>
+                                            <input type="text" maxLength="990" id="projectAddress" name="projectAddress" class="form-control border-input" placeholder="Project Legal Address" value="{{record.projectAddress}}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Legal Details</label>
+                                            <textarea id="LegalDetails"   name="LegalDetails" class="form-control  border-input" placeholder="Enter Project Full Details" rows="14">{{record.LegalDetails}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Created At</label>
+                                            <input type="text" id="dateCreatedAt" name="createdAt"
+                                                 class="form-control border-input datepicker-here" data-language='en'
+                                                 value="{{record.dateCreated}}" data-date-format="yyyy-mm-dd"
+                                                 autocomplete="off" onkeydown="return false;">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+                                {{#ifEqual op 1}}
+                                    <input type="hidden" name="id" value="{{record.ID}}" />
+                                {{/ifEqual}}
+
+                                {{#if bimountEnabled}}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Project Cost </label>
+                                                <input type="text" {{#if record.isActive}} disabled {{/if}} maxLength="12" id="projectCost" name="projectCost" class="form-control border-input" placeholder="Project Cost" value="{{record.projectCost}}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" id="bimountEnabled" name="bimountEnabled" value="1" {{#if record.isBimountEnabled}} checked {{/if}}>
+                                    <label for="vehicle1"> enable Bimount escrow service</label>
+                                {{/if}}
+
+								<input type="hidden" name="isICOProject" value="{{isICOProject}}" />
+                                <input type="hidden" name="op" value="{{op}}" />
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                            </form>
+                            <br />
+
+
+                            <button type="button" onclick="return submitForm()"class="btn btn-info btn-fill btn-wd">
+                                {{#if op}} Save {{else}} Start New Project {{/if}}
+                            </button>
+
+                            &nbsp;&nbsp;&nbsp; <a onclick="return cancelClicked()" class="btn btn-info btn-fill btn-wd">Cancel</a>
+
+                            <br /><br />
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                            {{#if op}}
+                                    <img src="/img/stobanners/{{record.propertypicture}}" width="100%" >
+                                    <br /><br />
+                                    <div class="upload-btn-wrapper">
+                                        <button class="btnfile">Select File</button>
+                                        <input   id="photos222"   name="photos222" multiple="multiple" type="file"  onchange="callMultiFileUpdate(1)" >
+                                        <br />
+                                        <span style="color: green; font-size: 12px; " id="upload-file1">No File Selected</span>
+                                    </div>
+
+                                    <br />
+                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                    <br/>
+                                    <input class="btn btn-info btn-fill btn-sm" onclick="uploadMultiplefilesToServer('photos222', 'fileUplodProgressUpload', 3, '/platform/uploadFiles')" name="Photo Uploads" value="Upload" />
+
+                                    <br /><br />
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="progress">
+                                              <div id="fileUplodProgressUpload" class="progress-bar" role="progressbar" style="width: 0px" ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            {{/if}}
+                            <br />
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<form id="sendpostfile" method="post" action="/platform/setstopropertyfile">
+    <input type="hidden" id="id" name="id" value="{{record.ID}}">
+    <input type="hidden" id="fil1" name="fil1" value="">
+    <input type="hidden" id="type" name="type" value="1">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

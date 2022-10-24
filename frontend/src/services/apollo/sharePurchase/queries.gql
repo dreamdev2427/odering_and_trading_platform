@@ -1,0 +1,53 @@
+query sharePurchaseDocuments($sharePurchaseID: Int!) {
+    sharePurchaseDocuments(sharePurchaseID: $sharePurchaseID) {
+        requireOnce
+        document {
+            ID
+            title
+        }
+        status
+    }
+}
+query getInternalSigningData($documentID: Int!, $sharePurchaseID: Int!) {
+    document(documentID: $documentID) {
+        ID,
+        title,
+        contents,
+    }
+    sharePurchaseDocument(sharePurchaseID:$sharePurchaseID, documentID: $documentID) {
+        fieldValues {
+            ID,
+            value,
+        }
+        signature {
+            url
+            modified
+        }
+        status
+        signatureFilePath
+    }
+    documentFields(documentID: $documentID) {
+        ID,
+        title,
+        type,
+        helperText
+    }
+    getPrefilledDocumentValues(sharePurchaseID:$sharePurchaseID, documentID: $documentID) {
+        ID,
+        value
+    }
+    investorAppParameters {
+        IsDarwSignatureActive
+        IsCheckMarkSignatureActive
+        drawSignaturePrefillFonts
+    }
+}
+query getDocuSignUrl($preferredReturnURL: String!, $documentID: Int!, $sharePurchaseID: Int!) {
+  getDocuSignUrl(preferredReturnURL: $preferredReturnURL, documentID: $documentID, sharePurchaseID: $sharePurchaseID)
+}
+query sendHelloSignTemplateSignRequest($documentID: Int!, $sharePurchaseID: Int!) {
+    sendHelloSignTemplateSignRequest(documentID: $documentID, sharePurchaseID: $sharePurchaseID)
+    findSto(ID: 0){
+        helloSignClientID
+    }
+}

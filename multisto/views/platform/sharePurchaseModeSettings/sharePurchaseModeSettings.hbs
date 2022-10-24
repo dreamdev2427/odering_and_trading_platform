@@ -1,0 +1,121 @@
+{{> Header}}
+
+<script language="javascript">
+  $(document).ready(function() {
+    const testMode = JSON.parse('{{{testMode}}}');
+    if (testMode === 1) {
+      document.getElementById('testMode').setAttribute("checked", "true");
+    } else {
+      document.getElementById('testMode').removeAttribute("checked");
+    }
+    const skip = JSON.parse('{{{skipDocumentSignScreen}}}');
+    if (skip === 1) {
+      document.getElementById('skipDocumentSignScreen').setAttribute("checked", "true");
+    } else {
+      document.getElementById('skipDocumentSignScreen').removeAttribute("checked");
+    }
+  })
+
+  function postChangeSharePurchaseDocumentsMode(mode) {
+    document.getElementById('docSigningMode').value = mode;
+    const testModeChecked = document.getElementById('testMode').checked;
+    document.getElementById('testModeInput').value = +testModeChecked
+    const skipChecked = document.getElementById('skipDocumentSignScreen').checked;
+    document.getElementById('skipDocumentSignScreenInput').value = +skipChecked;
+    document.getElementById('postChangeSharePurchaseDocumentsMode').submit();
+  }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-8">
+          <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Document Signing Mode</h4>
+          <label>Change the platform on which documents should be signed</label>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button onclick="postChangeSharePurchaseDocumentsMode('internal')" class="btn
+            {{#ifEqual spdsMode 'internal'}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Internal</button>
+            <button onclick="postChangeSharePurchaseDocumentsMode('docuSign')" class="btn
+            {{#ifEqual spdsMode 'docuSign'}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">DocuSign</button>
+            <button onclick="postChangeSharePurchaseDocumentsMode('helloSign')" class="btn
+            {{#ifEqual spdsMode 'helloSign'}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">HelloSign</button>
+          </div>
+        </div>
+      </div>
+
+      <hr/>
+
+      <div class="row">
+        <div class="col-md-1">
+          <label class="switch">
+            <input class="input-lg" id="testMode" name="testMode" type="checkbox" onclick="postChangeSharePurchaseDocumentsMode('{{spdsMode}}')">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="col">
+          <div class="row">
+            <div class="col-md-3">
+              <b>Test Mode</b>
+            </div>
+            <div class="col-md-9">
+              <label>This allows the sto admin to delete signed contracts form the platform</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr/>
+      <div class="row">
+        <div class="col-md-1">
+          <label class="switch">
+            <input class="input-lg" id="skipDocumentSignScreen" name="skipDocumentSignScreen" type="checkbox" onclick="postChangeSharePurchaseDocumentsMode('{{spdsMode}}')">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="col">
+          <div class="row">
+            <div class="col-md-3">
+              <b>Skip Signing Order</b>
+            </div>
+            <br/>
+            <div class="col-md-9">
+              <label>If enabled, the platform will automatically redirect the investor to the required documents </label>
+              <br/>
+              <label>If disabled, the investor will be allowed to sign the required documents in whatever order they choose to</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form id="postChangeSharePurchaseDocumentsMode" method="post" action="/platform/postChangeSharePurchaseDocumentsMode">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <input type="hidden" id="docSigningMode" name="docSigningMode" />
+    <input type="hidden" id="testModeInput" name="testModeInput"/>
+    <input type="hidden" id="skipDocumentSignScreenInput" name="skipDocumentSignScreenInput"/>
+  </form>
+  {{> isAllDocumentsSignedPopUpEnabledSwitch}}
+  {{> sharePurchaseModeSettings}}
+</div>
+{{> Footer}}

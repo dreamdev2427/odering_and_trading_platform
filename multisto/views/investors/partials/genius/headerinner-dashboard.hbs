@@ -1,0 +1,210 @@
+
+<script language="javascript">
+        function logout(){
+            window.location.href = "/logout";
+            return false;
+        }
+        function myprofile() {
+            window.location.href = "/wizard?step=0";
+            return false;
+        }
+        function backtofrontend() {
+                window.location.href = "{{Data.SSORedirectFrontEnd}}";
+                return false;
+        }
+        function openReferalLink() {
+             showModelGeneralOKDialogBox("Here is your referral link. Use your mouse and select and copy this link  <br/><br/> Please make sure investors you invite in the platform use this link to get registered in the platform <br/><br/> https://dashboard.genius-estates.com/register?geniusID={{Data.Login_UserID}}");
+        }
+
+    </script>
+
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div class="sidebar" data-background-color="black" data-active-color="danger">
+    <!--
+		Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+		Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+	-->
+    	<div class="sidebar-wrapper"  style="overflow-x: hidden; overflow-y: auto;">
+            <div class="logo">
+                <a href="dashboard" class="simple-text" >
+                    <img src="/img/stologo/{{Data.logo}}" style="max-height: 100px; max-width: 120px;" />
+                </a>
+            </div>
+
+            <ul class="nav">
+
+                {{#ifEqual Data.InvestorCombinePropertiesMode 1}}
+                    <li id="ActiveProperies">
+                        <a href="activeproperties">
+                            <i class="ti-home"></i>
+                            <p>{{{__ "Active"}}} {{{__ "Projects"}}}</p>
+                        </a>
+                    </li>
+                {{/ifEqual}}
+
+                {{#ifEqual Data.InvestorCombinePropertiesMode 1}}
+                        <li id="Portfolio">
+                            <a href="mycombineportfolio">
+                                <i class="ti-layout-grid3"></i>
+                                <p>{{{__ "My Portfolio"}}}</p>
+                            </a>
+                        </li>
+                {{/ifEqual}}
+
+
+                    <li id="ICOMenu">
+                    <a href="icolist">
+                        <i class="ti-panel"></i>
+                        <p>ICO</p>
+                    </a>
+                	</li>
+
+                    {{!-- <li id="votings">
+                    <a href="votings">
+                        <i class="ti-stamp"></i>
+                        <p>{{{__ "Voting"}}}</p>
+                    </a> --}}
+                </li>
+
+
+
+                {{#ifEqual Data.InvestorCombinePropertiesMode 1}}
+                        {{!-- <li id="affiliate">
+                            <a href="affiliateprogram">
+                                <i class="ti-user"></i>
+                                <p>{{{__ "Affiliate Program"}}}</p>
+                            </a>
+                        </li> --}}
+                        <li id="affiliatenetwork">
+                            <a href="affiliatenetwork">
+                                <i class="ti-user"></i>
+                                <p>{{{__ "Affiliate Program"}}}</p>
+                            </a>
+                        </li>
+                {{/ifEqual}}
+
+                {{#ifEqual Data.InvestorCombinePropertiesMode 1}}
+                    <li id="InvestorWallet">
+                    <a href="depositfundsinwallet">
+                        <i class="ti-wallet"></i>
+                        <p>{{{__ "Wallet"}}}</p>
+                    </a>
+                </li>
+                {{/ifEqual}}
+
+                {{#ifEqual Data.InvestorCombinePropertiesMode 0}}
+                    <li id="DashboardMenu">
+                    <a href="dashboard">
+                        <i class="ti-panel"></i>
+                        <p>{{{__ "Overview"}}}</p>
+                    </a>
+                </li>
+                {{/ifEqual}}
+
+                <li id="updates">
+                    <a href="updates">
+                        <i class="ti-volume"></i>
+                        <p>{{{__ "Company-Updates"}}}</p>
+                    </a>
+                </li>
+
+                {{#ifEqual Data.InvestorCombinePropertiesMode 0}}
+                        <li id="settlements">
+                            <a href="settlements">
+                                <i class="ti-agenda"></i>
+                                <p>{{{__ "Contracts-Documents"}}}</p>
+                            </a>
+                        </li>
+                {{/ifEqual}}
+
+                {{#ifEqual Data.InvestorCombinePropertiesMode 0}}
+                    {{#ifGreater (addTovalue Data.pastMeetings (addTovalue Data.isVotingForThisInvestorEnabled Data.isMeetingForThisInvestorEnabled)) 0 }}
+                        <li id="votings">
+                            <a href="votings">
+                                <i class="ti-stamp"></i>
+                                <p>{{{__ "Voting"}}}</p>
+                            </a>
+                        </li>
+                    {{/ifGreater}}
+                {{/ifEqual}}
+
+
+
+                <li id="inbox">
+                    <a href="inbox">
+                        <i class="ti-email"></i>
+                        <p>{{{__ "Inbox"}}}</p>
+                    </a>
+                </li>
+
+
+            </ul>
+    	</div>
+    </div>
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar bar1"></span>
+                    <span class="icon-bar bar2"></span>
+                    <span class="icon-bar bar3"></span>
+                </button>
+
+                <div class="navbar-header">
+                    <a class="navbar-brand stopATagLink">{{{__ "Investor-Dashboard"}}}
+                    </a>
+                </div>
+
+                {{#ifGreater Data.investorSTOs.length 1}}
+                     {{#ifEqual Data.InvestorCombinePropertiesMode 0}}
+                        <div class="navbar-header">
+                       &nbsp;&nbsp;&nbsp;&nbsp; <img src='/img/stologo/{{Data.logo}}' style="max-width:130px; max-height:70px;margin-top:5px;"> &nbsp;&nbsp; <button onclick="showInvestoSTOSelectionBox()" style="margin-top:20px;" class="btn btn-info btn-fill btn-sm"> Switch </button>
+                        </div>
+                    {{/ifEqual}}
+                {{/ifGreater}}
+
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+
+                        <li style="padding-top:15px;" >
+                            {{> languageSelection}}
+                        </li>
+
+
+                        <li>
+                            <a href="#">
+								&nbsp;&nbsp;&nbsp;
+                                <span onclick="return openReferalLink()"><i class="ti-layout-placeholder"></i>&nbsp;
+                                {{{__ "My Referral Link"}}}</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#"><span onclick="return myprofile()">
+                                <i class="ti-user"></i>&nbsp;
+									{{Data.Login_UserName}} -
+                                	{{{__ "My-Profile"}}}
+                            </span></a>
+                        </li>
+						<li>
+                            <a href="#">
+								<i class="ti-arrow-circle-up"></i>
+								<span onclick="return logout()">{{{__ "Logout"}}}</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+        </nav>
+
+        <div class="content">
+		      <div class="container-fluid">

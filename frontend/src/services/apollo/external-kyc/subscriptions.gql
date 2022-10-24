@@ -1,0 +1,8 @@
+subscription rootKyc {
+    rootKyc {
+        isKYC
+        isActive
+        status
+        ID
+    }
+}

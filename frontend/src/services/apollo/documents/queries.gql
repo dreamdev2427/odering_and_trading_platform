@@ -1,0 +1,74 @@
+query offeredDocument($documentID: Int!) {
+  offeredDocument(documentID: $documentID) {
+    document {
+      ID,
+      title,
+      contents,
+    }
+  }
+  unfinishedDocument(documentID: $documentID) {
+    fieldValues {
+      ID,
+      value,
+    }
+    signature {
+      url
+      modified
+    }
+    status
+  }
+  documentFields(documentID: $documentID) {
+    ID,
+    title,
+    type,
+    helperText
+  }
+}
+query submittedDocument($submittedDocumentID: Int!) {
+  submittedDocument(submittedDocumentID: $submittedDocumentID) {
+    fieldValues {
+      ID,
+      value,
+    }
+    contents
+    signature {
+      url
+      modified
+    }
+    document {
+      title
+    }
+    status
+  }
+}
+query contractsPage {
+  offeredDocuments {
+    title
+    to
+    document {
+      ID,
+      title,
+    }
+  }
+  submittedDocuments(minStatus: 2) {
+    ID
+    status
+    signatureFilePath
+    document {
+      ID,
+      title,
+      docusignDocumentID,
+      helloSignDocumentID
+    }
+    signature {
+      modified
+    }
+  }
+}
+query downloadSignedHelloSign($fileID: String!){
+  downloadSignedHelloSign(fileID: $fileID)
+}
+
+query downloadSignedDocuSign($envelopeID: String!){
+  downloadSignedDocuSign(envelopeID: $envelopeID)
+}

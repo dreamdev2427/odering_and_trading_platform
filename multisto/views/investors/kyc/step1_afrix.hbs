@@ -1,0 +1,136 @@
+
+<script language="javascript">        
+
+    var currencySelected = "{{stepData.Currency}}"    
+    
+    $(document).ready(function(){
+
+		if(!currencySelected == "") {
+			var element = document.getElementById("Currency");
+			element.value = currencySelected;            
+		}
+
+    })
+    function submitForm() {
+        
+        var res = "";
+        		
+        if(document.getElementById("TotalAmount").value == "")
+        {
+            document.getElementById("TotalAmount").value = "0";
+        }
+        else
+        {
+            var e = document.getElementById ("Currency");
+            var cur = e.options [e.selectedIndex] .value;
+            
+            
+            if(isNaN(document.getElementById("TotalAmount").value)) 
+                res = res + "<li>Amount must be numeric</li>";        
+            
+        }
+        
+        
+        if(res == "") {
+            document.getElementById("wizardForm").submit();
+        } else
+        {
+            $(window).scrollTop(0);
+            $("#ErrorMessages").html(res)
+        }        
+        
+    }
+
+    
+</script>
+
+
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Investment Details</h4>
+            </div>
+            <div class="content">
+                <form id="wizardForm" name="wizardForm" action="wizardPost" method="post">
+
+                        <img src="https://afri-x.ai/img/stologo/afrix.png" width="300px;" />
+                         <br />
+
+                        <ul style="color:red;"><span id="ErrorMessages">{{messages}}</span></ul>    
+
+                        <br />
+                        Below please indicate how much you are interested in investing in Afri-x.
+                        <br />
+                        The number is not in any way binding.
+                        <br /><br />
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Select Currency </label>
+
+                                    <select  id="Currency" name="Currency" class="form-control border-input" value="{{stepData.Currency}}" >
+                                        <option value="USD">USD</option>
+                                    </select>                
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Enter Amount <span id="currencyAmount">( Min $5500 )</span> </label>
+                                    <input type="text" maxlength="60" name="TotalAmount" id="TotalAmount" class="form-control border-input" placeholder="Enter Amount" value="{{stepData.TotalAmount}}">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                        <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                        <br /><br />
+                        <button type="button" onclick="submitForm()" class="btn btn-info btn-fill btn-wd">Save and Next</button>
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <a href='wizard?step=2' class="btn btn-info btn-fill btn-wd"> Next without Save </a>     
+
+                    </form>
+
+                <br /><br />
+
+                <div class="footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class = "modal fade" id = "myModal" tabindex = "-1" role = "dialog" 
+   aria-labelledby = "myModalLabel" aria-hidden = "true">
+
+   <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-body">
+            <br /><br />
+            <span style="color:gray; padding-left:20px;">File not available yet</span>
+            <br /><br />
+         </div>
+
+         <div class = "modal-footer">                 
+            <button type = "button" class = "btn btn-default" data-dismiss = "modal">
+               Close
+            </button>                 
+         </div>
+
+      </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+    

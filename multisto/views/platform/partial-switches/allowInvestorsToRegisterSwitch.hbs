@@ -1,0 +1,41 @@
+<script>
+    function changeAllowInvestorsToRegister(isChecked) {
+      document.getElementById('allowInvestorsToRegister-intValue').value = +isChecked;
+      document.getElementById('allowInvestorsToRegister-redirectUrl').value = window.location.pathname;
+      document.getElementById('postAllowInvestorsToRegister').submit();
+    }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more'/> Allow Platform Registrations</h4>
+        <label>When this is turned on, investors will be able to see the registration buttons and create a new account on the platform</label>
+      </div>
+      <div class="content">
+        <form method="post" id="postAllowInvestorsToRegister" action="postParamUpdateToApi">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="switch">
+                <input id="isPropertySortingEnabled"
+                       onclick=changeAllowInvestorsToRegister(this.checked) type="checkbox"
+                  {{#if allowInvestorsToRegister}}
+                       checked
+                  {{/if}}
+                >
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" id="allowInvestorsToRegister-intValue" name="intValue"/>
+          <input type="hidden" id="allowInvestorsToRegister-stringValue" name="stringValue" value=""/>
+          <input type="hidden" name="param" value="allowInvestorsToRegister" />
+          <input type="hidden" id="allowInvestorsToRegister-redirectUrl" name="redirectUrl" value="" />
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

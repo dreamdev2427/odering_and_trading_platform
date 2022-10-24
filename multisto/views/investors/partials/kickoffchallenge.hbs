@@ -1,0 +1,202 @@
+<style>
+    .challenge-title {
+
+    }
+    .challenge-period {
+        font-size: large;
+    }
+    .challenge-rules {
+        font-weight: bold;
+        font-variant: small-caps;
+        color: red;
+    }
+    .challenge-eligible {
+        color: green !important;
+    }
+	.spacer {
+		margin-bottom: 64px;
+	}
+    .challenge-teaminvestment {
+        background:#c8a25c;
+        color:white;
+        border-radius: 8px;
+        text-align: center;
+        margin-right: 10%;
+    }
+    .line-volume {
+        background:gray;
+        color:white;
+        border-radius: 8px;
+        text-align: center;
+        align-items: center;
+        vertical-align: middle;
+        display: flex;
+        flex-flow: column;
+        min-height: 3em;
+        height: 100%;
+    }
+    .padded {
+        padding-top: 1.3%;
+    }
+    {{!-- Don't judge... --}}
+    .padded-more {
+        padding-top: 3%;
+    }
+    .line-li {
+        color: gray;
+        margin: 4px;
+    }
+    .h-line {
+        border-bottom: 3px solid gray;
+        width: 150%;
+        min-height: 1.5em;
+        padding-top:12px;
+        display:flex;
+        flex-grow: 1;
+        padding: left 0 right 0;
+        margin: left 0 right 0;
+        margin-left: -32px;
+        margin-right: -32px;
+    }
+    .v-line {
+        border-left: 1px solid #c8a25c;
+        height: 100%;
+        min-height: 5em;
+        margin-top: -16px;
+        display:flex;
+        flex-grow: 1;
+        margin-left: 12px;
+    }
+    .line-eligible {
+        color: #c8a25c;
+        border-color: #c8a25c;
+    }
+    .element-eligible {
+        background-color: #c8a25c;
+        border-color: #c8a25c;
+    }
+    .box-number {
+        color: white;
+        font-weight: bold;
+        font-size: small;
+        font-variant: small-caps;
+    }
+    .box-text {
+        color: white;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .box {
+        background-color: #c8a25c;
+        color: white;
+        display: flex;
+        align-items: center;
+        vertical-align:middle;
+        flex-flow: column;
+        height: 100%;
+    }
+    .you {
+        background-color: #c8a25c;
+        color: white;
+        display: flex;
+        align-items: center;
+        vertical-align:middle;
+        flex-flow: column;
+        border-radius: 8px;
+        margin-top: 30%;
+        margin-left: 33%;
+        margin-right: 33%;
+    }
+    .you-container {
+        flex-grow: 1;
+        height: 320px;
+        align-items: center;
+        vertical-align:middle;
+    }
+    .column-header {
+        font-size: small;
+        font-weight: bold;
+    }
+    .grow-h {
+        height:100%;
+    }
+</style>
+
+<main class="challenge-main">
+    <div class="challenge-header">
+        <div class="row">
+            <div class="col-md-4 challenge-period">
+                {{{__ "Kick Off Challenge"}}}
+                <br/>
+                <div id="challenge-period"></div>
+                <script>
+                    var dateFromD = new Date("{{kickOffData.dateFrom}}");
+                    var dateToD = new Date("{{kickOffData.dateTo}}");
+                    var dateFrom = dateFromD.toDateString();
+                    var dateTo = dateToD.toDateString();
+                    var dateStr = `${dateFrom} — ${dateTo}`;
+                    $("#challenge-period").html(dateStr);
+                </script>
+            </div>
+            <div class="col-md-4 challenge-rules {{#if kickOffData.challengeEligible}}challenge-eligible{{/if}}">
+                {{{__ "You need minimum 10 lines to be eligible for this challenge"}}}
+            </div>
+            <div class="col-md-4">
+                <div class="challenge-teaminvestment">
+                    {{{__ "Your team investment in the project"}}}
+                    <br/>
+                    <div class="box-number">{{kickOffData.teamVolume}} EUR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<div class="spacer"></div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-9">
+            <div class="col-xs-3 column-header">{{{__ "Eligible Lines"}}}: {{kickOffData.linesEligible}}/{{kickOffData.minLines}}</div>
+            <div class="col-xs-2 column-header"></div>
+            <div class="col-xs-3 column-header">{{{__ "Total required purchase volume per line"}}}</div>
+            <div class="col-xs-1 column-header"></div>
+            <div class="col-xs-3 column-header">{{{__ "Current volume per line"}}}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 you-container">
+            <div class="you">YOU</div>
+            <br/>
+            <div class="column-header">{{{__ "Total Personal Purchase Volume"}}}:</div>
+            <br/>
+            <div class="infocard">{{kickOffData.personalVolume}} EUR</div>
+            <br/>
+            <div class="infocard">{{kickOffData.personalTokenVolume}} {{{__ "Tokens"}}}</div>
+        </div>
+        <div class="col-md-9 lines">
+            {{#each kickOffData.lines}}
+                <div class="row">
+                    <div id="line{{this.lineId}}" class="line-li {{#if this.lineEligible}}line-eligible{{/if}}">
+                        <div class="grow-h col-xs-3">
+                            <div class="line-volume padded-more {{#if this.lineEligible}}element-eligible{{/if}}">
+                                Line {{this.lineNumber}}
+                                <br/>
+                                <div class="column-header" style="padding-bottom: 4px;">{{this.lineName}}</div>
+                            </div>
+                        </div>
+                        <div class="grow-h col-xs-2">
+                            <div class="h-line {{#if this.lineEligible}}line-eligible{{/if}}"></div>
+                        </div>
+                        <div class="grow-h col-xs-3 line-volume padded {{#if this.lineEligible}}element-eligible{{/if}}">
+                            {{../kickOffData.minVolume}} EUR
+                        </div>
+                        <div class="grow-h col-xs-1">
+                            <div class="v-line">&nbsp;</div>
+                        </div>
+                        <div class="grow-h col-xs-3 line-volume {{#if this.lineEligible}}element-eligible{{/if}}">
+                            {{this.volume}} EUR <br/> ({{this.tokenVolume}} Tokens)
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</main>

@@ -1,0 +1,544 @@
+{{> Header}}
+
+<script language="javascript">
+
+    var companyShares = {{shareRec.companyShares}};
+    var createOrBurnOperation = 0;           //1=create   2=burn
+    var currentShareTypeId = {{shareRec.ID}};
+    var isShareBlockchain = {{shareRec.isblockchain}};      ////1=blockchain, 0=non-blockchain
+    var isShareNeedAuthorization = {{shareRec.needauthorization}};
+    var blockchainProtocol = {{shareRec.blockchainProtocol}};
+
+    var smartContractAddress = "{{shareRec.ethereumContractAddress}}";
+    var companyBlockchainPublicAddress = "{{shareRec.ethereumBlockchainPublicAddress}}";
+    var blockchainDecimals = "{{shareRec.blockchainDecimals}}"
+
+    var isMetaMaskConnected = 0;
+    var metaMaskAddress = "";
+
+	$(document).ready(function() {
+		$("#NewTokens").addClass('active');
+
+        $("#shareTypeSelect").val(currentShareTypeId);
+	})
+	function generateSharesCallToBlockchain() {
+
+        if(isShareBlockchain == 1) {
+            if(isShareNeedAuthorization == 1) {
+                document.getElementById("generateNonBlockchainShare").submit();
+                return;
+            } else {
+                //alert("ddd")
+                if( isEthereumBasedProtocolID(blockchainProtocol) ) {
+                    if(isMetaMaskConnected == 0) {
+                        $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+                        initializePublicKeyFileObject();              
+                    } else if(isMetaMaskConnected == 1) {
+                        if(companyBlockchainPublicAddress.toLowerCase() == metaMaskAddress.toLowerCase())
+                            createBurnTokensMetaMask(companyBlockchainPublicAddress, document.getElementById("nonTokens").value, smartContractAddress, blockchainDecimals, 1);
+                        else {
+                            showModelGeneralOKDialogBox("Please select company account (" + companyBlockchainPublicAddress + ") in MetaMask");
+                            return;
+                        }
+
+                    }                    
+                } else if (blockchainProtocol == 3 || blockchainProtocol == 7) {
+                    document.getElementById("password2").value = "";
+                    document.getElementById("filecontents2").value = "";            
+                    document.getElementById("generateNonBlockchainShare").submit();
+                }
+            }
+        } else {
+            document.getElementById("generateNonBlockchainShare").submit();
+            return;
+        }
+	}
+	function submitGenerateSharesForm() {
+
+		var res = "";
+
+            if(document.getElementById("nonTokens").value == "") {
+                showModelGeneralOKDialogBox("Please enter shares to create");
+                return;
+            }
+
+            if (isNaN(document.getElementById("nonTokens").value)) {
+                showModelGeneralOKDialogBox("Share value must be numeric");
+                return;
+            }
+
+            if (document.getElementById("nonTokens").value <= 0) {
+                showModelGeneralOKDialogBox("Share value cannot be negative or zero");
+                return;
+            }
+            
+            $("#tokensToGenerate2").html(document.getElementById("nonTokens").value);
+
+        createOrBurnOperation = 1;
+        $('#myModalNew').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+	}
+	function submitBurnSharesForm() {
+		    var res = "";
+
+            if(document.getElementById("nonTokensdel").value == "") {
+                showModelGeneralOKDialogBox("Please enter shares");
+                return;
+            }
+            if (isNaN(document.getElementById("nonTokensdel").value)) {
+                showModelGeneralOKDialogBox("Value must be numeric");
+                    return;
+            }
+            if (document.getElementById("nonTokensdel").value <= 0) {
+                showModelGeneralOKDialogBox("Share value cannot be negative or zero");
+                return;
+            }
+            if(document.getElementById("nonTokensdel").value > companyShares) {
+                showModelGeneralOKDialogBox("Value must be less or equal to " + companyShares);
+                return;
+            }
+
+            $("#nonBlockchainTokensDels").html(document.getElementById("nonTokensdel").value);
+
+            createOrBurnOperation = 2;
+
+            $('#myModalDel').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+	}
+	function delSharesCallToBlockchain(){
+        if(isShareBlockchain == 1) {
+            if(isEthereumBasedProtocolID(blockchainProtocol) ) {
+                if(isMetaMaskConnected == 0) {
+                    $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+                    initializePublicKeyFileObject();            
+                } else if(isMetaMaskConnected == 1) {
+                    if(companyBlockchainPublicAddress.toLowerCase() == metaMaskAddress.toLowerCase())                    
+                        createBurnTokensMetaMask(companyBlockchainPublicAddress, document.getElementById("nonTokensdel").value, smartContractAddress, blockchainDecimals, 2);
+                    else {
+                        showModelGeneralOKDialogBox("Please select company account (" + companyBlockchainPublicAddress + ") in MetaMask");
+                        return;
+                    }
+                } 
+            } else if (blockchainProtocol == 3 || blockchainProtocol == 7) {
+                document.getElementById("password2").value = "";
+                document.getElementById("filecontents2").value = "";            
+                document.getElementById("burnNonBlockchainShare").submit();
+            }
+        } else {
+            document.getElementById("burnNonBlockchainShare").submit();
+            return;
+        }
+	}
+    function callbackPublicKeyFileAndPasswordCollected(fileContents, password) {
+
+        if (createOrBurnOperation == 1) {    //create blockchain
+            document.getElementById("password2").value = password;
+            document.getElementById("filecontents2").value = fileContents;
+            document.getElementById("generateNonBlockchainShare").submit();
+        } else {
+            document.getElementById("password").value = password;
+            document.getElementById("filecontents").value = fileContents;
+            document.getElementById("burnNonBlockchainShare").submit();
+        }
+
+    }
+    function selectNewShareType() {
+        var e = document.getElementById("shareTypeSelect");
+        var id = e.options[e.selectedIndex].value;
+        window.location.href = "newtoken?id=" + id;
+    }
+    function approveshares(id) {
+        window.location.href = "approveshares?id=" + id;
+    }
+    function connectMetaMask() {
+        connectWallet();
+    }    
+    function Wallet_BlockchainAccountSelected(account) {
+        $("#metaMaskSection").show();
+        $("#metaMaskAccountAddress").html( account );
+
+        isMetaMaskConnected = 1;
+        metaMaskAddress = account;
+
+        //getAccountBalanceFromBlockchain(account, smartContractAddress).then((data)=> {
+            //alert(data)
+        //})
+        
+    }
+    function Wallet_TransactionEvent(hash, operation) {
+        if(operation == 1) {
+            document.getElementById("metaMaskTransaction").value = "1"
+            document.getElementById("blockchainTransactionID").value = hash;            
+            document.getElementById("generateNonBlockchainShare").submit();
+        } else {
+            document.getElementById("metaMaskTransaction2").value = "1"
+            document.getElementById("blockchainTransactionID2").value = hash;            
+            document.getElementById("burnNonBlockchainShare").submit();
+        }
+    }
+</script>
+
+
+{{> HeaderInnerSto}}
+
+    <b><span style="color:red;">{{message}}</span></b>
+
+	<div class="row">
+        <div class="card">
+				<div class="header">
+					<h4 class="title">
+                        {{#if shareRec.isblockchain}}
+                            <img src="/img/blockchainwallet.png" width="30px;"  style="padding-bottom:5px;"/> &nbsp;
+                        {{else}}
+                            <img src="/img/nonblockchain.png" width="30px;"  style="padding-bottom:5px;"/> &nbsp;
+                        {{/if}}
+                        Manage Shares
+                    </h4>
+				</div>
+				<div class="content">
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label>Select share class from list</label> &nbsp;&nbsp;&nbsp;
+                                <select id="shareTypeSelect" onchange="selectNewShareType()" class="form-control border-input" style="min-width:400px; background:transparent;  padding:5px; font-size:15px;">
+                                    &nbsp;&nbsp;&nbsp;
+                                    {{#each shareTypes}}
+                                        <option value="{{this.ID}}">
+                                            {{this.title}}
+                                            &nbsp;&nbsp;&nbsp;
+                                            Nominal &nbsp;&nbsp;{{currencySymbol this.currencyid}} {{this.nominalValue}}
+                                            {{#if this.premimum}}
+                                                &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                                                Market
+                                                &nbsp;&nbsp; {{currencySymbol this.currencyid}} {{this.premimum}}
+                                            {{/if}}
+                                        </option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+
+                        <br />
+                        {{#if shareRec.isblockchain}}
+                            <img src="/img/blockchainwallet.png" width="25px;"  style="padding-bottom:5px;"/> &nbsp; <label>Blockchain Share Class</label>
+                        {{else}}
+                            <img src="/img/nonblockchain.png" width="25px;"  style="padding-bottom:5px;"/> &nbsp; <label>Internal Share Class</label>
+                        {{/if}}
+                        <br />
+                        <label>Nominal Value</label> &nbsp;&nbsp; <b>{{currencySymbol shareRec.currencyid}} {{shareRec.nominalValue}}</b>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label>Market</label> &nbsp;&nbsp;
+                        {{#if shareRec.premimum}}
+                            <b> {{currencySymbol shareRec.currencyid}} {{shareRec.premimum}}</b>
+                        {{else}}
+                            n/a
+                        {{/if}}
+                        <br /><br />
+
+
+                        {{#if shareRec.isblockchain}}
+                            <hr />
+                                <button type="button" class="btn btn-info btn-fill btn-wd" onclick="connectMetaMask()">Connect MetaMask</button> 
+                                &nbsp;&nbsp;&nbsp;
+                                <span id="metaMaskSection" style="display:none;">
+                                    <img src="/img/greendot.png" width="20px;"> Meta Mask is connected
+
+                                    <br /><br />
+
+                                    <span id="metaMaskAccountAddress"></span> 
+                                    &nbsp;&nbsp;&nbsp;
+                                    ( Please make sure this is the correct address to send transaction )
+                                    
+                                </span>
+                            <hr />                        
+                        {{/if}}
+
+
+                        {{#ifIn 20 Data.AdminRights}}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5><img src="/img/add.png" width="20px" ;=""> &nbsp; Create New Shares</h5>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Total Shares &nbsp;  </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <b>&nbsp; {{numberFormat shareRec.totalShares decimalLength="3"}} &nbsp; <img src="/img/shares.jpg" width="35px;" style="padding-bottom:2px;" /> </b>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Shares not yet sold  &nbsp;&nbsp; </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <b>&nbsp; {{numberFormat shareRec.companyShares decimalLength="3"}} &nbsp; <img src="/img/shares.jpg" width="35px;" style="padding-bottom:2px;" /> </b>
+                                        </div>
+                                    </div>
+
+                                    <form id="generateNonBlockchainShare" name="generateNonBlockchainShare" action="generatetoken" method="post">
+
+                                        <div class="row">
+                                            <div class="col-md-6">                                                
+                                                <label>How many new shares to generate</label>
+                                                <input type="text"  maxlength="9" id="nonTokens" name="nonTokens" class="form-control border-input" placeholder="Enter Shares" value="">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-11">
+                                                <label>Enter Reason</label>
+                                                <textarea id="txtaddreasons" name="txtaddreasons" rows="4" class="form-control border-input" placeholder="Please enter the reason behind the change"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-left">
+                                            <button type="button" onclick="submitGenerateSharesForm()" class="btn btn-info btn-fill btn-wd">Generate New Shares</button>
+                                        </div>
+
+                                        <input type="hidden" id="password2" name="password" value="" >
+                                        <input type="hidden" id="filecontents2" name="filecontents" value="" >
+                                        <input type="hidden" id="sid" name="sid" value="{{shareRec.ID}}" >
+                                        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" >
+                                        <input type="hidden" id="blockchainTransactionID" name="blockchainTransactionID" value="" />
+                                        <input type="hidden" id="metaMaskTransaction" name="metaMaskTransaction" value="0" />
+                                        <input type="hidden" id="newTokenType" name="newTokenType" value="{{shareRec.isblockchain}}" >
+                                     </form>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h5><img src="/img/minus.png" width="20px" ;=""> &nbsp; Burn Shares</h5>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <b>Company owns {{numberFormat shareRec.companyShares decimalLength="3"}}  shares  which are not yet sold </b>
+                                        </div>
+                                    </div>
+                                    <br />                                    
+
+                                    <form id="burnNonBlockchainShare" name="burnNonBlockchainShare" action="burntokeninblockchain" method="post">
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>How many shares to remove</label>
+                                                <input type="text"  maxlength="9" id="nonTokensdel" name="nonTokensdel" class="form-control border-input" placeholder="Enter Shares" value="">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-11">
+                                                <label>Enter Reason</label>
+                                                <textarea id="txtremovereasons" name="txtremovereasons" rows="4" class="form-control border-input" placeholder="Please enter the reason behind the change"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <button type="button" onclick="submitBurnSharesForm()" class="btn btn-info btn-fill btn-wd">Burn Shares</button>
+                                            </div>
+                                        </div>
+
+
+                                        <input type="hidden" id="password" name="password" value="" >
+                                        <input type="hidden" id="filecontents" name="filecontents" value="" >
+                                        <input type="hidden" id="sid" name="sid" value="{{shareRec.ID}}" >
+                                        <input type="hidden" id="blockchainTransactionID2" name="blockchainTransactionID" value="" />
+                                        <input type="hidden" id="metaMaskTransaction2" name="metaMaskTransaction" value="0" />                                        
+                                        <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" >
+                                        <input type="hidden" id="burnSharesType" name="burnSharesType" value="{{shareRec.isblockchain}}" >
+                                    </form>
+                                    <br />
+                                </div>
+                            </div>
+                        {{/ifIn}}
+				</div>
+
+                <br />
+			</div>
+	</div>
+
+    {{#ifIn 18 Data.AdminRights}}
+        {{#if pendingRequest.length}}
+	   <div class="row topPaddingBetweenPageSections">
+
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"><img src="/img/addmore.png" width="26px;"  style="padding-bottom:5px;"/> &nbsp; Pending requests for share creation </h4>
+                        <label>New share creation requestes found. Please view and approve creation of shares</label>
+                    </div>
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-striped">
+                                    <thead style="font-size:12px;">
+                                        <th><b>Date</b></th>
+                                        <th><b>Share Type</b></th>
+                                        <th><b>Shares</b></th>
+                                        <th><b>Requested by</b></th>
+                                        <th><b>Desc</b></th>
+                                        <th></th>
+                                    </thead>
+                                    <tbody>
+                                        {{#each pendingRequest}}
+                                        <tr>
+                                            <td style="width: 15%; vertical-align: top;">{{this.LogDate}} </td>
+                                            <td style="width: 35%; vertical-align: top;">
+                                                {{this.title}}
+                                                <br />
+                                                <img width="20px" src="/img/nominalvalue.png" /> &nbsp; {{currencySymbol this.currencyid}} {{this.nominalvalue}}
+                                                &nbsp;
+                                                {{#if this.premimum}}
+                                                    <img width="20px" src="/img/premimum.png" /> &nbsp; {{currencySymbol this.currencyid}} {{this.premimum}}
+                                                {{/if}}
+                                            </td>
+                                            <td style="width: 5%; vertical-align: top;"> {{this.tokens}}</td>
+                                            <td style="width: 15%; vertical-align: top;">{{this.FirstName}} {{this.LastName}}</td>
+                                            <td style="width: 25%; vertical-align: top;">{{this.description}}</td>
+                                            <td style="width: 5%; vertical-align: top;">
+                                                <button onclick="approveshares({{this.ID}})" class="btn btn-info btn-fill btn-sm">View / Approve</button>
+                                            </td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+       </div>
+    {{/if}}
+    {{/ifIn}}
+
+	<div class="row topPaddingBetweenPageSections">
+
+			<div class="card">
+				<div class="header">
+					<h4 class="title"><img src="/img/summay.png" width="30px;"  style="padding-bottom:5px;"/> &nbsp; Activity Logs </h4>
+				</div>
+				<div class="content">
+                    <div class="row">
+                        <div class="col-md-12">
+                             {{#if SharesLogRecords.length}}
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            {{#each SharesLogRecords}}
+                                            <tr>
+                                                <td style="width: 5%; vertical-align: top;">
+                                                    {{#ifEqual this.ActivityType 7}}
+                                                        <img src="/img/add.png" width="17px;"/>
+                                                    {{else}}
+                                                        <img src="/img/minus.png" width="17px";/>
+                                                    {{/ifEqual}}
+                                                </td>
+                                                <td style="width: 15%; vertical-align: top;">{{this.LogDate}} </td>
+                                                <td style="width: 15%; vertical-align: top;">{{this.UserFirstName}} {{this.UserLastName}}</td>
+                                                <td style="width: 60%; vertical-align: top;">{{this.Description}}</td>
+                                            </tr>
+                                            {{/each}}
+                                        </tbody>
+                                    </table>
+                                    <br />
+                                    &nbsp; <img src="/img/add.png" width="20px;"/> &nbsp;&nbsp; New Shares Created
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <img src="/img/minus.png" width="20px;"/> &nbsp; Company Shares Burn / Removed
+                                    <br />&nbsp;
+                            {{else}}
+                                <label>No activity found</label>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div class = "modal fade" id="myModalNew" tabindex = "-1" role = "dialog"
+       aria-labelledby = "myModalLabel" aria-hidden = "true">
+
+       <div class = "modal-dialog">
+          <div class = "modal-content">
+
+             <div class = "modal-header">
+                <button type = "button btn-info btn-fill" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+                <h4 class = "modal-title" id="myModalLabel"> <img src="/img/add.png" width="22px" /> &nbsp; Generate Shares</h4>
+             </div>
+
+            <div class = "modal-body">
+                Are you sure you want to generate <b ><span id="tokensToGenerate2"></span></b> more share(s) ?
+
+                Please ensure that generating these shares is covered <br />
+                <br />
+                <div class="row">
+                    <div class="col-md-1"> <img src="/img/graydot.png" width="10px" /> </div>
+                    <div class="col-md-11">
+                        By a valid decision of the General Assembly (and the Board of Directors in case of an approved capital increase)
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-1"> <img src="/img/graydot.png" width="10px" /> </div>
+                    <div class="col-md-11">
+                        By a duly signed subscription form
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-1"> <img src="/img/graydot.png" width="10px" /> </div>
+                    <div class="col-md-11">
+                        Payment of the shares by the investor
+                    </div>
+                </div>
+            </div>
+
+             <div class = "modal-footer">
+                <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="generateSharesCallToBlockchain()">Generate Shares</button>
+                <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal">Cancel</button>
+             </div>
+
+          </div><!-- /.modal-content -->
+       </div><!-- /.modal-dialog -->
+
+    </div><!-- /.modal -->
+
+    <!-- Modal -->
+    <div class = "modal fade" id="myModalDel" tabindex = "-1" role = "dialog"
+       aria-labelledby = "myModalLabel" aria-hidden = "true">
+
+       <div class = "modal-dialog">
+          <div class = "modal-content">
+
+             <div class = "modal-header">
+                <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+                <h4 class = "modal-title" id = "myModalLabel"> <img src="/img/minus.png" width="22px" /> &nbsp;  Remove Shares</h4>
+             </div>
+
+             <div class = "modal-body">
+                Are you sure you want to remove <span id="nonBlockchainTokensDels"></span> share(s) ?
+                <br /><br />
+
+                <div class="row">
+                    <div class="col-md-1"> <img src="/img/graydot.png" width="10px" /> </div>
+                    <div class="col-md-11">
+                        Please ensure that removing these shares is covered by a valid descision of the General Assembly.
+                    </div>
+                </div>
+                <br />
+
+                <br />
+             </div>
+
+
+             <div class = "modal-footer">
+                <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="delSharesCallToBlockchain()"> Remove Shares </button>
+                <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+             </div>
+
+          </div><!-- /.modal-content -->
+       </div><!-- /.modal-dialog -->
+
+    </div><!-- /.modal -->
+
+
+{{> atomicswap}}
+{{> privateKeySelectorDialog}}
+{{> Footer}}

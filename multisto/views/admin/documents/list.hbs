@@ -1,0 +1,439 @@
+{{> Header}}
+
+<script language="javascript">
+        var currentDirID = {{id}};
+        var fullPublicPath = "{{fullPublicPath}}";
+
+        $(document).ready(function() {
+            $("#documents").addClass('active');
+        })
+
+        var currentop = 0;
+        var currentid = 0;
+        var currentdir = 0;
+        var docdata = 0;
+        var dirID = 0;
+        var currentOP = 0;
+
+        function newDoc() {
+            window.location.href = "doc?dirid={{id}}";
+            return false;
+        }
+        function editdoc(id, dir) {
+             window.location.href = "doc?id=" + id + "&dirid=" + dir;
+        }
+        function deletedoc(id, dir) {
+            currentop = 1;
+            currentid = id;
+            currentdir = dir;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete the file ?", "Delete" , "Cancel");
+        }
+        function generalModelOKButtonClickedClientEvent() {
+            if(currentop == 1)
+                window.location.href = "docdelete?id=" + currentid + "&dirid=" + currentdir;
+            else if(currentop == 2)
+                window.location.href = "deletedir?id=" + currentid + "&dirid=" + currentdir;
+            else if(currentop == 3)
+                window.location.href = "activatedirectoryforinvestoreview?id=" + currentid + "&dirid=" + currentdir + "&act=" + docdata;
+            else if(currentop == 4)
+                window.location.href = "deleteFileFromDirectory?id=" + currentDirID + "&filid=" + currentid;
+            else if(currentop == 5)
+              window.location.href = `deleteDocumentUser?id=${currentid}`;
+        }
+        function senddoc(id) {
+            window.location.href = "senddoc?docid=" + id;
+            return false;
+        }
+        function currentoffers() {
+            window.location.href = "listofcurrentoffers";
+        }
+        function deletedir(id, parentdirid) {
+            currentop = 2;
+            currentid = id;
+            currentdir = parentdirid;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete the directory ?", "Delete" , "Cancel");
+        }
+        function activatedocumentforinvestor(id, parnetdirid, op, type) {
+            /*currentop = 3;
+            currentid = id;
+            currentdir = parnetdirid;
+            docdata = op;
+
+            if(type == 0) {
+                if(op == 0)
+                    showModelGeneralYesNoDialogBox("Are you sure you want to de-activate document for investor review and take suggestions ?", "De-Activate" , "Cancel");
+                else
+                    showModelGeneralYesNoDialogBox("Are you sure you want to activate document for investor review and take suggestions ?", "Activate" , "Cancel");
+            } else {
+                if(op == 0)
+                    showModelGeneralYesNoDialogBox("Are you sure you want to de-activate document for investor view ?", "De-Activate" , "Cancel");
+                else
+                    showModelGeneralYesNoDialogBox("Are you sure you want to activate document for investor view ?", "Activate" , "Cancel");
+            }*/
+
+            window.location.href = "doccommentoffer?id=" + id + "&dirid=" + parnetdirid;
+            return false;
+        }
+
+        function createNewDir() {
+            currentOP = 0;
+            $("#modelBoxTitle").html("Create New Directory")
+            $("#createButton").html("Create");
+            $('#changeDirName').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            document.getElementById("txtDirectoryName").value = "";
+        }
+        function changeDirectoryName(id, dirname) {
+            currentOP = 1;
+            $("#modelBoxTitle").html("Change Directory Name")
+            dirID = id;
+            $("#createButton").html("Change");
+            document.getElementById("txtDirectoryName").value = dirname;
+            $('#changeDirName').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        }
+        function changeDirNameEvent() {
+            if(currentOP == 0) {
+                if(document.getElementById("txtDirectoryName").value == "") {
+                    showModelGeneralOKDialogBox("Please enter directory name");
+                    return;
+                }
+
+                window.location.href = "createdir?id=" + currentDirID + "&dir=" + document.getElementById("txtDirectoryName").value;
+                return false;
+            } else {
+                window.location.href = "changeDirectoryName?id=" + currentDirID + "&dirid=" + dirID + "&name=" + document.getElementById("txtDirectoryName").value;
+            }
+        }
+
+        function uploadFileDialog(type) {
+            document.getElementById("filetype").value = type;
+            $('#uploadFiles').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        }
+        function fileValidation() {
+            checkAndUpdateMultiFileUpload('files222', 'upload-file2', MultifileMultifileExtensions2, MultifileMultifileExtensions2msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);
+        }
+        function uploadFileToDir() {
+            const progressBar = 'fileUplodProgressUpload' + document.getElementById("filetype").value;
+            uploadMultiplefilesToServer('files222', progressBar, 3, '/admin/uploadFiles');
+        }
+        function multipleFilesUploadingDoneEvent(data) {
+            document.getElementById("title").value = document.getElementById("txtUploadFileTitle").value;
+            document.getElementById("files").value = JSON.stringify(data);
+            document.getElementById("frmuploadfiles").submit();
+        }
+        function deleteFile(id) {
+            currentop = 4;
+            currentid = id;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete the file ?", "Delete" , "Cancel");
+        }
+        function downloadUploadedFile(id) {
+            window.location.href = "downloadUploadedDocFile?id=" + id;
+        }
+
+        function showMessageCannotOffer() {
+            showModelGeneralOKDialogBox("Contract is currently active for investor review and suggestion. Please first deactive the contract for investor suggestions");
+        }
+
+        function showFileLink(lnk) {
+            var str = "Public Link is  <br /><br />" + fullPublicPath + "/docs/" + lnk
+            showModelGeneralOKDialogBox(str);
+        }
+
+        function gotoOfferedContractList(docid, offerid, dirid) {
+            window.location.href = "senddoccontracts?docid=" + docid + "&id=" + offerid + "&dirid=" + dirid;
+        }
+
+        function viewSignedContracts() {
+          window.location.href = "viewSignedContracts";
+        }
+
+	</script>
+
+<style>
+    .linkStyle100 {
+        cursor: pointer;
+        padding:5px;
+    }
+</style>
+
+{{> HeaderInnerSto}}
+
+{{>multifileupload}}
+
+
+{{#if docMessage}}
+    <b> <span style="color:red;"> {{docMessage}} </span> </b>
+    <br /><br />
+{{/if}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title"> <img src="/img/documents2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Documents</h4>
+                        <lable></lable>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        {{#ifGreater id 0}}
+                            <div class="row">
+                                <div class="col-md-2">
+                                        <a href="backdir?id={{id}}">
+                                            <img src="/img/back.png" width="20px;" style="padding-bottom:4px;" />
+                                            <span style="color:black; font-size:16px;";>Back</span>
+                                        </a>
+                                </div>
+                                <div class="col-md-8">
+                                        Current Directory
+                                        &nbsp;
+                                        ( <span style="font-size:14px;">{{dir}}</span> )
+                                </div>
+                            </div>
+                            <br /><br />
+                        {{/ifGreater}}
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                {{#ifIn 15 Data.AdminRights}}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <h5>Folders</h5>
+                                        </div>
+                                        <div class="col-md-2">
+                                        {{#ifIn 32 Data.AdminRights}}
+                                                <button type="button" onclick="return createNewDir()" class="btn btn-info btn-fill btn-sm"> &nbsp; New Directory &nbsp; </button>
+                                        {{/ifIn}}
+                                        </div>
+                                    </div>
+                                    {{#if dirRec.length}}
+                                        {{#each dirRec}}
+                                            <div class="row" style="padding-top:10px;" >
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-8" >
+                                                        {{#ifIn 32 ../Data.AdminRights}}
+                                                            <a onclick="deletedir({{this.ID}}, {{this.parentid}})" class="linkStyle100 hovercolor" ><img src="/img/cross.png" width="13px;"  /></a> &nbsp;
+                                                        {{/ifIn}}
+
+                                                        <img src="/img/folder.png" width="25px;"/> &nbsp;
+                                                        <a href="directorylist?id={{this.ID}}&dir={{this.title}}">  {{this.title}}  </a>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        {{#ifIn 32 ../Data.AdminRights}}
+                                                            <a onclick="changeDirectoryName({{this.ID}}, '{{this.title}}')" class="linkStyle100 hovercolor" title="Edit Directory Name"><img src="/img/edit.png" width="25px;" /></a>
+                                                        {{/ifIn}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{/each}}
+                                    {{else}}
+                                       <label> No Directory Found</label>
+                                    {{/if}}
+                                {{/ifIn}}
+                                {{#ifIn 30 Data.AdminRights}}
+                                    {{> DocumentDraftsPartial}}
+                                {{/ifIn}}
+                                {{#ifIn 37 Data.AdminRights}}
+                                  {{#if signedContractsCount}}
+                                    <hr />
+                                    <div class="row">
+                                      <div class="col-md-4">
+                                        <h5><b>Investor Signed Contracts:</b> {{signedContractsCount}}</h5>
+                                      </div>
+                                      <div class="col-md-8">
+                                        <button type = "button" class = "btn btn-info btn-fill" onclick="viewSignedContracts()"
+                                                data-dismiss = "modal">View Signed Contracts</button>
+                                      </div>
+                                      <hr />
+                                    </div>
+                                  {{/if}}
+                                {{/ifIn}}
+                                {{#ifIn 16 Data.AdminRights}}
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <h5>Platform Bound Files</h5>
+                                            <label>Files uploaded will only be visible within the platform</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                        {{#ifIn 35 Data.AdminRights}}
+                                            <button type="button" onclick="return uploadFileDialog(2)" class="btn btn-info btn-fill btn-sm"> &nbsp; Upload File &nbsp; </button>
+                                        {{/ifIn}}
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="progress" style="display: none;">
+                                               <div id="fileUplodProgressUpload2" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{#if nonEditableFilesRec.length}}
+                                        {{#each nonEditableFilesRec}}
+                                            <div class="row"  style="padding-top:10px;">
+                                                <div class="col-md-8" >
+
+                                                    {{#ifIn 35 ../Data.AdminRights}}
+                                                        <a onclick="deleteFile({{this.ID}}, {{this.parentid}})" class="linkStyle100 hovercolor" ><img src="/img/cross.png" width="13px;"  /></a> &nbsp;
+                                                    {{/ifIn}}
+
+                                                    <img src="/img/file.png" width="28px;"  /> &nbsp;
+                                                     {{title}}
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <a onclick="downloadUploadedFile({{this.ID}})" class="linkStyle100 hovercolor" title="Downoad File"><img src="/img/download.png" width="25px;" /></a>
+
+                                                    {{!-- {{#ifIn 35 ../Data.AdminRights}}
+                                                        <a onclick="activatedocumentforinvestor({{this.ID}}, {{this.directoryid}},
+                                                            {{#if this.isactiveforinvestors}} 0 {{else}} 1 {{/if}}, 1)" class="linkStyle100 hovercolor"  data-toggle="tooltip" data-placement="top"
+
+                                                           {{#if this.isactiveforinvestors}}
+                                                                title="Click to de-activate document for Investor dashboard"
+                                                            {{else}}
+                                                                title="Click to activate document for Investor dashboard"
+                                                           {{/if}} >
+
+                                                            {{#if this.isactiveforinvestors}}
+                                                                <img src="/img/reddot.png" width="23px;" />
+                                                            {{else}}
+                                                                <img src="/img/emptycircle.png" width="23px;" />
+                                                            {{/if}}
+                                                        </a>
+                                                    {{/ifIn}} --}}
+
+                                                </div>
+                                            </div>
+                                        {{/each}}
+                                    {{else}}
+                                        <label>No Files Found</label>
+                                    {{/if}}
+                                {{/ifIn}}
+                                {{#ifIn 31 Data.AdminRights}}
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <h5>Publicly Sharable Files</h5>
+                                            <label>Files uploaded will generate their own unique sharable link which can be posted and viewed outside the platform</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                        {{#ifIn 36 Data.AdminRights}}
+                                            <button type="button" onclick="return uploadFileDialog(3)" class="btn btn-info btn-fill btn-sm"> &nbsp; Upload File &nbsp; </button>
+                                        {{/ifIn}}
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="progress" style="display: none;">
+                                               <div id="fileUplodProgressUpload3" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{#if publicFiles.length}}
+                                        {{#each publicFiles}}
+                                            <div class="row"  style="padding-top:10px;">
+                                                <div class="col-md-8" >
+
+                                                    {{#ifIn 36 ../Data.AdminRights}}
+                                                        <a onclick="deleteFile({{this.ID}}, {{this.parentid}})" class="linkStyle100 hovercolor" ><img src="/img/cross.png" width="13px;"  /></a> &nbsp;
+                                                    {{/ifIn}}
+
+                                                    <img src="/img/file.png" width="28px;"  /> &nbsp;
+                                                    {{title}}
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <a onclick="showFileLink('{{this.contents}}')" class="linkStyle100 hovercolor" title="Show Public Link"><img src="/img/webshare1.png" width="22px;" /></a>
+                                                </div>
+                                            </div>
+                                        {{/each}}
+                                    {{else}}
+                                        <label>No Files Found</label>
+                                    {{/if}}
+                                {{/ifIn}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br/><br/><br/><br/>
+                &nbsp;<img src="/img/emptycircle.png" width="20px;" /> Document is not active for investor review / suggestions
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <img src="/img/reddot.png" width="20px;" /> Document is active for investor review  / suggestions
+                <br />
+                <img src="/img/offer.png" width="30px;" /> Offer document as contract to investors
+            </div>
+            <br />
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="changeDirName" tabindex="-1" role="dialog" aria-labelledby="changeDirName" aria-hidden="true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h5 class = "modal-title" id = "myModalLabel">
+                <span id="modelBoxTitle"> </span>
+            </h5>
+         </div>
+
+         <div  class="modal-body">
+             <input type="text" id="txtDirectoryName"  maxlength="70" class="form-control border-input" />
+         </div>
+         <br /><br />
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="changeDirNameEvent()" id="createButton">  </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="uploadFiles" tabindex="-1" role="dialog" aria-labelledby="uploadFiles" aria-hidden="true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h5 class = "modal-title" id = "myModalLabel">
+                Upload file in current directory
+            </h5>
+         </div>
+
+         <div  class="modal-body">
+             <b>Document Title</b>
+             <input type="text" id="txtUploadFileTitle" placeholder="Enter Document Title"  maxlength="70" class="form-control border-input" />
+             <br />
+             <div class="upload-btn-wrapper">
+                 <button class="btnfile">Select File</button>
+                 <input   id="files222"   name="files222" type="file"  onchange="fileValidation(2)" >
+                 &nbsp;&nbsp;&nbsp;&nbsp;
+                 <span style="color: green; font-size: 12px; " id="upload-file2">No File Selected</span>
+             </div>
+         </div>
+         <br /><br />
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="uploadFileToDir()" id="createButton"> Upload </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<form id="frmuploadfiles" name="frmuploadfiles" action="/admin/fileUploadinDirectory"  method="post">
+    <input type="hidden" id="id" name="id" value="{{id}}" />
+    <input type="hidden" id="filetype" name="type" value="" />
+    <input type="hidden" id="title" name="title" value="" />
+    <input type="hidden" id="files" name="files" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

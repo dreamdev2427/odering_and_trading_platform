@@ -1,0 +1,307 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {
+        $("#sto").addClass('active');                
+    })
+    function opensto(id) {
+          window.location.href = "switchtosto?id=" + id;
+          return false;
+    }
+    function openusettings(id) {
+          window.location.href = "settings?id=" + id;
+          return false;        
+    }
+    function openspublic(id) {
+          window.location.href = "stopublic?id=" + id;
+          return false;        
+    }
+    function enableDisableSTO(id, en) {
+          window.location.href = "enableDisablePublicSTO?id=" + id + "&en=" + en;
+          return false;
+    }
+    function openusers(id) {
+        window.location.href = "systemuserslist?stoid=" + id;
+        return false;        
+    }
+    function newSto(type) {
+        window.location.href = "newsto?isICO=" + type;
+        return false;  
+    }
+    function editsto(id) {
+        window.location.href = "newsto?id=" + id;
+        return false;          
+    }
+    function editshares(id) {
+        window.location.href = "shareslist?id=" + id;
+        return false;          
+    }
+    function editroles(id) {
+        window.location.href = "roleslist?id=" + id;
+        return false;          
+    }
+    function activateproperty(id, status) {
+        window.location.href = "activtepropertystatu?id=" + id + "&status=" + status;
+        return false;  
+    }
+    function activatebuyproperty(id, status) {
+        window.location.href = "activtepropertystatusBuy?id=" + id + "&status=" + status;
+        return false;  
+    }	
+    function openfilesupload(id) {
+        window.location.href = "uploadSTORelatedFiles?id=" + id;
+        return false;  
+    }    
+
+	function redirectConfig(id) {
+		window.location.href = '/platform/stoparam?stoid=' + id
+	}
+
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+{{#if message}}
+    <span style="color:red;">{{{message}}}</span>
+    <br /><br />&nbsp;
+{{/if}}
+
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-6">
+                         <h4 class="title"> <img src="/img/maincompany.png" width="35px" /> &nbsp; Platform Operator</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+				<br /><br />								
+						{{#each mainrecord}}
+							<div class="row">
+									<div class="col-md-2">
+											<img src='/img/stologo/{{this.logo}}' style="max-width:100px; max-height:50px;"> 
+									</div>
+									<div class="col-md-4">
+											<b>{{this.title}}</b>
+									</div>                           
+									<div class="col-md-3">
+											{{this.stolink}}
+									</div>
+
+							</div>
+							<br />
+							<div class="row">
+									<div class="col-md-12">
+											<button onclick="return editsto({{this.ID}})" class="btn btn-info btn-fill btn-sm">Edit</button>
+											&nbsp;&nbsp;&nbsp;
+										   <button onclick="return openusettings({{this.ID}})" class="btn btn-info btn-fill btn-sm">Settings</button>
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return editshares({{this.ID}})" class="btn btn-info btn-fill btn-sm">Shares</button>                                
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return editroles({{this.ID}})" class="btn btn-info btn-fill btn-sm">Roles</button>                          
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return openusers({{this.ID}})" class="btn btn-info btn-fill btn-sm">Users</button>
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return openfilesupload({{this.ID}})" class="btn btn-info btn-fill btn-sm">Files / Pics</button>
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return redirectConfig({{this.ID}})" class="btn btn-info btn-fill btn-sm">Config</button>
+									</div>   
+							</div>
+							<br />
+						{{/each}}
+
+            </div>
+        </div>
+    </div>								
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-7">
+                         <h4 class="title"> <img src="/img/company.png" width="30px" /> &nbsp;  Hosted Projects</h3>
+                    </div>
+                    <div class="col-md-5">
+                        <button onclick="return newSto(0)" class="btn btn-info btn-fill">New Project</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+				<br /><br />
+				{{#if STORecords.length}}
+				
+						{{#each STORecords}}
+							<br />
+							<div class="row">
+									<div class="col-md-2">
+											<img src='/img/stologo/{{this.logo}}' style="max-width:100px; max-height:50px;"> 
+									</div>
+									<div class="col-md-4">
+											<b>{{this.title}}</b>		
+											{{#if this.BlockchainName}}
+												&nbsp;&nbsp;&nbsp;
+												( {{this.BlockchainName}} )
+											{{/if}}
+									</div>                           
+									<div class="col-md-3">
+											{{this.stolink}}
+									</div>
+									<div class="col-md-3">
+											{{#ifGreater this.ID 0}}
+												{{#if this.isActive}}
+														<img src="/img/greendot.png" width="22px"> &nbsp;&nbsp;  Active &nbsp;&nbsp; 
+														<button onclick="return activateproperty({{this.ID}}, 0)" class="btn btn-info btn-fill btn-sm">De-Activate</button>
+												{{else}}
+														<img src="/img/reddot.png" width="20px">  &nbsp;&nbsp; In-Active &nbsp;&nbsp; 
+														<button onclick="return activateproperty({{this.ID}}, 1)" class="btn btn-info btn-fill btn-sm">Activate</button>
+												{{/if}}
+										{{/ifGreater}}
+									</div>
+							</div>
+							<br />
+							<div class="row">
+									<div class="col-md-9">
+											<button onclick="return editsto({{this.ID}})" class="btn btn-info btn-fill btn-sm">Edit</button>
+											&nbsp;&nbsp;&nbsp;
+										   <button onclick="return openusettings({{this.ID}})" class="btn btn-info btn-fill btn-sm">Settings</button>
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return editshares({{this.ID}})" class="btn btn-info btn-fill btn-sm">Shares</button>                                
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return editroles({{this.ID}})" class="btn btn-info btn-fill btn-sm">Roles</button>                          
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return openusers({{this.ID}})" class="btn btn-info btn-fill btn-sm">Users</button>
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return openfilesupload({{this.ID}})" class="btn btn-info btn-fill btn-sm">Files / Pics</button>
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return redirectConfig({{this.ID}})" class="btn btn-info btn-fill btn-sm">Config</button>
+
+											<br /><br />
+									</div>   
+									<div class="col-md-3"> 
+										{{#if this.isBuyButtonEnabled}}
+												<img src="/img/greendot.png" width="22px"> &nbsp;&nbsp;  Buying &nbsp;&nbsp; 
+												<button onclick="return activatebuyproperty({{this.ID}}, 0)" class="btn btn-info btn-fill btn-sm">De-Activate</button>
+										{{else}}
+												<img src="/img/reddot.png" width="20px">  &nbsp;&nbsp; Buying &nbsp;&nbsp; 
+												<button onclick="return activatebuyproperty({{this.ID}}, 1)" class="btn btn-info btn-fill btn-sm">Activate</button>
+										{{/if}}
+									</div>									
+									<br /><br />
+							</div>
+							<hr style="display: block; height: 1px;
+    									border: 0; border-top: 1px solid #aaa;
+    									margin: 1em 0; padding: 0;" />							
+						{{/each}}
+
+				{{else}}
+						No STO / Company / Project Found. Please click New Project 				
+				{{/if}}
+
+            </div>
+        </div>
+    </div>								
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                         <h4 class="title">  <img src="/img/ico.png" width="30px" /> &nbsp;  ICO Projects</h3>
+                    </div>
+                    <div class="col-md-3">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <button onclick="return newSto(1)" class="btn btn-info btn-fill">New ICO Project</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+				<br /><br />
+				{{#if ICORecords.length}}
+				
+						{{#each ICORecords}}
+							<div class="row">
+									<div class="col-md-2">
+											<img src='/img/stologo/{{this.logo}}' style="max-width:100px; max-height:50px;"> 
+									</div>
+									<div class="col-md-4">
+											<b>{{this.title}}</b>
+									</div>                           
+									<div class="col-md-3">
+											{{this.stolink}}
+									</div>
+									<div class="col-md-3">
+											{{#ifGreater this.ID 0}}
+												{{#if this.isActive}}
+														<img src="/img/greendot.png" width="25px"> &nbsp;&nbsp;  Active &nbsp;&nbsp; 
+														<button onclick="return activateproperty({{this.ID}}, 0)" class="btn btn-info btn-fill btn-sm">De-Activate</button>
+												{{else}}
+														<img src="/img/reddot.png" width="25px">  &nbsp;&nbsp; In-Active &nbsp;&nbsp; 
+														<button onclick="return activateproperty({{this.ID}}, 1)" class="btn btn-info btn-fill btn-sm">Activate</button>
+												{{/if}}
+										{{/ifGreater}}
+									</div>
+							</div>
+							<br />
+							<div class="row">
+									<div class="col-md-9">
+											<button onclick="return editsto({{this.ID}})" class="btn btn-info btn-fill btn-sm">Edit</button>
+											&nbsp;&nbsp;&nbsp;
+										   <button onclick="return openusettings({{this.ID}})" class="btn btn-info btn-fill btn-sm">Settings</button>
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return editshares({{this.ID}})" class="btn btn-info btn-fill btn-sm">Shares</button>                                
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return editroles({{this.ID}})" class="btn btn-info btn-fill btn-sm">Roles</button>                          
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return openusers({{this.ID}})" class="btn btn-info btn-fill btn-sm">Users</button>
+											&nbsp;&nbsp;&nbsp;
+											<button onclick="return openfilesupload({{this.ID}})" class="btn btn-info btn-fill btn-sm">Files / Pics</button>                   
+
+											<br /><br />
+											{{#ifIn this.defaultBlockchain '[0, 5]'}}
+												<button onclick="return ravenStudio({{this.ID}})" class="btn btn-info btn-fill btn-sm">Raven Token Studio</button>
+											{{/ifIn}}
+											&nbsp;&nbsp;
+											{{#ifIn this.defaultBlockchain '[0, 1, 2, 3]'}}
+												<button onclick="return tokenStudio({{this.ID}})" class="btn btn-info btn-fill btn-sm">Ethereum  Token Studio</button>											
+											{{/ifIn}}
+											&nbsp;&nbsp;
+											{{#ifIn this.defaultBlockchain '[0, 6]'}}
+												<button onclick="return polymehtokenStudio({{this.ID}})" class="btn btn-info btn-fill btn-sm">Polymesh Token Studio</button>											
+											{{/ifIn}}											
+									</div>   
+									<div class="col-md-3"> 
+										{{#if this.isBuyButtonEnabled}}
+												<img src="/img/greendot.png" width="22px"> &nbsp;&nbsp;  Buying &nbsp;&nbsp; 
+												<button onclick="return activatebuyproperty({{this.ID}}, 0)" class="btn btn-info btn-fill btn-sm">De-Activate</button>
+										{{else}}
+												<img src="/img/reddot.png" width="20px">  &nbsp;&nbsp; Buying &nbsp;&nbsp; 
+												<button onclick="return activatebuyproperty({{this.ID}}, 1)" class="btn btn-info btn-fill btn-sm">Activate</button>
+										{{/if}}
+									</div>
+							</div>
+							<hr /><hr />
+						{{/each}}
+				
+				{{else}}
+						No ICO Project Found. Please click New Project 				
+				{{/if}}
+
+            </div>
+        </div>
+    </div>								
+</div>
+
+
+{{> Footer}}

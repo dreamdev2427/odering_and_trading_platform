@@ -1,0 +1,867 @@
+{{> Header}}
+
+<script language="javascript">
+	var op = {{op}};
+
+    $(document).ready(function() {
+        mapBlockchainToDropdown();
+        //$("#sto").addClass('active');
+        SummernoteBasicDataInitialize('LegalDetails', 'Enter Full Details', 200);
+		MinimumSharesToInvestChange();
+		if(!op)
+        	swtichsharetype();
+
+		switchcustodytype();
+        protocolTypeChanged();
+        initiateSwitches();
+    })
+
+    function mapBlockchainToDropdown() {
+            const blockchains = {{{ json blockchain }}}
+            const selectedblockchain = {{{ json selectedBlockchain }}}
+            const selectedToken = selectedblockchain[0].stringValue
+
+        let html = ''
+
+        blockchains.forEach((blockchain) => {
+            if (selectedToken.includes(blockchain.id)) {
+                if (blockchain.id == 1) {
+                    html += `<option value="1" >Ethereum - ERC1404</option>`
+                } else if (blockchain.id == 2) {
+                    html += `<option value="6">Binance - ERC1404</option >`
+                } else if (blockchain.id == 3) {
+                    html += `<option value="5"> Polygon - ERC1404</option >`
+                } else if (blockchain.id == 5) {
+                    html += `<option value="3">Ravencoin</option >`
+                } else if (blockchain.id == 6) {
+                    html += ` <option value="2">Ethereum - PolyMath</option >`
+                }
+            }
+        })
+        document.getElementById('blockchainprotocoltype').innerHTML = html
+       
+    }
+
+    function initiateSwitches() {
+        const needAuthorization = JSON.parse('{{{record.needauthorization}}}');
+        if (needAuthorization === 1) {
+            document.getElementById('needapproval').setAttribute("checked", "true");
+        } else {
+            document.getElementById('needapproval').removeAttribute("checked");
+        }
+        const votingRights = JSON.parse('{{{record.isVotingRightsApplicable}}}');
+        if (votingRights === 1) {
+            document.getElementById('votingrights').setAttribute("checked", "true");
+        } else {
+            document.getElementById('votingrights').removeAttribute("checked");
+        }
+        const meetingRights = JSON.parse('{{{record.isMeetingRightsApplicable}}}');
+        if (meetingRights === 1) {
+            document.getElementById('meetingRights').setAttribute("checked", "true");
+        } else {
+            document.getElementById('meetingRights').removeAttribute("checked");
+        }
+        const investorCanPurchaseDirectly = JSON.parse('{{{record.investorCanPurchaseDirectly}}}');
+        if (investorCanPurchaseDirectly === 1) {
+            document.getElementById('investorCanPurchaseDirectly').setAttribute("checked", "true");
+        } else {
+            document.getElementById('investorCanPurchaseDirectly').removeAttribute("checked");
+        }
+        const blockchainBuyOrdersAllowed = JSON.parse('{{{record.blockchainBuyOrdersAllowed}}}');
+        if (blockchainBuyOrdersAllowed === 1) {
+            document.getElementById('blockchainBuyOrdersAllowed').setAttribute("checked", "true");
+        } else {
+            document.getElementById('blockchainBuyOrdersAllowed').removeAttribute("checked");
+        }
+        const isInvestorTradable = JSON.parse('{{{record.isInvestorTradable}}}');
+        if (isInvestorTradable === 1) {
+            document.getElementById('isInvestorTradable').setAttribute("checked", "true");
+        } else {
+            document.getElementById('isInvestorTradable').removeAttribute("checked");
+        }
+        const isSellToCompany = JSON.parse('{{{record.sellToCompany}}}');
+        if (isSellToCompany === 1) {
+          document.getElementById('sellToCompany').setAttribute("checked", "true");
+        } else {
+          document.getElementById('sellToCompany').removeAttribute("checked");
+        }
+        const isShareNosApplicable = JSON.parse('{{{record.isShareNosApplicable}}}');
+        if (isShareNosApplicable === 1) {
+          document.getElementById('isShareNosApplicable').setAttribute("checked", "true");
+        } else {
+          document.getElementById('isShareNosApplicable').removeAttribute("checked");
+        }
+        const isCertificateNosApplicable = JSON.parse('{{{record.isCertificateNosApplicable}}}');
+        if (isCertificateNosApplicable === 1) {
+          document.getElementById('isCertificateNosApplicable').setAttribute("checked", "true");
+        } else {
+          document.getElementById('isCertificateNosApplicable').removeAttribute("checked");
+        }
+    }
+
+	function switchcustodytype() {
+		var select = document.getElementById('walletCustodayType');
+		var value = select.options[select.selectedIndex].value;
+
+		if(value  == 1 )
+			$("#divCustodianSection").show();
+		else
+			$("#divCustodianSection").hide();
+	}
+
+    function swtichsharetype() {
+        var e = document.getElementById("shareType");
+        var shareType = e.options[e.selectedIndex].value;
+
+        if( shareType == 0)
+            $("#blockchainSharesSpan").hide();
+        else {
+            $("#blockchainSharesSpan").show();
+        }
+    }
+    function submitForm() {
+
+        if(document.getElementById("title").value == "") {
+            showModelGeneralOKDialogBox("Please enter share title");
+            return;
+        }
+
+        if(op == 0) {
+            if(document.getElementById("totalshares").value != "") {
+                if(isNaN(document.getElementById("totalshares").value)) {
+                    showModelGeneralOKDialogBox("Value entered in Total Shares is not a valid number");
+                    return;
+                } else {
+                    if( !Number.isInteger( parseFloat( document.getElementById("totalshares").value ) ) ) {
+                        showModelGeneralOKDialogBox("Value entered in Total Shares is not a whole number. Please enter integer without fractions");
+                        return;
+                    }
+                }
+            } else
+               document.getElementById("totalshares").value = "0";
+        }
+
+        if(document.getElementById("nominalvalue").value == "") {
+            showModelGeneralOKDialogBox("Please enter Nominal Value");
+            return;
+        } else {
+            if(isNaN(document.getElementById("nominalvalue").value)) {
+                showModelGeneralOKDialogBox("Value entered in Nominal Value is not a valid number");
+                return;
+            }
+        }
+
+        if(document.getElementById("premiumvalue").value != "") {
+            if(isNaN(document.getElementById("premiumvalue").value)) {
+                showModelGeneralOKDialogBox("Value entered in Market Value is not a valid number");
+                return;
+            }
+        } else
+            document.getElementById("premiumvalue").value = "0";
+
+        const sellValue = document.getElementById("sellvalue");
+        if(sellValue && sellValue.value !== "") {
+            if(isNaN(sellValue.value)) {
+                showModelGeneralOKDialogBox("Value entered in Sell Value is not a valid number");
+                return;
+            }
+        }
+
+        if(document.getElementById("sellToCompany")?.checked === true){
+            if(!Number(sellValue.value)){
+                showModelGeneralOKDialogBox("Please enter a non-zero Sell Price.");
+                return;
+            }
+        }
+
+        if(document.getElementById("minimumSharesToBuyByInvestor").value != "") {
+            if(isNaN(document.getElementById("minimumSharesToBuyByInvestor").value)) {
+                showModelGeneralOKDialogBox("Value entered in  minimum shares to buy is not a valid number");
+                return;
+            }
+        } else
+            document.getElementById("minimumSharesToBuyByInvestor").value = "0";
+
+
+        if(document.getElementById("reduceSharesForPurchase").value != "") {
+            if(isNaN(document.getElementById("reduceSharesForPurchase").value)) {
+                showModelGeneralOKDialogBox("Value entered in Shares not available for purchase is not valid");
+                return;
+            }
+        } else
+            document.getElementById("reduceSharesForPurchase").value = "0";
+
+        let votingPower = document.getElementById("votingPower").value;
+        if (!votingPower || isNaN(votingPower) || votingPower < 0 || votingPower > 1000000) {
+            showModelGeneralOKDialogBox("Voting power is not valid. Must be a number between 0 and 1000000.");
+            return;
+        }
+
+
+        var shareType = 0;
+        var blockchainprotocoltype = 0;
+
+        if(op == 0) {
+            var e = document.getElementById("shareType");
+            shareType = e.options[e.selectedIndex].value;
+        } else
+            shareType = document.getElementById("shareType").value;
+
+
+        e = document.getElementById("blockchainprotocoltype");
+        blockchainprotocoltype = e.options[e.selectedIndex].value;
+
+        if(shareType == 1) {
+
+			var select = document.getElementById('walletCustodayType');
+			var value = select.options[select.selectedIndex].value;
+			if(value == "1") {
+				if( document.getElementById("tanganyWalletID").value == "" ) {
+					showModelGeneralOKDialogBox("Please enter Tangany wallet ID");
+					return;
+				}
+			} else
+				document.getElementById("tanganyWalletID").value = "";
+
+                if( isEthereumBasedProtocolID(blockchainprotocoltype) ) {
+                    if(document.getElementById("tokenaddress").value == "") {
+                        showModelGeneralOKDialogBox("Please enter Token Address");
+                        return;
+                    } else {
+                            if(document.getElementById("tokenaddress").value.length < 42) {
+                                showModelGeneralOKDialogBox("Token Address is not valid");
+                                return;
+                            }
+                    }
+
+                    if(document.getElementById("ethereumPublicKey").value == "") {
+                        showModelGeneralOKDialogBox("Please enter company / custodian public address");
+                        return;
+                    } else {
+                            if(document.getElementById("ethereumPublicKey").value.length < 42) {
+                                showModelGeneralOKDialogBox("Company / Custodian public address is not valid");
+                                return;
+                            }
+                    }
+
+                    if(document.getElementById("whitelistaddress").value == "") {
+                        showModelGeneralOKDialogBox("Please enter whitelist address");
+                        return;
+                    }  else {
+                            if(document.getElementById("whitelistaddress").value.length < 42) {
+                                showModelGeneralOKDialogBox("Whitelist address is not valid");
+                                return;
+                            }
+                    }
+                } else if (blockchainprotocoltype == 3) {
+                    if(document.getElementById("AssetName").value == "") {
+                        showModelGeneralOKDialogBox("Please enter Ravencoin Asset Name");
+                        return;
+                    }
+
+                    if(document.getElementById("AssetTag").value == "") {
+                        showModelGeneralOKDialogBox("Please enter Ravencoin Asset Tag");
+                        return;
+                    }
+
+                }
+        }
+
+        document.getElementById("frmShare").submit();
+    }
+    function back() {
+        window.location.href = "/platform/shareslist?id={{cid}}";
+    }
+
+	function MinimumSharesToInvestChange() {
+
+		 if(document.getElementById("nominalvalue").value == "")
+			 document.getElementById("nominalvalue").value = "0"
+
+		 if(document.getElementById("premiumvalue").value == "")
+			 document.getElementById("premiumvalue").value = "0"
+
+
+
+		if( document.getElementById("minimumSharesToBuyByInvestor").value == "" ) {
+			 document.getElementById("minimumSharesToBuyByInvestor").value = "0"
+			 document.getElementById("minimumAmountToInvestByInvestor").value = "0";
+			return;
+		}
+
+
+		if( document.getElementById("minimumSharesToBuyByInvestor").value == "0" ) {
+			document.getElementById("minimumAmountToInvestByInvestor").value = "0";
+			return;
+		}
+
+
+		if(isNaN(document.getElementById("nominalvalue").value)) {
+			showModelGeneralOKDialogBox("Value entered in Nominal Price is not a valid number");
+			return;
+		}
+
+		if(isNaN(document.getElementById("premiumvalue").value)) {
+			showModelGeneralOKDialogBox("Value entered in Premium Price is not a valid number");
+			return;
+		}
+
+        if(isNaN(document.getElementById("sellvalue").value)) {
+			showModelGeneralOKDialogBox("Value entered in Sell Price is not a valid number");
+			return;
+		}
+
+
+		var price = parseFloat( document.getElementById("premiumvalue").value);
+
+
+		document.getElementById("minimumAmountToInvestByInvestor").value = ( price * parseFloat(  document.getElementById("minimumSharesToBuyByInvestor").value ) ).toFixed(3)
+
+
+	}
+	function MinimumAmountToInvestChange() {
+
+
+		if( document.getElementById("minimumAmountToInvestByInvestor").value == "" ) {
+			document.getElementById("minimumAmountToInvestByInvestor").value = "0";
+			document.getElementById("minimumSharesToBuyByInvestor").value = "0";
+			return;
+		}
+
+
+		if( document.getElementById("minimumAmountToInvestByInvestor").value == "0" ) {
+			document.getElementById("minimumSharesToBuyByInvestor").value = "0";
+			return;
+		}
+
+
+		if(isNaN(document.getElementById("nominalvalue").value)) {
+			showModelGeneralOKDialogBox("Value entered in Nominal Price is not a valid number");
+			return;
+		}
+
+		if(isNaN(document.getElementById("premiumvalue").value)) {
+			showModelGeneralOKDialogBox("Value entered in Premium Price is not a valid number");
+			return;
+		}
+
+        if(isNaN(document.getElementById("sellvalue").value)) {
+			showModelGeneralOKDialogBox("Value entered in Sell Price is not a valid number");
+			return;
+		}
+
+
+		var price = parseFloat( document.getElementById("premiumvalue").value  );
+
+
+		document.getElementById("minimumSharesToBuyByInvestor").value = ( parseFloat(  document.getElementById("minimumAmountToInvestByInvestor").value ) / price   ).toFixed(3)
+
+
+	}
+
+	function PremimumValueChange() {
+		if( document.getElementById("premiumvalue").value == "" )
+			document.getElementById("premiumvalue").value = "0";
+
+		MinimumSharesToInvestChange();
+	}
+	function NominalValueChange() {
+		if( document.getElementById("nominalvalue").value == "" )
+			document.getElementById("nominalvalue").value = "0";
+
+		MinimumSharesToInvestChange();
+	}
+	function protocolTypeChanged() {
+        var e = document.getElementById("blockchainprotocoltype");
+        var protocolType = e.options[e.selectedIndex].value;
+
+        if( protocolType == 1 || protocolType == 2|| protocolType == 4) {
+            $("#spanEthereumSection").show();
+            $("#spanRavencoinSection").hide();
+        } else {
+            $("#spanEthereumSection").hide();
+            $("#spanRavencoinSection").show();
+
+        }
+    }
+
+    function setPrivateKeyForShareType() {
+		if( document.getElementById("ethereumPrivateKeysField").value == "" ) {
+            alert("Please enter Private Key Field");
+            return;
+        }
+
+		if( document.getElementById("ethereumPassword").value == "" ) {
+            alert("Please enter Password");
+            return;
+        }
+
+        document.getElementById("frmAutomaticShareTransfer").submit();
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-10">
+                        <h4 class="title">Add / Edit Share Class</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="return back()" class="btn btn-info btn-fill">Back to list</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <label>Currency Symbol </label> &nbsp;&nbsp;&nbsp; <b> {{currencySymbol2}} </b>
+                <br /><br />
+
+                <form id="frmShare" name="frmShare" action="/platform/sharesaddition" method="post">
+
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                {{#if op}}
+                                    {{#if record.isblockchain}}
+                                        Tokenized / Blockchain Share Class
+                                        <input type="hidden" id="shareType" name="shareType" value = "1">
+                                    {{else}}
+                                        Non Tokenized Share Class
+                                        <input type="hidden" id="shareType" name="shareType" value = "0">
+                                    {{/if}}
+                                {{else}}
+                                    <label>Share Class launched in</label>
+                                    <select id="shareType" name="shareType" onchange="swtichsharetype()" class="form-control border-input">
+                                        {{#ifEqual stoType 0}}
+                                            <option value="0">Non-Tokenized Shares</option>
+                                            <option value="1">Tokenized / Blockchain Shares</option>
+                                        {{/ifEqual}}
+
+                                        {{#ifEqual stoType 1}}
+                                            <option value="1">Tokenized / Blockchain Shares</option>
+                                        {{/ifEqual}}
+
+                                        {{#ifEqual stoType 2}}
+                                            <option value="0">Non-Tokenized Shares</option>
+                                        {{/ifEqual}}
+
+                                    </select>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>Share Title</label>
+                                <input type="text" maxLength="150" id="title" name="title" class="form-control border-input" placeholder="Title of the share class" value="{{record.title}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{#ifEqual op 0}}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Total Shares</label>
+                                    <input type="text" maxLength="12" id="totalshares" name="totalshares" class="form-control border-input" placeholder="Total Shares" value="{{record.totalShares}}">
+                                </div>
+                            </div>
+                        </div>
+                    {{/ifEqual}}
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Nominal Value ( {{currencySymbol2}} ) </label>
+                                <input  type="text" maxLength="33" id="nominalvalue" name="nominalvalue" class="form-control border-input" placeholder="Nominal Value" value="{{record.nominalValue}}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-2"></div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Market Value  ( {{currencySymbol2}} )</label>
+                                <input type="text" onChange="PremimumValueChange()"    maxLength="33" id="premiumvalue" name="premiumvalue" class="form-control border-input" placeholder="Market Value" value="{{record.premimum}}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{#if isSellBackEnabled}}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Sell Value ( {{currencySymbol2}} ) </label>
+                                    <input  type="text" maxLength="33" id="sellvalue" name="sellvalue" class="form-control border-input" placeholder="Sell Value" value="{{record.sellValue}}">
+                                </div>
+                            </div>
+                        </div>
+                    {{/if}}
+
+                    <span style="display:none">
+                                <label>Reduce number of Shares for Purchase. These shares will be deducted from company shares and will not  be available on <br />  investor dashboard or admin to transfer. Please make sure you enter correct value</label>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" maxLength="24" id="reduceSharesForPurchase" name="reduceSharesForPurchase" class="form-control border-input" placeholder="Minimum Shares Values" value="{{record.reduceSharesForPurchase}}">
+                                        </div>
+                                    </div>
+                                </div>
+                        </span>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Minimum Shares Investor can buy</label>
+                                <input type="text" maxLength="24" id="minimumSharesToBuyByInvestor" onChange="MinimumSharesToInvestChange()" name="minimumSharesToBuyByInvestor" class="form-control border-input" placeholder="Minimum Shares Values" value="{{record.minimumSharesToBuyByInvestor}}">
+                            </div>
+                        </div>
+
+						<div class="col-md-2"> </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Minimum Amount ( {{currencySymbol2}} ) </label>
+                                <input type="text" maxLength="12" id="minimumAmountToInvestByInvestor" onChange="MinimumAmountToInvestChange()"   name="minimumAmountToInvestByInvestor" class="form-control border-input" placeholder="Minimum Investment" >
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Voting power per share</label>
+                                <input id="votingPower" name="votingPower" type="number" step="0.1" min="0" max="1000000" value="{{record.votingPower}}" class="form-control border-input" placeholder="{{record.votingPower}}"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="switch mini-switch">
+                                    <input class="input-sm" id="needapproval" name="needapproval" type="checkbox">
+                                    <span class="slider round"></span>
+                                </label>
+                                Need Approval
+                                <br /> <label> (if checked then share creation request need approval from authorized admin who can accept or reject share creation request) </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="switch mini-switch">
+                                    <input class="input-sm" id="votingrights" name="votingrights" type="checkbox">
+                                    <span class="slider round"></span>
+                                </label>
+                                Is Voting Rights Applicable
+                                <br /><label> (if checked then investor holding shares in this share class can contribute their shares as votes in POLLS)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="switch mini-switch">
+                                    <input class="input-sm" id="meetingRights" name="meetingRights" type="checkbox">
+                                    <span class="slider round"></span>
+                                </label>
+                                Is Meeting Rights Applicable
+                                <br /><label> (if checked then investor holding shares in this share class can contribute their shares as votes in MEETINGS)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="switch mini-switch">
+                                    <input class="input-sm" id="investorCanPurchaseDirectly" name="investorCanPurchaseDirectly" type="checkbox">
+                                    <span class="slider round"></span>
+                                </label>
+                                Shares can be bough directly from investor dashboard
+                                <br /><label> (if checked then investor can purchase shares directly from investor dashboard with crypto payment or his internal balance)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="switch mini-switch">
+                                    <input class="input-sm" id="isInvestorTradable" name="isInvestorTradable" type="checkbox">
+                                    <span class="slider round"></span>
+                                </label>
+                                Shares can be traded by investors
+                                <br /> <label> (if checked, the investors would be able to trade those shares between them) </label>
+                            </div>
+                        </div>
+                    </div>
+
+                  {{#if isSellBackEnabled}}
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="switch mini-switch">
+                            <input class="input-sm" id="sellToCompany" name="sellToCompany" type="checkbox">
+                            <span class="slider round"></span>
+                          </label>
+                          Investors can Sell Shares back to company
+                          <br /> <label> (if checked, the investors would be sell their shares back to the company at the set Sell Price) </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="switch mini-switch">
+                            <input class="input-sm" id="isShareNosApplicable" name="isShareNosApplicable" type="checkbox">
+                            <span class="slider round"></span>
+                          </label>
+                          Are Share Serials Applicable
+                          <br /> <label> (if checked, the investors will be provided with the Share Serial Numbers) </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="switch mini-switch">
+                            <input class="input-sm" id="isCertificateNosApplicable" name="isCertificateNosApplicable" type="checkbox">
+                            <span class="slider round"></span>
+                          </label>
+                          Are Certificate Serials Applicable
+                          <br /> <label> (if checked, the investors will be provided with the Certificate Serial Numbers) </label>
+                        </div>
+                      </div>
+                    </div>
+                  {{/if}}
+
+                    <span id="blockchainSharesSpan"
+                          {{#if op}}
+                                {{#if record.isblockchain}}  style=""  {{else}}  style="display:none;"  {{/if}}
+                          {{else}}
+                                style="display:none;"
+                          {{/if}}
+                    >
+                        <hr />
+
+                        <h5>Shares in Blockchain Details </h5>
+                        <br />
+
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Select Protocol</label>
+                                    <select onChange="protocolTypeChanged()" id="blockchainprotocoltype" name="blockchainprotocoltype" class="form-control border-input" >
+                                        {{!-- <option value="1"  {{#ifEqual record.blockchainProtocol 1}} selected {{/ifEqual}}  >Ethereum - R-Token</option>
+                                        <option value="2" {{#ifEqual record.blockchainProtocol 2}} selected {{/ifEqual}}  >Ethereum - PolyMath</option>
+                                        <option value="3" {{#ifEqual record.blockchainProtocol 3}} selected {{/ifEqual}}  >Ravencoin</option>
+                                        <option value="4" {{#ifEqual record.blockchainProtocol 4}} selected {{/ifEqual}}  >Ethereum - ERC1404</option>
+                                        <option value="5" {{#ifEqual record.blockchainProtocol 5}} selected {{/ifEqual}}  >Polygon - ERC1404</option>
+                                        <option value="6" {{#ifEqual record.blockchainProtocol 6}} selected {{/ifEqual}}  >Binance - ERC1404</option> --}}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Select Custodian</label>
+                                    <select  id="walletCustodayType" name="walletCustodayType" class="form-control border-input" onchange="switchcustodytype()" >
+                                        <option value="0"  {{#ifEqual record.walletCustodayType 0}} selected {{/ifEqual}}  >Default</option>
+                                            <option value="1" {{#ifEqual record.walletCustodayType 1}} selected {{/ifEqual}}  >Tangany</option>
+                                    </select>
+                                </div>
+                            </div>
+							<div class="col-md-1"></div>
+                            <div class="col-md-4" id="divCustodianSection" >
+                                <div class="form-group">
+                                    <label>Wallet ID</label>
+                                    <input type="text" maxLength="100" id="tanganyWalletID" name="tanganyWalletID" class="form-control border-input" placeholder="Tangany Wallet ID" value="{{record.tanganyWalletID}}">
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        {{#if op}}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="switch mini-switch">
+                                                <input class="input-sm" id="blockchainBuyOrdersAllowed" name="blockchainBuyOrdersAllowed" type="checkbox">
+                                                <span class="slider round"></span>
+                                            </label>
+                                            Accept Blockchain Transfer Orders from Investors
+                                            <br /> <label> (if checked then investors can send their buy order request with blockchain address) </label>
+                                        </div>
+                                    </div>
+                                </div>
+                        {{/if}}
+
+
+
+                        <span id = "spanEthereumSection">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Ethereum Token Address</label>
+                                        <input type="text" maxLength="42" id="tokenaddress" name="tokenaddress" class="form-control border-input" placeholder="Token Address" value="{{record.ethereumContractAddress}}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Ethereum Whitelist Address</label>
+                                        <input type="text" maxLength="42" id="whitelistaddress" name="whitelistaddress" class="form-control border-input" placeholder="Whitelist Address" value="{{record.ethereumWhitelistAddress}}">
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Blockchain Company / Custodian Public Key</label>
+                                        <input type="text"  maxLength="42"   rows="5" id="ethereumPublicKey" name="ethereumPublicKey" class="form-control border-input" placeholder="Token ABI JSON" value="{{record.ethereumBlockchainPublicAddress}}" >
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        <span id = "spanRavencoinSection">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Essat Name</label>
+                                        <input type="text" maxLength="42" id="AssetName" name="AssetName" class="form-control border-input" placeholder="Token Address" value="{{record.AssetName}}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Essat Tag</label>
+                                        <input type="text"  maxLength="42"   rows="5" id="AssetTag" name="AssetTag" class="form-control border-input" placeholder="Token ABI JSON" value="{{record.AssetTag}}" >
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+
+
+                    </span>
+
+                    {{#if op}}
+                        <input type="hidden" name="id" value="{{record.ID}}" />
+                    {{/if}}
+
+                    <input type="hidden" name="currencyid" value="{{currencyid}}" />
+                    <input type="hidden" name="op" value="{{op}}" />
+                    <input type="hidden" name="cid" value="{{cid}}" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+
+                <br /><br />
+
+                <button type="button" onclick="return submitForm()"class="btn btn-info btn-fill btn-wd">Save</button>
+
+                &nbsp;&nbsp;&nbsp; <a onclick="return back()" class="btn btn-info btn-fill btn-wd">Cancel</a>
+
+                
+                {{#if op}}
+                {{#if isAutomaticShareClassSettingsEnabled}}
+                        <br /><br />
+                        <hr />
+
+                        <h4>
+                            <img src="/img/reddot.png" width="25px" />
+                            &nbsp;&nbsp;&nbsp;
+                            Set automatic share transfer settings with private key
+                        </h4>
+                        <label>
+                            If you want to set automatic share transfer service for this share class, please enter the private key of company account below with any password. This information will be encrypted in DB for security. After setting this information in DB this share class will be ready for automatic share transfers on blockchain when investor submit it's order                           
+                        </label>
+
+                        {{#if record.keyStoreFileAutoPayments}}
+                            <span style="color: red;">  Private key is set for this share class for automatic  share transfer service. <br />  If you want to change password you can re-enter the private key and password again below  </span>
+                        {{/if}}
+
+
+                        <form id="frmAutomaticShareTransfer" name="frmAutomaticShareTransfer" action="/platform/setAutomaticTransferShares" method="post">
+
+                            <br />
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Enter Private Key of Company Account </label>
+                                        <input type="text"  maxLength="200" rows="5" id="ethereumPrivateKeysField" name="ethereumPrivateKeysField" class="form-control border-input" placeholder="Ethereum Private Keys" value="" >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>Enter Password 
+                                        <br />
+                                        ( Set any password so that private key is encrypted and secure in DB )</label>
+                                        <input type="text"  maxLength="42" rows="5" id="ethereumPassword" name="ethereumPassword" class="form-control border-input" placeholder="Enter Password" value="" >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Select Payment Channel</label>
+                                        <select id="selectedChannelID" name="selectedChannelID" class="form-control border-input" >
+                                            {{#each paymentChannels}} 
+                                                <option value="{{this.ID}}">{{this.title}}</option>
+                                            {{/each}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="cid" value="{{cid}}" />
+                            <input type="hidden" name="recordID" value="{{record.ID}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        </form>
+
+                        <br />
+                        <a onclick="return setPrivateKeyForShareType()" class="btn btn-info btn-fill btn-wd">Save</a>
+                        <br /><br />       
+                        {{/if}}                 
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

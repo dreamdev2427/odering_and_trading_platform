@@ -1,0 +1,258 @@
+{{> Header}}
+<script language="javascript">
+    var emptyImage;
+
+    var documentfieldids = [
+    {{#each documentfiels}}
+        "{{this.fieldid}}",
+    {{/each}}
+    ]
+    var fieldValuesJson = {{{fieldValuesJson}}};
+
+    $(document).ready(function(){
+        $("#InvestorsMenu").addClass('active');
+
+        $("#maindocument").show();
+
+        for (var name in fieldValuesJson) {
+            document.getElementById(name).value = fieldValuesJson[name];
+        }
+    })
+    function saveAndSignDocument(op) {
+        setData();
+        document.getElementById("op").value = op;
+        document.getElementById("signContract").submit();
+    }
+    function setData() {
+        document.getElementById("jsondata").value = getDataValues();
+        document.getElementById("contents").value = getContentsWithData();
+    }
+    function getDataValues() {
+        var datavalues = {};
+        documentfieldids.forEach(obj => {
+            datavalues[obj] = document.getElementById(obj).value
+        });
+        return JSON.stringify(datavalues);
+    }
+    function getContentsWithData() {
+        var contents = $("#maindocument").html().toString();
+        var str = "";
+        documentfieldids.forEach(obj => {
+            contents = contents.replaceAll( obj , document.getElementById(obj).value);
+        });
+        return contents;
+    }
+    function deletecontractsignatures() {
+        window.location.href = "deletedocumentusersignatures?offerid={{record.ID}}&docid={{document.ID}}";
+    }
+</script>
+
+{{> HeaderInner}}
+
+{{#if UserMessage}}
+    <span style="color:red; font-size:18px;">
+        {{#ifEqual UserMessage 1}}
+           Data is saved
+            <br /> &nbsp;
+        {{/ifEqual}}
+    </span>
+{{/if}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title">{{{__ "Offer Details"}}}</h4>
+                    </div>
+                    <div class="col-md-3">
+                        <a onclick="generatePDF('report')"  class="btn btn-info btn-fill btn-wd"> {{{__ "Generate PDF"}}}</a>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <h5>{{record.title}}</h5>
+                    {{{record.contents}}}
+                    <br />&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#if documentuserfound}}
+    {{#unless documentusersettled}}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">{{{__ "Contract"}}}</h4>
+                    </div>
+                    <div class="content">
+                        <label>
+                        <b>{{{__ "You have signed the contract on"}}} {{signaturedate2}}</b>
+                        <br /><br />
+                        {{{__ "Administration will review your information and settle the contract"}}}
+
+                        <br /><br />
+
+                        {{{__ "To change your information or simply delete your signature please click"}}}</label>
+                        <br /><br />
+                        <button onclick="return deletecontractsignatures()" class="btn btn-info btn-fill btn-wd">{{{__ "Delete your signature"}}}</button>
+                        <br />&nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/unless}}
+
+    <div class="row topPaddingBetweenPageSections">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="header">
+            <h4 class="title"> <img src="/img/documents2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp;
+              Contract Details</h4>
+          </div>
+
+          <div class="content" style="overflow: hidden">
+            {{{documentuser.contents}}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="header">
+        <h4 class="title">Signature</h4>
+      </div>
+      <div class="content">
+        {{#ifEqual internalSignatureMode 'draw'}}
+          <img src="data:image/png;base64, {{signatureFileContents}}" width="250px;" alt='signature Placeholder'/>
+          <br/>
+        {{/ifEqual}}
+        <hr/>
+        <b>{{fullname}}</b>
+        <br />
+        {{signaturedate2}}
+      </div>
+    </div>
+
+{{else}}
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+
+                </div>
+                <div class="content">
+                    <span id="maindocument" style="display:none">
+                        {{{document.contents}}}
+                    </span>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">{{{__ "Please enter following contract information"}}}</h4>
+                    <label>{{{__ "Please enter all information"}}}</label>
+                </div>
+                <div class="content">
+                    {{#each documentfiels}}
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                {{this.title}}
+                            </div>
+                            <div class="col-md-7">
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>{{this.fieldhelpertext}} </label>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    {{#ifEqual this.fieldtype 1}}
+                                        <div class="col-md-12">
+                                            <input type="text" maxlength="1000" id="{{this.fieldid}}" class="form-control border-input">
+                                        </div>
+                                    {{/ifEqual}}
+
+                                    {{#ifEqual this.fieldtype 2}}
+                                        <div class="col-md-3">
+                                            <input type="text"  maxlength="10" onkeypress="return allowOnlyNumberInTextBoxes(event)" id="{{this.fieldid}}" class="form-control border-input">
+                                        </div>
+                                    {{/ifEqual}}
+
+                                    {{#ifEqual this.fieldtype 3}}
+                                        <div class="col-md-5">
+                                            <input type="text" id="{{this.fieldid}}"  class="form-control border-input datepicker-here" data-language='en' onkeydown="return false;"  data-date-format="MM dd yyyy" type=text autocomplete="off">
+                                        </div>
+                                    {{/ifEqual}}
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <br />
+                    {{/each}}
+
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-md-6"></div>
+                        <div class="col-md-6">
+                            <button onclick="return saveAndSignDocument('0')" class="btn btn-info btn-fill btn-wd">{{{__ "Save"}}}</button>
+                            &nbsp;&nbsp;
+                            <button onclick="return saveAndSignDocument('1')" class="btn btn-info btn-fill btn-wd">{{{__ "Save"}}} / {{{__ "Sign Now"}}} ></button>
+                        </div>
+                    </div>
+
+                </div>
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+
+    <form id="signContract" name="signContract" action="/contractview2sign" method="post" >
+        <input type="hidden" id="dirid" name="dirid" value={{document.directoryid}} />
+        <input type="hidden" id="docid" name="docid" value={{document.ID}} />
+        <input type="hidden" id="offerid" name="offerid" value={{record.ID}} />
+        <input type="hidden" id="jsondata" name="jsondata" value="" />
+        <input type="hidden" id="contents" name="contents" value="" />
+        <input type="hidden" id="op" name="op" value="" />
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+    </form>
+
+{{/if}}
+
+
+<div style="display:none">
+    <div id="report" style="padding:30px;">
+        <h5>{{record.title}}</h5>
+        {{{record.contents}}}
+        <span  style="page-break-before:always" />
+        {{#if documentuserfound}}
+            &nbsp;<br />
+            {{{documentuser.contents}}}
+            <br />
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp; <img src="data:image/png;base64, {{signatureFileContents}}" width="250px;" />
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp;  <b>{{fullname}}</b>
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp; {{signaturedate2}}
+        {{else}}
+            <br /><br />&nbsp;
+            {{{document.contents}}}
+        {{/if}}
+    </div>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,1 @@
+ALTER TABLE documentsADD countriesWhitelist varchar(10000) DEFAULT '["ALL"]';

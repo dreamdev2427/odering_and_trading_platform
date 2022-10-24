@@ -1,0 +1,540 @@
+{{> Header}}
+
+	<script language="javascript">
+        const currentstoid = {{stoid}};
+    let selectedAccountID = 0;
+    let sendInstructionalEmailEnabled = false;
+		var isBlockchainTrnasactionTrnasfer = 0;
+
+		$(document).ready(function(){
+                $("#InvestorWallet").addClass('active');
+
+                document.getElementById("stoList").value = currentstoid;
+
+                var e = document.getElementById("stoList");
+                var project = e.options[e.selectedIndex].text;
+                $("#txtDepositTitle").html( "{{{__ "Transaction history"}}} - " + project);
+                $("#txtDepositTitle2").html( project);
+
+
+		})
+        function getSTORecord() {
+                window.location.href = "/depositfundsinwallet?stoid=" + $('#stoList option:selected').attr('value');
+                return false;
+        }
+        function sendDeposits(isWithdrawRequest) {
+            if(  document.getElementById("amount").value.trim() == "" ) {
+                showModelGeneralOKDialogBox("Please Enter Amount");
+                return;
+            } else {
+                if( isNaN( document.getElementById("amount").value  )  ) {
+                    showModelGeneralOKDialogBox("Please Enter Valid Amount");
+                    return;
+                } else {
+                    if(  parseFloat( document.getElementById("amount").value ) == 0 )  {
+                        showModelGeneralOKDialogBox("Amount cannot be 0");
+                        return;
+                    }
+                }
+            }
+
+            if( isBlockchainTrnasactionTrnasfer	== 0) {
+                if (isWithdrawRequest === '1') {
+                    if (document.getElementById("bankaccountnumber").value.trim() == "" ) {
+                        showModelGeneralOKDialogBox("Please Enter the IBAN on which you wish to receive the funds");
+                        return;
+                    }
+                    if (document.getElementById("swiftcode").value.trim() == "" ) {
+                        showModelGeneralOKDialogBox("Please Enter the SWIFT code of the account on which you wish to receive the funds");
+                        return;
+                    }
+                }
+                if(  document.getElementById("sendingbankname").value.trim() == "" ) {
+                    showModelGeneralOKDialogBox("Please enter sending bank name");
+                    return;
+                }
+            } else if ( isBlockchainTrnasactionTrnasfer	== 1 ) {
+                let message = "Please enter Blockchain Transaction ID / TxID / TxHash";
+                if (isWithdrawRequest === '1') {
+                    message = "Please enter Blockchain Public Wallet Address";
+                }
+                if(  document.getElementById("publicAddress").value.trim() == "" ) {
+                    showModelGeneralOKDialogBox(message);
+                    return;
+                }
+            }
+
+            if(  document.getElementById("details").value.trim() == "" ) {
+                showModelGeneralOKDialogBox("Please Enter Some details of your transaction");
+                return;
+            }
+
+            document.getElementById("frmDeposit").submit();
+        }
+        function sendDepositPayment(id, currencyid, Symbol, Abbreviation,  isBlockchain, isWithdrawRequest, conversionEnabled,
+                                    conversionRate, currencyTo, currencySymbolTo, sendInstructionalDepositEmail) {
+
+            if (isWithdrawRequest) {
+                document.getElementById('transactionTypeSpan').innerHTML = '</br></br>Type: <b>Withdraw Request</b>';
+                document.getElementById('amountLabel').innerHTML = 'Amount Withdrawn *';
+                document.getElementById('bankNameLabel').innerHTML = 'Receiving Bank Name *';
+                document.getElementById('swiftCodeLabel').innerHTML = 'Receiving Bank SWIFT Code *';
+                document.getElementById('ibanLabel').innerHTML = 'Receiving IBAN Code *';
+                document.getElementById('sendButton').innerHTML = 'Send Withdraw Request';
+                document.getElementById('sendButton').name = 1;
+                document.getElementById('publicAddressLabel').innerHTML = 'Receiving Wallet Public Address *';
+            } else {
+                document.getElementById('transactionTypeSpan').innerHTML = '</br></br>Type: <b>Deposit Alert</b>';
+                document.getElementById('amountLabel').innerHTML = 'Amount Deposited *';
+                document.getElementById('bankNameLabel').innerHTML = 'Sending Bank Name *';
+                document.getElementById('swiftCodeLabel').innerHTML = 'Sending Bank SWIFT Code';
+                document.getElementById('ibanLabel').innerHTML = 'Sending IBAN Code';
+                document.getElementById('sendButton').innerHTML = 'Send Deposit Alert';
+                document.getElementById('sendButton').name = 0;
+                document.getElementById('publicAddressLabel').innerHTML = 'Transaction ID / TxID / TxHash *';
+            }
+
+			$("#spanChannelInformationTextFromFrontEnd").html (  $("#ChannelTextDetails" + id).html()  );
+
+
+			$("#divCurrencySymbolAbbriviation").html( " ( " + Abbreviation + " )"  )
+
+            if (isBlockchain == 0) {
+                    isBlockchainTrnasactionTrnasfer = 0;
+                    $(".depositBankWire").show();
+                    $(".depositBlockchain").hide();
+                    document.getElementById("isBlockchainIDTransfer").value = "0";
+            } else {
+                    isBlockchainTrnasactionTrnasfer = 1;
+                    $(".depositBankWire").hide();
+                    $(".depositBlockchain").show();
+                    document.getElementById("isBlockchainIDTransfer").value = "1";
+            }
+
+            document.getElementById("currencyIDSelected").value = currencyid;
+            document.getElementById("accountIDSelected").value = id;
+            document.getElementById("stoidSelected").value = $('#stoList option:selected').attr('value');
+            document.getElementById("isWithdrawRequest").value = isWithdrawRequest;
+          {{#if mercuryAccount}}
+            selectedAccountID = id;
+            sendInstructionalEmailEnabled = sendInstructionalDepositEmail;
+            if (sendInstructionalDepositEmail == 1) {
+              document.getElementById('sendInstructionalEmailButton').style.display = 'true';
+            } else {
+              document.getElementById('sendInstructionalEmailButton').style.display = 'none';
+            }
+            if(Abbreviation==='USD'){
+              $('#mercuryPayment').appendTo("body").modal( { backdrop: 'static', keyboard: false });
+            }
+            else {
+                $('#makepayment').appendTo("body").modal( { backdrop: 'static', keyboard: false });
+            }
+          {{else}}
+            $('#makepayment').appendTo("body").modal( { backdrop: 'static', keyboard: false });
+          {{/if}}
+        }
+        function teansferBalance(id) {
+                window.location.href = "/transferInvestorBalance?id=" + id;
+                return false;
+        }
+    function sendInstructionalEmail() {
+      if (sendInstructionalEmailEnabled) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/sendInstructionalEmail");
+        xhr.setRequestHeader("X-CSRF-Token", "{{csrfToken}}");
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        const additionalText = `
+      <p>Initiate a payment to the following account, if your balance does not update within 3 business days, please contact the site administrator</p>
+          <br />
+          <p>Routing number: {{mercuryAccount.routingNumber}}</p>
+          <p>Account number: {{mercuryAccount.accountNumber}}</p>
+
+          <br />
+          <p style="text-align: center"><b>You must include the following note in your transaction:</b></p>
+
+          <p style="text-align: center"><b>{{mercuryAccount.note}}</b></p>`;
+        const json = {
+          accountID: selectedAccountID,
+          stoID: currentstoid,
+          additionalText
+        };
+
+        xhr.onreadystatechange = function() {//Call a function when the state changes.
+          if(xhr.readyState == 4) {
+            if (xhr.status != 200) {
+              console.log(xhr.response);
+            }
+          }
+        }
+        xhr.send(JSON.stringify(json));
+      }
+    }
+	</script>
+
+{{> HeaderInner}}
+
+    {{#if messages}}
+        <span style="color:red; font-size:18px;">{{messages}}</span>
+        <br /><br />
+    {{/if}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title">  <img src="/img/wallet.png" width="22px;" style="padding-bottom:4px;" /> &nbsp;
+
+                                {{#ifEqual Data.CurrentClientID 5}}
+                                    {{{__ "faer Wallet Management"}}}
+                                {{else}}
+                                    {{{__ "Wallet Management"}}}
+                                {{/ifEqual}}  </h4>
+                        </div>
+                    </div>
+                </div>
+                    <div class="content">
+                        <div class="row">
+
+                            <div class="col-md-4">
+                                    <span style="font-size:20px;"> {{{__ "Current Balance"}}}  </span> <br />
+                                    {{#if walletBalances.length}}
+                                            <label>  {{{__ "Your current balance in"}}}  <b><span id="txtDepositTitle2"></span></b> {{{__ "Project"}}}  </label><br /><br />
+                                            {{#each walletBalances}}
+
+												{{#if this.Amount}}
+															<b>{{this.Abbreviation}}</b>   &nbsp;&nbsp;&nbsp;&nbsp;  {{this.Symbol}}
+															{{numberFormat this.Amount decimalLength="-"}}
+
+																<!-- <button onclick="return teansferBalance({{this.InvestorBalancesInCompanyAccountsID}})" class="btn btn-info btn-fill btn-sm">{{{../__ "Transfer"}}} </button> -->
+
+
+															<br /><br /><br />
+												{{/if}}
+
+                                            {{/each}}
+
+                                    {{else}}
+                                            <br />
+                                            <label> No balance found </label>
+                                    {{/if}}
+                                <br />
+                            </div>
+
+                            <div class="col-md-8">
+
+                                {{#if message}}
+                                    <b><span style="color: red;">{{message}}</span></b>
+                                    <br /><br />
+                                {{/if}}
+
+                                <span style="font-size:20px;"> {{{__ "Deposit Funds"}}}
+                                </span> <br />
+                                <br /><br />
+                                <span style="font-size:20px;">
+                                        <img src="/img/graydot.png" width="18px;" style="padding-bottom:4px;" />
+                                        &nbsp;
+                                        {{{__ "Step"}}} 1 &nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    {{#ifEqual Data.CurrentClientID 9}}
+                                        Select Opportunity
+                                    {{else}}
+                                        {{{__ "Select Project"}}}
+                                    {{/ifEqual}}
+                                </span>
+                                <br />
+                                <label>{{{__ "Select project in which you want to deposit amounts"}}}</label>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-8">
+                                            <select id="stoList" name="stoList" style="font-size: 20px;" class="form-control border-input" onchange="getSTORecord()">
+                                                    {{#each stos}}
+                                                            <option value="{{this.id}}">
+																{{#if this.isICOShareTypeCompany}}ICO -{{/if}}
+																{{this.title}}
+															</option>
+                                                    {{/each}}
+                                            </select>
+                                    </div>
+                                </div>
+
+
+                                <br /><br />
+                                <span style="font-size:20px;">
+                                        <img src="/img/graydot.png" width="18px;" style="padding-bottom:4px;" />
+                                        &nbsp;
+                                        {{{__ "Step"}}} 2 &nbsp;&nbsp;&nbsp;&nbsp;  {{{__ "Deposit Funds"}}}
+                                </span>
+                                <br/>
+                                <label>{{{__ "Deposit your funds in one of the following payment channels and then click Deposit to send your payment details to administration. Once payment is verified your balance will be updated in the system"}}} <br /><br />
+											{{{__ "In order to be able to process your payment, kindly use your own bank account, and not another person’s account"}}}<br /><br />
+
+											{{{__ "Please make sure when you are trnasferring funds from your bank, you provide your Investor ID "}}} ( {{investorID}})  {{{__ "along with trnasaction details so that we can identify your trnasaction"}}}
+
+								</label>
+                                <br /><br />
+                                {{#if channels.length}}
+                                        {{#each channels}}
+
+                  <div class="row">
+                    <div class="col-md-8">
+                      <b>
+                        {{this.title}}
+                      </b>
+                      <br />
+                      <b>Currency</b> : {{this.Abbreviation}} ( {{this.Symbol}} )
+                      <br />
+                      <span id="ChannelTextDetails{{this.channelID}}">{{textBreakLinesEnters this.paymentDetails}}</span>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div>
+                                <button onclick="return sendDepositPayment({{this.channelID}}, {{this.currencyID}},
+                                    '{{this.Symbol}}',  '{{this.Abbreviation}}',  {{this.isBlockchainBased}}, 0,
+                                  {{this.conversionEnabled}}, {{this.conversionRate}}, '{{this.currencyTo}}',
+                                  '{{this.currencySymbolTo}}', '{{this.sendInstructionalDepositEmail}}')"
+                                        class="btn btn-info btn-fill btn-sm">{{{../__ "Deposit Funds"}}}
+                                </button>
+                            </div>
+                        </div>
+                        </br>
+                        {{#ifEqual this.canWithdrawFunds 1}}
+                            <div class="row">
+                                <div>
+                                    <button onclick="return sendDepositPayment({{this.channelID}}, {{this.currencyID}},
+                                        '{{this.Symbol}}',  '{{this.Abbreviation}}',  {{this.isBlockchainBased}}, 1)"
+                                            class="btn btn-info btn-fill btn-sm">{{{../__ "Withdraw Funds"}}}
+                                    </button>
+                                </div>
+                            </div>
+                        {{/ifEqual}}
+                     </div>
+                  </div>
+
+                                            <hr />
+                                        {{/each}}
+                                {{else}}
+                                        <label>{{{__ "No Payment Channels found for this Project"}}}</label>
+                                {{/if}}
+
+
+                                <br /><br />
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title">  <img src="/img/wallet.png" width="22px;" style="padding-bottom:4px;" /> &nbsp;
+                            <span id="txtDepositTitle"></span>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content">
+
+                        {{#if balanceHistory.length}}
+                                <div class="row">
+                                    <div class="col-md-2"> Transaction Type </div>
+                                    <div class="col-md-2"> Date Received </div>
+                                    <div class="col-md-2"> Amount </div>
+                                    <div class="col-md-2"> Status </div>
+                                    <div class="col-md-4"> Message </div>
+                                </div>
+                                <br  />
+
+                                {{#each balanceHistory}}
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                {{#ifEqual this.isWithdrawFundsRequest 1}}
+                                                    <td style="width: 20%; vertical-align: top;">
+                                                        <h5><img src="/img/minus.png" width="20px" ;=""> Withdraw </h5>
+                                                    </td>
+                                                {{else}}
+                                                    <td style="width: 20%; vertical-align: top;">
+                                                        <h5><img src="/img/add.png" width="20px" ;=""> Deposit </h5>
+                                                    </td>
+                                                {{/ifEqual}}
+                                            </div>
+                                            <div class="col-md-2"> {{this.DateReceived}} </div>
+                                            <div class="col-md-2"> {{currencySymbol this.CurrencyIDDeposit}}   {{decimal this.Amount}}   </div>
+                                            <div class="col-md-2">
+                                                    {{#if this.isApproved}}
+                                                        {{this.DateApproved}}
+                                                        {{#ifEqual this.isApproved 1}} <span style="color:green"><b>Approved</b></span> <br /> Added in Investor Balance {{/ifEqual}}
+                                                        {{#ifEqual this.isApproved 2}} <span style="color:red"><b>Decline</b></span> {{/ifEqual}}
+
+                                                        {{#ifEqual this.isApproved 3}} <span style="color:green"><b>Increased by Admin</b></span> {{/ifEqual}}
+                                                        {{#ifEqual this.isApproved 4}} <span style="color:red"><b>Reduced by Admin</b></span> {{/ifEqual}}
+                                                        {{#ifEqual this.isApproved 5}} <span style="color:green"><b>Share Transfer</b></span> {{/ifEqual}}
+                                                    {{else}}
+                                                            <span style="color:black"><b>Pending Approval</b></span>
+                                                    {{/if}}
+                                            </div>
+                                            <div class="col-md-6"> {{textBreakLinesEnters this.Details}} </div>
+                                        </div>
+                                        <br  />
+                                {{/each}}
+
+                        {{else}}
+                                <label>No Records Founds</label>
+                        {{/if}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class = "modal fade" id="makepayment" tabindex = "-1" role = "dialog" aria-labelledby = "makepayment" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title"> <img src="/img/bank.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;
+					<span class="depositBankWire">
+							Bank Transaction Details
+					</span>
+					<span class="depositBlockchain">
+							Blockchain Transaction Details
+					</span>
+			 </h4>
+         </div>
+
+         <div  class="modal-body">
+
+
+			 	<label>Because our process complies with the EU regulatory standards, the entry methodology should be as follows</label>
+			 	<br />
+
+			 	<span id="spanChannelInformationTextFromFrontEnd"></span>
+
+			 	<span class="depositBankWire">
+						<br /><br />
+                    	Please enter deposit amount and sending bank name.  If possible, please also enter your bank SWIFT code and your bank account number to help track your payment quicker
+				</span>
+
+            <span id="transactionTypeSpan" class="depositBankWire"><br /><br /> asdf</span>
+
+             	<br /><br />
+                    <form id="frmDeposit" name="frmDeposit" method="post" action="depositAmountsBalancesAccount">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label id="amountLabel"><span id="divCurrencySymbolAbbriviation"></span></label>  <br />
+                                <input class="form-control border-input" max="99999999999.999" min="0" type="number" step="any" id="amount" name="amount" placeholder="">
+                                <br/>
+                            </div>
+
+                            <span class="depositBankWire">
+                                    <div  class="col-md-7">
+                                        <label id="bankNameLabel"></label><br />
+                                        <input class="form-control border-input" maxlength="120"    id="sendingbankname" name="sendingbankname" placeholder="">
+                                    </div>
+                            </span>
+                        </div>
+
+                        <span class="depositBankWire">
+                            <br />
+                            <div  class="row">
+                                <div class="col-md-5">
+                                    <label id="swiftCodeLabel"></label>
+                                    <br />
+                                    <input class="form-control border-input" maxlength="30"    id="swiftcode" name="swiftcode" placeholder="">
+                                </div>
+
+                                <div class="col-md-5">
+                                    <label id="ibanLabel"></label>
+                                    <br />
+                                    <input class="form-control border-input" maxlength="80"  id="bankaccountnumber" name="bankaccountnumber" placeholder="">
+                                </div>
+                            </div>
+                        </span>
+
+                        <span class="depositBlockchain">
+                            <br />
+                            <div   class="row">
+                                <div class="col-md-10">
+                                    <label id="publicAddressLabel"></label> <br />
+                                    <input class="form-control border-input" maxlength="100"    id="publicAddress" name="publicAddress" placeholder="">
+                                </div>
+                            </div>
+                        </span>
+
+                        <br />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Details *</label> <br />
+                                <label>( Your Investor ID is  {{investorID}}. Please add this ID in your transaction details below )</label>
+                                <textarea rows="5" maxlength="1000" class="form-control border-input" id="details" name="details" placeholder="">Investor ID: {{investorID}} </textarea>
+                            </div>
+                        </div>
+                        <br />
+
+                        <input type="hidden" name="currencyID" id="currencyIDSelected" value="" />
+                        <input type="hidden" name="accountID" id="accountIDSelected" value="" />
+                        <input type="hidden" name="stoid" id="stoidSelected" value="" />
+                        <input type="hidden" name="isBlockchainIDTransfer" id="isBlockchainIDTransfer" value="" />
+                        <input type="hidden" name="isWithdrawRequest" id="isWithdrawRequest" value="" />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+         </div>
+
+         <div class = "modal-footer">
+            <button id="sendButton" type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" name=0 onclick="sendDeposits(this.name)">
+            </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+{{#if mercuryAccount}}
+  <div class = "modal fade" id="mercuryPayment" tabindex = "-1" role = "dialog" aria-labelledby = "mercuryPayment" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+        <div class = "modal-header">
+          <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+          <h4 class = "modal-title"> <img src="/img/bank.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;
+            <span class="depositBankWire">
+               Mercury Transaction Details
+            </span>
+          </h4>
+        </div>
+
+        <div  class="modal-body">
+
+
+          <p>Initiate a payment to the following account, if your balance does not update within 3 business days, please contact the site administrator</p>
+          <br />
+          <p>Routing number: {{mercuryAccount.routingNumber}}</p>
+          <p>Account number: {{mercuryAccount.accountNumber}}</p>
+
+          <br />
+          <p style="text-align: center"><b>You must include the following note in your transaction:</b></p>
+
+          <p style="text-align: center"><b>{{mercuryAccount.note}}</b></p>
+
+          <div class = "modal-footer">
+            <button id="sendInstructionalEmailButton" type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="sendInstructionalEmail()"> Send Instructions To Email </button>
+          </div>
+
+        </div>
+
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+  </div>
+{{/if}}
+{{> Footer}}

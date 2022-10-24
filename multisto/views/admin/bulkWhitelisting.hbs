@@ -1,0 +1,158 @@
+{{> Header}}
+
+<script language="javascript">
+    var UploadFile_Size = 5;
+    var investorCount = 0;
+    var bulkEmailSending = 0;
+	var JSONAddresses = {{{tokenJSON}}};
+	var op = 0;
+	var recID = 0;
+
+
+	$(document).ready(function() {
+
+	})
+
+	function deleteRec(id) {
+		op = 3;
+		recID = id;
+		showModelGeneralYesNoDialogBox("Are you sure you want to delete this address from list", "Yes", "Cancel");	
+	}
+	function clearlist() {
+		op = 2;
+		showModelGeneralYesNoDialogBox("Are you sure you want to clear this list ?  <br /><br />   All addresses will be deleted and you have to build this list again", "Yes", "Cancel");	
+	}
+
+	function Wallet_BlockchainAccountSelected(account) {
+		$("#metaMaskSection").show();
+		$("#metaMaskAccountAddress").html( account );
+
+		isMetaMaskConnected = 1;
+		metaMaskAddress = account;
+
+		getAccountBalanceFromBlockchain(account, smartContractAddress).then((data)=> {
+			alert(data)
+		})
+	}
+	function Wallet_TransactionEvent(data) {
+		document.getElementById("metaMaskTransaction").value = "1"
+		document.getElementById("blockchainTransactionID").value = data;
+		submitFormToServer();
+	}
+	function setupBulkWhitelist() {
+		var e = document.getElementById("selectToken");
+		var value = e.value;
+		op = 1;
+		showModelGeneralYesNoDialogBox("Are you sure you want to whitelist all addresses in this list", "Yes", "Cancel");	
+	}
+	function Wallet_TransactionEvent(hash, data) {
+		var e = document.getElementById("selectToken");
+		var value = e.value;		
+        window.location.href = "processBulkWhitelistTransaction?transactionID=" + hash + "&address=" + value;
+        return false;
+	}
+	function generalModelOKButtonClickedClientEvent() {
+		if(op == 1) {
+			var e = document.getElementById("selectToken");
+			var value = e.value;	
+			setBulkWhitelistAddresses( value, JSONAddresses, 1, 1 );
+		}
+		if(op == 2) {
+			window.location.href = "clearwhitelistaddressesfromdb";
+		}
+		if(op == 3) {
+        	window.location.href = "deleteWhitelistAddress?id=" + recID;
+		}
+	}
+	
+</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+		<div class="col-md-12 topPaddingBetweenPageSections">
+			<div class="card">
+
+				<div class="header">
+                    <div class="col-md-10">                                
+                        <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Bulk Whitelist for Ethereum Security Token</h4>
+                    </div>
+				</div>
+
+				<div class="content">
+					<br /><br /><br />
+
+					{{#if records.length}}
+
+							<div class="row">
+								<div class="col-md-10"> 
+									<label>Select Ethereum Token &nbsp;&nbsp;&nbsp;&nbsp; ( Make sure correct token is selected form the list )</label>
+									<br />
+									<select id="selectToken" style="font-size:large"  class="form-control border-input" style="min-width:400px; background:transparent;  padding:5px; font-size:15px;">
+										{{#each tokens}}
+											<option value="{{this.ethereumContractAddress}}">{{this.title}}   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   ( {{this.ethereumContractAddress}} )</option>
+										{{/each}}
+									</select>
+								</div>
+							</div>
+
+							<br /><br /><br />
+								<div class="row">
+									<div class="col-md-8">
+										<h5>Current List of Public Addresses</h5>
+									</div>
+									<div class="col-md-4">							
+										<button type="button" onclick="return clearlist()" class="btn btn-info btn-fill btn-sm">Delete all Addresses from list </button>
+									</div>
+								</div>
+							<br />
+							{{#each records}}
+								<div class="row">
+									<div class="col-md-6">
+										{{this.address}} 
+									</div>
+									<div class="col-md-4">
+										{{this.FirstName}} {{this.LastName}}	
+									</div>
+									<div class="col-md-1">
+										<button type="button" onclick="return deleteRec({{this.ID}})" class="btn btn-info btn-fill btn-sm">Delete</button>
+									</div>							
+								</div>
+								<br />
+							{{/each}}
+
+							<br />
+
+							<button type="button" class="btn btn-info btn-fill btn-wd" onclick="connectWallet()" style="margin-right: 0.2em;">Connect MetaMask</button>
+							<span id="metaMaskSection" style="display:none;">
+								<img src="/img/greendot.png" width="20px;"> Meta Mask is connected
+
+								<br /><br />
+
+								<span id="metaMaskAccountAddress" style="margin-right: 0.2em;"></span>
+								( Please make sure this is the correct address to send transaction )
+
+
+							<br /><br /><br />
+
+
+							<label>Send transaction to Blockchain</label>
+							<br />
+
+							<button type="button" onclick="return setupBulkWhitelist()" class="btn btn-info btn-fill">Send Transaction</button>
+
+							</span>
+							<br /><br /><br />
+					{{else}}
+						<h5>No list found. Please use Investor module to find investors and add addresses from their wallets</h5>
+					{{/if}}
+
+				</div>
+
+			</div>
+		</div>
+</div>
+
+
+{{> atomicswap}}
+{{> Footer}}

@@ -1,0 +1,43 @@
+<div class="card col"
+  {{#ifEqual platformConfiguration 1}}
+     style="
+  border-style: solid;
+  border-color: green;
+"
+  {{/ifEqual}}
+>
+  <div>
+    {{#ifEqual platformConfiguration 1}}
+      <span class="checkmark">
+        <div class="checkmark_circle"></div>
+        <div class="checkmark_stem"></div>
+        <div class="checkmark_kick"></div>
+      </span>
+    {{/ifEqual}}
+    <h2 class="mx-auto px-4 py-1 rounded-bottom shadow-sm">Wallet Based</h2>
+    <hr/>
+    <h3 class="card-title pricingTable-header">
+      <ul>
+        <li>External wallets</li>
+        <li>No running balances</li>
+        <li>Only for crypto</li>
+      </ul>
+    </h3>
+    <hr/>
+    <ul >
+      <li class="li-separator">
+        Customer funds in their own wallets (Metamask, Coinbase wallet, etc.)
+      </li>
+      <li class="li-separator">
+        Customers’ security tokens in own wallets
+      </li>
+      <li class="li-separator">
+        Issuer funds in issuer’s own wallet
+      </li>
+      <li class="li-separator">
+        Issuer’s security tokens in own wallet
+      </li>
+    </ul>
+    <button class="btn btn-info btn-fill btn-wd" onclick=changePlatformConfigurationMode(1)>Select</button>
+  </div>
+</div>

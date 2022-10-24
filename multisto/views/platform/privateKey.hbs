@@ -1,0 +1,81 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {    
+
+    });
+
+    function createKeryStore() {
+        if( document.getElementById("privateKey").value == "") {
+            showModelGeneralOKDialogBox("Please enter Private Key")
+            return;            
+        } 
+
+        if( document.getElementById("password").value == "") {
+            showModelGeneralOKDialogBox("Please enter Password")
+            return;            
+        } 
+
+        document.getElementById("tokenStudioForm").submit();
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                 <h3 class="title"><img src="/img/tokenstudio.png" width="35px;"> &nbsp; Private Keys KeyStore Generation </h3>
+                 <label>Generate KeyStore File</label>
+            </div>
+
+            <div class="content">
+
+                <form id="tokenStudioForm" name="tokenStudioForm" action="privateKeysPost" method="post">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Enter Private Address</label>
+                                <input type="text" maxLength="100" id="privateKey" name="privateKey" class="form-control border-input" placeholder="Enter Private Keys">
+                            </div>
+                        </div> 
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Enter Password</label>
+                                <input type="text" maxLength="100" id="password" name="password" class="form-control border-input" placeholder="Private Key">
+                            </div>
+                        </div> 
+                    </div>
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <button type="button" onclick="return createKeryStore()" class="btn btn-info btn-fill">Create Key Store File</button>
+                </form>
+
+
+                <br /><br />
+                {{#if data}}
+                    <h3>Generated KeyStore File</h3>
+                    - KeyStore file contents are created and text contents are following <br />
+                    - Copy these contents in a text file and save with extension txt or json <br />
+                    - Make sure you remember password and during blockchain operation, this KeyStore file and password will be asked for <br />
+                    <br /><br />
+                    <span style="word-wrap: break-word;">
+                        {{{data}}}                    
+                    </span>
+                {{/if}}
+                <br /><br />
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,269 @@
+{{> Header}}
+
+<script language="javascript">
+    var UploadFile_Size = 5;
+    var deleteDocumentLink = "";
+
+    $(document).ready(function() {
+        $("#voting").addClass('active');
+    })
+    function submitForm() {
+
+        if( document.getElementById("optiontxt").value == ""){
+           showModelGeneralOKDialogBox("Please enter title");
+           return;
+        }
+
+        if( document.getElementById("description").value == ""){
+           showModelGeneralOKDialogBox("Please enter description");
+           return;
+        }
+
+      showModelGeneralOKDialogBox("Saved");
+      document.getElementById("frmAgendaItem").submit();
+    }
+    function addAgendaItem() {
+        window.location.href = "agendaItem";
+        return false;
+    }
+    function backTomainpage() {
+        window.location.href = "meetingedit?id={{meetingid}}";
+        return false;
+    }
+	function fileValidation(uploadID) {
+
+		var fileInput = null;
+
+		if(uploadID == 1)
+			fileInput = document.getElementById('fileID');
+		else
+			fileInput = document.getElementById('fileAddress');
+
+		var filePath = fileInput.value;
+
+		var error = false;
+
+		var allowedExtensions = /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf)$/i;
+		if( fileInput.files[0].size > UploadFile_Size * 1048576 ) {
+			showModelGeneralOKDialogBox("File size cannot be larger than " + UploadFile_Size + "MB");
+			error = true;
+		}
+		else if(!allowedExtensions.exec(filePath)){
+			alert('Please select doc, docx, pdf or image file only');
+			error = true;
+		}
+
+		if(error == true) {
+			fileInput.value = '';
+			$('#upload-file' + uploadID).html("No File Selected");
+			return false;
+		}
+		else
+			$('#upload-file' + uploadID).html(fileInput.files[0].name)
+	}
+	function submitUploadFile(uploadID) {
+		var fileInput = null;
+
+        if( document.getElementById("title").value == ""){
+           showModelGeneralOKDialogBox("Please enter title");
+           return;
+        }
+
+        if( document.getElementById("desc").value == ""){
+           showModelGeneralOKDialogBox("Please enter description");
+           return;
+        }
+
+		if(uploadID == 1)
+			fileInput = document.getElementById('fileID');
+		else
+			fileInput = document.getElementById('fileAddress');
+
+		if(fileInput.value == "")
+			showModelGeneralOKDialogBox("Please select a file to upload");
+		else
+			document.getElementById("FileUpload" + uploadID).submit();
+	}
+    function deleteDocument(id) {
+        deleteDocumentLink = "deleteagendadocument?itemid=" + id + "&meetingid={{meetingid}}&id={{id}}";
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete the file ?", "Delete", "Cancel");
+    }
+    function downloadDocument(id) {
+        window.location.href = "downloadAgendaIemDocument?id=" + id;
+        return false;
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = deleteDocumentLink;
+    }
+</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            <img src="/img/agendaitem.png" width="25px;" style="padding-bottom:-10px;" /> &nbsp;
+                            {{#if isEditing}}
+                                Edit Agenda Item
+                            {{else}}
+                                Add New Agenda Item
+                            {{/if}}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+			<div class="content">
+
+                <form id="frmAgendaItem" action="agendaItemPost" method="post">
+                        <div class="row">
+
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> Title / Subject
+                                        </span>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <input  id="optiontxt"  maxlength="999" name="optiontxt" value="{{Record.optiontxt}}" class="form-control border-input" type=text />
+                                </div>
+                        </div>
+                        <br />
+                        <div class="row">
+
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> Details</span>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <textarea rows="5" cols="80"   maxlength="999" id="description" name="description" class="form-control border-input">{{Record.description}} </textarea>
+                                </div>
+                        </div>
+
+                        <hr />
+
+                        <input type="hidden" name="isEditing" value="{{isEditing}}" />
+                        <input type="hidden" name="meetingid" value="{{meetingid}}" />
+                        <input type="hidden" name="id" value="{{id}}" />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-7">      </div>
+                        <div class="col-md-5">
+                            <button onclick="backTomainpage()" class="btn btn-info btn-fill">Back to Meeting</button>
+                          <button onclick="submitForm()" class="btn btn-info btn-fill">Save</button>
+                        </div>
+                    </div>
+                    <br />
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{{#if isEditing}}
+<div class="row topPaddingBetweenPageSections">
+	   <div class="col-md-12">
+		<div class="card">
+
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            <img src="/img/document2.png" width="25px;" style="padding-bottom:-10px;" /> &nbsp; Agenda Documents
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+			<div class="content">
+
+                <table class="table table-striped">
+                    <thead>
+                        <th></th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {{#each documentsRecord}}
+                        <tr>
+                            <td style="width: 30%; vertical-align: top">
+                                <img src="/img/document2.png" width="25px;" /> &nbsp;
+                                {{this.title}}
+                            </td>
+                            <td style="width: 50%; vertical-align: top">{{this.description}}</td>
+                            <td style="width: 10%; vertical-align: top">
+                                <button onclick="return downloadDocument({{this.ID}})" class="btn btn-info btn-fill btn-sm">Download</button>
+                            </td>
+                            <td  style="width: 10%; vertical-align: top">
+                                <button onclick="return deleteDocument({{this.ID}})" class="btn btn-info btn-fill btn-sm">Delete </button>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+
+                <hr />
+
+                <h4>
+                    <img src="/img/upload.png" width="25px;" /> &nbsp;
+                    Upload New Agenda File
+                </h4>
+                <form id="FileUpload1" name="FileUpload1" action="uploadAgendDocument?_csrf={{csrfToken}}" enctype="multipart/form-data" method="post">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="upload-btn-wrapper">
+                                    <button class="btnfile btn-sm">Select File to Upload</button>
+                                    <input   id="fileID"   name="fileID"   type="file"  onchange="return fileValidation(1)">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <span style="color: green; font-size: 18px; " id="upload-file1">No File Selected</span>
+
+                                    <input type="hidden" name="id" value="{{id}}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                Document Title
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="title"   maxlength="99" name="title"  class="form-control border-input"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                Description
+                            </div>
+                            <div class="col-md-6">
+                                <textarea id="desc" name="desc" cols="70"  rows="5"   maxlength="99"  class="form-control border-input"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" onclick="return submitUploadFile(1)"  class="btn btn-info btn-fill btn-sm"> Upload Document</button>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="meetingid" value="{{meetingid}}" />
+                        <input type="hidden" name="id" value="{{id}}" />
+                </form>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{{/if}}
+
+{{> Footer}}

@@ -1,0 +1,496 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        //$("#sto").addClass('active');                
+    })    
+    
+    function selectallchecks() {
+        
+        var temp = 0;
+        var obj = "";
+        for(temp=1; temp<=44; temp++) {
+                obj = document.getElementById("chk" + temp );
+                if (obj)
+                    document.getElementById("chk" + temp).checked = true;            
+        }
+        
+        
+        /*document.getElementById("chk1").checked = true;
+        document.getElementById("chk1").checked = true;
+        document.getElementById("chk2").checked = true;
+        document.getElementById("chk38").checked = true;
+        document.getElementById("chk39").checked = true;
+        document.getElementById("chk3").checked = true;
+        document.getElementById("chk19").checked = true;
+        document.getElementById("chk9").checked = true;
+        document.getElementById("chk4").checked = true;
+        document.getElementById("chk8").checked = true;
+        document.getElementById("chk20").checked = true;
+        document.getElementById("chk18").checked = true;
+        document.getElementById("chk10").checked = true;
+        document.getElementById("chk22").checked = true;
+        document.getElementById("chk23").checked = true;
+        document.getElementById("chk7").checked = true;
+        document.getElementById("chk11").checked = true;
+        document.getElementById("chk12").checked = true;
+        document.getElementById("chk24").checked = true;
+        document.getElementById("chk14").checked = true;
+        document.getElementById("chk27").checked = true;
+        document.getElementById("chk28").checked = true;
+        document.getElementById("chk15").checked = true;
+        document.getElementById("chk16").checked = true;
+        document.getElementById("chk30").checked = true;
+        document.getElementById("chk31").checked = true;
+        document.getElementById("chk32").checked = true;
+        document.getElementById("chk33").checked = true;
+        document.getElementById("chk35").checked = true;
+        document.getElementById("chk36").checked = true;
+        document.getElementById("chk17").checked = true;
+        document.getElementById("chk37").checked = true;
+        document.getElementById("chk40").checked = true;  
+        document.getElementById("chk41").checked = true;          
+        document.getElementById("chk44").checked = true; */            
+    }
+    
+    function deselectallchecks() {
+        
+        var temp = 0;
+        var obj = "";
+        for(temp=1; temp<=44; temp++) {
+                obj = document.getElementById("chk" + temp );
+                if (obj)
+                    document.getElementById("chk" + temp).checked = false;            
+        }        
+
+        
+        /*document.getElementById("chk1").checked = false;
+        document.getElementById("chk1").checked = false;
+        document.getElementById("chk2").checked = false;
+        document.getElementById("chk38").checked = false;
+        document.getElementById("chk39").checked = false;
+        document.getElementById("chk3").checked = false;
+        document.getElementById("chk19").checked = false;
+        document.getElementById("chk9").checked = false;
+        document.getElementById("chk4").checked = false;
+        document.getElementById("chk8").checked = false;
+        document.getElementById("chk20").checked = false;
+        document.getElementById("chk18").checked = false;
+        document.getElementById("chk10").checked = false;
+        document.getElementById("chk22").checked = false;
+        document.getElementById("chk23").checked = false;
+        document.getElementById("chk7").checked = false;
+        document.getElementById("chk11").checked = false;
+        document.getElementById("chk12").checked = false;
+        document.getElementById("chk24").checked = false;
+        document.getElementById("chk14").checked = false;
+        document.getElementById("chk27").checked = false;
+        document.getElementById("chk28").checked = false;
+        document.getElementById("chk15").checked = false;
+        document.getElementById("chk16").checked = false;
+        document.getElementById("chk30").checked = false;
+        document.getElementById("chk31").checked = false;
+        document.getElementById("chk32").checked = false;
+        document.getElementById("chk33").checked = false;
+        document.getElementById("chk35").checked = false;
+        document.getElementById("chk36").checked = false;
+        document.getElementById("chk17").checked = false;
+        document.getElementById("chk37").checked = false;
+        document.getElementById("chk40").checked = false;
+        document.getElementById("chk41").checked = false;        
+        document.getElementById("chk42").checked = false;     */           
+    }
+    
+    function back() {
+        window.location.href = "/platform/roleslist?id={{cid}}";
+    }
+
+    function submitForm() {
+        if(document.getElementById("title").value == "") {
+            alert("Please enter role title");
+            return;
+        }
+        
+        document.getElementById("frmRole").submit();
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-10">
+                        <h4 class="title">Add / Edit Role</h4>
+                        <label>Add / Edit Company Administrator Role</label>
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="return back()" class="btn btn-info btn-fill">Back to Role List</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+
+                <form id="frmRole" name="frmRole" action="/platform/rolesaddition" method="post">
+                
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label>Role Title</label>
+                                    <input type="text" maxLength="100" id="title" name="title" class="form-control border-input" placeholder="Role Title" value="{{record.Role}}">
+                                </div>
+                            </div>                                        
+                        </div>      
+
+                        <hr />
+
+                        <h3>Role Rights</h3>
+
+                        <button type="button" onclick="return selectallchecks()" class="btn btn-info btn-fill btn-sm">Select All Rights</button>
+
+                        &nbsp;&nbsp;&nbsp;
+                        <button type="button" onclick="return deselectallchecks()"  class="btn btn-info btn-fill btn-sm">De-Select All Rights</button>                
+
+
+                        <br /> <h4>  <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp; Investor View </h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="checkbox" id="chk1" name="chk1" value="1" {{#ifIn 1 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp; Investor View
+                            </div>
+                            <div class="col-md-8">
+                                <label>User can view current Investors, search investors and view investor profiles</label>
+                            </div>
+                        </div>
+
+
+                        <br /><h4>  <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp; Investor Add/Edit</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="checkbox"  id="chk2" name="chk2" value="2"  {{#ifIn 2 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp;  Investor Add/Edit  
+                            </div> 
+                            <div class="col-md-8">
+                                <label> User can add new investors, edit existing investor profiles & reset password   </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="checkbox"  id="chk38" name="chk38" value="38"  {{#ifIn 38 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Send Messages to Investors 
+                            </div>
+                            <div class="col-md-8">
+                                <label>Send messages to specific investor</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">    
+                                <input type="checkbox"  id="chk39" name="chk39" value="39"  {{#ifIn 39 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp;  Investor Document Management 
+                            </div>
+                            <div class="col-md-8">    
+                                <label>Upload new document to investor profile</label>
+                            </div>
+                        </div>
+
+
+                        <br /><h4>  <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp; Investor Share Transfer</h4>
+                        <div class="row">
+                            <div class="col-md-4">  
+                                <input type="checkbox"  id="chk3" name="chk3" value="3"  {{#ifIn 3 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp;  Company Share Transfer 
+                            </div>
+                            <div class="col-md-8"> 
+                                <label> User can transfer company shares to investors</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="checkbox"  id="chk19" name="chk19" value="19"  {{#ifIn 19 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp;  Investor Share Transfer 
+                            </div>
+                            <div class="col-md-8">
+                                <label> User can transfer investor shares to another investors </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="checkbox"  id="chk40" name="chk40" value="40"  {{#ifIn 40 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp;  Increase / Decrease Investor Balance 
+                            </div>
+                            <div class="col-md-8">
+                                <label> User can increase decrease investor balance </label>
+                            </div>
+                        </div>
+
+                    
+                        <br /> <h4>  <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp; Payments </h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="checkbox" id="chk41" name="chk41" value="41" {{#ifIn 41 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp; Process Payment from Investors
+                            </div>
+                            <div class="col-md-8">
+                                <label>User can manage payment channels, view payment requests from investors and approve decline those requests</label>
+                            </div>
+                        </div>
+
+                    
+                        <br /> <h4>  <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp; Dividend Management </h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="checkbox" id="chk42" name="chk42" value="42" {{#ifIn 42 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp; Manage Dividends 
+                            </div>
+                            <div class="col-md-8">
+                                <label>User can manage dividends, create new dividend and manage payouts to investors</label>
+                            </div>
+                        </div>
+                    
+                    
+                        <br /><h4>  <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp; New Registrations (KYC/Manage Documents)</h4>
+                        <div class="row">
+                            <div class="col-md-4">    
+                                <input type="checkbox"  id="chk9" name="chk9" value="9"  {{#ifIn 9 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp;  KYC / Manage Documents
+                            </div>
+                            <div class="col-md-8">    
+                                <label>User can view new registrations in the system and manage his documents</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">    
+                                <input type="checkbox"  id="chk4" name="chk4" value="4"  {{#ifIn 4 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp;  Investor Authorize
+                            </div>
+                            <div class="col-md-8">    	
+                                <label>User can authorize / activate the new investor in the system</label>
+                            </div>
+                        </div>
+
+
+                        <br /><h4> <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp;Manage Shares</h4>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk8" name="chk8" value="8"  {{#ifIn 8 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp;  Manage Shares	
+                            </div>
+                            <div class="col-md-8"> 
+                                <label>User can view and access share creation/burn module</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk20" name="chk20" value="20"  {{#ifIn 20 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp;  Create / Burn Shares
+                            </div>
+                            <div class="col-md-8"> 
+                                <label>User can issue tokens / shares and he can create new share creation and burn requests for existing share classes</label>          
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk18" name="chk18" value="18"  {{#ifIn 18 rights}}checked{{/ifIn}} /> &nbsp;&nbsp;&nbsp;  
+                                    Approve Shares Creation
+                            </div>
+                            <div class="col-md-8"> 
+                                <label>User has the authority approve the share creation request. In previous right user can share creation request and user with this right can actually authorize the creation of share or reject the request. A user can has both of these rights</label>       
+                            </div>
+                        </div>
+
+
+                        <br /><h4> <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp;Share Register Reports</h4>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk10" name="chk10" value="10"  {{#ifIn 10 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp;  
+                                Share Register View	
+                            </div>
+                            <div class="col-md-8"> 
+                                <label>User can view the share register overview               </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk22" name="chk22" value="22"  {{#ifIn 22 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp;                      
+                                Summary Register View
+                            </div>
+                            <div class="col-md-8"> 
+                                <label>Summary: User can view the summary of the share classes                    </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk23" name="chk23" value="23"  {{#ifIn 23 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; 
+                                History Register View 
+                            </div>
+                            <div class="col-md-8"> 
+                                <label>History: User can and print the actual share register with all mutations             </label>
+                            </div>
+                        </div>
+
+
+                        <br /><h4> <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp;View Activity Logs / News/ Emails</h4>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox" id="chk7" name="chk7" value="7"  {{#ifIn 7 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; View Activity Logs	
+                            </div>
+                            <div class="col-md-8">                     
+                                <label>User can view and search logs Manage Company News / Updates</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk11" name="chk11" value="11"  {{#ifIn 11 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp;  Manage Company News / Updates
+                            </div>
+                            <div class="col-md-8">                                         
+                                <label>User has the right to create and update news items Inbox </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk12" name="chk12" value="12"  {{#ifIn 12 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp;  Inbox
+                            </div>
+                            <div class="col-md-8">                                                         
+                                <label>User can access the inbox module, view new messages and reply back to investor</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk24" name="chk24" value="24"  {{#ifIn 24 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Send Bulk Email to all Investors
+                            </div>
+                            <div class="col-md-8">  
+                                <label>User can send bulk mail to all registered investors</label>    
+                            </div>
+                        </div>
+
+
+                        <br /><h4> <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp;Voting Campaigns Management</h4>
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk14" name="chk14" value="14"  {{#ifIn 14 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Meetings Management	
+                            </div>
+                            <div class="col-md-8">     
+                                <label>User can create, view and manage meetings</label>
+                            </div>
+                        </div>  
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk27" name="chk27"  {{#ifIn 27 rights}}checked{{/ifIn}} value="27" > &nbsp;&nbsp;&nbsp; 
+                                    Internal Polls Management 
+                            </div>
+                            <div class="col-md-8">  
+                                <label>User can create, view and manage internal polls </label>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk28" name="chk28" value="28"  {{#ifIn 28 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Public Polls Management 
+                            </div>
+                            <div class="col-md-8">  
+                                <label>User can create, view and manage public polls</label>
+                            </div>
+                        </div> 
+
+
+                        <br /><h4> <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp;Document Management Views</h4> 
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk15" name="chk15" value="15"  {{#ifIn 15 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; View Documents Module and Directories 
+                            </div>
+                            <div class="col-md-8">  
+                                <label>	User can access Documents module and view directories and files. </label>
+                            </div>
+                        </div>       
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk16" name="chk16" value="16"  {{#ifIn 16 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; View / Download Shared Files
+                            </div>
+                            <div class="col-md-8">  
+                                <label>	User can view the contents of files</label>
+                            </div>
+                        </div>       
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk30" name="chk30" value="30"  {{#ifIn 30 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; View Draft Contracts 
+                            </div>
+                            <div class="col-md-8">  
+                               <label>User can view draft contracts  </label>
+                            </div>
+                        </div>                
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk31" name="chk31" value="31"  {{#ifIn 31 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; View Public Files 
+                            </div>
+                            <div class="col-md-8">  
+                               <label>User can view public accessible files  </label>
+                            </div>
+                        </div>                 
+
+
+                        <br /><h4> <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp;Edit Documents</h4> 
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk32" name="chk32" value="32"  {{#ifIn 32 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Create / Edit Directories
+                            </div>
+                            <div class="col-md-8">  
+                               <label> User can add and edit new directories   </label>
+                            </div>
+                        </div>                 
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk33" name="chk33" value="33"  {{#ifIn 33 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Create / Edit Draft Contracts
+                            </div>
+                            <div class="col-md-8">  
+                               <label> User can add and edit (incl. comment) new draft contracts for collaborative editing  </label>
+                            </div>
+                        </div>                       
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk35" name="chk35" value="35"  {{#ifIn 35 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Upload Shared Files
+                            </div>
+                            <div class="col-md-8">  
+                               <label> User can add new files that can be shared  with investors  </label>
+                            </div>
+                        </div>                          
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk36" name="chk36" value="36"  {{#ifIn 36 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Upload Public Files
+                            </div>
+                            <div class="col-md-8">  
+                               <label> User can add new public accessible files   </label>
+                            </div>
+                        </div>                   
+
+
+                        <br /><h4> <img src="/img/graydot.png" width="15px;" /> &nbsp;&nbsp;&nbsp;Manage Document Contracts</h4> 
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk17" name="chk17" value="17"  {{#ifIn 17 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Offer Contracts as Documents 
+                            </div>
+                            <div class="col-md-8">  
+                               <label> User can offer documents as contracts to investors  </label>
+                            </div>
+                        </div>                 
+                        <div class="row">
+                            <div class="col-md-4"> 
+                                <input type="checkbox"  id="chk37" name="chk37" value="37"  {{#ifIn 37 rights}}checked{{/ifIn}} > &nbsp;&nbsp;&nbsp; Approve Investor Signed Contracts
+                            </div>
+                            <div class="col-md-8">  
+                               <label> User can sign contracts signed by investors and approve or settle signed contracts  </label>
+                            </div>
+                        </div>                               
+                    
+                    {{#if op}}
+                        <input type="hidden" name="id" value="{{record.ID}}" />
+                    {{/if}}
+                    <input type="hidden" name="op" value="{{op}}" />
+                    <input type="hidden" name="cid" value="{{cid}}" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+                
+
+                <br /><br />
+
+                <button type="button" onclick="return submitForm()"class="btn btn-info btn-fill btn-wd">Save</button>
+
+                &nbsp;&nbsp;&nbsp; <a onclick="return back()" class="btn btn-info btn-fill btn-wd">Cancel</a>                
+
+                <br /><br />
+
+            </div>
+        </div>
+    </div>								
+</div>
+
+{{> Footer}}

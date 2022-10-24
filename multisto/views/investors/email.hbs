@@ -1,0 +1,145 @@
+{{> Header}}
+
+	<script language="javascript">
+        var isMessageBeingSend = 0;
+        
+		$(document).ready(function() {
+			$("#inbox").addClass('active');            
+            SummernoteBasicDataInitialize('emailText', 'Enter Email Text', 300);       
+		})
+        function cancelClicked() {
+            window.location.href = "/inbox";
+            return false;
+        }
+        function submitForm() {
+            var res = "";
+
+            if(isMessageBeingSend == 1) {
+                showModelGeneralOKDialogBox('{{{__ "Message is being send. Please wait"}}}');
+                return;
+            }
+            if(document.getElementById("emailTitle").value == "") {
+                showModelGeneralOKDialogBox('{{{__ "Type email title"}}}');
+                return;
+            }
+            if(document.getElementById("emailText").value == "") {
+                showModelGeneralOKDialogBox('{{{__ "Type your message"}}}');
+                return;
+            }
+            
+            isMessageBeingSend = 1;
+            document.getElementById("sendEmail").submit();
+        }
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">
+                        <img src="/img/email.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;
+
+                        {{#if this.operation}}
+                            {{{__ "Send-Message-to-Company"}}}
+                        {{else}}
+                            {{{__ "Message Details"}}}
+                        {{/if}}
+                    </h4>
+                </div>
+
+                <div class="content">
+
+                    {{#if operation}}
+                    
+                        <div class="row">
+                            <div class="col-md-12">
+                                <span style="color:red;" id="ErrorMessages"></span>  
+
+                                    <form id="sendEmail" name="sendEmail" action="/sendCompanyMessage" method="post">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>{{{__ "Title"}}}</label>  
+                                                <input type="text" maxlength="240" id="emailTitle" name="emailTitle" class="form-control border-input" >
+                                            </div>
+                                        </div>
+                                        <br />
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>{{{__ "Message"}}}</label> 
+                                                <textarea id="emailText" maxlength="3000" name="emailText" rows="10" class="form-control border-input" style="width:100%;"></textarea>
+                                            </div>
+                                        </div>
+
+                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                    </form>
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div class="row">
+                            <div class="text-center">
+                                <div class="col-md-12">
+                                    <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">{{{__ "Send Message"}}}</button>
+
+                                    &nbsp;&nbsp;&nbsp; <button onclick="return cancelClicked()" class="btn btn-info btn-fill btn-wd">{{{__ "Cancel"}}}</button>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    {{else}}
+                            <br />
+                            <div class="row">
+                                {{#if this.record.Details}}
+                                    <div class="col-md-1">
+                                        <label>{{{__ "Message"}}}</label> 
+                                    </div>
+                                {{/if}}
+                                <div class="col-md-9">
+                                    <b>{{this.record.Title}}</b>
+                                    <br /><br />
+                                    {{{this.record.Details}}}
+                                </div>
+                            </div>
+
+                            <br />
+                            {{#if this.record.isResponded}}
+                                <div class="row">
+                                    {{#if this.record.Details}}
+                                        <div class="col-md-1"><label>Response</label></div>
+                                    {{/if}}
+                                    <div class="col-md-9">
+                                        {{{this.record.Response}}}
+                                    </div>
+                                </div>									
+                            {{else}}
+                                <div class="col-md-1"><label></label></div>
+                                <div class="col-md-9">                    
+                                    <label>No response yet received</label>
+                                </div>
+                            {{/if}}
+                    
+                            <br /><br />
+
+                            <div class="row">
+                            <div class="text-center">
+                                <div class="col-md-12">
+                                    &nbsp;&nbsp;&nbsp; <button onclick="return cancelClicked()" class="btn btn-info btn-fill btn-wd">{{{__ "Back to Inbox"}}}</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    {{/if}}
+
+                    <br /><br />
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

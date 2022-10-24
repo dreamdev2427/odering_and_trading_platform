@@ -1,0 +1,41 @@
+<script>
+    function changeIsContactTheSponsorFont(isChecked) {
+      document.getElementById('isContactTheSponsorFontSwitchEnabled-intValue').value = +isChecked;
+      document.getElementById('isContactTheSponsorFontSwitchEnabled-redirectUrl').value = window.location.href;
+      document.getElementById('postIsContactTheSponsorFontSwitchEnabled').submit();
+    }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:0.5rem; margin-right:1rem;" alt='add more'/>Contact The Sponsor Font</h4>
+        <label>Allow the investor to format their text with various fonts and text tools, on the right side menu chat box</label>
+      </div>
+      <div class="content">
+        <form method="post" id="postIsContactTheSponsorFontSwitchEnabled" action="postParamUpdateToApi">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="switch">
+                <input id="isPropertySortingEnabled"
+                       onclick=changeIsContactTheSponsorFont(this.checked) type="checkbox"
+                  {{#if isContactTheSponsorFontSwitchEnabled}}
+                       checked
+                  {{/if}}
+                >
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" id="isContactTheSponsorFontSwitchEnabled-intValue" name="intValue"/>
+          <input type="hidden" id="isContactTheSponsorFontSwitchEnabled-stringValue" name="stringValue" value=""/>
+          <input type="hidden" name="param" value="isContactTheSponsorFontSwitchEnabled" />
+          <input type="hidden" id="isContactTheSponsorFontSwitchEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

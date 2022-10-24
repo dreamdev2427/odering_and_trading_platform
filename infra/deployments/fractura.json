@@ -1,0 +1,7 @@
+{
+    "id": "fractura",
+    "version": "staging",
+    "apiHostname": "api.fractura.ph",
+    "frontendHostname": "investor.fractura.ph",
+    "multistoHostname": "admin.fractura.ph"
+}

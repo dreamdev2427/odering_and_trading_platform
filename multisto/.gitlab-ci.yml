@@ -1,0 +1,69 @@
+
+build-multisto:
+  extends: .build-image
+  variables:
+    FOLDER: multisto
+  only:
+    refs:
+      - staging
+    changes:
+      - "multisto/**/*"
+
+legacy-production-build-multisto:
+  image: docker:20.10
+  stage: build
+  services:
+    - docker:dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY # login to gitlab registry
+    - export LATEST_IMAGE="$CI_REGISTRY_IMAGE/$FOLDER:$CI_COMMIT_REF_NAME" # save the name of the version
+    - docker pull "$LATEST_IMAGE" || true # get latest image for caching
+    - docker build --build-arg commit_hash="$CI_COMMIT_SHORT_SHA" --cache-from "$LATEST_IMAGE" -t "$LATEST_IMAGE" ./$FOLDER # build image
+    - docker push "$LATEST_IMAGE"  # upload image to gitlab registry
+  variables:
+    FOLDER: multisto
+  only:
+    refs:
+      - "production"
+    changes:
+      - "multisto/**/*"
+
+deploy-staging-multisto:
+  stage: deploy
+  image: cdrx/rancher-gitlab-deploy
+  variables:
+    FOLDER: multisto
+  script:
+    - upgrade --environment Default --stack gosecurity --service digishares-staging-2 --new-image "$CI_REGISTRY_IMAGE/$FOLDER:latest" --create --no-start-before-stopping --rollback-on-error --finish-upgrade
+  only:
+    refs:
+      - staging
+    changes:
+      - "multisto/**/*"
+
+deploy-staging-3-multisto:
+  stage: deploy
+  image: cdrx/rancher-gitlab-deploy
+  variables:
+    FOLDER: multisto
+  script:
+    - upgrade --environment Default --stack gosecurity --service digishares-staging-3 --new-image "$CI_REGISTRY_IMAGE/$FOLDER:latest" --create --no-start-before-stopping --rollback-on-error --finish-upgrade
+  only:
+    refs:
+      - staging
+    changes:
+      - "multisto/**/*"
+
+deploy-prod-multisto:
+  stage: deploy
+  image: cdrx/rancher-gitlab-deploy
+  variables:
+    FOLDER: multisto
+  script:
+    - upgrade --environment Default --stack gosecurity --service digishares-invest-prod --new-image "$CI_REGISTRY_IMAGE/$FOLDER:$CI_COMMIT_REF_NAME" --create --no-start-before-stopping --rollback-on-error --finish-upgrade
+  only:
+    refs:
+      - production
+    changes:
+      - "multisto/**/*"
+

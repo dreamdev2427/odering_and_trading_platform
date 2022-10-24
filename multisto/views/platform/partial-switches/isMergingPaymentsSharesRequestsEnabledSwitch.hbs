@@ -1,0 +1,37 @@
+<script>
+    function postIsMergingPaymentsSharesRequestsEnabled(isChecked) {
+        document.getElementById('isMergingPaymentsSharesRequestsEnabled-intValue').value = +isChecked;
+        document.getElementById('isMergingPaymentsSharesRequestsEnabled-redirectUrl').value = window.location.href;
+        document.getElementById('postisMergingPaymentsSharesRequestsEnabled').submit();
+    }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;"
+                        alt='add more' /> Merge Purchase Alerts/Payment Requests</h4>
+                <label>Enable/Disable Merge param</label>
+            </div>
+            <div class="content">
+                <form method="post" id="postisMergingPaymentsSharesRequestsEnabled" action="postParamUpdateToApi">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="switch">
+                                <input type="checkbox" onclick="postIsMergingPaymentsSharesRequestsEnabled(this.checked)" {{#if
+                                    isMergingPaymentsSharesRequestsEnabled}} checked {{/if}} />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="isMergingPaymentsSharesRequestsEnabled-intValue" name="intValue" />
+                    <input type="hidden" id="isMergingPaymentsSharesRequestsEnabled-stringValue" name="stringValue" value="" />
+                    <input type="hidden" id="isMergingPaymentsSharesRequestsEnabled-param" name="param" value="isMergingPaymentsSharesRequestsEnabled" />
+                    <input type="hidden" id="isMergingPaymentsSharesRequestsEnabled-redirectUrl" name="redirectUrl"
+                        value="/platform/otherSwitches" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

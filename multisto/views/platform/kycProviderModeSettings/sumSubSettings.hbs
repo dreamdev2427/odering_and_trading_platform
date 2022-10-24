@@ -1,0 +1,140 @@
+<script language="javascript">
+  function submitChanges() {
+    document.getElementById('saveParams').submit();
+  }
+</script>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-10">
+          <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Sum Sub Parameters</h4>
+          <label>Please follow the instructions and make sure all fields are filled in:</label>
+        </div>
+        <div class="col-md-1">
+          <button onclick="submitChanges()" class="btn btn-info btn-fill">Save All</button>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <form method="post" id="saveParams" action="postChangeSumSubSettings">
+        <dib class="row">
+          <div class="col-md-12">
+            Note: the following 2 parameters can be copied only when generating an app token. Please fill in both of them at the same time.
+          </div>
+        </dib>
+        <div class="row">
+          <div class="col-md-12">
+            <b>App Token</b>
+            <br/>
+            <label>The App Token can be found here (while generating a new token, under the alias: "Token"):
+              <a href="https://cockpit.sumsub.com/checkus#/devSpace/appTokens">
+                https://cockpit.sumsub.com/checkus#/devSpace/appTokens
+              </a>
+            </label>
+            <br/>
+            <br/>
+            <input name="appToken" class="form-control border-input" value="{{sumSubAppToken}}">
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Api Secret Key</b>
+            <br/>
+            <label>The Api Secret Key can be found here (under the alias "Secret Key"):
+              <a href="https://cockpit.sumsub.com/checkus#/devSpace/appTokens">
+                https://cockpit.sumsub.com/checkus#/devSpace/appTokens
+              </a>
+              <br/>
+            </label>
+            <br/>
+            <input name="apiSecretKey" class="form-control border-input" value="{{sumSubApiSecretKey}}">
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Webhook Secret Key</b>
+            <br/>
+            <label>The Webhook Secret Key can be found under the "webhooks" left-side menu, here:
+              <a href="https://cockpit.sumsub.com/checkus#/devSpace/webhooks">
+                https://cockpit.sumsub.com/checkus#/devSpace/webhooks
+              </a>
+              <br/>
+              <b>Note:</b> Digishares currently runs under 2 applications. V1 and V2. As such, you need to create a webhook for each
+              of the applications you wish to use. You can do that by pressing on the Create Webhook button found at the link above.
+              <br/>
+              <li>For V1, please use the admin base URL followed by /api/investorSumSubWebhookPost</li>
+              <li>For V2, please use the api base URL followed by /api/investorSumSubWebhookPost</li>
+              <br/>
+              Please edit/create one with the following settings:
+              <br/>
+              <li><b>Name:</b> Any descriptive name you wish to provide</li>
+              <li><b>Receiver:</b>HTTP Address</li>
+              <li><b>Target:</b>your digishares domain followed by /api/investorSumSubWebhookPost</li>
+              <li><b>Types:</b>Application Reviewed</li>
+              <li><b>Secret Key:</b>make sure the value provided on Sum Sub matches the one provided in the field bellow (feel free to edit it as you wish, just make sure it matches on both platforms)</li>
+              <br/>
+            </label>
+            <br/>
+            <input name="webhookSecretKey" class="form-control border-input" value="{{sumSubWebhookSecretKey}}">
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Applicant Levels</b>
+            <br/>
+            <label>The Applicant Levels can be found under the "Applicant Levels" tab (under the column "Name"), here:
+              <a href="https://cockpit.sumsub.com/checkus#/sdkIntegrations/levels">
+                https://cockpit.sumsub.com/checkus#/sdkIntegrations/levels
+              </a>
+              <br/>
+              Note: Please edit the existing level with the following settings:
+              <br/>
+              <li><b>Level Name:</b> Any descriptive name you wish to provide (just make sure the name matches the one provided in the field bellow)</li>
+              Under the <b>Required Steps</b> tab, fill the following:</li>
+              <li><b>Identity Document:</b>ID card, Passport, Residence Permit (anything else won't be processed)</li>
+              <li><b>Proof of Residence (* required):</b>Country*, Street*, City*, PostCode*, Building Number, Flat Number</li>
+              <li><b>Applicant Data (* required):</b>
+                <br/>
+                <ul>
+                  <li><b>Field Name:</b> SocialSecurity</li>
+                  <li><b>Display Name:</b> Social Security Number or any other name you wish</li>
+                  <li><b>Required:</b> yes</li>
+                </ul>
+                <br/>
+                <ul>
+                  <li><b>Field Name:</b> firstName</li>
+                  <li><b>Display Name:</b> First Name or any other name you wish</li>
+                  <li><b>Required:</b> yes</li>
+                </ul>
+                <ul>
+                  <li><b>Field Name:</b> lastName</li>
+                  <li><b>Display Name:</b> Last Name or any other name you wish</li>
+                  <li><b>Required:</b> yes</li>
+                </ul>
+                <ul>
+                  <li><b>Field Name:</b> middleNames</li>
+                  <li><b>Display Name:</b> Middle Names or any other name you wish</li>
+                  <li><b>Required:</b> no</li>
+                </ul>
+              </li>
+              <li><b>Other:</b>You can also add Phone Verification, Selfie and Email Verification if you wish</li>
+              <br/>
+            </label>
+            <br/>
+            <input name="levelName" class="form-control border-input" value="{{sumSubLevelName}}">
+          </div>
+        </div>
+        <hr/>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+  </div>
+</div>

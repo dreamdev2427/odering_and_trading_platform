@@ -1,0 +1,36 @@
+<script>
+  function postisDoAutomaticPurchaseEnabled(isChecked) {
+    document.getElementById('isDoAutomaticPurchaseEnabled-intValue').value = +isChecked;
+    document.getElementById('isDoAutomaticPurchaseEnabled-redirectUrl').value = window.location.href;
+    document.getElementById('postisDoAutomaticPurchaseEnabled').submit();
+  }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;"
+                        alt='add more' /> Enable automatic purchasing</h4>
+                <label>Enable/Disable automatic purchasing of shares</label>
+            </div>
+            <div class="content">
+                <form method="post" id="postisDoAutomaticPurchaseEnabled" action="postParamUpdateToApi">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="switch">
+                                <input type="checkbox" onclick="postisDoAutomaticPurchaseEnabled(this.checked)"
+                                    {{#if isDoAutomaticPurchaseEnabled}} checked {{/if}} />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="isDoAutomaticPurchaseEnabled-intValue" name="intValue" />
+                    <input type="hidden" id="isDoAutomaticPurchaseEnabled-stringValue" name="stringValue" value="" />
+                    <input type="hidden" id="isDoAutomaticPurchaseEnabled-param" name="param" value="doAutomaticPurchase" />
+                    <input type="hidden" id="isDoAutomaticPurchaseEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

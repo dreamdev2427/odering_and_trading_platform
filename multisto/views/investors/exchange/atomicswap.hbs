@@ -1,0 +1,713 @@
+{{> Header}}
+
+{{> atomicswap}}
+
+
+<script language="javascript">
+    //var contract_address = "0xF2A6143Bf60885d2044a744943d09ca1C05EF66F";    //DIgiUSD
+    //var web3Address = "https://kovan.infura.io/v3/fe41724da6f24b76a782f376b2698ee8";
+    var currentSwapStatus = {{order.atomicSwapCurrentStatus}};
+    $(document).ready(async function() {
+        
+    })
+    
+    var contractabi = [
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "approve",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [],
+          "name": "totalSupply",
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "name": "addedValue",
+              "type": "uint256"
+            }
+          ],
+          "name": "increaseAllowance",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "mint",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "burn",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "balanceOf",
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [],
+          "name": "renounceOwnership",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "burnFrom",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [],
+          "name": "registry",
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [],
+          "name": "owner",
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [],
+          "name": "isOwner",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "addMinter",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [],
+          "name": "renounceMinter",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "name": "subtractedValue",
+              "type": "uint256"
+            }
+          ],
+          "name": "decreaseAllowance",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [
+            {
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "isMinter",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [
+            {
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "name": "spender",
+              "type": "address"
+            }
+          ],
+          "name": "allowance",
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "transferOwnership",
+          "outputs": [],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "name": "_registry",
+              "type": "address"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "reason",
+              "type": "uint8"
+            },
+            {
+              "indexed": true,
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "CheckStatus",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "MinterAdded",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "MinterRemoved",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Transfer",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Approval",
+          "type": "event"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ],
+          "name": "transfer",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ],
+          "name": "transferFrom",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ],
+          "name": "forceTransfer",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "constant": true,
+          "inputs": [],
+          "name": "_service",
+          "outputs": [
+            {
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ];
+    var openingContractAddress = "{{ethereumContractAddress}}";  // Shares Contract Address   Digi
+    var closingContractAddress = "{{order.atomicSwapTokenAddressAcceptable}}"
+    
+    var isWalletConnected = 0;
+    var currentWalletAccount = "";
+    var tokenAccount = "{{wallet.publicKey}}";
+
+    async function appriveTokensTransfersLocalFunction() {   
+        if(isWalletConnected == 0) {
+              showModelGeneralOKDialogBox("Wallet is not yet connect. Please perform step 1");
+              return;
+        }
+        
+        if(currentWalletAccount.toLowerCase() != tokenAccount.toLowerCase()) {
+              showModelGeneralOKDialogBox("Wallet account {{wallet.publicKey}} is not selected");
+              return;
+        }
+        
+        Wallet_ApproveTransfers({{offer.sharesPartial}}, openingContractAddress, 1)
+    }    
+    async function openSwapOperation() {
+
+        if(isWalletConnected == 0) {
+                  showModelGeneralOKDialogBox("Wallet is not yet connect. Please perform step 1");
+                  return;
+          }        
+        
+        if(currentWalletAccount.toLowerCase() != tokenAccount.toLowerCase()) {
+              showModelGeneralOKDialogBox("Wallet account {{wallet.publicKey}} is not selected");
+              return;
+        }        
+
+          const web3 = new Web3(provider);
+
+          // Get list of accounts of the connected wallet
+          const accounts = await web3.eth.getAccounts();
+
+          web3.eth.getTransactionCount(accounts[0], 'pending').then(obj=> {
+
+                const contract = new web3.eth.Contract(swapcontractabi, swapcontract_address);
+
+                const _swapNumber = web3.utils.toHex( {{offer.atomicSwapSecret}} );
+                const _executor = "{{offer.atomicBuyerPublicKey}}";     //this is the user who will call close / or other party
+                const _openingToken = openingContractAddress;
+                const _tokensToOpen = web3.utils.toHex( {{offer.sharesPartial}} );
+                const _closingToken = "{{order.atomicSwapTokenAddressAcceptable}}";
+                const _tokensToClose = web3.utils.toHex( {{offer.rateFrom}}   );
+                const _expiry = web3.utils.toHex( 1644733968 );
+
+                    // creating raw tranaction
+                    const rawTransaction = {
+                        from: accounts[0],
+                        gasPrice: web3.utils.toHex(120 * 1e9),
+                        gasLimit: 93399 + 1000000,
+                        to: swapcontract_address,
+                        value: 0x0,
+                        data: contract.methods.open( _swapNumber, _executor,  _openingToken,  _tokensToOpen,  _closingToken,  _tokensToClose,  _expiry ).encodeABI(),
+                        nonce: web3.utils.toHex( obj ),
+                    };
+
+                    web3.eth.sendTransaction( rawTransaction )
+                    .once('transactionHash', function(hash){ 
+                        $("#spanSwapTrnasferExecuting").show();
+                    })
+                    .once('receipt', function(receipt){ })
+                    .on('confirmation', function(confNumber, receipt){  })
+                    .on('error', function(error){ 
+                         showModelGeneralOKDialogBox("An error occured while executing blockchain transaction");
+                         return;
+                    }).then ( obj => {
+                        window.location.href = "changeSwapStatus?id={{order.ID}}&status=3";
+                        return false;
+                    });
+
+          })
+
+    }
+    function Wallet_BlockchainAccountSelected(account) {
+        isWalletConnected = 1;
+        currentWalletAccount = account;
+        $("#wallet").show();
+        $("#walletnotconnected").hide();        
+        $("#selectedAccount").text(account);        
+    }
+    function Wallet_ApproveTransfersSuccessEvent(obj) {
+        window.location.href = "changeSwapStatus?id={{order.ID}}&status=2";
+        return false;
+    }
+    function Wallet_ApproveTransfersFailureEvent(error) {
+         showModelGeneralOKDialogBox("Error occured in blockchain. Please make sure your wallet is configured correctly and you have required tokens in your account" + JSON.stringify(error) );
+    }
+    function Wallet_TransactionEvent(id, data) {
+        if(id == 1)
+            $("#spanApproveTrnasferExecuting").show();
+    }
+</script>
+
+{{> HeaderInner}}
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">  Atomic Swap  </h4>
+                </div>
+                
+                <div class="content">
+                    
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Number of shares you sell </label>
+                            </div>
+                            <div class="col-md-9">            
+                                {{offer.sharesPartial}}
+                            </div>
+                        </div>                                 
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Price to be paid by buyer </label>
+                            </div>
+                            <div class="col-md-9">            
+                                {{offer.rateFrom}}  USDC
+                            </div>
+                        </div>     
+
+                    
+
+                        <br />
+                        <hr >
+                        <h4> Step 1 - Connect your Ethereum Wallet</h4> 
+                        <label>Please make sure you Ethereum wallet is configured correctly</label>
+                        <br />
+                        <button type="button" onclick="connectWallet()" class="btn btn-info btn-fill"> Connect Wallet </button>       
+
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span id="walletnotconnected" >
+                                 <img src="/img/reddot.png" width="20px"> &nbsp;&nbsp;&nbsp;  Wallet is not connect
+                        </span>
+                        
+                        <span id="wallet" style="display:none;">                                
+                                <img src="img/greendot.png" width="20px">  Wallet is connect
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <b>Selected Account in Wallet</b>   &nbsp;&nbsp;&nbsp;    <span id="selectedAccount"></span>                                
+                        </span>
+                        <hr >
+
+                        <h4> Step 2 - Approve Transfer of Token</h4> 
+                        {{#ifGreater order.atomicSwapCurrentStatus 1}}
+                               <img src="img/greendot.png" width="20px">  You have approved the shares transfer. Please perform Step 3
+                        {{else}}
+                              <button type="button" onclick="appriveTokensTransfersLocalFunction()" class="btn btn-info btn-fill">Approve Transfer</button>       
+                    
+                              &nbsp;&nbsp;&nbsp;
+                              <span style="display:none; color:red;" id="spanApproveTrnasferExecuting">
+                                    <img src="img/loading2.gif" width="25px"> &nbsp;  Please wait, blockchain transaction is executing. Do not close this browser window
+                              </span>                    
+                        {{/ifGreater}}
+                                                        
+                        <hr >
+
+
+                        <h4> Step 3 - Initiate Blockchain Swap Operation</h4> 
+                            {{#ifGreater order.atomicSwapCurrentStatus 2}}
+                                   <img src="img/greendot.png" width="20px">  You have transferred your shares <b> ( {{offer.sharesPartial}} ) </b> for swap.  &nbsp;&nbsp; 
+                                    {{#ifEqual order.atomicSwapCurrentStatus 2 }}
+                                        Now wating for buyer to complete the swap transaction 
+                                    {{/ifEqual}}
+                            {{else}}
+                                  <button type="button" onclick="openSwapOperation()" class="btn btn-info btn-fill">Start Swap</button>  
+                    
+                    
+                                  &nbsp;&nbsp;&nbsp;
+                                  <span style="display:none; color:red;" id="spanSwapTrnasferExecuting">
+                                        <img src="img/loading2.gif" width="25px"> &nbsp;  Please wait, blockchain transaction is executing. Do not close this browser window
+                                  </span>                      
+                            {{/ifGreater}}
+                            
+                        <br /><br />
+                    
+                        {{#ifEqual order.atomicSwapCurrentStatus 5 }}
+                                <img src="img/greendot.png" width="20px">  This trade is complete  &nbsp;&nbsp; 
+                        {{/ifEqual}}
+                                                    
+                        <br /><br />                    
+                </div>                    
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

@@ -1,0 +1,265 @@
+<script language="javascript">
+    $(document).ready(function() {
+
+    });
+    const link = "{{{targetServerSideEndpointAutoPost}}}";
+    {{#if JSONRemoteCallWithoutRedirect}} 
+        const JsonCall = 1;
+    {{else}}
+        const JsonCall = 0;
+    {{/if}}
+ 
+    function InvestorSearchModule_resetForm() {
+        //window.location.href = link;
+        //return false;
+        document.getElementById("name").value = "";
+        document.getElementById("type").value = 0;
+        InvestorSearchModule_submitForm();
+    }
+    function InvestorSearchModule_submitForm() {
+        var fullLink = link;
+
+        if(link.indexOf('?') < 0)
+            fullLink = fullLink + "?";
+        else
+            fullLink = fullLink + "&";
+
+        var searchLink = fullLink + InvestorSearchModule_getPageSearchCriteria();
+        
+        if(JsonCall) {
+            $("#loadingimageinvestorsearch").show();
+            $.getJSON(searchLink, function( data ) { 
+                InvestorSearchModule_callbackJsonCallData(data);
+                $("#loadingimageinvestorsearch").hide();
+            });
+        } else {
+            window.location.href = searchLink;
+        }
+    
+    }
+    function InvestorSearchModule_getPageSearchCriteriaJSON() {
+        var search = {};
+        if(document.getElementById("name").value != "")
+            search.name = document.getElementById("name").value;
+
+        if(document.getElementById("type").value != "0")
+            search.type = document.getElementById("type").value;                
+
+        search.sortby = document.getElementById("sortby").value;                
+        search.sortingby = document.getElementById("sortingby").value;                
+        
+        return search;
+    }
+    function InvestorSearchModule_getPageSearchCriteria() {
+        var search = "";
+
+        search = "sortby=" + document.getElementById("sortby").value;
+        search = search + "&sortingby=" + document.getElementById("sortingby").value;        
+                
+        if(document.getElementById("name").value != "")
+            search = search + "&namesearch=" + document.getElementById("name").value;
+
+        if(document.getElementById("type").value != "0") {
+            if(search != "")
+                search = search + "&";
+            search = search + "typesearch=" + document.getElementById("type").value;
+        }
+        
+        return search;
+    }
+    function InvestorSearchModule_setControls() {
+        if(getParameterByName("namesearch") != null)
+            document.getElementById("name").value = getParameterByName("namesearch");
+
+        if(getParameterByName("typesearch") != null)
+            document.getElementById("type").value = getParameterByName("typesearch");
+        
+        if(getParameterByName("sortby") != null)
+            document.getElementById("sortby").value = getParameterByName("sortby");   
+        
+        if(getParameterByName("sortingby") != null)
+            document.getElementById("sortingby").value = getParameterByName("sortingby");           
+    }
+    function InvestorSearchModule_setControlsParams(name, type, sortby, sortingby) {
+        document.getElementById("name").value = name;
+        document.getElementById("type").value = type;
+        
+        if(sortby != "")
+            document.getElementById("sortby").value = sortby;
+        if(sortingby != "")
+            document.getElementById("sortingby").value = sortingby;        
+    }
+    function InvestorSearchModule_viewSelected() {
+        var e = document.getElementById("type");
+        var id = parseInt(e.options[e.selectedIndex].value);
+
+        if(id == 0) {
+            if(document.getElementById("name").value == "") {
+                showModelGeneralOKDialogBox("All investors are selected with current search criteria <br/><br/> Please make changes in search criteria to view selected investors");
+                return;
+            }
+        }
+
+        var searchCriteria = "searchInvestorjson?namesearch=" + document.getElementById("name").value;
+        
+        if(id != 0)
+            searchCriteria = searchCriteria + "&typesearch=" + id;
+
+        $("#loadingimageinvestorsearch").show();
+
+        $.getJSON(searchCriteria, function( data ) { 
+            var html = "";
+
+            if(data.length > 0) {
+                for(var k in data) {
+                    html = html + "<div class='row'><div class='col-md-1'>";
+                    html = html + data[k].id;
+                    html = html + "</div>";                
+
+                    html = html + "<div class='col-md-5'>";
+                    if(data[k].investortype == 0) {
+                        html = html + data[k].firstname + " " + data[k].lastname;
+                    } else
+                        html = html + data[k].companyname;                        
+                    html = html + "</div>";
+
+
+                    html = html + "<div class='col-md-3'>";
+                    html = html + data[k].country;
+                    html = html + "</div>";
+
+                    html = html + "<div class='col-md-2'>";
+                    html = html + data[k].email;
+                    html = html + "</div>";
+
+                    html = html + "</div><br />";
+                } 
+            } else
+                html = "<b>No investor found</b>"
+            
+            $("#InvestorSearchAreaJSON").html(html);
+            $('#selectedInvestorsListFromSearchCriteria').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+            $("#loadingimageinvestorsearch").hide();
+        });
+
+
+    }
+    function InvestorSearchModule_enableBulkInvestorSelectionInDropDown() {
+        $("#type").append("<option value='-2'> Bulk Upload List</option>");
+    }
+
+</script>
+
+<div class="row">
+
+<div class="col-md-12 ">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">  <img src="/img/search.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Investor Search</h4>
+            <label>{{#if HelperMessage}} {{HelperMessage}} {{/if}}</label>
+        </div>
+        <div class="content table-responsive table-full-width icon-section">
+
+            <div class="row">
+                <div class="col-md-1"> </div>
+                <div class="col-md-6"> 
+                    <div class="row">                        
+                        <div class="col-md-2">
+                            Name
+                        </div>
+                        <div class="col-md-10">         
+                            <label>(use "," for multiple searches) </label>
+                            <input id="name" name="name" class="form-control border-input" type=text />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">                        
+                        <div class="col-md-2">         
+                            <span style="font-size:15px;">  Type  </span>
+                        </div> 
+                        <div class="col-md-9">                              
+                            <span style="font-size:15px;">
+                                <select id="type" name="type" onchange="InvestorSearchModule_submitForm()"  class="form-control border-input" style="padding:3px; width:255px;">
+                                    <option value="0"> All </option>  
+                                    <option value="-1"> Registered Investors </option>  
+                                    {{#each Data.STOInvestorTypes}}
+                                        <option value="{{this.id}}"> {{this.type}} </option>
+                                    {{/each}} 
+                                </select>                    
+                            </span>                                        
+                        </div>
+                    </div>
+                    <br />
+                </div>     
+                <div class="col-md-2" > 
+                    <div class="row">                        
+                        <div class="col-md-12" {{#unless DisplaySortingControls}} style="display:none;" {{/unless}}>                              
+                            <span style="font-size:15px;">
+                                <label>Sort By</label>
+                                <select id="sortby" name="sortby" onchange="InvestorSearchModule_submitForm()"  class="form-control border-input" style="padding:3px; ">
+                                    <option value="name"> Name </option> 
+                                    <option value="id"> ID </option> 
+                                    <option value="country"> Country </option> 
+                                    <option value="shares"> Shares </option> 
+                                </select>                    
+                            </span>                                        
+                        </div>
+                    </div>                    
+                </div>
+                <div class="col-md-2" {{#unless DisplaySortingControls}} style="display:none;" {{/unless}}> 
+                    <div class="row">                        
+                        <div class="col-md-9">                              
+                            <span style="font-size:15px;">
+                                <label>Sorting</label>
+                                <select id="sortingby" name="sortingby" onchange="InvestorSearchModule_submitForm()"  class="form-control border-input" style="padding:3px; ">
+                                    <option value="asc"> asc </option>  
+                                    <option value="desc"> desc </option>  
+                                </select>                    
+                            </span>                                        
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-7">
+                    <button onclick="InvestorSearchModule_submitForm()" class="btn btn-info btn-fill">Search Investors</button> 
+                    &nbsp;&nbsp;&nbsp;
+                    <button onclick="InvestorSearchModule_resetForm()" class="btn btn-info btn-fill">Reset Search</button>                 
+                    &nbsp;&nbsp;&nbsp;
+                    <span style="display:none;" id="loadingimageinvestorsearch"> <img src="/img/loading2.gif" width="20px" /> <label>Loading ....</label> </span>
+                </div>
+                <div class="col-md-2"> 
+                    {{#if ShowViewSelectedButton}}
+                        <button onclick="InvestorSearchModule_viewSelected()" class="btn btn-info btn-fill">View Selected</button>
+                    {{/if}}
+                </div>
+            </div>
+            <br />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class = "modal fade" id="selectedInvestorsListFromSearchCriteria" tabindex = "-1" role = "dialog" aria-labelledby = "selectedInvestorsListFromSearchCriteria" aria-hidden = "true">
+    
+    <div class = "modal-dialog  modal-lg">
+      <div class = "modal-content">
+          
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title">Selected Investors</h4>
+         </div>
+
+         <div  class="modal-body">
+            <div id="InvestorSearchAreaJSON" class="FixedHeightContainer" style="width:100%; height:200px; overflow:auto; padding:40px;"></div>
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>

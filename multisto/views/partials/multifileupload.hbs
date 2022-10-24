@@ -1,0 +1,128 @@
+
+<script language="javascript">
+    
+    const MultifileMultifileExtensions1 = /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf)$/i;
+    const MultifileMultifileExtensions1msg = "You selected file(s) other than following types. Please select only following file types <br /> <br /> <img src='/img/graydot.png' width='15px'> &nbsp; image (tif, tiff, jpg, jpeg, png, gif) <br /><br />  <img src='/img/graydot.png' width='15px'> &nbsp; documents (doc, docx) <br /><br />  <img src='/img/graydot.png' width='15px'> &nbsp; pdf";
+
+    
+    const MultifileMultifileExtensions2 = /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf|\.xls|\.xlsx|\.xlsm|\.csv)$/i;
+    const MultifileMultifileExtensions2msg = "You selected file(s) other than following types. Please select only following file types <br /> <br /> <img src='/img/graydot.png' width='15px'> &nbsp; image (tif, tiff, jpg, jpeg, png, gif) <br /><br />  <img src='/img/graydot.png' width='15px'> &nbsp; documents (doc, docx, xls, xlsx, xlsm, csv) <br /><br />  <img src='/img/graydot.png' width='15px'> &nbsp; pdf";
+    
+    
+    const MultifileMultifileExtensions3 = /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif)$/i;
+    const MultifileMultifileExtensions3msg = " Please select only following image types <br /> <br /> <img src='/img/graydot.png' width='15px'> &nbsp; tif<br /> <img src='/img/graydot.png' width='15px'> &nbsp; tiff<br /> <img src='/img/graydot.png' width='15px'> &nbsp; jpg<br /> <img src='/img/graydot.png' width='15px'> &nbsp; jpeg<br /> <img src='/img/graydot.png' width='15px'> &nbsp; png<br /> <img src='/img/graydot.png' width='15px'> &nbsp; gif";    
+    
+    
+    const MultifileMultifileMaxFiles1 = 3;
+    const MultifileMultifileMaxFileSizeMB1 = 6;
+    
+    
+    var MultifileMultifile_IsFilesUploading = 0;
+    
+    
+    function checkAndUpdateMultiFileUpload(fileid, filelistid, allowedExtensions, extensionError, maxFiles, maxSize) {
+        var fileInput = document.getElementById(fileid);
+        var fileName = "";
+        
+        if(fileInput.files.length > maxFiles) {
+            showModelGeneralOKDialogBox("Please select " + maxFiles + " or less files");
+            return false;
+        }
+
+        if(fileInput.files.length > 0) {
+            for(var cnt = 0; cnt<fileInput.files.length; cnt++) {
+                var filePath = fileInput.files[cnt].name;
+
+                if( fileInput.files[cnt].size > maxSize * 1048576 ) {
+                    showModelGeneralOKDialogBox("File size cannot be larger than " + maxSize + "mb. One of the file size is greater than size limit");
+                    $("#" + filelistid).html("No File Selected");
+                    fileInput.value = fileInput.defaultValue;
+                    return false;
+                }
+                else if(!allowedExtensions.exec(filePath)){
+                    showModelGeneralOKDialogBox(extensionError);
+                    $("#" + filelistid).html("No File Selected")
+                    return false;
+                }
+
+                fileName = fileName + "&nbsp;&nbsp;&nbsp;&nbsp;" + fileInput.files[cnt].name;
+            }
+            
+            $("#" + filelistid).html(fileName)    
+        } else 
+            $("#" + filelistid).html("No File Selected")
+    }
+    
+    function uploadMultiplefilesToServer(fileid, progressbarid, maxfiles, uploadurl) {
+        
+        event.preventDefault();
+        var files = $("#" +  fileid).get(0).files;
+        formData = new FormData();
+        if (files.length === 0) {
+            showModelGeneralOKDialogBox('Select atleast 1 file to upload.');
+            return false;
+        }
+
+        if (files.length > maxfiles) {
+            showModelGeneralOKDialogBox('Please select ' + maxfiles + " or less");
+            return false;
+        }
+        
+        if( MultifileMultifile_IsFilesUploading == 1) {
+            showModelGeneralOKDialogBox("Files are being uploaded. Please wait . . .");
+            return;
+        }
+        
+        MultifileMultifile_IsFilesUploading = 1;
+        
+        // Append the files to the formData.
+        for (var i=0; i < files.length; i++) {
+            var file = files[i];
+            formData.append('photos[]', file, file.name);
+        }
+
+        $("#" + progressbarid).css("width", "0%"); 
+        $("#" + progressbarid).html( "0%" );            
+        $("#" + progressbarid).parent().show();
+        
+		
+        $.ajax({
+			url: uploadurl + '?_csrf=' +  encodeURI('{{csrfToken}}'),
+            contentType: 'multipart/form-data',
+            method: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+            xhr: function () {
+                var xhr = new XMLHttpRequest();
+                xhr.upload.addEventListener('progress', function (event) {
+                    var progressBar = $('.progress-bar');
+                    if (event.lengthComputable) {
+                        var percent = (event.loaded / event.total) * 100;
+                        percent = Math.round(percent);
+                        $("#" + progressbarid).css("width", percent + "%"); 
+                        $("#" + progressbarid).html( percent + "%" );
+
+                        progressBar.width(percent + '%');
+                        if (percent === 100) {
+                            progressBar.removeClass('active');
+                        }
+                    }
+                });
+                return xhr;
+            },
+              success: function(data) {
+                  multipleFilesUploadingDoneEvent(data);
+                  MultifileMultifile_IsFilesUploading = 0;
+              },
+              error: function(e) {
+                //called when there is an error
+                MultifileMultifile_IsFilesUploading = 0;
+                alert(e.toString() + "Error occured while uploading files. Please try later or contact administrator");
+              }        
+        })
+    }        
+
+</script>
+
+

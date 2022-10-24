@@ -1,0 +1,79 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function(){
+
+		})
+
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-7">
+                                <h4 class="title">  <img src="/img/list.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Share Certificate</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content">
+
+                        <h4 class="title">{{record.title}}</h4>
+                        {{record.projectAddress}}
+                        <hr />
+                        <h4 class="title">Investor Details</h4>
+                        {{#if investor.investorType}}
+                             {{investor.CompanyName}} ( {{investor.TitleWithinCompany}} )
+                        {{else}}
+                            {{investor.FirstName}} {{investor.LastName}}
+                        {{/if}}
+                            <br />
+                            {{investor.Address}} {{investor.town}} {{investor.state}}
+                            <br />
+                            {{#if zip}} ( {{investor.zip}} ) {{/if}}  {{investor.country}}
+
+                        <hr />
+                        <h4 class="title">Share Holdings</h4> <br />
+                        <b><div class="row">
+                            <div class="col-md-4">Share Class</div>
+                            <div class="col-md-3">Shares</div>
+                            <div class="col-md-2">Voting Power</div>
+                            <div class="col-md-3">No. Votes (Power * Shares)</div>
+                        </div></b><br />
+                        {{#each shares}}
+                                <div class="row">
+                                    <div class="col-md-4"> {{this.title}} </div>
+                                    <div class="col-md-3"> {{numberFormat this.shares decimalLength="ShareCountInFractions"}} </div>
+                                    <div class="col-md-2"> {{this.votingPower}} </div>
+                                    <div class="col-md-3"> {{multiplyTovalue this.shares this.votingPower}} </div>
+                                </div>
+
+                        {{/each}}
+
+                        <hr />
+                        <h4 class="title">Share/Token etherscan link</h4> <br />
+                        {{#each shares}}
+                                {{#if this.isblockchain}}
+                                    <div class="row">
+                                        <div class="col-md-4"> {{this.title}} </div>
+                                        <div class="col-md-3"> https://etherscan.io/token/{{this.ethereumContractAddress}} </div>
+                                    </div>
+                                {{/if}}
+                        {{/each}}
+
+                        <br /><br />
+                        {{{record.LegalDetails}}}
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

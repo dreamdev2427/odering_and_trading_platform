@@ -1,0 +1,7 @@
+{
+    "id": "bitblock",
+    "version": "staging",
+    "apiHostname": "api.investbay.com",
+    "frontendHostname": "portal.investbay.com",
+    "multistoHostname": "admin.investbay.com"
+}

@@ -1,0 +1,50 @@
+{{> Header}}
+
+<script>
+    $(document).ready(function() {
+        $("#documents").addClass('active');
+    })
+
+    function currentoffers() {
+        window.location.href = "listofcurrentoffers";
+    }
+</script>
+
+<style></style>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">{{Record.title}}</h4>
+      </div>
+      <div class="content" style="overflow: hidden">
+        <span id="maindocument">
+          {{{Record.usercontents}}}
+        </span>
+        <br>
+      </div>
+    </div>
+    <div class="card">
+      <div class="header">
+        <h4 class="title">Signature</h4>
+      </div>
+      <div class="content">
+        <span id="maindocument">
+          {{#ifEqual internalSignatureMode 'draw'}}
+            <img src="{{signatureFileContents}}" width="250px;" alt='signature Placeholder'/>
+            <br/>
+          {{/ifEqual}}
+          <hr/>
+          <b>{{Record.FirstName}} {{Record.LastName}}</b>
+          <br />
+          {{Record.signaturedate2}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,220 @@
+<mxfile host="65bd71144e">
+    <diagram id="Nny2fqKGG7ETfjDUv1Hv" name="Page-1">
+        <mxGraphModel dx="1580" dy="1779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="5" value="DividendTemplates" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;swimlaneFillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="80" width="160" height="454" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="Defines a type of dividend and its details" style="text;html=1;strokeColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;whiteSpace=wrap;" parent="5" vertex="1">
+                    <mxGeometry y="29" width="160" height="51" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="id&lt;br&gt;" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;strokeColor=#FFCC99;" parent="5" vertex="1">
+                    <mxGeometry y="80" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="122" value="historyId" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="106" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" value="stoId" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="132" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="shareTypeId" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="158" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="currencyId" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="184" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="75" value="channelId" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="210" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="118" value="isActive" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="236" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="117" value="periodUnit: days | months" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="262" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="period (INT)" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="288" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="awardValue" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="314" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="84" value="&lt;meta charset=&quot;utf-8&quot;&gt;&lt;span style=&quot;color: rgb(240, 240, 240); font-family: helvetica; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: normal; text-align: left; text-indent: 0px; text-transform: none; word-spacing: 0px; background-color: rgb(42, 42, 42); display: inline; float: none;&quot;&gt;title (NULL)&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="5" vertex="1">
+                    <mxGeometry y="340" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="112" value="awardStrategy: ..." style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;whiteSpace=wrap;" parent="5" vertex="1">
+                    <mxGeometry y="366" width="160" height="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="127" value="awardFormula (NULL)" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;whiteSpace=wrap;" vertex="1" parent="5">
+                    <mxGeometry y="388" width="160" height="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="status: unused | used | historical" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;strokeColor=#f0f0f0;dashed=1;dashPattern=1 4;whiteSpace=wrap;" parent="5" vertex="1">
+                    <mxGeometry y="410" width="160" height="44" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="DividendPayouts" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="80" width="160" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="Defines a total dividend payment as a historical record with details" style="text;html=1;strokeColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;whiteSpace=wrap;" parent="19" vertex="1">
+                    <mxGeometry y="29" width="160" height="61" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="id" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;strokeColor=#EEFF99;glass=0;shadow=0;rounded=0;" parent="19" vertex="1">
+                    <mxGeometry y="90" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="71" value="templateId" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;strokeColor=#f0f0f0;" parent="19" vertex="1">
+                    <mxGeometry y="115" width="160" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="116" value="dateTimeFrom" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="19" vertex="1">
+                    <mxGeometry y="141" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" value="dateTimeDue" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="19" vertex="1">
+                    <mxGeometry y="166" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="114" value="lastUpdatedAt" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="19" vertex="1">
+                    <mxGeometry y="191" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="80" value="status: future | pending | completed | rejected | reverting | reverted | exception" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;whiteSpace=wrap;" parent="19" vertex="1">
+                    <mxGeometry y="216" width="160" height="64" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="totalAmount" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="19" vertex="1">
+                    <mxGeometry y="280" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="49" value="totalShares" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="19" vertex="1">
+                    <mxGeometry y="305" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="50" value="totalInvestorShares" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="19" vertex="1">
+                    <mxGeometry y="330" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" value="investors" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="19" vertex="1">
+                    <mxGeometry y="355" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="sharetypes" style="html=1;fillColor=#2a2a2a;gradientColor=none;fontStyle=2;fontColor=#BFBFBF;strokeColor=#8A38A8;" parent="1" vertex="1">
+                    <mxGeometry x="-110" y="80" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="currency" style="html=1;fillColor=#2a2a2a;gradientColor=none;fontStyle=2;fontColor=#BFBFBF;strokeColor=#A5A838;" parent="1" vertex="1">
+                    <mxGeometry x="-110" y="145" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#8A38A8;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" parent="1" source="24" target="29" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="70" y="251"/>
+                            <mxPoint x="70" y="105"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="42" style="edgeStyle=orthogonalEdgeStyle;rounded=1;sketch=1;jumpStyle=arc;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#A5A838;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" parent="1" source="28" target="30" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="60" y="280"/>
+                            <mxPoint x="60" y="170"/>
+                        </Array>
+                        <mxPoint x="70" y="260" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="52" value="DividendInvestorPayouts" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="80" width="160" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="Defines a single dividend payment as a historical record" style="text;html=1;strokeColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;whiteSpace=wrap;" parent="52" vertex="1">
+                    <mxGeometry y="29" width="160" height="61" as="geometry"/>
+                </mxCell>
+                <mxCell id="54" value="id" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="52" vertex="1">
+                    <mxGeometry y="90" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="102" value="investorId" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="52" vertex="1">
+                    <mxGeometry y="115" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="68" value="payoutId" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;strokeColor=#EEFF99;" parent="52" vertex="1">
+                    <mxGeometry y="140" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" value="amount" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="52" vertex="1">
+                    <mxGeometry y="165" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="59" value="investorShares" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="52" vertex="1">
+                    <mxGeometry y="190" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="115" value="lastUpdatedAt" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;" parent="52" vertex="1">
+                    <mxGeometry y="215" width="160" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="73" value="status: future | pending | completed | rejected | reverting | reverted exception" style="text;html=1;strokeColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fillColor=#2a2a2a;whiteSpace=wrap;" parent="52" vertex="1">
+                    <mxGeometry y="240" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="69" style="edgeStyle=orthogonalEdgeStyle;rounded=1;sketch=1;jumpStyle=arc;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontColor=#808080;startArrow=ERzeroToMany;startFill=1;strokeColor=#EEFF99;endArrow=ERone;endFill=0;" parent="1" source="68" target="21" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="74" value="paymentchannels" style="html=1;fillColor=#2a2a2a;gradientColor=none;fontStyle=2;fontColor=#BFBFBF;strokeColor=#52A838;" parent="1" vertex="1">
+                    <mxGeometry x="-110" y="210" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="76" style="edgeStyle=orthogonalEdgeStyle;rounded=1;sketch=1;jumpStyle=arc;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontColor=#808080;strokeColor=#52A838;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" parent="1" source="75" target="74" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="50" y="303"/>
+                            <mxPoint x="50" y="235"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="90" style="edgeStyle=orthogonalEdgeStyle;rounded=1;sketch=1;jumpStyle=arc;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;dashed=1;fontFamily=Helvetica;fontColor=#98B3D6;strokeColor=#85A8D6;entryX=1.001;entryY=0.673;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="82" target="26" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="220" y="40"/>
+                            <mxPoint x="260" y="40"/>
+                            <mxPoint x="260" y="420"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="82" value="Every time an admin edits a template AND the template is already used by historical data, a new template must be created for historical correctness. &quot;Used&quot; denotes the most recent template marked in use." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#303030;gradientColor=none;strokeColor=#FFFFFF;fontFamily=Helvetica;fontColor=#98B3D6;dashed=1;spacing=4;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="-80" width="240" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="95" style="edgeStyle=orthogonalEdgeStyle;sketch=1;jumpStyle=arc;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontColor=#808080;startArrow=ERoneToMany;startFill=0;strokeColor=#FFCC99;endArrow=ERone;endFill=0;" parent="1" source="71" target="7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="99" style="edgeStyle=orthogonalEdgeStyle;sketch=1;jumpStyle=arc;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;dashed=1;fontColor=#98B3D6;strokeColor=#85A8D6;" parent="1" source="96" target="19" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="96" value="This record is created on each dividend period date. A &quot;future&quot; payout is created to ensure we don't miss the date." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#303030;gradientColor=none;strokeColor=#FFFFFF;fontFamily=Helvetica;fontColor=#98B3D6;dashed=1;spacing=4;" parent="1" vertex="1">
+                    <mxGeometry x="310" y="-80" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="107" value="stos" style="html=1;fillColor=#2a2a2a;gradientColor=none;fontStyle=2;fontColor=#BFBFBF;strokeColor=#A83838;" parent="1" vertex="1">
+                    <mxGeometry x="-110" y="270" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="108" value="investor" style="html=1;fillColor=#2a2a2a;gradientColor=none;fontStyle=2;fontColor=#BFBFBF;strokeColor=#5264F5;" parent="1" vertex="1">
+                    <mxGeometry x="-110" y="330" width="110" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="109" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;strokeColor=#A83838;" parent="1" source="105" target="107" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="110" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;strokeColor=#4C5DE3;" parent="1" source="102" target="108" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="500" y="208"/>
+                            <mxPoint x="500" y="550"/>
+                            <mxPoint x="20" y="550"/>
+                            <mxPoint x="20" y="355"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="121" style="edgeStyle=orthogonalEdgeStyle;sketch=1;jumpStyle=arc;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;fontColor=#98B3D6;strokeColor=#85A8D6;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="119" target="118" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="60" y="580"/>
+                            <mxPoint x="60" y="329"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="119" value="Create new payouts based on this" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fontColor=#98B3D6;strokeColor=#FFFFFF;fillColor=#303030;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="560" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="126" style="edgeStyle=orthogonalEdgeStyle;sketch=1;jumpStyle=arc;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;fontColor=#98B3D6;strokeColor=#85A8D6;" parent="1" source="124" target="122" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="270" y="474"/>
+                            <mxPoint x="270" y="199"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="124" value="A historical template and a current template share the same &lt;b&gt;historyId&lt;/b&gt; if they are versions of the same template" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fontColor=#98B3D6;strokeColor=#FFFFFF;fillColor=#303030;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="474" width="170" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

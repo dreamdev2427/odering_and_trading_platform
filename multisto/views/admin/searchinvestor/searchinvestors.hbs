@@ -1,0 +1,210 @@
+{{> Header}}
+
+<script language="javascript">
+    var isEmailSending = 0;
+
+    $(document).ready(function() {
+        $("#KYC").addClass('active');
+        
+        SummernoteBasicDataInitialize('emailTextLocalForm', 'Enter Text', 300);       
+    })
+    function sendEmailToInvestorInbox() {
+        if(isEmailSending == 1)
+            return;
+
+        if(document.getElementById("emailTextLocalForm").value == "<p></p>") {
+            showModelGeneralOKDialogBox("Enter email text");
+            return true;
+        } else {
+            if(  document.getElementById("photos222").files.length > 0 ) {
+                isEmailSending = 1;
+                uploadMultiplefilesToServer('photos222', 'fileUplodProgressUpload2', 3, '/admin/uploadFiles');
+            } else
+                sendFormToServer();
+        } 
+    }
+    function fileValidation() {
+        checkAndUpdateMultiFileUpload('photos222', 'upload-file2', MultifileMultifileExtensions1, MultifileMultifileExtensions1msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);     
+    }
+    function multipleFilesUploadingDoneEvent(data) {
+        document.getElementById("files").value = JSON.stringify(data);
+        sendFormToServer();
+    }          
+    function sendFormToServer() {
+        document.getElementById("emailText").value = document.getElementById("emailTextLocalForm").value;
+        document.getElementById("email2").value = document.getElementById("email").value;
+        document.getElementById("city2").value = document.getElementById("city").value;
+        document.getElementById("country2").value = document.getElementById("country").value;
+        document.getElementById("firstname2").value = document.getElementById("firstname").value;
+        document.getElementById("lastname2").value = document.getElementById("lastname").value;        
+        document.getElementById("frmSendEmailToInvestor2").submit();
+    }
+    function searchInvestors() {
+        if(document.getElementById("email").value == "") {
+            showModelGeneralOKDialogBox("Please enter email address");
+            return false;
+        }   
+        if(document.getElementById("firstname").value == "") {
+            showModelGeneralOKDialogBox("Please enter First Name");
+            return false;
+        }  
+        if(document.getElementById("lastname").value == "") {
+            showModelGeneralOKDialogBox("Please enter Last Name");
+            return false;
+        }           
+        if(document.getElementById("city").value == "") {
+            showModelGeneralOKDialogBox("Please enter City");
+            return false;
+        }
+        if(document.getElementById("country").value == "") {
+            showModelGeneralOKDialogBox("Please enter Country");
+            return false;
+        }
+        document.getElementById("frmsearch").submit();
+    }
+</script>
+
+{{> HeaderInnerSto}}
+
+{{>multifileupload}}
+
+<div class="row">
+   <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/registernew.png" width="25px;" style="padding-bottom:4px;" /> &nbsp; Search Investors</h4>
+                <p class="category">Search the company wise investor database for investors and send them invitation</p>
+            </div>
+
+            <div class="content">
+                <form id="frmsearch" name="frmsearch" action="/admin/searchInvestorsinPlatform" method="post">
+                    <div class="row">                                    
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" id="email" name="email" class="form-control border-input" placeholder="Enter Email Address" value="{{email}}">
+                            </div>
+                        </div>                        
+                    </div>
+
+                    <div class="row">                                    
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="firstname" name="firstname" class="form-control border-input" placeholder="First Name" value="{{firstname}}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-1"></div>
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="lastname" name="lastname" class="form-control border-input" placeholder="Last Name"  value="{{lastname}}">
+                            </div>
+                        </div>                        
+                    </div>
+
+                    <div class="row">                                    
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" id="city" name="city" class="form-control border-input" placeholder="Enter City"  value="{{city}}">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-1"></div>
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Country</label>
+                                <input type="text" id="country" name="country" class="form-control border-input" placeholder="Last Name"  value="{{country}}">
+                            </div>
+                        </div>                         
+                        
+                    </div>
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+
+                <br />
+                <div class="row">                                    
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <button onclick="return searchInvestors()" class="btn btn-info btn-fill"> &nbsp; Search Investors &nbsp; </button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div> 
+
+{{#if isResultsIncluded}}
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                {{#if Records.length}}
+                    <h4 class="title"> <img src="/img/registernew.png" width="25px;" style="padding-bottom:4px;" /> &nbsp; Investor Found</h4>
+                {{/if}}
+            </div>
+
+            <div class="content">
+                {{#ifEqual RecordStatus 0}}
+                    {{#if Records.length}}
+                    An investor profile has been found with the information provided above 
+                    <br /><br />
+
+                    <br /><br />
+                    <textarea  id="emailTextLocalForm" rows="10" class="form-control border-input"></textarea>
+
+                    <label>You can include file(s) that will be sent in an email invitation</label>
+                    <br />
+                    <div class="upload-btn-wrapper">
+                        <button class="btnfile">Select File</button>
+                        <input   id="photos222"   name="photos222" multiple="multiple" type="file"  onchange="fileValidation(2)" >
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span style="color: green; font-size: 12px; " id="upload-file2">No File Selected</span>
+                    </div>                
+                    <br />
+                    <div class="col-md-4">
+                        <div class="progress" style="display: none;">
+                          <div id="fileUplodProgressUpload2" class="progress-bar" role="progressbar" style="width: 0px;" ></div> 
+                        </div>                   
+                    </div>
+
+                    <br /><br />
+                    <button onclick="return sendEmailToInvestorInbox()" class="btn btn-info btn-fill"> &nbsp; Send Proposal &nbsp; </button>
+                {{else}}
+                    <label> <img src="/img/reddot.png" width="20px"/> &nbsp;&nbsp;&nbsp; No investor record found in this platform </label>
+                {{/if}}
+                {{/ifEqual}}
+                {{#ifEqual RecordStatus 1}}
+                    <span style="font-size:18px;">
+                        <img src="/img/reddot.png" width="25px" /> &nbsp; Investor is already been invited
+                    </span>                
+                {{/ifEqual}}
+                {{#ifEqual RecordStatus 2}}
+                    <span style="font-size:18px;">
+                        <img src="/img/reddot.png" width="25px" /> &nbsp; Investor is already member of this Company      
+                    </span>
+                {{/ifEqual}}
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div> 
+{{/if}}
+
+<form id="frmSendEmailToInvestor2" name="frmSendEmailToInvestor2" action="/admin/sendEmailInvitationToInvestor" method="post">
+    <input type="hidden" id="files" name="files" value="[]">
+    <input type="hidden" name="emailText" id="emailText" />
+    <input type="hidden" name="email2" id="email2" value="" />
+    <input type="hidden" name="city2" id="city2" value="" />
+    <input type="hidden" name="country2" id="country2" value="" />
+    <input type="hidden" name="firstname2" id="firstname2" value="" />
+    <input type="hidden" name="lastname2" id="lastname2" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

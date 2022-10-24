@@ -1,0 +1,128 @@
+<style>
+  table {
+    width:100%;
+    border:1px solid black;
+  }
+  th, td {
+    border:1px solid black;
+  }
+  .li-separator{
+    padding: 10px;
+  }
+
+  .pricingTable-header{
+    background: #08c6aa;
+    color: #fff;
+    padding: 40px;
+  }
+
+  .custom-separator {
+    border: 10px solid transparent;
+  }
+  .checkmark {
+    display:inline-block;
+    width: 22px;
+    height:22px;
+    -ms-transform: rotate(45deg); /* IE 9 */
+    -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+    transform: rotate(45deg);
+  }
+
+  .checkmark_circle {
+    position: absolute;
+    width:22px;
+    height:22px;
+    background-color: green;
+    border-radius:11px;
+    left:0;
+    top:0;
+  }
+
+  .checkmark_stem {
+    position: absolute;
+    width:3px;
+    height:9px;
+    background-color:#fff;
+    left:11px;
+    top:6px;
+  }
+
+  .checkmark_kick {
+    position: absolute;
+    width:3px;
+    height:3px;
+    background-color:#fff;
+    left:8px;
+    top:12px;
+  }
+  .col-container {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .col {
+    flex: 1;
+    padding: 16px;
+  }
+  .disabledDiv {
+    pointer-events: none;
+    opacity: 0.4;
+  }
+</style>
+
+<script>
+  function changePlatformConfigurationMode(value) {
+    document.getElementById('platformConfiguration-intValue').value = value;
+    document.getElementById('changePlatformConfigurationForm').submit();
+  }
+</script>
+
+{{> Header}}
+
+{{> HeaderInnerPlatform}}
+<div class="col-container text-center">
+  <div class="custom-separator">
+    {{> walletBased}}
+  </div>
+  <div class="custom-separator">
+    {{> accountBased}}
+  </div>
+  <div class="custom-separator">
+    {{> custodyBased}}
+  </div>
+</div>
+<div class="card">
+  <div class="header">
+    <div class="row">
+      <div class="col-md-12">
+        <h4 class="title">
+          <img src="/img/dividends.png" width="30px" >
+          Detailed Configuration <small class="tag">BETA</small>
+        </h4>
+      </div>
+    </div>
+  </div>
+  <div class="content
+{{#ifEqual enablePlatformConfigurationSwitches 0}}
+    disabledDiv
+{{/ifEqual}}
+  ">
+    {{> isBlockchainAddressSwitch}}
+    {{> isBankDetailsSwitch}}
+    {{> defaultProjectTypeSwitch}}
+    {{> isPrivateKeySwitch}}
+    {{> isAutomaticShareClassSettingsEnabledSwitch}}
+    {{> internalWalletModeSwitches}}
+    {{> isDoAutomaticPurchaseEnabledSwitch}}
+    {{> isInvoicingEnabledSwitch}}
+    {{> defaultCurrencySwitch}}
+  </div>
+</div>
+<form id="changePlatformConfigurationForm" method="post" action="postParamUpdateToApi">
+  <input type="hidden" id="platformConfiguration-intValue" name="intValue"/>
+  <input type="hidden" id="platformConfiguration-stringValue" name="stringValue" value=""/>
+  <input type="hidden" name="param" value="platformConfiguration" />
+  <input type="hidden" name="redirectUrl" value="/platform/platformConfigurationMode" />
+  <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+{{> Footer}}

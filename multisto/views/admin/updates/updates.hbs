@@ -1,0 +1,71 @@
+{{> Header}}
+
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#CompanyUpdates").addClass('active');       
+    })
+    function deleteClicked(id) {
+          window.location.href = "deleteUpdate?id=" + id;
+          return false;
+    }
+    function editClicked(id) {
+          window.location.href = "addEditUpdate?id=" + id;
+          return false;
+    }
+    function addUpdates() {
+          window.location.href = "addEditUpdate";
+          return false;
+    }
+    function viewDetails(id) {
+          window.location.href = "updateDetails?id=" + id;
+          return false;
+    }
+</script>
+
+{{> HeaderInnerSto}}
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9"> 
+                        <h4 class="title"> <img src="/img/news.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Company Updates </h4>
+                    </div>
+                    <div class="col-md-3"> 
+                            <button onclick="addUpdates()" class="btn btn-info btn-fill" style="float: right;">Add Update</button>  
+                    </div>
+                </div>
+                
+                <label>Share the news with your investors. The updates will be visible within the investor's Company Updates module.</label>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+
+                    <table class="table table-striped">
+                        <thead class="listingHeaderFontSize">
+                            <th>Date</th>
+                            <th>Title</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each UpdateRecords}}
+                            <tr>
+                                <td style="width: 20%">{{this.UpdateDate}} </td>
+                                <td style="width: 50%">{{this.TITLE}}</td>
+                                <td style="width: 30%">
+                                    <button onclick="return viewDetails({{this.ID}})" class="btn btn-sm  btn-info btn-fill">View</button>
+                                    &nbsp;&nbsp;                                    
+                                    <button onclick="return editClicked({{this.ID}})" class="btn btn-sm  btn-info btn-fill">Edit</button>
+                                    &nbsp;&nbsp;
+                                    <button onclick="return deleteClicked({{this.ID}})" class="btn btn-sm  btn-info btn-fill">Delete</button>
+                                </td>															
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                
+            </div>
+        </div>
+    </div>								
+</div>
+{{> Footer}}

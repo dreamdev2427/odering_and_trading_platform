@@ -1,0 +1,1 @@
+delete from params where param='SMTP_SSL3' and id > 0

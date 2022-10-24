@@ -1,0 +1,85 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function(){
+			$("#ActiveProperies").addClass('active');
+		})
+
+        function viewproperty(id) {
+			window.location.href = "combinedpropertydetails?id=" + id;
+			return false;
+        }
+
+        function buyproperty(id) {
+			window.location.href = "buycombineproperty?id=" + id;
+			return false;
+        }
+
+	</script>
+
+{{> HeaderInner}}
+
+    {{#if messages}}
+        <span style="color:red; font-size:18px;">{{messages}}</span>
+        <br /><br />
+    {{/if}}
+
+
+{{#if records.length}}
+
+        {{#grouped_each 3 records}}
+            <div class="row">
+            {{#each this }}
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="content">
+
+                                <center>
+                                <span style="font-size:20px;">{{this.title}}</span>
+                                <br /><br />
+                                <img src="/img/stobanners/{{this.propertypicture}}"  width="100%">
+                                </center>
+                                <br />
+                                {{this.details}}
+                                <br /><br />
+
+                                <button onclick="return viewproperty({{this.id}})" class="btn btn-info btn-fill  btn-sm">&nbsp;&nbsp;
+									{{{../../__ "View-Details"}}}&nbsp;&nbsp;</button>
+                                &nbsp;
+								{{#if this.isBuyButtonEnabled}}
+                                	<button onclick="return buyproperty({{this.id}})" class="btn btn-info btn-fill  btn-sm">&nbsp;&nbsp;&nbsp;&nbsp;{{{../../__ "Buy"}}}&nbsp;&nbsp;&nbsp;&nbsp;</button>
+								{{/if}}
+                            </div>
+                        </div>
+                    </div>
+
+            {{/each}}
+            </div> <br /><br />
+        {{/grouped_each}}
+{{else}}
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+
+                    <div class="content">
+                            <br /><br />
+                            <center>
+                                <span style="font-size:16px;">
+                                    {{{__ "No active projects found"}}}
+                                </span>
+                            </center>
+                            <br />
+                    <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{{/if}}
+
+
+
+{{> Footer}}

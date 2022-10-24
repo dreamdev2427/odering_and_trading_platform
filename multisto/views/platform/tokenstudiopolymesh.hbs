@@ -1,0 +1,272 @@
+{{> Header}}
+
+<script language="javascript">
+    const selectedSTOID = {{selectedSTOID}};
+
+
+    $(document).ready(function() {
+        $('#mainAsset').keyup(function() {
+            str = $(this).val();
+            str = str.replace(/\s/g,'');
+            $(this).val(str);
+        });
+    })
+
+    function copyText(key) {
+        navigator.clipboard.writeText(key);
+
+        showModelGeneralOKDialogBox(key + " public key is copied in your clipboard");
+    }
+
+
+    function createTokenInformation() {
+
+        if( document.getElementById("mainAsset").value == "") {
+            showModelGeneralOKDialogBox("Please enter main asset name")
+            return;
+        } else {
+            if( document.getElementById("mainAsset").value.length < 3 ) {
+                showModelGeneralOKDialogBox("Main Asset name must be atleast 3 character long");
+                return;
+            }
+        }
+
+
+        if( document.getElementById("titleToken").value == "") {
+            showModelGeneralOKDialogBox("Please enter Title")
+            return;
+        } else {
+            if( document.getElementById("titleToken").value.length < 3 ) {
+                showModelGeneralOKDialogBox("Title Token should be atleast 3 character long");
+                return;
+            }
+        }
+
+        document.getElementById("titleToken").value = document.getElementById("titleToken").value.toUpperCase();
+
+        if( document.getElementById("nominal").value == "") {
+            showModelGeneralOKDialogBox("Enter Nominal Value")
+            return;
+        } else {
+            if( isNaN ( document.getElementById("nominal").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid nominal value number");
+                return;
+            }
+        }
+
+        if( document.getElementById("premimum").value == "") {
+            showModelGeneralOKDialogBox("Enter Premimum Value")
+            return;
+        }else {
+            if( isNaN ( document.getElementById("premimum").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid premimum value number");
+                return;
+            }
+        }
+
+
+        if( document.getElementById("tokenAmount").value == "") {
+            showModelGeneralOKDialogBox("Enter number of tokens to mint with deployment")
+            return;
+        }else {
+            if( isNaN ( document.getElementById("tokenAmount").value ) ) {
+                showModelGeneralOKDialogBox("Please enter a valid number of tokens");
+                return;
+            } else {
+                operation = 4;
+                showModelGeneralYesNoDialogBox("Do you want to start minting ?", "Yes", "Cancel")
+            }
+        }
+
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        document.getElementById("tokenStudioForm").submit();
+    }
+
+
+</script>
+
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                 <h3 class="title"><img src="/img/polymeshicon.jpg" width="35px;"> &nbsp; PolyMesh Token Studio </h3>
+                 <label>Deploy PolyMesh Security Token</label>
+            </div>
+
+            <div class="content">
+
+                <img src="/img/polymesh.png" width="100%" >
+
+                {{#if polymeshStudioMessage}}
+                    <br /><br /><span style="color:red;"><b>{{polymeshStudioMessage}}</b></span>
+                {{/if}}
+
+                <br /><br />
+                <span style="font-size:20px;">Using this Token Studio you can deploy Polymesh security tokens on the blockchain</span>
+                <br /><br />
+
+                <span style="font-size:20px;">Polymesh Deployment</span>
+                <br /><br />
+
+                <img src="/img/greendot.png" width="10px">  <b>Setup token</b>    &nbsp;&nbsp;&nbsp; <label> Polymesh token deployment </label>
+                <br /><br />
+
+                    <img src="/img/lineseparator.png" width="100%"  height="30px">
+
+
+                        <span style="font-size:20px;">Enter Token Information</span>
+
+                        <form id="tokenStudioForm" name="tokenStudioForm" action="polymeshcoinstudiopost" method="post">
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>
+                                            Selected Project
+                                         </label>
+                                          <br />
+                                         {{stoTitle}}
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>
+                                            Selected Polymesh Account
+                                         </label>
+                                          <br />
+                                        <select class="form-control border-input" id="polymeshAccountsID" name="polymeshAccountsID">
+                                            {{#each polymeshAccounts}}
+                                                <option value="{{this.ID}}">{{this.title}}</option>                                                                                                                                                                                                                                                                                                                                                                                                           
+                                            {{/each}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Enter Asset Ticker / Token Name</label>
+                                            <input type="text" maxLength="150"  style="text-transform:uppercase" id="mainAsset" name="mainAsset" class="form-control border-input" placeholder="Enter Asset Ticker / Token Name">
+                                    </div>
+                                </div>
+                            </div>
+
+                           <br />
+ 
+                            <img src="/img/greendot.png" width="10px"> &nbsp;&nbsp;      
+                            Do you want your tokens divisible or not. By default checkbox is enabled which means tokens are divisible. Divisibility means that tokens can be transferred in fractions
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="checkbox" id="unitDecimals" name="unitDecimals" checked value="1"/> &nbsp;&nbsp;&nbsp; <label> Token Divisible </label>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Asset Type</label>
+                                        <select class="form-control border-input" id="assetTypeSelect" name="assetTypeSelect">
+                                            <option value="Commodity">Commodity</option>
+                                            <option value="Derivative">Derivative</option>
+                                            <option value="EquityCommon">Equity Common</option>
+                                            <option value="EquityPreferred">Equity Preferred</option>
+                                            <option value="FixedIncome">Fixed Income</option>
+                                            <option value="Fund">Fund</option>
+                                            <option value="Reit">Reit</option>
+                                            <option value="RevenueShareAgreement">Revenue Share Agreement</option>
+                                            <option value="StableCoin">Stable Coin</option>
+                                            <option value="StructuredProduct">Structured Product</option>                                                                                                                                                                                                                                                                                                                                                                                                            
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <img src="/img/greendot.png" width="10px"> &nbsp;&nbsp;
+                                Do you want your tokens divisible or not. By default checkbox is enabled which means tokens are divisible. Divisibility means that tokens can be transferred in fractions
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="checkbox" id="unitDecimals" name="unitDecimals" checked value="1"/> &nbsp;&nbsp;&nbsp; <label> Token Divisible </label>
+                                    </div>
+                                </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Security Identifier Type</label>
+                                        <select class="form-control border-input" id="" name="">
+                                            <option value="Cins">Cins</option>
+                                            <option value="Cusip">Cusip</option>
+                                            <option value="Isin">Isin</option>
+                                            <option value="Lei">Lei</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Share Class Title</label>
+                                        <input type="text" maxLength="150" id="titleToken" name="titleToken" class="form-control border-input" placeholder="Title of the share class" value="{{record.title}}">
+                                        This is not on the blockchain but used within the platform
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Nominal Value </label>
+                                        <input  type="text" maxLength="10" id="nominal" name="nominal" class="form-control border-input" placeholder="Nominal Value" value="{{record.nominal}}">
+                                        Non-blockchain project
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2"></div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Market Value</label>
+                                        <input type="text"    maxLength="10" id="premimum" name="premimum" class="form-control border-input" placeholder="Market Value" value="{{record.premimum}}">
+                                        Non-blockchain project
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <br />
+                                        <label>Enter number of tokens to mint</label>
+                                        <input type="text" maxLength="150" id="tokenAmount" name="tokenAmount" class="form-control border-input" placeholder="Qualifier Assets" value="">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="stoid" name="stoid" value="{{selectedSTOID}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                            <button type="button" onclick="return createTokenInformation()" class="btn btn-info btn-fill">
+                                Start Token Deployment
+                            </button>
+                        </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

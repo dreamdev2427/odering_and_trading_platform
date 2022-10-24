@@ -1,0 +1,122 @@
+
+	<script language="javascript">
+
+            function logout() {
+                window.location.href = "logout";
+                return false;
+            }
+            function settings() {
+                window.location.href = "settings";
+                return false;
+            }
+
+	</script>
+
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div  class="sidebar" data-background-color="black" data-active-color="danger">
+    <!--
+		Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+		Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+	-->
+    	<div class="sidebar-wrapper" style="overflow-x: hidden; overflow-y: auto;">
+            <div class="logo">
+                 <a href="dashboardsto" class="simple-text"  target="_blank" >
+                    <img src="/img/stologo/{{Data.logo}}" width="170px"  />
+                </a>
+            </div>
+
+            <ul class="nav">
+                <li id="DashboardMenu">
+                    <a href="dashboard">
+                        <i class="ti-panel"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+
+                <li id="sto">
+                    <a href="sto">
+                        <i class="ti-plus"></i>
+                        <p>STO List</p>
+                    </a>
+                </li>
+
+                {{#ifIn 1 Data.AdminRights}}
+                <li id="InvestorsMenu">
+                    <a href="investors">
+                        <i class="ti-user"></i>
+                        <p>All Investors</p>
+                    </a>
+                </li>
+                {{/ifIn}}
+
+                {{#ifIn 1 Data.AdminRights}}
+                <li id="KYC">
+                    <a href="investorsKYCList">
+                        <i class="ti-timer"></i>
+                        <p>New Investors / KYC</p>
+                    </a>
+                </li>
+                {{/ifIn}}
+
+                {{#if Data.isSystemUserModuleEnable}}
+                    <li id="SystemUsers">
+                        <a href="systemuserslist?stoid=0">
+                            <i class="ti-android"></i>
+                            <p>Platform Users</p>
+                        </a>
+                    </li>
+                {{/if}}
+
+                {{#ifIn 7 Data.AdminRights}}
+                <li id="ActivityLogs">
+                    <a href="activitylog">
+                        <i class="ti-eye"></i>
+                        <p>Activity Logs</p>
+                    </a>
+                </li>
+                {{/ifIn}}
+            </ul>
+    	</div>
+    </div>
+
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar bar1"></span>
+                        <span class="icon-bar bar2"></span>
+                        <span class="icon-bar bar3"></span>
+                    </button>
+                    <a class="navbar-brand stopATagLink">Issuer Dashboard</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a class="stopATagLink"><b>Current User:</b> {{Data.Login_UserName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        </li>
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="ti-settings"></i>
+								<span onclick="return settings();">Settings</span>
+                            </a>
+                        </li>
+						<li>
+                            <a href="#">
+								<i class="ti-arrow-circle-up"></i>
+								<span onclick="return logout();">Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="content">
+		      <div class="container-fluid">

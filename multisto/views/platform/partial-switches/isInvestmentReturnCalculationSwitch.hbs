@@ -1,0 +1,41 @@
+<script>
+    function changeShowThemeEngineSwitch(isChecked) {
+      document.getElementById('isInvestmentReturnCalculationEnabled-intValue').value = +isChecked;
+      document.getElementById('isInvestmentReturnCalculationEnabled-redirectUrl').value = window.location.href;
+      document.getElementById('postIsInvestmentReturnCalculationEnabled').submit();
+    }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more'/>Investment Return Calculation</h4>
+        <label>Change the top bar of the investor's view into a different one that shows the portfolio value based on the amount of time they've been invested into the platform</label>
+      </div>
+      <div class="content">
+        <form method="post" id="postIsInvestmentReturnCalculationEnabled" action="postParamUpdateToApi">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="switch">
+                <input id="isPropertySortingEnabled"
+                       onclick=changeShowThemeEngineSwitch(this.checked) type="checkbox"
+                  {{#if isInvestmentReturnCalculationEnabled}}
+                       checked
+                  {{/if}}
+                >
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" id="isInvestmentReturnCalculationEnabled-intValue" name="intValue"/>
+          <input type="hidden" id="isInvestmentReturnCalculationEnabled-stringValue" name="stringValue" value=""/>
+          <input type="hidden" name="param" value="isInvestmentReturnCalculationEnabled" />
+          <input type="hidden" id="isInvestmentReturnCalculationEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

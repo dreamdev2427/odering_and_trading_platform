@@ -1,0 +1,124 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+				$("#dvidends").addClass('active');				
+				var data = commonGetQueryStringValue("type")
+			
+				if(data != null) {			
+					let element = document.getElementById("selectDividend");
+					element.value = data;					
+				}
+		})
+        
+        function viewDividend(id) {
+            window.location.href = "viewdividenddetails?id=" + id;
+            return false;			            
+        }
+        
+        function addDividend(id) {
+            window.location.href = "adddividend";
+            return false;			            
+        }        
+		
+		function SelectDividendPeriod() {
+			var x = document.getElementById("selectDividend").value;
+            window.location.href = "dividendinvestors?type=" + x;
+		}
+				
+		
+		function viewInvestor(id) {
+            window.location.href = "viewdividendinvestors?id=" + id;
+            return false;	
+		}
+		
+		
+	</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+	<div class="col-md-12 ">
+		<div class="card">
+			<div class="header">
+                
+                <div class="row">
+                    <div class="col-md-10">                
+                        <h4 class="title">
+                            <img src="/img/dividends.png" width="30px" >
+                            &nbsp; Current Dividends Paid and Pendig Paid 
+                        </h4>
+                        <label></label>
+                    </div> 
+                </div>
+			</div>
+			 <div class="content">
+
+
+				<div class="row">                        
+					<div class="col-md-3">
+						<label>Select Dividend Period</label>
+						<select onchange="SelectDividendPeriod()"  id="selectDividend" name="selectDividend" class="form-control border-input" style="min-width:400px; background:transparent;  padding:5px; font-size:15px;">
+								<option value="1"> Quartely </option>
+								<option value="2"> Yearly </option>                                    
+						</select>
+					</div>                            
+				</div>  
+				<br />				 
+				 
+				 
+                 {{#if result.length}}
+                        <div class="row">
+                            <div class="col-md-2">
+                                ID
+                            </div>
+                            <div class="col-md-2">
+                                Investor
+                            </div>
+                            <div class="col-md-2">
+                                Amount Paid
+                            </div>
+                            <div class="col-md-2">
+                                Amount Not Paid
+                            </div>
+							<div class="col-md-2">
+							</div>
+                        </div>
+                        <br />                 
+                        {{#each result}}
+                            <div class="row">
+                                <div class="col-md-2">
+                                    {{this.id}} 
+                                </div>
+                                <div class="col-md-2">
+                                    {{this.firstName}} {{this.lastName}}
+                                </div> 
+                                <div class="col-md-2">
+									{{#if this.AmountPaid}}
+										{{currencySymbol ../DefaultSTOCurreny}} 
+										{{numberFormat this.AmountPaid decimalLength="-"}}        
+									{{/if}}
+								</div>
+                                <div class="col-md-2">
+									{{#if this.AmountNotYetPaid}}
+										{{currencySymbol ../DefaultSTOCurreny}} 
+										{{numberFormat this.AmountNotYetPaid decimalLength="-"}}   
+									{{/if}}
+								</div>
+                                <div class="col-md-2">								
+									<button onclick="return viewInvestor({{this.id}})"  class="btn btn-info btn-fill btn-sm">View</button>
+								</div>
+                            </div>
+                            <br />
+                        {{/each}}
+                 {{else}}
+                        <label> No Dividends Found 1</label>
+                 {{/if}}				 
+				 
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+{{> Footer}}

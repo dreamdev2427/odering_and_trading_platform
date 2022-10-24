@@ -1,0 +1,282 @@
+{
+  "emailFromInvestor": {
+    "subject": "New Email Received from Investor",
+    "text": [
+      "You have received a new email from an investor. Please login the dashboard and process to the INBOX to view and reply that message."
+    ]
+  },
+  "newUserSignUpEmailForAdmin": {
+    "subject": "New User Has Just Signed Up",
+    "meta": {
+      "tags": ["fullName", "email", "number"]
+    },
+    "text": [
+      "A new user has just signed up to the platform.",
+      "Full Name: {fullName}",
+      "E-mail: {email}",
+      "Number: {number}",
+      "Visit the manage contacts section of the Management Console to approve, deny or contact this user."
+    ]
+  },
+  "newUserSignUpEmailForUser": {
+    "subject": "You Have Successfully Signed Up",
+    "text": ["Welcome! You have successfully signed up to"]
+  },
+  "documentSubscriptionReminderEmail": {
+    "subject": "Document Subscription Reminder",
+    "text": ["Subscription of documents is pending for project"]
+  },
+  "documentSubscriptionCompletedEmail": {
+    "subject": "Document Subscription Completed",
+    "text": ["Subscription of documents completed for"]
+  },
+  "userProfileUpdatedEmail": {
+    "subject": "User Profile Updated",
+    "text": ["An investor has made changes to the following parts of their profile."]
+  },
+  "offerSubmittedEmail": {
+    "subject": "Offer Submitted",
+    "text": ["Buy request sent by Investor :"]
+  },
+  "documentsESignedEmail-Admin": {
+    "subject": "{shareClassName} | Documents E-Signed - {fullName}",
+    "meta": {
+      "tags": ["shareClassName", "price", "fullName", "stoTitle"]
+    },
+    "text": [
+      "Closing documents were e-signed for this offer",
+      "Investor: {fullName}",
+      "Offering: {stoTitle}",
+      "Offer Amt: {price}",
+      "In the Management Console, please confirm the documents are complete and fully signed.",
+      "Then either mark them as accredited or not so they can receive wire instructions."
+    ]
+  },
+  "verificationUploadedEmail": {
+    "subject": "Verification Uploaded",
+    "text": ["The accreditation process started as verification uploaded by Investor :"]
+  },
+  "finalizedInvestmentEmail": {
+    "subject": "Finalized Investment",
+    "text": ["The buy process finished and the shares are waiting to be transferred to Investor :"]
+  },
+  "verifyEmail": {
+    "subject": "Email Verification",
+    "text": [
+      "Thank you very much for registering with us. This email contains the verification link for your email verification.",
+      "Please open the following link to verify your email address:"
+    ]
+  },
+  "verifyEmailMarketspace": {
+    "subject": "MarketSpace Capital Email Verification Link",
+    "text": [
+      "Thank you so much for registering with MarketSpace Capital. Please find below the email verification link to access your account."
+    ]
+  },
+  "sendToAllNotificationEmail": {
+    "subject": "You Have a New Message",
+    "text": ["You have received the following message from"]
+  },
+  "notificationEmailForInvestor": {
+    "subject": "You Have a New Message",
+    "text": ["You have received a new message from"]
+  },
+  "notificationEmailForAdmin": {
+    "subject": "You Have a New Message",
+    "text": ["You have received a new message from Investor :"]
+  },
+  "send2FAEmail": {
+    "subject": "Your 2FA code for sign in verification",
+    "text": ["Your 2FA code is:"]
+  },
+  "newSubmission": {
+    "subject": "New Investor Registered",
+    "text": [
+      "A new Investor submitted his profile for KYC verification. Please login to your admin dashboard and review his KYC record in the Investor's list: "
+    ]
+  },
+  "resetEmail": {
+    "subject": "Password Reset Link",
+    "text": [
+      "You have requested to change the password to your dashboard. Please click the following link, then enter the new password."
+    ]
+  },
+  "enableInvestorAccountEmail": {
+    "subject": "Login to your Dashboard Enabled",
+    "text": [
+      "We enabled the login to your investor dashboard. You can now login to your dashboard with your email and password."
+    ]
+  },
+  "disableInvestorAccountEmail": {
+    "subject": "Login to your Dashboard Disabled",
+    "text": [
+      "We disabled the Login to your Dashboard. You cannot login on your dashboard for the time being. Please contact us for assistance."
+    ]
+  },
+  "mercuryDepositInstructionEmail": {
+    "subject": "Your Mercury deposit instructions",
+    "meta": {
+      "tags": ["accountNumber", "routingNumber", "note"]
+    },
+    "text": [
+      "Initiate a payment to the following account, if your balance does not update within 3 business days,please contact the site administrator",
+      "Routing Number: {routingNumber}",
+      "Account Number: {accountNumber}",
+      "You must include the following note in your transaction: {note}"
+    ]
+  },
+  "netkiSignUpEmail": {
+    "subject": "Start your onboarding process with Netki",
+    "text": [
+      "Please download the MyVerify app from your favorite store and insert the access code when prompted"
+    ]
+  },
+  "marketSpaceIntroduction": {
+    "subject": "Introduction to the New Portal",
+    "meta": {
+      "tags": ["firstName", "activationLink", "sponsorTitle"]
+    },
+    "text": [
+      "Dear {firstName},",
+      "Welcome to the new MarketSpace Capital Investor Portal. Here, you can browse through our offerings and invest at any time, from any device. You can even manage your entire investment portfolio with secure access to documents, transactions, and investment performance including consolidated reporting that summarizes exposures and performance across all investments.",
+      "Within this portal you will find all closing documents, statements, tax documents, as well as project updates and information regarding your investments.",
+      "{activationLink}",
+      "MarketSpace Capital is committed to ensuring a comprehensive and straightforward investor experience for our investors. If you have trouble at any time during registration, please call us at 281-766-9784 for immediate assistance or email us at info@marketspacecapital.com.",
+      "Thank you for joining the {sponsorTitle} Investor Portal, and for being part of our family of investors."
+    ]
+  },
+  "marketSpaceNewUserSignUpEmailForUser": {
+    "subject": "New User Signs Up",
+    "meta": {
+      "tags": ["firstName", "consultationLink"]
+    },
+    "text": [
+      "Hello {firstName},",
+      "Thank you for creating an account with MarketSpace Capital. We invite you to {consultationLink} with one of our team members to learn more about the company and hear about upcoming opportunities.",
+      "If you have any questions or feedback, do not hesitate to contact us at info@marketspace.capital or 281-766-9784. We look forward to hearing from you!",
+      "Regards,"
+    ]
+  },
+  "marketSpacePasswordReset": {
+    "subject": "Password Reset",
+    "meta": {
+      "tags": ["firstName", "passwordResetLink"]
+    },
+    "text": [
+      "{firstName},",
+      "It appears you requested your password be reset on the MarketSpace Capital Investor Portal. If you did not request a login or password reset, you can ignore this message. To reset your password, please click the following link, or copy and paste it into your web browser:",
+      "<a href=\"{passwordResetLink}\" > RESET MY PASSWORD </a>",
+      "If you have any questions or concerns, please contact us at 281-766-9784 or info@marketspace.capital."
+    ]
+  },
+  "marketSpaceDocumentSubscriptionReminderEmail": {
+    "subject": "Document Subscription Reminder",
+    "meta": {
+      "tags": ["firstName", "projectName", "resumeLink"]
+    },
+    "text": [
+      "Hi {firstName},",
+      "We noticed you started signing your subscription documents for {projectName} but have not yet completed them. If you would like to finish the subscription process, you can resume {resumeLink}.",
+      "If you have any questions about the offering, please reach out to your MarketSpace Capital representative or email us at info@marketspacecapital.com and we will get back to you in a timely manner.",
+      "Kindest Regards,"
+    ]
+  },
+  "sharesSoldBackNonBlockchain": {
+    "subject": "Transfer of Shares from your Account",
+    "meta": {
+      "tags": ["firstname", "lastname", "tokens", "title", "currency", "nominal", "premium"]
+    },
+    "text": [
+      "Dear {firstname} {lastname},",
+      "We have transferred some shares from your account. You will find your new balance immediately in your dashboard.",
+      "<b>Shares Transferred</b>: {tokens} {title}",
+      "Nominal {currency} {nominal}",
+      "Premium {currency} {premium}"
+    ]
+  },
+  "sharesTransferredNonBlockchain": {
+    "subject": "Transfer of Shares to your Account",
+    "meta": {
+      "tags": ["firstname", "lastname", "tokens", "title", "currency", "premium"]
+    },
+    "text": [
+      "Dear {firstname} {lastname},",
+      "We have transferred some shares to your account. You will find your new share balance immediately in your dashboard.",
+      "<b>Shares Transferred</b>: {tokens} {title}",
+      "Premium {currency} {premium}"
+    ]
+  },
+  "sharesTransferred-Admin": {
+    "subject": "{shareClassName} | Finalized investment - {fullName}",
+    "meta": {
+      "tags": ["fullName", "shareClassName", "date", "price", "email", "phoneNumber"]
+    },
+    "text": [
+      "A new investment has been finalized for {shareClassName} Offering.",
+      "We have transferred some shares to your account. You will find your new share balance immediately in your dashboard.",
+      "Offering: {shareClassName}",
+      "Investing Entity: {fullName}",
+      "Invested Date: {date}",
+      "Investment Amount: {price}",
+      "Primary Investor: {fullName}",
+      "Investor Email: {email}",
+      "Investor Phone: {phoneNumber}"
+    ]
+  },
+  "marketSpaceDocumentSubscriptionCompletedEmail": {
+    "subject": "Document Subscription Completed",
+    "meta": {
+      "tags": ["firstName", "projectName"]
+    },
+    "text": [
+      "Hi {firstName},",
+      "Your subscription agreement for {projectName} has been received and is under review by our team.  Once you/your entity has been verified as an accredited investor you will receive wiring instructions to complete your investment.",
+      "If you have any questions, feel free to call us at 281-766-9784 or email us at info@marketspacecapital.com",
+      "Once again, we look forward to partnering with you on this and more projects to come.",
+      "Regards,"
+    ]
+  },
+  "marketSpaceFinalizedInvestmentEmail": {
+    "subject": "Receipt of Funds",
+    "meta": {
+      "tags": ["firstName", "projectName", "marketSpaceLink"]
+    },
+    "text": [
+      "{firstName},",
+      "Congratulations! We have received your funds and your investment in the {projectName} offering has been finalized.",
+      "Closing documents related to this investment are available in the DOCUMENTS menu of the investor portal, which includes your fully executed subscription agreement and your investor accreditation verification. Ongoing status reports and periodic financial summaries/statements will be posted in the News / Updates section of the investor portal as they become available. Keep up with the value of your portfolio in the “My Portfolio” menu.",
+      "Click the link below to access the portal now:",
+      "{marketSpaceLink}",
+      "If you have any questions about the investment process or require some personal assistance, please contact us at 281-766-9784 or info@marketspace.capital.",
+      "Regards,"
+    ]
+  },
+  "entityAccreditationApproved": {
+    "subject": "Entity accreditation Approved",
+    "text": [
+      "Your entity accreditation has been approved, the wiring instructions are now visible in your portfolio.",
+      "Regards,"
+    ]
+  },
+  "newAccreditionClaim": {
+    "subject": "New Investor Accredtion claim",
+    "text": ["just claimed new accredition which waiting your approval"]
+  },
+  "statusOfAdminResponseOnAccreditation": {
+    "subject": "Informaton about Status of Accreditation Claim",
+    "text": ["just viewed accreditation's status"]
+  },
+  "purchaseAlertCreated-Admin": {
+    "subject": "{shareClassName} | Offer Submitted - {price}",
+    "meta": {
+      "tags": ["shareClassName", "price", "fullName", "stoTitle"]
+    },
+    "text": [
+      "An offer has been submitted and an email confirmation has been sent to the investor. The investor is expecting to hear back from us within two business days",
+      "Investor: {fullName}",
+      "Offering: {stoTitle}",
+      "Offer Amount: {price}",
+      "Review this offer in the Management Console"
+    ]
+  }
+}

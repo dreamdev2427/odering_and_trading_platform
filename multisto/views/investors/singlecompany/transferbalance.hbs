@@ -1,0 +1,167 @@
+{{> Header}}
+
+	<script language="javascript">
+        var currentAmount = {{record.Amount}};
+        var recordID = {{record.ID}}
+        var link = "";
+        
+		$(document).ready(function(){
+                $("#InvestorWallet").addClass('active');   
+		})
+
+        function transferShares() {
+
+            if(document.getElementById("transferTextBox").value == "") {
+                showModelGeneralOKDialogBox("Please enter amount to transfer");
+                return;
+            }
+            
+            if( isNaN( document.getElementById("transferTextBox").value  )  ) {
+                showModelGeneralOKDialogBox("Please enter a valid number");
+                return;
+            }            
+            
+            if( document.getElementById("transferTextBox").value  > currentAmount) {
+                showModelGeneralOKDialogBox("Amount cannot be greater than " + currentAmount );
+                return;
+            }
+            
+            const selectSTO = $( "#selectSTO" ).val();;
+            
+            //link = "transferInvestorBalanceGet?id=" + recordID + "&amount=" + document.getElementById("transferTextBox").value //+ "&toSTOID=" + selectSTO;
+            
+			
+			document.getElementById("idRec").value = recordID
+			document.getElementById("amountRec").value = document.getElementById("transferTextBox").value;
+			document.getElementById("toSTOIDRec").value = selectSTO;
+
+			 showModelGeneralYesNoDialogBox("Do you want to transfer funds ? ", "Yes Transfer", "Cancel")
+
+        }
+
+        
+        function generalModelOKButtonClickedClientEvent() {
+            document.getElementById("frmSendBalance").submit(); 
+            return false;	        
+        }
+                
+	</script>
+
+{{> HeaderInner}}
+
+    {{#if messages}}
+        <span style="color:red; font-size:18px;">{{messages}}</span>
+        <br /><br />
+    {{/if}}        
+
+    <div class="row">
+        <div class="col-md-12">        
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">                                
+                            <h4 class="title">  <img src="/img/wallet.png" width="22px;" style="padding-bottom:4px;" /> &nbsp; Transfer Balance</h4>
+                        </div>
+                    </div>
+                </div>
+                    <div class="content">
+                        
+                        <h5>Your Current Balance in following 
+                            {{#ifEqual Data.CurrentClientID 9}}                            
+                                Opportunity 
+                            {{else}}
+                                Project
+                            {{/ifEqual}}                               
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-3">                                
+                                <label>
+                                    {{#ifEqual Data.CurrentClientID 9}}                            
+                                        Opportunity 
+                                    {{else}}
+                                        Project
+                                    {{/ifEqual}}                                   
+                                </label>
+                            </div>
+                            <div class="col-md-4">                                
+                                   {{record.title}}  
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-3">                                
+                                <label>Current Balance</label>
+                            </div>
+                            <div class="col-md-4">                                
+                                   {{currencySymbol record.currencyID}}     {{numberFormat record.Amount decimalLength="-"}} 
+                            </div>
+                        </div>
+                        
+                        <hr />
+                        
+                        <h5>Transfer Shares to another                                     
+                                    {{#ifEqual Data.CurrentClientID 9}}                            
+                                        Opportunity 
+                                    {{else}}
+                                        Project
+                                    {{/ifEqual}}   
+                        </h5>                        
+                        <div class="row">
+                            <div class="col-md-3">                                
+                                <label>Select 
+                                    {{#ifEqual Data.CurrentClientID 9}}                            
+                                        Opportunity 
+                                    {{else}}
+                                        Project
+                                    {{/ifEqual}}                                       
+                                    where to transfer funds</label>
+                            </div>
+                            <div class="col-md-4">                                
+
+                                    <select id="selectSTO" name="selectSTO"  class="form-control border-input">
+                                            {{#each stos}}
+                                                    <option value="{{this.id}}">{{this.title}}</option>
+                                            {{/each}}
+                                     </select>                                
+                                
+                            </div>                                                        
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-3">                                
+                                <label>Enter Amount </label>
+                            </div>
+                            <div class="col-md-4">                                
+                                    <input type="text"  maxLength="70" class="form-control border-input" id="transferTextBox" name="transferTextBox" placeholder=" Amount">    
+                                    <label>  Amount must be less than  {{numberFormat record.Amount decimalLength="-"}}   </label>
+                            </div>
+                        </div>                        
+                                                
+                        <br />
+                        
+                        <div class="row">
+                            <div class="col-md-3">                                
+                            </div>
+                            <div class="col-md-4">                                
+                                    <button onclick="return transferShares()"  class="btn btn-info btn-fill">Transfer</button>
+                            </div>
+                        </div>                          
+                        
+                        <br /><br />
+                        
+                    </div>
+                </div>
+        </div>
+    </div>        
+
+		
+		<form id="frmSendBalance" name="frmSendBalance" action="/transferInvestorBalanceGet"  method="post">
+			<input type="hidden" id="idRec" name="id" value="" />
+			<input type="hidden" id="amountRec" name="amount" value="" />
+			<input type="hidden" id="toSTOIDRec" name="toSTOID" value="" />
+			<input type="hidden" name="_csrf" value="{{csrfToken}}" />
+		</form>			
+		
+
+
+{{> Footer}}

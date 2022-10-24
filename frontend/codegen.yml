@@ -1,0 +1,15 @@
+overwrite: true
+schema: "http://localhost:3000/gql"
+documents: 'src/services/apollo/**/*.{js,ts,gql}'
+generates:
+  src/services/apollo/graphql.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+    config:
+      withHooks: true
+      skipTypeNameForRoot: true
+      skipTypename: true
+      namingConvention:
+        transformUnderscore: true

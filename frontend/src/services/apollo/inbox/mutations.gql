@@ -1,0 +1,3 @@
+mutation createInbox($data: InboxInput!) {
+  investorInboxCreate(data: $data)
+}

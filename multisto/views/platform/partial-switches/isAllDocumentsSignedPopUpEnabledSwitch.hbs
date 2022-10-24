@@ -1,0 +1,44 @@
+<script>
+    function changeisAllDocumentsSignedPopUpEnabled(isChecked) {
+      document.getElementById('isAllDocumentsSignedPopUpEnabled-intValue').value = +isChecked;
+      document.getElementById('isAllDocumentsSignedPopUpEnabled-redirectUrl').value = window.location.pathname;
+      document.getElementById('postisAllDocumentsSignedPopUpEnabled').submit();
+    }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more'/> All documents signed pop-up</h4>
+        <label>
+          When this feature is turned on a pop-up notifying the user that all the documents have been signed will appear.
+          When it is turned off it will redirect the user to their portfolio instead.
+        </label>
+      </div>
+      <div class="content">
+        <form method="post" id="postisAllDocumentsSignedPopUpEnabled" action="postParamUpdateToApi">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="switch">
+                <input id="isPropertySortingEnabled"
+                       onclick=changeisAllDocumentsSignedPopUpEnabled(this.checked) type="checkbox"
+                  {{#if isAllDocumentsSignedPopUpEnabled}}
+                       checked
+                  {{/if}}
+                >
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" id="isAllDocumentsSignedPopUpEnabled-intValue" name="intValue"/>
+          <input type="hidden" id="isAllDocumentsSignedPopUpEnabled-stringValue" name="stringValue" value=""/>
+          <input type="hidden" name="param" value="isAllDocumentsSignedPopUpEnabled" />
+          <input type="hidden" id="isAllDocumentsSignedPopUpEnabled-redirectUrl" name="redirectUrl" value="" />
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+export type AtomicSwapStatus =
+  | "NOT_INITIALIZED"
+  | "ACCEPTED"
+  | "SELLER_COMMITTED"
+  | "SELLER_SENT"
+  | "BUYER_COMMITTED"
+  | "BUYER_COMPLETED"
+  | "UNSUCCESSFUL"
+  | "PROCESSED";

@@ -1,0 +1,21 @@
+subscription GetLastChatRecord {
+  getLastChatRecord {
+    ID
+    sender
+    receiver
+    investorID
+    adminID
+    stoID
+    message
+    type
+    dateSent
+    isRead
+    dateRead
+    isEdited
+    location
+    isDeleted
+    context
+    contextID
+    contextReceiverID
+  }
+}

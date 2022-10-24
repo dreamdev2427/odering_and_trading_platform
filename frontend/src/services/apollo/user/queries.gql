@@ -1,0 +1,7 @@
+query GetUsernameByID($userID: Int!) {
+  getUsernameByID(userID: $userID)
+}
+
+query GetFullNameByID($userID: Int!) {
+  getFullNameByID(userID: $userID)
+}

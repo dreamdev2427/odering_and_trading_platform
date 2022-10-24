@@ -1,0 +1,174 @@
+{{> Header}}
+
+{{> HeaderInnerSto}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#documents").addClass('active');
+    })
+    function opencontract(id) {
+        window.location.href = "viewsenddoccontracts?id=" + id;
+    }
+    function backTomainlistingpage() {
+        window.location.href = "directorylist?id=" + commonGetQueryStringValue("dirid");
+    }
+    function editOffer() {
+        window.location.href = "senddoc?docid={{offerRecord.documentid}}&id={{offerRecord.ID}}";
+    }
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title"> <img src="/img/document.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Offer Details</h4> 
+                    </div>
+                    <div class="col-md-3">                    
+                        <button onclick="backTomainlistingpage()" class="btn btn-info btn-fill"> &nbsp;&nbsp; Back to Directory &nbsp;&nbsp; </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <label>From</label> &nbsp;&nbsp;&nbsp;&nbsp; <b>{{offerRecord.datefrom}}</b>   &nbsp;&nbsp;&nbsp;&nbsp; <label>to</label>    &nbsp;&nbsp;&nbsp;&nbsp;   <b>{{offerRecord.datato}}</b>
+                <br /><br />
+                <div class="row" >
+                    <div class="col-md-12">
+                        <h5>  {{offerRecord.title}}</h5>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="col-md-12">
+                        {{{offerRecord.contents}}}
+                    </div>
+                </div>
+
+                
+                {{#ifIn open '[1,2]'}}
+                    <h4>Contract is on offer to following investors (search criteria) </h4>
+                    <div class="row" >
+                        <div class="col-md-2"><label>Name(s)</label></div>
+                        <div class="col-md-10">{{offerRecord.InvestorsName}}</div>
+                    </div>
+
+                    <div class="row" >
+                        <div class="col-md-2"><label>Authorization</label></div>
+                        <div class="col-md-10">{{investorTypeText}}</div>
+                    </div>                
+
+                    <br />
+                
+                    <button onclick="editOffer()" class="btn btn-info btn-fill"> &nbsp;&nbsp; Edit Offer Details &nbsp;&nbsp; </button>
+                {{/ifIn}}
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div> 
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title"> <img src="/img/contracts2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Newly Signed Contracts</h4>        
+                        </div>
+                    </div>
+                    
+                    {{#if SignedRecords.length}}
+                        <label>Newly signed contracts by investors. Click view and settle the contract</label>
+                    {{/if}}
+                </div>
+
+                <div class="content">
+                    {{#if SignedRecords.length}}
+                            <br />
+                            {{#each SignedRecords}}
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        {{this.firstname}} {{this.lastname}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{this.town}} {{this.country}} 
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{this.email}}
+                                    </div>                                    
+                                    <div class="col-md-2">
+                                        {{this.signaturedate}}
+                                    </div>                                   
+                                    <div class="col-md-2">
+                                        <button type="button" onclick="return opencontract({{this.DocID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; View &nbsp; </button>
+                                    </div>
+                                </div>
+                            <br />
+                            {{/each}}
+                    {{else}}
+                        <label>No Contract Found</label>
+                        <br />&nbsp;
+                    {{/if}}
+
+                </div>
+                
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">                    
+                            <h4 class="title"> <img src="/img/contracts2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Settled Contracts</h4>        
+                        </div>
+
+                    </div>
+                    
+                    {{#if SettledRecords.length}}
+                        <label>List of investors who signed this contract and admin has accepted</label>
+                    {{/if}}
+                </div>
+
+                <div class="content">
+                    {{#if SettledRecords.length}}
+                            <br />
+                            {{#each SettledRecords}}
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        {{this.firstname}} {{this.lastname}} 
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{this.town}} {{this.country}} 
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{this.email}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{this.signaturedate}}
+                                    </div>                                    
+                                    <div class="col-md-2">
+                                        <button type="button" onclick="return opencontract({{this.DocID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; View &nbsp; </button>
+                                    </div>
+                                </div>
+                            <br />
+                            {{/each}}
+                    {{else}}
+                        <label>No Contract Found</label>
+                        <br />&nbsp;
+                    {{/if}}
+
+                </div>
+                
+            </div>
+        </div>
+
+
+    </div>
+
+{{> Footer}}

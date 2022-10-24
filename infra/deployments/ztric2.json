@@ -1,0 +1,7 @@
+{
+    "id": "ztric2",
+    "version": "staging",
+    "apiHostname": "api.lokgreenenergy.io",
+    "frontendHostname": "investor.lokgreenenergy.io",
+    "multistoHostname": "platform.lokgreenenergy.io"
+}

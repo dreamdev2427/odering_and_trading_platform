@@ -1,0 +1,291 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function(){
+			$("#Portfolio").addClass('active');
+		})
+		function compose(val, id) {
+			window.location.href = "/email?op=" + val + "&id=" + id;
+			return false;
+		}
+
+        function viewproperty(id) {
+			window.location.href = "combinedpropertydetails?id=" + id;
+			return false;
+        }
+        function buyproperty(id) {
+			window.location.href = "buycombineproperty?id=" + id;
+			return false;
+        }
+        function deleteBuyRequest(id) {
+			window.location.href = "deletecombinepropertybuyrequest?id=" + id;
+			return false;
+        }
+        function signContract(id, stoID) {
+			window.location.href = `signSubscriptionForms?id=${id}&stoID=${stoID}`;
+			return false;
+        }
+        function viewlegalInfo(id) {
+			window.location.href = "/legalinformation?id=" + id
+			return false;
+        }
+
+	</script>
+
+{{> HeaderInner}}
+
+{{#if messages}}
+        <span style="color:red; font-size:18px;">{{messages}}</span>
+        <br /><br />
+    {{/if}}
+
+{{#if buys.length}}
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/summay.png" width="25px;" style="padding-bottom:7px;" /> &nbsp;
+                            {{#ifEqual Data.CurrentClientID 9}}
+                                Opportunity Buy Request
+                            {{else}}
+                                {{{__ "Project Buy Request"}}}
+                            {{/ifEqual}}
+
+                    </h4>
+                </div>
+                <div class="content">
+                           <label> {{{__ "You have previously sent project buy requests, the company administration is in the process of reviewing these requests"}}} </label>
+
+
+                            <br /><br />
+                                    {{#each buys }}
+                                        <div class="row">
+                                            <div class="col-md-2"><label>{{{../__ "Date"}}}</label></div>
+                                            <div class="col-md-2"><label>
+
+                                                {{#ifEqual ../Data.CurrentClientID 9}}
+                                                    {{{../__ "Opportunity"}}}
+                                                {{else}}
+                                                    {{{../__ "Company"}}} / {{{../__ "Project"}}}
+                                                {{/ifEqual}}
+
+                                                </label></div>
+                                            <div class="col-md-3"><label>Share</label></div>
+                                            <div class="col-md-1"><label>{{{../__ "Shares"}}}</label></div>
+                                            <div class="col-md-2"><label>{{{../__ "Contract"}}}</label></div>
+                                            <div class="col-md-2"></div>
+                                        </div>
+
+                                            <div class="row">
+                                                <div class="col-md-2"> {{this.DateReceived}} </div>
+                                                <div class="col-md-2"> {{this.companyname}} </div>
+                                                <div class="col-md-3"> {{this.sharetitle}} </div>
+                                                <div class="col-md-1"> {{numberFormat this.Shares decimalLength="ShareCountInFractions"}}</div>
+                                                <div class="col-md-1">
+
+                                                        {{#if buyRequestContractsSigned}}
+                                                                <span style="color:green">{{{../__ "Signed"}}}</span>
+                                                        {{else}}
+                                                                <span style="color:red">{{{../__ "Not Signed"}}}</span>
+                                                        {{/if}}
+
+                                                </div>
+                                                <div class="col-md-3">
+
+                                                    {{#unless this.buyRequestContractsSigned}}
+                                                            <button onclick="return signContract({{this.ID}}, {{this.stoID}})"  class="btn btn-info btn-fill btn-sm">{{{../__ "Sign Contract"}}}</button>
+                                                    {{/unless}}
+
+                                                    &nbsp;&nbsp;&nbsp;
+                                                    <button onclick="return deleteBuyRequest({{this.ID}})"  class="btn btn-info btn-fill btn-sm">{{{../__ "Delete"}}}</button>
+                                                </div>
+                                            </div>
+
+                                            {{#if this.buyRequestContractsSigned}}
+                                                    <div class="row">
+                                                            <div class="col-md-12">
+                                                                    <span style="color:green">{{{../__ "Your request to buy shares is being reviewed by administration"}}}</span>
+                                                            </div>
+                                                    </div>
+                                            {{else}}
+                                                    <div class="row">
+                                                            <div class="col-md-12">
+                                                                    <span style="color:red">{{{../__ "You have not signed the contract(s)"}}}</span>
+                                                            </div>
+                                                    </div>
+                                            {{/if}}
+
+                                            <hr />
+                                    {{/each}}
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+{{/if}}
+
+{{setVariable "CurrentID" -1}}
+{{setVariable "FirstRecord" 1}}
+
+{{#if records.length}}
+
+        {{#each records}}
+
+                {{#ifEqual this.stoid ../CurrentID }}
+
+                       <div class="row">
+                            <div class="col-md-6">
+                                    <img src="img/blockchainwallet.png" width="20px" >
+                                    &nbsp;&nbsp;
+                                    {{this.title}}
+                           </div>
+                            <div class="col-md-4">
+                                    {{numberFormat this.shares decimalLength="ShareCountInFractions"}} Shares
+                           </div>
+                        </div>
+                        <br />
+
+                {{else}}
+
+                                {{#if ../FirstRecord}}
+                                                {{setVariable "FirstRecord" 0}}
+
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="card">
+
+                                                                <div class="content">
+
+                                {{else}}
+
+                                                               </div>
+                                                        </div>
+
+
+                                                            <br />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="card">
+
+                                                            <div class="content">
+
+                                {{/if}}
+
+
+
+                               <div class="row">
+
+                                    <div class="col-md-3">
+                                            <img src="/img/stobanners/{{this.propertypicture}}"  width="100%">
+                                   </div>
+
+                                    <div class="col-md-9">
+
+                                            {{#if this.isActive}}
+												{{#if this.isBuyButtonEnabled}}
+													<button onclick="return buyproperty({{this.stoid}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;&nbsp;&nbsp;{{{../__ "Buy More Shares" }}}&nbsp;&nbsp;&nbsp;&nbsp;</button>
+													&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												{{/if}}
+                                            {{/if}}
+
+
+                                            <button onclick="return viewproperty({{this.stoid}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                                {{#ifEqual ../Data.CurrentClientID 9}}
+                                                    {{{../__ "Opportunity "}}}
+                                                {{else}}
+                                                    {{{../__ "Project"}}}
+                                                {{/ifEqual}}
+                                                {{{../__ "Details"}}}&nbsp;&nbsp;&nbsp;&nbsp;</button>
+
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <button onclick="return viewlegalInfo({{this.stoid}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;&nbsp;&nbsp;Share Certificate&nbsp;&nbsp;&nbsp;&nbsp;</button>
+
+                                            <br /><br />
+                                            <span style="font-size:20px;">{{this.stotitle}}</span><br />
+                                            <br />
+                                            {{this.stodetails}}
+                                            <br />     <br />
+
+                                           <div class="row">
+                                                <div class="col-md-6">
+                                                        {{#if this.isblockchain}}
+                                                                <img src="img/blockchainwallet.png" width="20px" >
+                                                        {{else}}
+                                                                <img src="img/nonblockchain.png" width="20px" >
+                                                        {{/if}}
+                                                        &nbsp;&nbsp;
+                                                        {{this.title}}
+                                               </div>
+                                                <div class="col-md-4">
+                                                        {{numberFormat this.shares decimalLength="ShareCountInFractions"}} {{{../__ "Shares"}}}
+                                               </div>
+                                            </div>
+                                            <br />
+
+                        {{setVariable "CurrentID" this.stoid}}
+
+                {{/ifEqual}}
+
+        {{/each}}
+
+
+               </div>
+        </div>
+
+
+                        <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+{{else}}
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+
+                    <div class="content">
+                            <br /><br />
+                            <center>
+                                <span style="font-size:16px;">
+                                    You are currently not affiliated with any
+
+                                    {{#ifEqual Data.CurrentClientID 9}}
+                                        Opportunity
+                                    {{else}}
+                                        Company / Project
+                                    {{/ifEqual}}
+
+                                    <br /><br />
+                                    Please click <b>Active
+
+                                    {{#ifEqual Data.CurrentClientID 9}}
+                                        Opportunities
+                                    {{else}}
+                                      Projects
+                                    {{/ifEqual}}
+
+                                    </b> and buy shares
+                                </span>
+                            </center>
+                            <br />
+                    <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{{/if}}
+
+{{> Footer}}

@@ -1,0 +1,9 @@
+build-db-create:
+  extends: .build-image
+  variables:
+    FOLDER: db-create
+  only:
+    refs:
+      - staging
+    changes:
+      - "db-create/**/*"

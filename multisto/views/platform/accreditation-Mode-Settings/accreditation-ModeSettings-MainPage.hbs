@@ -1,0 +1,146 @@
+{{> Header}}
+
+<script>
+  $(document).ready(function() {
+    const isAccreditationEnabled = JSON.parse('{{{isAccreditationEnabled}}}');
+
+    if (isAccreditationEnabled === 1) {
+      document.getElementById('isAccreditationEnabledToggle').checked = true;
+      document.getElementById('partialView').style.display = "block";
+      document.getElementById('providerView').style.display = "block";
+    }
+  });
+
+  function isEnableAccreditation() {
+    const isEnabled = document.getElementById('isAccreditationEnabledToggle').checked;
+    document.getElementById('isAccreditationEnabled').value = +isEnabled;
+    document.getElementById('changeMode').submit();
+  }
+
+  function changeAccreditationRequirementStep(intValue, param) {
+    document.getElementById('postAccreditationSettingsForm-intValue').value = intValue;
+    document.getElementById('postAccreditationSettingsForm-param').value = param;
+    document.getElementById('postAccreditationSettingsForm').submit();
+  }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more' /> Investor Accreditation Mode</h4>
+      <label>Change the way investor accreditation is managed on the platform</label>
+      <hr/>
+    </div>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-1">
+          <label class="switch">
+            <input id="isAccreditationEnabledToggle" name="isAccreditationEnabledToggle"
+                   onclick=changeAccreditationRequirementStep(+this.checked,'AccreditationProvider') type="checkbox">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="col-md-11">
+          <div class="row">
+            Enable Investor Accreditation Checks
+          </div>
+          <div class="row">
+            <label>
+              Investors residing in the USA will be required to pass an extra level of KYC.
+            </label>
+          </div>
+        </div>
+      </div>
+      <div id="providerView" style="display: none">
+        <hr/>
+        <div class="row">
+          <div class="col-md-12">
+            <h3> Accreditation Provider </h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button onclick="changeAccreditationRequirementStep(0, 'AccreditationProvider')" class="btn
+            {{#ifEqual accreditationProvider 0}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Verify Investor</button>
+              <button onclick="changeAccreditationRequirementStep(1, 'AccreditationProvider')" class="btn
+            {{#ifEqual accreditationProvider 1}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Accredd</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-8">
+          <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt="add more"/> Accreditation Requirement Step </h4>
+          <label>Change the step in which the investor is required to fill in the Accreditation forms</label>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button title="Right after the investor has confirmed their email address"
+                    onclick="changeAccreditationRequirementStep(0, 'accreditationRequirementStep')" class="btn
+            {{#ifEqual accreditationRequirementStep 0}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">On Register</button>
+            <button title="When the investor tries to purchase shares from the active properties menu"
+                    onclick="changeAccreditationRequirementStep(1, 'accreditationRequirementStep')" class="btn
+            {{#ifEqual accreditationRequirementStep 1}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">On Purchase</button>
+            <button title="Ignore all requirements"
+                    onclick="changeAccreditationRequirementStep(2, 'accreditationRequirementStep')" class="btn
+            {{#ifEqual accreditationRequirementStep 2}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Ignore Accreditation</button>
+            <button title="After Document Signing, Before Payment" onclick="changeAccreditationRequirementStep(3, 'accreditationRequirementStep')" class="btn
+            {{#ifEqual accreditationRequirementStep 3}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Pre-Payment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form id="changeMode" method="post" action="/platform/setAccreditationMode">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <input type="hidden" id="accreditationProvider" name="accreditationProvider" />
+    <input type="hidden" id="isAccreditationEnabled" name="enableAccreditation" />
+  </form>
+
+  <form method="post" id="postAccreditationSettingsForm" action="postParamUpdateToApi">
+    <input type="hidden" id="postAccreditationSettingsForm-intValue" name="intValue"/>
+    <input type="hidden" id="postAccreditationSettingsForm-stringValue" name="stringValue"/>
+    <input type="hidden" id="postAccreditationSettingsForm-param" name="param" />
+    <input type="hidden" name="redirectUrl" value="/platform/accreditationMode" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+  </form>
+  <div id="partialView" style="display: none">
+    {{> accreditationModeSettings}}
+  </div>
+</div>
+{{> Footer}}

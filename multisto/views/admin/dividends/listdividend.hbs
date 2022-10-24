@@ -1,0 +1,132 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			$("#dvidends").addClass('active');
+		})
+
+        function viewDividend(id) {
+            window.location.href = "viewdividenddetails?id=" + id;
+            return false;
+        }
+
+        function deleteDividend(id, dateReport) {
+		    if (Date.parse(dateReport) > Date.now()){
+            document.getElementById("dividendId").value = id;
+            document.getElementById("deleteDividendForm").submit();
+		    } else {
+		        alert("Cannot delete Dividends that have already started");
+            }
+        }
+
+        function addDividend(id) {
+            window.location.href = "adddividend";
+            return false;
+        }
+
+		function showDividendList() {
+            window.location.href = "dividendinvestors";
+            return false;
+		}
+
+	</script>
+
+{{> HeaderInnerSto}}
+
+<form id="deleteDividendForm" action="deleteDividend" method="post">
+    <input type="hidden" id="dividendId" name="dividendId" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+<div class="row">
+	<div class="col-md-12 ">
+		<div class="card">
+			<div class="header">
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            <img src="/img/dividends.png" width="30px" >
+                            &nbsp; Past / Current DIvidends
+                        </h4>
+                        <label>Following are the list of dividends created by different admins</label>
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="return showDividendList()"  class="btn btn-info btn-fill ">Show Investors</button>
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="return addDividend()"  class="btn btn-info btn-fill">Add Dividend</button>
+                    </div>
+                </div>
+			</div>
+			 <div class="content">
+                 {{#if records.length}}
+                        <div class="row">
+                            <div class="col-md-2">
+                                Title
+                            </div>
+                            <div class="col-md-2">
+                                Date
+                            </div>
+                            <div class="col-md-2">
+                                Amount Distributed
+                            </div>
+                            <div class="col-md-2">
+                                Investor Shares
+                            </div>
+                            <div class="col-md-1">
+                                Total Shares
+                            </div>
+                            <div class="col-md-1">
+                                Investors
+                            </div>
+                            <div class="col-md-1">
+                            </div>
+                            <div class="col-md-2">
+                            </div>
+                        </div>
+                        <br />
+                        {{#each records}}
+                            <div class="row">
+                                <div class="col-md-2">
+                                    {{this.title}}
+                                </div>
+                                <div class="col-md-2">
+                                    {{this.DateReport}}
+                                </div>
+                                <div class="col-md-2">
+                                     {{currencySymbol this.currencyid}}
+                                    {{numberFormat this.totalamount decimalLength="-"}}
+                                </div>
+                                <div class="col-md-2">
+                                    {{numberFormat this.investorTotalShares decimalLength="ShareCountInFractions"}}
+                                </div>
+                                <div class="col-md-1">
+                                    {{numberFormat this.companyTotalShares  decimalLength="ShareCountInFractions"}}
+                                </div>
+                                <div class="col-md-1">
+                                    {{this.totalInvestors}}
+                                </div>
+                                <div class="col-md-2">
+                                    <button onclick="return viewDividend({{this.ID}})"  class="btn btn-info btn-fill btn-sm">View</button>
+                                    <button onclick="return deleteDividend({{this.ID}}, '{{this.DateReport}}')"  class="btn btn-info btn-fill btn-sm">Delete</button>
+                                </div>
+                            </div>
+                            <br />
+                        {{/each}}
+                 {{else}}
+                        <label> No Dividends Found </label>
+                 {{/if}}
+
+			</div>
+		</div>
+	</div>
+</div>
+
+{{> Footer}}
+
+
+
+
+
+

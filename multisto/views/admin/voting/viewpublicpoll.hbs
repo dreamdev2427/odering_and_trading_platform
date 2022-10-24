@@ -1,0 +1,134 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {
+        $("#voting").addClass('active');
+
+        var data = {
+            datasets: [{
+                data: [
+                    {{#each OptionRecord}}
+                        {{this.count}},
+                    {{/each}}
+                ],
+                        backgroundColor: [
+                            'red', 'green', 'blue'
+                        ],
+                        label: 'Dataset 1'
+            }],
+
+            // These labels appear in the legend and in the tooltips when hovering different arcs
+                    labels: [
+                        {{#each OptionRecord}}
+                            "{{this.optiontxt}}",
+                        {{/each}}
+                    ]
+        };
+        var ctx = document.getElementById('myChart');
+        var myPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: data,
+            options: {
+                legend: {
+                    labels: {
+                        fontColor: 'black',
+                        fontSize: 13,
+                    }
+                }
+            }
+        });
+
+    })
+</script>
+
+{{> HeaderInnerSto}}
+
+    <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b>
+
+    <div class="row" id="report">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title"> <img src="/img/lock.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Public Poll</h4>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" onclick="generatePDF('report')" class="btn btn-info btn-fill" data-html2canvas-ignore="true">Download PDF</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <br />
+                            <b>{{Record.title}}</b>
+
+                            <br /><br />
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Voting Start </label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{Record.opendate}}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Voting Finish </label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{Record.closedate}}
+                                </div>
+                            </div>
+                            <br />
+                            {{{Record.contents}}}
+                            <br /><br /><br />
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-md-7">
+
+                            {{#each OptionRecord}}
+                                <div class="row">
+                                    <div class="col-md-8">  {{addTovalue @index 1}}. {{this.optiontxt}}  </div>
+                                    <div class="col-md-4">  {{this.count}} Votes  </div>
+                                </div><br />
+                            {{/each}}
+                            <br /><br />
+                            <div class="row">
+                                <div class="col-md-8">  Votes Casted  </div>
+                                <div class="col-md-4">  {{VotesCasted}}  </div>
+                            </div><br />
+                            <div class="row">
+                                <div class="col-md-8"> Total Users </div>
+                                <div class="col-md-4"> {{TotalUsers}} </div>
+                            </div><br />
+                            <div class="row">
+                                <div class="col-md-8"> Votes not Casted </div>
+                                <div class="col-md-4"> {{subtractTovalue TotalUsers VotesCasted}} </div>
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <canvas id="myChart" width="100" height="100"></canvas>
+                        </div>
+                    </div>
+
+                    <br />&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

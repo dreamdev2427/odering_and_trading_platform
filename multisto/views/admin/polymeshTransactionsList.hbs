@@ -1,0 +1,240 @@
+{{> Header}}
+
+    <script language="javascript">
+		$(document).ready(function() {
+
+		})				
+
+        function viewRecord(id) {
+            window.location.href = "polymeshtransactions?id=" + id;
+            return false;
+        }
+
+        function closeRecord() {
+            window.location.href = "polymeshtransactions";
+            return false;
+        }
+
+	</script>
+
+{{> HeaderInnerSto}}
+
+    {{#unless showRecord}}      
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">
+                            <img src="/img/polymeshicon.jpg" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Polymesh Pending Transactions
+                        </h4>
+                    </div>
+
+                    <div class="content">
+                        <br />
+
+                        {{#each pendingRecords}}
+                            <div class="row">
+                                <div class="col-md-1">                    
+                                    {{this.ID}}
+                                </div>
+                                <div class="col-md-2">                                                
+                                    {{this.FirstName}} {{this.LastName}}
+                                </div>
+                                <div class="col-md-5">     
+                                    {{this.title}}                                           
+                                </div>                                
+                                <div class="col-md-2">     
+                                    {{this.amountToSend}}
+                                </div>
+                                <div class="col-md-2">                                                    
+                                    <button onclick="return viewRecord({{this.ID}})" class="btn btn-info btn-fill btn-sm">View</button>
+                                </div>
+                            </div>
+                            <br />
+                        {{/each}}
+
+                        <br /><br />
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <br /><br />
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">
+                            <img src="/img/polymeshicon.jpg" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Polymesh Settled Transactions
+                        </h4>
+                    </div>
+
+                    <div class="content">
+                        <br />
+                        {{#if settleRecords.length}}
+                            {{#each settleRecords}}
+                                <div class="row">
+                                    <div class="col-md-1">                    
+                                        {{this.ID}}
+                                    </div>
+                                    <div class="col-md-2">                                                
+                                        {{this.FirstName}} {{this.LastName}}
+                                    </div>
+                                    <div class="col-md-5">     
+                                        {{this.title}}                                           
+                                    </div>                                
+                                    <div class="col-md-2">     
+                                        {{this.amountToSend}}
+                                    </div>
+                                    <div class="col-md-2">                                                    
+                                        <button onclick="return viewRecord({{this.ID}})" class="btn btn-info btn-fill btn-sm">View</button>
+                                    </div>
+                                </div>
+                                <br />
+                            {{/each}}
+                        {{else}}
+                            No Records Found
+                        {{/if}}
+
+                        <br /><br />
+
+                    </div>
+
+                </div>
+            </div>
+        </div>        
+
+    {{/unless}}
+
+    {{#if showRecord}}      
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h4 class="title">
+                                    <img src="/img/polymeshicon.jpg" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Polymesh Transaction Details
+                                </h4>
+                            </div>
+                            <div class="col-md-2">
+                                <button onclick="return closeRecord()" class="btn btn-info btn-fill">Close</button>
+                            </div>                            
+                        </div>
+                    </div>
+
+                    <div class="content">
+                        <h4><img src="/img/graydot.png" width="18px" /> &nbsp; Investor Details </h4>
+                        
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Name</label>
+                            </div>
+                            <div class="col-md-2">                            
+                                {{rec.FirstName}} {{rec.LastName}}
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Address</label>
+                            </div>
+                            <div class="col-md-2">                            
+                                {{Address}} {{zip}}
+                                {{town}} {{state}} {{country}}  
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Email</label>
+                            </div>
+                            <div class="col-md-2">                            
+                                {{rec.email}}
+                            </div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-1">
+                                <label>Phone</label>
+                            </div>
+                            <div class="col-md-2">                            
+                                {{rec.cell}} &nbsp;
+                                {{rec.phone}}
+                            </div>                            
+                        </div>
+                        <br />                        
+                        <br />
+
+
+                        <h4><img src="/img/graydot.png" width="18px" /> &nbsp; Transaction Details </h4>
+                        
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Token</label>
+                            </div>
+                            <div class="col-md-10">                            
+                                {{rec.title}}  &nbsp;&nbsp; (  {{rec.AssetTag}}  )
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Token Amount</label>
+                            </div>
+                            <div class="col-md-10">                            
+                                {{rec.amountToSend}}  
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Transaction Date</label>
+                            </div>
+                            <div class="col-md-10">                            
+                                {{rec.recordDate}}  
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Transaction ID</label>
+                            </div>
+                            <div class="col-md-10">                            
+                                {{rec.transactionID}}  
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Status</label>
+                            </div>
+                            <div class="col-md-10">                            
+                                {{#unless rec.polymeshInstructionStatus}}  
+                                    <img src="/img/reddot.png" width="18px" /> 
+                                    &nbsp;&nbsp;&nbsp;
+                                    Not yet accepted by investor
+
+                                    <br /><br />
+                                    <button onclick="return closeRecord()" class="btn btn-info btn-fill btn-sm">Cancel Transaction</button>
+                                {{else}}
+                                    <img src="/img/greendot.png" width="18px" /> 
+                                    &nbsp;&nbsp;&nbsp;
+                                    Transaction is accepted by investor
+                                {{/unless}}
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <br /><br /><br />
+
+                </div>
+            </div>
+        </div>
+    {{/if}}
+
+{{> Footer}}
+

@@ -1,0 +1,11 @@
+FROM node:14
+
+COPY package.json package-lock.json /usr/src/app/
+WORKDIR /usr/src/app
+RUN npm -g install serve
+RUN npm install
+
+COPY . /usr/src/app/
+RUN npm run build:staging
+
+ENTRYPOINT [ "serve", "-s", "build" ]

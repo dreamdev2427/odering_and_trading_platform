@@ -1,0 +1,58 @@
+<script>
+    function setParamsByValue(param) {
+        document.getElementById('defaultCurrencyType-intValue').value = +param;
+        document.getElementById('defaultCurrencyType-redirectUrl').value = window.location.href;
+        console.log(document.getElementById('defaultCurrencyType-redirectUrl').value);
+        document.getElementById('postdefaultCurrencyType').submit();
+    }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+            <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more' /> Default
+                Currency Mode</h4>
+            <label>Select defualt currency mode</label>
+            </div>
+            <div class="content">
+                <form method="post" id="postdefaultCurrencyType" action="postParamUpdateToApi">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="btn-group" role="group" id="defaultCurrencyType">
+                                <button onclick="setParamsByValue(1)"
+                                    {{#ifEqual defaultCurrencyType 1}}
+                                        class="btn btn-info btn-fill"
+                                    {{else}}
+                                        class="btn btn-secondary btn-fill"
+                                    {{/ifEqual}}>
+                                    Fiat
+                                </button>
+                                <button onclick="setParamsByValue(2)"
+                                    {{#ifEqual defaultCurrencyType 2}}
+                                        class="btn btn-info btn-fill"
+                                    {{else}}
+                                        class="btn btn-secondary btn-fill"
+                                    {{/ifEqual}}>
+                                    Crypto
+                                </button>
+                                <button onclick="setParamsByValue(3)"
+                                    {{#ifEqual defaultCurrencyType 3}}
+                                        class="btn btn-info btn-fill"
+                                    {{else}}
+                                        class="btn btn-secondary btn-fill"
+                                    {{/ifEqual}}>
+                                    Combined
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="defaultCurrencyType-intValue" name="intValue" />
+                    <input type="hidden" id="defaultCurrencyType-stringValue" name="stringValue" value="" />
+                    <input type="hidden" id="defaultCurrencyType-param" name="param" value="defaultCurrencyType" />
+                    <input type="hidden" id="defaultCurrencyType-redirectUrl" name="redirectUrl" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

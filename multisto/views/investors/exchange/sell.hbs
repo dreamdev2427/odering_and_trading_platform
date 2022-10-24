@@ -1,0 +1,328 @@
+{{> Header}}
+
+	<script language="javascript">
+        const totalSharesOfInvestor = {{record.shares}};
+        const isShareBlockchain = {{record.isblockchain}};
+
+        $(document).ready(function() {
+            $("#trading").addClass('active');
+        })
+        function submitForm() {
+
+            const selectedRadio = $("input[name='radShareTypeID']:checked").val();
+            if (typeof(selectedRadio) == "undefined") {
+                showModelGeneralOKDialogBox("Please select type of offer");
+                return;
+            } else {
+                  document.getElementById("currentAmount").value = document.getElementById("amountTextBox" + selectedRadio).value;
+                  document.getElementById("currentShares").value = document.getElementById("sharesTextBox" + selectedRadio).value ;
+                  document.getElementById("currentSharesWalletID").value = selectedRadio;
+
+                  if( selectedRadio != "0" )
+                    document.getElementById("swaptoken").value = document.getElementById("swaptoken" + selectedRadio).value;
+                  else
+                      document.getElementById("swaptoken").value = "-1"
+
+            }
+
+            if(document.getElementById("dateFrom").value == "") {
+                showModelGeneralOKDialogBox("Please enter opening date");
+                return;
+            }
+
+            if(document.getElementById("dateTo").value == "") {
+                showModelGeneralOKDialogBox("Please enter closing date");
+                return;
+            }
+
+            if(isNaN(document.getElementById("sharesTextBox" + selectedRadio).value) ) {
+                showModelGeneralOKDialogBox("Please enter numeric values in number of shares to sell");
+                return;
+            } else {
+                    if(document.getElementById("sharesTextBox" + selectedRadio).value == "") {
+                        showModelGeneralOKDialogBox("Please enter number of shares to sell");
+                        return;
+                    }
+
+                    if(selectedRadio == 0) {
+                        if( parseInt(document.getElementById("sharesTextBox" + selectedRadio).value) > totalSharesOfInvestor ) {
+                            showModelGeneralOKDialogBox("You have " + totalSharesOfInvestor + " shares in this share class. Please reduce your shares to sell");
+                            return;
+                        }
+                    }
+            }
+
+            if( document.getElementById("amountTextBox" + selectedRadio).value == "" ) {
+                showModelGeneralOKDialogBox("Please enter amount");
+                return;
+            } else {
+                   if( isNaN(document.getElementById("amountTextBox" + selectedRadio).value) ) {
+                       showModelGeneralOKDialogBox("Amount entered is not valid");
+                   }
+            }
+
+            document.getElementById("dateFrom").value =  commonGetMySQLDateFormat( document.getElementById("dateFrom").value );
+            document.getElementById("dateTo").value =  commonGetMySQLDateFormat( document.getElementById("dateTo").value );
+            document.getElementById("sellTrading").submit();
+        }
+        function cancel() {
+            window.location.href = "trading";
+            return false;
+        }
+        function radioButtonChange(radioObject) {
+            const rate_value = $("input[name='radShareTypeID']:checked").val();
+            // alert(rate_value);
+        }
+        function shareCountChanged(shareCount) {
+            if (isNaN(shareCount.value)) {
+                shareCount.value = 0;
+            }
+            shareCount.value = parseFloat(shareCount.value).toFixed({{ShareCountInFractions}});
+            return;
+        }
+
+	</script>
+
+{{> HeaderInner}}
+
+    <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/lock.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; New Sell Order </h4>
+                    <label>Offer your shares for sale on the exchange</label>
+                </div>
+                <div class="content">
+
+                    <form id="sellTrading" action="/tradingsellpost" method="post">
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Share Type</label>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <b>{{record.title}}</b>
+
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    Nominal &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <b> {{currencySymbol  record.currencyid}}  {{record.nominalValue}}</b>
+
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    {{#if record.premimum}}
+                                        Premimum &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <b> {{currencySymbol  record.currencyid}}  {{record.premimum}}</b>
+                                    {{/if}}
+                                </div>
+                            </div>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                    <b>Select Active Period </b>
+                            </div>
+                            <div class="col-md-6">
+                                    <label>Enter dates during which order will be active in exchange</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Open Date</label>
+                                {{#if op}}
+                                    {{record.dateFrom}}
+                                {{else}}
+                                    <input  id="dateFrom" name="dateFrom" onkeydown="return false;"  value="" class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" placeholder="Select Open Date" />
+                                {{/if}}
+                            </div>
+
+                            <div class="col-md-1"></div>
+
+                            <div class="col-md-3">
+                                <label>Close Date</label>
+                                <input  id="dateTo" name="dateTo" onkeydown="return false;"  {{#if op}}value="{{record.dateTo}}"{{/if}} class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" placeholder="Select Close Date" />
+                            </div>
+                        </div>
+
+
+
+                        <br />
+                        <div class="row" >
+                            <div class="col-md-9">
+                                <label>Ineternal Note</label>
+                                <textarea class="form-control border-input" rows="4" id="desc" name="desc" placeholder="Shares">{{#if op}}{{record.description}} {{/if}}</textarea>
+                            </div>
+                        </div>
+
+
+                        <hr />
+
+                        <div class="row">
+                                <div class="col-md-11">
+                                    <h4>
+                                            Option 1 - Internal Wallet Sell Order
+                                    </h4>
+                                </div>
+                        </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Your Shares</label>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <b>{{record.shares}}</b>  &nbsp;&nbsp;&nbsp;  ( <label>You currently own these shares. Enter details below how many shares you want to sell</label> )
+                                </div>
+                            </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                    <input type="radio"  checked  onchange="radioButtonChange()" id="radShareTypeID" name="radShareTypeID" value="0">
+                                    &nbsp;&nbsp;&nbsp;
+                                    <label>Number of shares to offer for sale: <br/> (up to {{ShareCountInFractions}} decimals)</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input  type="text" class="form-control border-input radioTextBoxes"
+                                        onchange="shareCountChanged(this)" id="sharesTextBox0" name="sharesTextBox" placeholder="Shares">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Enter Price  (  {{currencySymbol  record.currencyid}}   ) </label>
+                            </div>
+
+                            <div class="col-md-2">
+                                <input type="text" class="form-control border-input"   id="amountTextBox0" name="amountTextBox0" placeholder="Price">
+                            </div>
+
+                            <div class="col-md-1">
+                                <input type="hidden"value="1" id="rateTo" name="rateTo">
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" onclick="submitForm()" class="btn btn-info btn-fill">
+                                        Open Sell Order
+                                </button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" onclick="cancel()" class="btn btn-info btn-fill">Cancel</button>
+                            </div>
+                        </div>
+
+
+
+                        {{#if record.isblockchain}}
+                            {{#if blockchainShares.length}}
+
+                                <hr />
+                                <div class="row">
+                                        <div class="col-md-11">
+                                            <h4>
+                                                    Option 2 - Sell Order From Self Custody
+                                            </h4>
+                                        </div>
+                                </div>
+
+                                    <label>You have shares in your private wallet in blockchain. You have the option to open sell order with swap with another crypto token in blockchain
+
+                                    <br />
+                                            Select one of the blockchain account from your wallet and enter number of shares you want to sell from that account and crypto tokens you want to receive from buyer
+                                    </label>
+
+                                    <br /><br />
+
+                                    <div class="row">
+
+                                        <div class="col-md-10">
+                                                {{#each blockchainShares}}
+
+                                                    <div class="row">
+                                                        <div class="col-md-1">
+                                                            <br />
+                                                            <input type="radio"  onchange="radioButtonChange()" id="radShareTypeID{{this.ID}}" name="radShareTypeID" value="{{this.ID}}">
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                                <label>Wallet Address</label><br />
+                                                                {{this.publicKey }}
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                                <label>Shares in this Address</label>
+                                                                <br />
+                                                                {{numberFormat this.shares decimalLength="ShareCountInFractions"}}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label>Number of shares to offer for sale
+                                                                <br>(up to {{ShareCountInFractions}} decimals)</label>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <input  type="text" class="form-control border-input radioTextBoxes" onchange="shareCountChanged(this)"
+                                                                    id="sharesTextBox{{this.ID}}" name="sharesTextBox{{this.ID}}" placeholder="Shares">
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label>Enter Price</label>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                                <input type="text" class="form-control border-input radioTextBoxes" id="amountTextBox{{this.ID}}" name="amountTextBox{{this.ID}}" placeholder="Tokens">
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                                <select id="swaptoken{{this.ID}}" class="form-control border-input">
+                                                                    {{#each ../swaptokens}}
+                                                                            <option value="{{this.address}}"> {{this.symbol}}</option>
+                                                                    {{/each}}
+                                                                </select>
+                                                        </div>
+
+                                                    </div>
+                                                {{/each}}
+                                        </div>
+                                    </div>
+                            {{/if}}
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button type="button" onclick="submitForm()" class="btn btn-info btn-fill">
+                                            Open Sell Order
+                                    </button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button type="button" onclick="cancel()" class="btn btn-info btn-fill">Cancel</button>
+                                </div>
+                            </div>
+                        {{/if}}
+
+                        <br />
+
+
+                        <input type="hidden" name="op" value="{{op}}" />
+                        {{#if op}}
+                            <input type="hidden" name="id" value="{{id}}" />
+                        {{/if}}
+
+
+                        <input type="hidden" id="swaptoken" name="swaptoken" value="" />
+                        <input type="hidden" id="currentSharesWalletID" name="currentSharesWalletID" value="" />
+                        <input type="hidden" id="currentShares" name="currentShares" value="" />
+                        <input type="hidden" id="currentAmount" name="currentAmount" value="" />
+
+                        <input type="hidden" name="sid" value="{{id}}" />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br />&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}
+

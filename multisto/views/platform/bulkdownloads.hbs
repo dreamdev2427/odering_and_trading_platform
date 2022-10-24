@@ -1,0 +1,74 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function () {
+        $("#bulkdownloads").addClass('active');
+    })
+
+
+    function exportInvestors() {
+        var e = document.getElementById("stoiddropdown");
+        var val = e.options[e.selectedIndex].value;
+
+        document.getElementById("stotitle").value = $("#stoiddropdown option:selected").text();
+        document.getElementById("stoid").value = val;
+        document.getElementById("exportinvestordata").submit();
+    }
+
+</script>
+
+{{>multifileupload}}
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12 ">
+    <div class="card">
+        <div class="header">
+            <h4 class="title"> Bulk Downloads</h4>
+        </div>
+
+        <div class="content">
+
+
+            <label>
+                Export investors and their investments into a CSV file.
+            </label>
+
+            <br/><br/>
+            <div class="row">
+                <div class="col-md-5">
+                    <label>Step 1. &nbsp;&nbsp; Select STO</label><br/>
+                    <select class="form-control border-input" id="stoiddropdown" name="stoiddropdown">
+                        {{#each stos}}
+                            <option value="{{this.id}}">{{this.title}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+            <br/><br/>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="upload-btn-wrapper">
+                        <label>Step 1. &nbsp;&nbsp; Click the export button to download the data</label><br/>
+                        <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="exportInvestors()" id="createButton"> Export </button>
+
+                    </div>
+                </div>
+            </div>
+            <br/><br/>
+
+
+            <br/><br/><br/>
+        </div>
+    </div>
+</div>
+
+
+<form id="exportinvestordata" name="exportinvestordata" action="/platform/bulkdownloadspost" method="post">
+    <input type="hidden" id="stoid" name="stoid" value=""/>
+    <input type="hidden" id="stotitle" name="stotitle" value=""/>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+</form>
+
+{{> Footer}}

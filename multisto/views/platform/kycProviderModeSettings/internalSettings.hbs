@@ -1,0 +1,52 @@
+<script language="javascript">
+  function postIsDriversLicenseEnabled(isChecked) {
+    document.getElementById('isDriversLicenseSwitchEnabled-intValue').value = +isChecked;
+    document.getElementById('isDriversLicenseSwitchEnabled-redirectUrl').value = window.location.href;
+    document.getElementById('postIsDriversLicenseSwitchEnabled').submit();
+  }
+</script>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Internal Parameters</h4>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="header">
+              <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:0.5rem; margin-right:1rem;" alt='add more'/>
+                Allow Driver's License as ID
+              </h4>
+              <label>Allow the investor to upload a driver's license as their ID</label>
+            </div>
+            <div class="content">
+              <form method="post" id="postIsDriversLicenseSwitchEnabled" action="postParamUpdateToApi">
+                <div class="row">
+                  <div class="col-md-12">
+                    <label class="switch">
+                      <input id="postIsDriversLicenseSwitchEnabled"
+                            onclick=postIsDriversLicenseEnabled(this.checked) type="checkbox"
+                        {{#if isDriversLicenseEnabled}}
+                            checked
+                        {{/if}}
+                      >
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <input type="hidden" id="isDriversLicenseSwitchEnabled-intValue" name="intValue"/>
+                <input type="hidden" id="isDriversLicenseSwitchEnabled-stringValue" name="stringValue" value=""/>
+                <input type="hidden" id="isDriversLicenseSwitchEnabled-param" name="param" value="isDriversLicenseEnabled" />
+                <input type="hidden" id="isDriversLicenseSwitchEnabled-redirectUrl" name="redirectUrl" />
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

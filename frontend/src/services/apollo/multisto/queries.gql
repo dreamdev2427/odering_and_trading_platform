@@ -1,0 +1,494 @@
+query investorActiveProperties {
+  investorActiveProperties {
+    ID
+    details
+    picture
+    title
+    projectCost
+    createdAt
+    popularity
+    isBuyButtonEnabled
+  }
+}
+
+query investorRelatedSto {
+  investorRelatedSto {
+    ID
+    title
+    details
+    picture
+  }
+  investorUser {
+    sto {
+      ID
+      title
+    }
+  }
+}
+
+query investorStoDetail($_id: Int!) {
+  findSto(ID: $_id) {
+    ID
+    title
+    details
+    picture
+    fullDetails
+    images {
+      ID
+      title
+      url
+    }
+    documents {
+      ID
+      title
+      url
+    }
+    parsedSettings {
+      investorCategories {
+        value
+        label
+      }
+    }
+    stolinkfull
+    logo
+    registrationText
+    meta {
+      stoID
+      key
+      value
+      order
+      display
+    }
+    isBuyButtonEnabled
+  }
+}
+
+query investorWallet($_id: Int!) {
+  investorBalances(stoID: $_id) {
+    ID
+    stoID
+    investorID
+    currencyID
+    currency {
+      ID
+      currency
+      abbreviation
+      symbol
+      isBlockchainBased
+    }
+    amount
+  }
+
+  investorPaymentChannels(stoID: $_id) {
+    ID
+    stoID
+    title
+    details
+    currencyID
+    currency {
+      ID
+      currency
+      abbreviation
+      symbol
+      isBlockchainBased
+      Address
+      cryptoReceivingAddress
+    }
+    canWithdrawFunds
+    channelType
+    isActive
+  }
+
+  investorDepositHistory(stoID: $_id) {
+    ID
+    isApproved
+    dateReceived
+    dateApproved
+    amount
+    details
+    currencyID
+    currency {
+      ID
+      currency
+      abbreviation
+      symbol
+      isBlockchainBased
+    }
+  }
+}
+
+query investorPortfolio($_id: Int, $status: [BuyAlertStatus!]!) {
+  investorShares(investorID: $_id) {
+    sharesHistoryID
+    investorID
+    shares
+    isBlockchainAuthorized
+    isBlockchainFrozen
+    shareType {
+      ID
+      title
+      stoID
+      totalShares
+      companyShares
+      nominalValue
+      custodianShares
+      isBlockchain
+      premiumValue
+      currencyID
+      sellToCompany
+      sellValue
+      isShareNosApplicable
+      isCertificateNosApplicable
+      currency {
+        ID
+        currency
+        abbreviation
+        symbol
+        isBlockchainBased
+      }
+      minimumSharesToBuyByInvestor
+      availableShare
+      totalPrice
+      blockchaindecimals
+      blockchainProtocol
+      reduceSharesForPurchase
+      walletCustodyType
+    }
+    shareTypeID
+    stoID
+    ID
+  }
+
+  investorBuyAlerts(status: $status) {
+    ID
+    status
+    stoID
+    shares
+    shareTypeID
+    isHiddenForInvestor
+    shareType {
+      ID
+      title
+      stoID
+      totalShares
+      companyShares
+      nominalValue
+      custodianShares
+      isBlockchain
+      premiumValue
+      currencyID
+      minimumSharesToBuyByInvestor
+      sellToCompany
+      sellValue
+      isShareNosApplicable
+      isCertificateNosApplicable
+      currency {
+        ID
+        currency
+        abbreviation
+        symbol
+        isBlockchainBased
+      }
+      availableShare
+      totalPrice
+      blockchaindecimals
+      blockchainProtocol
+      reduceSharesForPurchase
+      walletCustodyType
+    }
+    date
+    isBuySharesSigned
+    purchasePriceOffered
+    fromCurrencyID
+    isSellRequest
+  }
+}
+
+query InvestorInvoiceAlerts {
+  investorInvoiceAlerts {
+    ID
+    buyAlert {
+      ID
+      entityID
+    }
+    buyAlertID
+    investorID
+    shareTypeID
+    shareType {
+      ID
+      title
+      stoID
+      totalShares
+      companyShares
+      ethereumBlockchainPublicAddress
+      custodianShares
+      nominalValue
+      isBlockchain
+      premiumValue
+      currencyID
+      currency {
+        ID
+        currency
+        abbreviation
+        symbol
+        isBlockchainBased
+        blockchainID
+        isNative
+        cryptoReceivingAddress
+        Address
+      }
+      minimumSharesToBuyByInvestor
+      sellToCompany
+      sellValue
+      isShareNosApplicable
+      isCertificateNosApplicable
+      channelIDForAutoPayments
+      availableShare
+      totalPrice
+      blockchaindecimals
+      blockchainProtocol
+      reduceSharesForPurchase
+      walletCustodyType
+    }
+    paymentChannel {
+      title
+      details
+      currencyID
+      currency {
+        ID
+      }
+      canWithdrawFunds
+    }
+    stoID
+    ID
+    shares
+    status
+    amountToPay
+    isBlockchain
+    dateCreated
+    invoiceDescription
+    dateUpdated
+    investorWallet
+    paymentChannelID
+  }
+}
+
+query investorBuyAlerts($status: [BuyAlertStatus!]!) {
+  investorBuyAlerts(status: $status) {
+    ID
+    entityID
+    status
+    stoID
+    shares
+    shareTypeID
+    isHiddenForInvestor
+    shareType {
+      ID
+      title
+      stoID
+      totalShares
+      companyShares
+      nominalValue
+      custodianShares
+      isBlockchain
+      premiumValue
+      currencyID
+      minimumSharesToBuyByInvestor
+      sellToCompany
+      sellValue
+      isShareNosApplicable
+      isCertificateNosApplicable
+      currency {
+        ID
+        currency
+        abbreviation
+        symbol
+        isBlockchainBased
+        blockchainID
+        isNative
+        cryptoReceivingAddress
+      }
+      availableShare
+      totalPrice
+      blockchaindecimals
+      blockchainProtocol
+      reduceSharesForPurchase
+      walletCustodyType
+    }
+    date
+    isBuySharesSigned
+    purchasePriceOffered
+    fromCurrencyID
+    isSellRequest
+  }
+}
+
+query investorBuyProperty($_id: Int!) {
+  investorDetailProperty(stoID: $_id) {
+    ID
+    title
+    details
+    picture
+    fullDetails
+    images {
+      ID
+      title
+      url
+    }
+    documents {
+      ID
+      title
+      url
+    }
+  }
+  investorBalances(stoID: $_id) {
+    ID
+    stoID
+    investorID
+    currencyID
+    currency {
+      ID
+      currency
+      abbreviation
+      symbol
+      isBlockchainBased
+    }
+    amount
+  }
+  findShareTypes(stoID: $_id) {
+    ID
+    stoID
+    title
+    totalShares
+    companyShares
+    nominalValue
+    isBlockchain
+    premiumValue
+    custodianShares
+    availableShare
+    totalPrice
+    currencyID
+    sellToCompany
+    sellValue
+    isShareNosApplicable
+    isCertificateNosApplicable
+    currency {
+      ID
+      abbreviation
+      currency
+      symbol
+      isBlockchainBased
+    }
+    minimumSharesToBuyByInvestor
+    channelIDForAutoPayments
+    blockchaindecimals
+    blockchainProtocol
+    reduceSharesForPurchase
+    walletCustodyType
+  }
+}
+
+query FindInvestorDividendPayouts {
+  findInvestorDividendPayouts {
+    ID
+    investorID
+    payoutID
+    amount
+    investorShares
+    lastUpdatedAt
+    status
+  }
+}
+
+query FindShareHistoricalValues($shareTypeID: Int!) {
+  findShareHistoricalValues(shareTypeID: $shareTypeID) {
+    ID
+    shareTypeID
+    stoID
+    premiumValue
+    dateOfChange
+  }
+}
+
+query investorDetailProperty($_id: Int!) {
+  investorDetailProperty(stoID: $_id) {
+    ID
+    title
+    details
+    picture
+    fullDetails
+    images {
+      ID
+      title
+      url
+    }
+    documents {
+      ID
+      title
+      url
+    }
+  }
+}
+
+query InvestorInvoiceAlert($id: Int!) {
+  investorInvoiceAlert(ID: $id) {
+    stoID
+    buyAlertID
+    investorID
+    shareTypeID
+    shareType {
+      ethereumBlockchainPublicAddress
+      channelIDForAutoPayments
+      premiumValue
+      currencyID
+      currency {
+        ID
+        currency
+        abbreviation
+        symbol
+        isBlockchainBased
+        blockchainID
+        isNative
+        cryptoReceivingAddress
+        Address
+      }
+      sellValue
+      sellToCompany
+      title
+      blockchaindecimals
+      blockchainProtocol
+      reduceSharesForPurchase
+      walletCustodyType
+    }
+    shares
+    amountToPay
+    status
+    isBlockchain
+    dateCreated
+    dateUpdated
+    invoiceDescription
+    investorWallet
+    paymentChannelID
+    paymentChannel {
+      title
+      details
+      currencyID
+      currency {
+        ID
+        currency
+        abbreviation
+        symbol
+        isBlockchainBased
+        blockchainID
+        isNative
+        cryptoReceivingAddress
+        Address
+      }
+    }
+    buyAlert {
+      ID
+      entityID
+    }
+  }
+}
+

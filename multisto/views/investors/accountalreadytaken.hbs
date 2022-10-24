@@ -1,0 +1,62 @@
+{{> Header}}
+
+<html>
+<head>
+    <title></title>
+    
+<script language="javascript">
+    var idToExpan = "header{{MeetingRecord.currentItemBeingDiscussed}}";
+    
+    $(document).ready(function() { 
+        $(".header").click(function () {
+            toggelAgenaItem($(this));
+        });        
+    });
+</script>
+
+<style type="text/css">
+
+</style>    
+
+</head>
+<body>
+
+    <center>
+        
+        <br />
+        
+        <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="card">
+
+                        <div class="content">
+                            <br />
+                                <img src="/img/stologo/{{logo}}" width="200px"  /> 
+                                <br />
+                                <h3>Email Address Taken  </h3>
+                                This email address is already been registered in this platform and associated investor profile already exists. 
+                                <br /><br />
+                                If you have investment profile with other company please contact admin of <b>{{title}}</b> and <br /> provide them following information from your profile
+                                <br /><br />
+                                <img src="/img/graydot.png" width="14px;" > &nbsp; First Name &nbsp; and &nbsp; Last Name
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <img src="/img/graydot.png" width="14px;" > &nbsp; City
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <img src="/img/graydot.png" width="14px;" > &nbsp; Country 
+                                <br /><br />
+                                <b>{{title}}</b> will send you invitation that you can review and accept. <br /> Once accepted your existing profile will be shared with <b>{{title}}</b>
+                                <br /><br /><br /><br />
+                                <a href="{{link}}/register" class="btn btn-info btn-fill btn-wd">Back to Registration Page</a>
+                                
+                            <br /><br />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+        </div>
+    </center> 
+
+</body>
+</html>

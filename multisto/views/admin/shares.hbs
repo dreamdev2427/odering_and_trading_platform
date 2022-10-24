@@ -1,0 +1,241 @@
+{{> Header}}
+
+<style>
+  .sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: white;
+    border-bottom: 2px solid #eee;
+    box-shadow: 0 14px 12px -12px rgba(0,0,0,0.25);
+  }
+</style>
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#ShareRegister").addClass('active');
+    })
+
+    function switchSummary() {
+        window.location.href = "sharessummary";
+        return false;
+    }
+
+    function switchHistory() {
+        window.location.href = "shareshistory";
+        return false;
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+
+
+<div class="row" >
+	<div class="col-md-12">
+
+		<div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-5">
+                        <form action="reloadSharecapRedirect" method="POST">
+                          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                          <input class="btn btn-info btn-fill" type="submit" value="Refresh data" title="The report is auto-generated once daily, but you can update it manually" />
+                        </form>
+                    </div>
+                    <div class="col-md-5"  data-html2canvas-ignore="true">
+                        {{#ifIn 22 Data.AdminRights}}
+                            <button onclick="return switchSummary()"  class="btn btn-info btn-fill">Summary</button>
+                        {{/ifIn}}
+                        &nbsp;
+                        {{#ifIn 23 Data.AdminRights}}
+                            <button onclick="return switchHistory()"  class="btn btn-info btn-fill">History</button>
+                        {{/ifIn}}
+                    </div>
+
+                    <div class="col-md-2"  data-html2canvas-ignore="true">
+                        <button type="button" onclick="generatePDF('report')" class="btn btn-info btn-fill">PDF</button>
+                        <a href="api/sharecap" class="btn btn-info btn-fill">JSON</a>
+                        <a href="api/sharecap_csv" class="btn btn-info btn-fill">CSV</a>
+                    </div>
+                </div>
+            </div>
+
+			<div class="content" id="report" >
+
+                <h4 class="title">
+                    <img src="/img/report.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Share Register
+                </h4>
+                &nbsp;
+                <div class="row">
+                    <div class="col-md-3"><label>Date and Time of report</label></div>
+                    <div class="col-md-9">
+                      <script>
+                        const date = new Date("{{ShareCapTable.updatedAt}}");
+                        document.write(`${date.toLocaleDateString()} ${date.toLocaleTimeString()}`);
+                      </script>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3"><label>Total Shares</label></div>
+                    <div class="col-md-9"> {{numberFormat ShareCapTable.sharesTotal decimalLength="ShareCountInFractions"}} </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3"><label>Shares Distributed</label></div>
+                    <div class="col-md-9">
+                      {{numberFormat ShareCapTable.sharesDistributed decimalLength="ShareCountInFractions"}}
+                      &nbsp;( {{numberFormat ShareCapTable.sharesDistributedPercent decimalLength="VotingPowerInFractions"}} % )
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3"><label>Shares Held by the Company</label></div>
+                    <div class="col-md-9">
+                      {{numberFormat ShareCapTable.sharesCompany decimalLength="ShareCountInFractions"}}
+                      &nbsp;( {{numberFormat ShareCapTable.sharesCompanyPercent decimalLength="VotingPowerInFractions"}} % )
+                    </div>
+                </div>
+                {{#if TotalCustodianShares}}
+                <div class="row">
+                    <div class="col-md-3"><label>Shares Held by Custodian</label></div>
+                    <div class="col-md-9">
+                      {{numberFormat ShareCapTable.sharesCustodian decimalLength="ShareCountInFractions"}}
+                      &nbsp;( {{numberFormat ShareCapTable.sharesCustodianPercent decimalLength="VotingPowerInFractions"}} % )
+                    </div>
+                </div>
+                {{/if}}
+
+				<br />
+				<table class="table">
+					<thead class="listingHeaderFontSize sticky">
+            <b>
+              <th style="width:15%; vertical-align: top;">Investor</th>
+              <th style="width:25%; vertical-align: top;">Share Class Name</th>
+              <th style="width:10%; vertical-align: top;">Value</th>
+              <th style="width:5%; vertical-align: top;">Quantity</th>
+              <th style="width:10%; vertical-align: top;;">Invested Amount</th>
+              <th style="width:15%; vertical-align: top;">Voting Power</th>
+              {{#if ShareCapTable.totalDividends}}
+                <th style="width:8%; vertical-align: top;">Dividend Entitlement</th>
+              {{/if}}
+            </b>
+					</thead>
+					<tbody>
+            {{#each ShareCapTable.investors}}
+              {{#ifGreater this.totalQuantity 0}}
+                {{#each this.shareTypes}}
+                  <tr>
+                    <td style="vertical-align: top;">
+                      {{#if @first}}
+                        {{../name}}
+                        <br/>
+                        <small><i>ID: <b>{{../ID}}</b></i></small>
+                      {{/if}}
+                    </td>
+                    <td style="vertical-align: top;">{{this.title}}</td>
+                    <td style="vertical-align: top;">
+                      {{#if this.nominalValue}}
+                        <img src="/img/nominalvalue.png" width="16px;" />
+                        {{currencySymbol this.currencyID}} {{this.nominalValue}}
+                      {{/if}}
+                      {{#if this.premiumValue}}
+                        <img src="/img/premimum.png" width="16px;" />
+                        {{currencySymbol this.currencyID}} {{this.premiumValue}}
+                      {{/if}}
+                    </td>
+                    <td style="vertical-align: top;">
+                      {{#ifEqual this.isBlockchain 1}}
+                        {{this.quantity}}
+                      {{else}}
+                        {{#ifEqual this.currencyMetadata.isBlockchainBased 1}}
+                          {{this.quantity}}
+                        {{else}}
+                          {{numberFormat this.quantity decimalLength="ShareCountInFractions"}}
+                        {{/ifEqual}}
+                      {{/ifEqual}}
+                    </td>
+                    <td style="vertical-align: top;">
+                        {{#if this.investment}}
+                            {{currencySymbol this.currencyID}} {{numberFormat this.investment decimalLength="-"}}
+                        {{/if}}
+                    </td>
+                    <td style="vertical-align: top;">
+                          {{numberFormat this.votingPower decimalLength="ShareCountInFractions"}}
+                          ({{numberFormat this.votingPowerPercent decimalLength="VotingPowerInFractions"}}%)
+                    </td>
+                    {{#if this.isDividendRightsApplicable}}
+                      {{#if this.totalDividends}}
+                        <td style="vertical-align: top;">
+                            {{numberFormat this.dividend decimalLength="ShareCountInFractions"}}
+                        </td>
+                      {{/if}}
+                    {{/if}}
+                  </tr>
+                {{/each}}
+                {{!-- Investor Totals --}}
+                <tr bgcolor="#eee">
+                  <td></td>
+                  <td></td>
+                  <td align="right" style="vertical-align: top;"><b>Total</b></td>
+                  <td style="vertical-align: top;">{{numberFormat this.totalQuantity decimalLength="ShareCountInFractions"}}</td>
+                  <td style="vertical-align: top;">
+                    {{currencySymbol ../Data.currencyID}}
+                    {{numberFormat this.totalInvestment decimalLength="-"}}
+                   </td>
+                  <td style="vertical-align: top;">
+                    {{numberFormat this.totalVotingPower decimalLength="ShareCountInFractions"}}
+                    ({{numberFormat this.totalVotingPowerPercent decimalLength="VotingPowerInFractions"}} %)
+                   </td>
+                  {{#if this.totalDividends}}
+                    <td style="vertical-align: top;">
+                        {{numberFormat this.totalDividends decimalLength="ShareCountInFractions"}}
+                        ({{numberFormat this.totalDividendsPercent decimalLength="ShareCountInFractions"}} %)
+                    </td>
+                  {{/if}}
+                </tr>
+              {{/ifGreater}}
+            {{/each}}
+            <tr>
+              {{!-- Total Distribution --}}
+              <td></td>
+              <td></td>
+              <td align="right" style="vertical-align: top;"><b>Total Shares Sold</b></td>
+              <td style="vertical-align: top;">
+                {{numberFormat ShareCapTable.sharesDistributed decimalLength="ShareCountInFractions"}}
+              </td>
+              <td style="vertical-align: top;">
+                {{currencySymbol Data.currencyID}}
+                {{numberFormat ShareCapTable.totalInvestorInvestment decimalLength="-"}}
+                </td>
+              <td style="vertical-align: top;">
+                {{numberFormat ShareCapTable.totalInvestorVotingPower decimalLength="ShareCountInFractions"}}
+                ({{numberFormat ShareCapTable.totalInvestorVotingPowerPercent decimalLength="VotingPowerInFractions"}} %)
+                <br/>
+                out of
+                <br/>
+                {{numberFormat ShareCapTable.totalVotingPower decimalLength="VotingPowerInFractions"}}
+                </td>
+              {{#if ShareCapTable.totalInvestorDividends}}
+                <td style="vertical-align: top;">
+                  {{numberFormat ShareCapTable.totalInvestorDividends decimalLength="ShareCountInFractions"}}
+                </td>
+              {{/if}}
+            </tr>
+          </tbody>
+        </table>
+
+
+        <img src="/img/nominalvalue.png" width="16px;" /> Nominal Value
+        &nbsp;
+        <img src="/img/premimum.png" width="16px;" /> Market Value
+
+    </div>
+
+</div>
+
+
+
+
+{{> Footer}}

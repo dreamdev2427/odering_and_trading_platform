@@ -1,0 +1,10 @@
+mutation saveContractFields($documentID: Int!, $fieldValues: [DocumentFieldValueDTO!]!) {
+    setSubmittedDocument(documentID: $documentID, fieldValues: $fieldValues)
+
+}
+mutation saveContractSignature($documentID: Int!,$signature: String!) {
+  setSignature(documentID: $documentID, base64: $signature)
+}
+mutation sendContract($documentID: Int!) {
+  sendContract(documentID: $documentID)
+}

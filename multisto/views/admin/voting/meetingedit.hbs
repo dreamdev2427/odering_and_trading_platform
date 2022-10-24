@@ -1,0 +1,516 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#voting").addClass('active');
+    })
+    var deleteAgendaID = 0;
+
+    function submitForm() {
+
+        if(document.getElementById("title").value == "") {
+            showModelGeneralOKDialogBox("Enter meeting title");
+            return true;
+        }
+
+        if(document.getElementById("place").value == "") {
+            showModelGeneralOKDialogBox("Enter meeting place");
+            return true;
+        }
+
+        if(document.getElementById("details").value == "") {
+            showModelGeneralOKDialogBox("Enter some details of meeting");
+            return true;
+        }
+
+        if(document.getElementById("nameResponsiblePerson").value == "") {
+            showModelGeneralOKDialogBox("Enter name of responsible person");
+            return true;
+        }
+
+        if(document.getElementById("phoneResponsiblePerson").value == "") {
+            showModelGeneralOKDialogBox("Enter phone of responsible person");
+            return true;
+        }
+
+        if(document.getElementById("emailResponsiblePerson").value == "") {
+            showModelGeneralOKDialogBox("Enter email of responsible person");
+            return true;
+        }
+
+        if(document.getElementById("nameProxyPerson").value == "") {
+            showModelGeneralOKDialogBox("Enter name of proxy person");
+            return true;
+        }
+
+        if(document.getElementById("phoneProxyPerson").value == "") {
+            showModelGeneralOKDialogBox("Enter phone of proxy person");
+            return true;
+        }
+
+        if(document.getElementById("emailProxyPerson").value == "") {
+            showModelGeneralOKDialogBox("Enter email of proxy person");
+            return true;
+        }
+      showModelGeneralOKDialogBox("Saved");
+
+        document.getElementById("frmVotingCampaigns").submit();
+    }
+    function addAgendaItem() {
+        window.location.href = "agendaitem?meetingid={{id}}";
+        return false;
+    }
+    function editAgenda(id) {
+        window.location.href = "agendaitem?meetingid={{id}}&id=" + id;
+        return false;
+    }
+    function scheduleMeeting() {
+
+        if(document.getElementById("txtDateMeeting").value == "")
+        {
+            showModelGeneralOKDialogBox("Please select meeting date");
+            return;
+        }
+        if( Date.parse(document.getElementById("txtDateMeeting").value) < Date.now()) {
+          showModelGeneralOKDialogBox("Date cannot be in the past");
+          return;
+        }
+
+        document.getElementById("scheduleDate").value = commonGetMySQLDateFormat(document.getElementById("txtDateMeeting").value);
+        document.getElementById("frmScheduleMeeting").submit();
+    }
+    function unScheduleMeeting() {
+        window.location.href = "unscheduleMeeting?id={{id}}";
+        return false;
+    }
+    function extendMeetingTime() {
+        var da = new Date("{{currentCloseDateTime}}");
+        da.setMinutes( da.getMinutes() + parseInt(document.getElementById("extendTime").value) )
+
+        var dateSte = da.getFullYear() + "-" + (da.getMonth() + 1) + "-" + da.getDate() + " " + da.getHours() + ":" + da.getMinutes() + ":" + da.getSeconds();
+
+        window.location.href = "extendMeetingTime?id={{id}}&timeToExtend=" + dateSte;
+        return false;
+    }
+    function deleteAgenda(id) {
+        deleteAgendaID = id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete agenda item ?", "Delete", "Cancel");
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = "deleteAgendaItem?id=" + deleteAgendaID + "&vid={{id}}";
+        return false;
+    }
+</script>
+
+{{> HeaderInnerSto}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            <img src="/img/meeting.png" width="35px;" style="padding-bottom:-10px;" /> &nbsp;
+                            {{#if isEditing}}
+                                Edit Meeting
+                            {{else}}
+                                Meeting
+                            {{/if}}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+			<div class="content">
+                <form id="frmVotingCampaigns" action="meetingEditPost" method="post">
+                        <div class="row">
+
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Title / Subject</label>
+                                        </span>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <input  id="title" maxlength="900" name="title" value="{{Record.title}}" class="form-control border-input" type=text />
+                                </div>
+                        </div>
+                        <br />
+                        <div class="row">
+
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Meeting Place</label></span>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <input  id="place"  maxlength="99" name="place" value="{{Record.place}}" class="form-control border-input" type=text />
+                                </div>
+                        </div>
+                        <br />
+                        <div class="row">
+
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Details</label></span>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <textarea rows="5" cols="80"  maxlength="2000" id="details" name="details" class="form-control border-input">{{Record.contents}} </textarea>
+                                </div>
+                        </div>
+
+                        <hr />
+                        <h5> <img src="/img/user.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp;  Responsible Person</h5>
+                        <div class="row">
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Full Name </label></span>
+                                </div>
+
+                                <div class="col-md-5">
+                                    <input type="text" id="nameResponsiblePerson" name="nameResponsiblePerson" class="form-control border-input" name="txtOpenDate" maxlength="99"  value="{{Record.nameResponsiblePerson}}" />
+                                </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Phone Number</label> </span>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <input  id="phoneResponsiblePerson" name="phoneResponsiblePerson"  class="form-control border-input" type="text" maxlength="29" value="{{Record.phoneResponsiblePerson}}"/>
+                                </div>
+
+                        </div>
+                        <br />
+                        <div class="row">
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Email </label></span>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <input  id="emailResponsiblePerson" name="emailResponsiblePerson"  class="form-control border-input" type=text maxlength="79" value="{{Record.emailResponsiblePerson}}" />
+                                </div>
+
+                        </div>
+
+                        <hr />
+                        <h5><img src="/img/user.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Proxy Person</h5>
+                        <div class="row">
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Full Name</label> </span>
+                                </div>
+
+                                <div class="col-md-5">
+                                    <input type="textbox" id="nameProxyPerson" name="nameProxyPerson" class="form-control border-input" name="txtOpenDate" maxlength="99"  value="{{Record.nameProxyPerson}}" />
+                                </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Phone Number</label> </span>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <input  id="phoneProxyPerson" name="phoneProxyPerson" class="form-control border-input" maxlength="29" type=text   value="{{Record.phoneProxyPerson}}"/>
+                                </div>
+
+                        </div>
+                        <br />
+                        <div class="row">
+                                <div class="col-md-2">
+                                    <span style="font-size:15px;"> <label>Email</label> </span>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <input  id="emailProxyPerson" name="emailProxyPerson" class="form-control border-input" type=text maxlength="79" value="{{Record.emailProxyPerson}}" />
+                                </div>
+
+                        </div>
+                        <br />
+
+                        <input type="hidden" id="isEditing" name="isEditing" value="{{isEditing}}" />
+                        {{#if isEditing}}
+                            <input type="hidden" id="id" name="id" value="{{id}}" />
+                        {{/if}}
+
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+                <br />
+                <div class="row">
+                    <div class="col-md-8">      </div>
+                    <div class="col-md-4">
+                        <button onclick="submitForm()" class="btn btn-info btn-fill">Save Meeting</button>
+                        &nbsp;&nbsp;&nbsp;
+                        <button onclick="backTomainpage()" class="btn btn-info btn-fill"> &nbsp;&nbsp; Cancel  &nbsp;&nbsp; </button>
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+    </div>
+</div>
+
+    {{#if isEditing}}
+    <div class="row topPaddingBetweenPageSections">
+	    <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                <img src="/img/events.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Schedule Meeting
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="row">
+
+                        {{#ifIn this.isMeetingScheduled '[0, 1]'}}
+                            <div class="col-md-6">
+                                <form id="frmScheduleMeeting" action="scheduleMeeting" method="post">
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <label>Meeting Date</label>
+                                            <input id="txtDateMeeting" name="txtDateMeeting"  class="form-control border-input datepicker-here" data-language='en' onkeydown="return false;"  data-date-format="MM dd yyyy" type=text autocomplete="off">
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <label>Select Time Zone</label>
+                                            <select id="timezone" name="timezone"  class="form-control border-input">
+                                                {{#each timezones}}
+                                                    <option value="{{this.ID}}">{{this.title}} ( {{this.timezone}} )</option>
+                                                {{/each}}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                            <div class="col-md-3">
+                                                <label>Start Time</label>
+                                                <select id="startTime" name="startTime"  class="form-control border-input">
+                                                    <option value="00:00">00:00</option>
+                                                    <option value="00:30">00:30 </option>
+                                                    <option value="1:00">01:00 </option>
+                                                    <option value="1:30">01:30 </option>
+                                                    <option value="2:00">02:00 </option>
+                                                    <option value="2:30">02:30 </option>
+                                                    <option value="3:00">03:00 </option>
+                                                    <option value="3:30">03:30 </option>
+                                                    <option value="4:00">04:00 </option>
+                                                    <option value="4:30">04:30 </option>
+                                                    <option value="5:00">05:00 </option>
+                                                    <option value="5:30">05:30 </option>
+                                                    <option value="6:00">06:00 </option>
+                                                    <option value="6:30">06:30 </option>
+                                                    <option value="7:00">07:00 </option>
+                                                    <option value="7:30">07:30 </option>
+                                                    <option value="8:00">08:00 </option>
+                                                    <option value="8:30">08:30 </option>
+                                                    <option value="9:00">09:00 </option>
+                                                    <option value="9:30">09:30 </option>
+                                                    <option value="10:00">10:00 </option>
+                                                    <option value="10:30">10:30 </option>
+                                                    <option value="11:00">11:00 </option>
+                                                    <option value="11:30">11:30 </option>
+                                                    <option value="12:00">12:00 </option>
+                                                    <option value="12:30">12:30 </option>
+                                                    <option value="13:00">13:00 </option>
+                                                    <option value="13:30">13:30 </option>
+                                                    <option value="14:00">14:00 </option>
+                                                    <option value="14:30">14:30 </option>
+                                                    <option value="15:00">15:00 </option>
+                                                    <option value="15:30">15:30 </option>
+                                                    <option value="16:00">16:00 </option>
+                                                    <option value="16:30">16:30 </option>
+                                                    <option value="17:00">17:00 </option>
+                                                    <option value="17:30">17:30 </option>
+                                                    <option value="18:00">18:00 </option>
+                                                    <option value="18:30">18:30 </option>
+                                                    <option value="19:00">19:00 </option>
+                                                    <option value="19:30">19:30 </option>
+                                                    <option value="20:00">20:00 </option>
+                                                    <option value="20:30">20:30 </option>
+                                                    <option value="21:00">21:00 </option>
+                                                    <option value="21:30">21:30 </option>
+                                                    <option value="22:00">22:00 </option>
+                                                    <option value="22:30">22:30 </option>
+                                                    <option value="23:00">23:00 </option>
+                                                    <option value="23:30">23:30 </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-3">
+                                                <label>End Time</label>
+                                                <select id="endTime" name="endTime"  class="form-control border-input">
+                                                    <option value="00:00">00:00 </option>
+                                                    <option value="00:30">00:30 </option>
+                                                    <option value="1:00">01:00 </option>
+                                                    <option value="1:30">01:30 </option>
+                                                    <option value="2:00">02:00 </option>
+                                                    <option value="2:30">02:30 </option>
+                                                    <option value="3:00">03:00 </option>
+                                                    <option value="3:30">03:30 </option>
+                                                    <option value="4:00">04:00 </option>
+                                                    <option value="4:30">04:30 </option>
+                                                    <option value="5:00">05:00 </option>
+                                                    <option value="5:30">05:30 </option>
+                                                    <option value="6:00">06:00 </option>
+                                                    <option value="6:30">06:30 </option>
+                                                    <option value="7:00">07:00 </option>
+                                                    <option value="7:30">07:30 </option>
+                                                    <option value="8:00">08:00 </option>
+                                                    <option value="8:30">08:30 </option>
+                                                    <option value="9:00">09:00 </option>
+                                                    <option value="9:30">09:30 </option>
+                                                    <option value="10:00">10:00 </option>
+                                                    <option value="10:30">10:30 </option>
+                                                    <option value="11:00">11:00 </option>
+                                                    <option value="11:30">11:30 </option>
+                                                    <option value="12:00">12:00 </option>
+                                                    <option value="12:30">12:30 </option>
+                                                    <option value="13:00">13:00 </option>
+                                                    <option value="13:30">13:30 </option>
+                                                    <option value="14:00">14:00 </option>
+                                                    <option value="14:30">14:30 </option>
+                                                    <option value="15:00">15:00 </option>
+                                                    <option value="15:30">15:30 </option>
+                                                    <option value="16:00">16:00 </option>
+                                                    <option value="16:30">16:30 </option>
+                                                    <option value="17:00">17:00 </option>
+                                                    <option value="17:30">17:30 </option>
+                                                    <option value="18:00">18:00 </option>
+                                                    <option value="18:30">18:30 </option>
+                                                    <option value="19:00">19:00 </option>
+                                                    <option value="19:30">19:30 </option>
+                                                    <option value="20:00">20:00 </option>
+                                                    <option value="20:30">20:30 </option>
+                                                    <option value="21:00">21:00 </option>
+                                                    <option value="21:30">21:30 </option>
+                                                    <option value="22:00">22:00 </option>
+                                                    <option value="22:30">22:30 </option>
+                                                    <option value="23:00">23:00 </option>
+                                                    <option value="23:30">23:30 </option>
+
+                                                </select>
+                                            </div>
+                                            <input type="hidden" id="id" name="id" value="{{id}}" />
+                                            <input type="hidden" name="scheduleDate" id="scheduleDate" value="" />
+                                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                    </div>
+                                </form>
+                                <br />
+                                <button onclick="scheduleMeeting()" class="btn btn-info btn-fill btn-sm"> &nbsp;&nbsp;
+                                    {{#if this.isMeetingScheduled}}Re-{{/if}}Schedule Meeting
+                                    &nbsp;&nbsp;
+                                </button>
+                            </div>
+                        {{/ifIn}}
+
+                        <div class="col-md-6">
+                            {{#if this.isMeetingScheduled}}
+
+                                        {{#ifEqual this.isMeetingScheduled 1}}
+                                            <img src="/img/greendot.png" width="25px"/> &nbsp;&nbsp;
+                                            <span style="font-size:18px; color: green;">Meeting is scheduled</span>
+                                        {{/ifEqual}}
+
+                                        {{#ifEqual this.isMeetingScheduled 2}}
+                                            <img src="/img/greendot.png" width="25px"/> &nbsp;&nbsp;
+                                            <span style="font-size:18px; color: green;">Meeting has started</span>
+                                        {{/ifEqual}}
+
+                                        <br /><br />
+                                        <b> {{Record.place}} </b> <br />
+                                        {{Record.opendate}} <br />
+                                        {{Record.starttime}}
+                                        &nbsp;&nbsp;to &nbsp;&nbsp;
+                                        {{Record.closetime}} &nbsp;&nbsp;&nbsp; {{Record.timezone}}
+                                        <br />
+                                        ( {{Record.timezonetitle}} )
+
+                                        <br /><br />
+                                        {{#ifIn this.isMeetingScheduled '[0, 1]'}}
+                                            <button onclick="unScheduleMeeting()" class="btn btn-info btn-fill btn-sm"> &nbsp;&nbsp; Un-Schedule Meeting &nbsp;&nbsp; </button>
+                                        {{/ifIn}}
+
+                            {{else}}
+                                <img src="/img/reddot.png" width="25px"/> &nbsp;&nbsp; Meeting is not scheduled
+                            {{/if}}
+                        </div>
+                        {{#ifEqual this.isMeetingScheduled 2}}
+                            <div class="col-md-4">
+                                <label>Extend Meeting Time</label>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select id="extendTime" name="extendTime"  class="form-control border-input">
+                                            <option value="15">15 Minutes</option>
+                                            <option value="30">30 Minutes</option>
+                                            <option value="45">45 Minutes</option>
+                                            <option value="60">1 Hour</option>
+                                            <option value="120">2 Hours</option>
+                                            <option value="180">3 Hours</option>
+                                            <option value="240">4 Hours</option>
+                                            <option value="300">5 Hours</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br />
+                                <button onclick="extendMeetingTime()" class="btn btn-info btn-fill btn-sm"> &nbsp;&nbsp; Extend Time &nbsp;&nbsp; </button>
+
+                            </div>
+                        {{/ifEqual}}
+                    </div>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+	    <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title">
+                                <img src="/img/agendaitem.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Meeting Agenda Items
+                            </h4>
+                        </div>
+                        <div class="col-md-2">
+                            <button onclick="addAgendaItem()" class="btn btn-info btn-fill btn-sm">Add Agenda Item</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+                    <table class="table table-striped">
+                        <thead>
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each agendaitems}}
+                                <tr>
+                                    <td style="width: 30%; vertical-align: top;">
+                                        <img src="/img/agendaitem.png" width="20px;" /> &nbsp;
+                                        {{this.optiontxt}}
+                                    </td>
+                                    <td style="width: 50%; vertical-align: top;">{{this.description}}</td>
+                                    <td style="width: 20%; vertical-align: top;">
+                                        <button onclick="return editAgenda({{this.id}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Edit &nbsp; </button>
+                                        &nbsp;&nbsp;
+                                        {{#ifEqual ../this.showDeleteButton 1}}
+                                            <button onclick="return deleteAgenda({{this.id}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Delete &nbsp; </button>
+                                        {{/ifEqual}}
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+{{> Footer}}

@@ -1,0 +1,93 @@
+<html>
+<head>
+    <title>{{SiteParameter_PageTitle}}</title>
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+    <script src="/assets/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/libs/common.js"></script>
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+                if(  commonGetQueryStringValue("stoid") != "" && commonGetQueryStringValue("stoid") != null  ) {
+                        var element = document.getElementById("stoid");
+                        element.value = commonGetQueryStringValue("stoid");
+                }
+          document.addEventListener("keydown", keyDownTextField, false);
+          function keyDownTextField(e) {
+            var keyCode = e.keyCode;
+            if(keyCode==13) {
+              e.preventDefault();
+              document.getElementById("submitButton").click();
+            }
+          }
+        });
+
+         function login() {
+
+
+                if(document.getElementById("username").value === "") {
+                    alert("Username required");
+                    return false;
+                }
+
+                if(document.getElementById("password").value === "") {
+                    alert("Password required");
+                    return false;
+                }
+
+                document.getElementById("username").value = document.getElementById("username").value.trim();
+                document.getElementById("Login").submit();
+         }
+
+     </script>
+</head>
+
+<body id="LoginForm">
+<br /><br />
+
+<div class="container" style="">
+    <div class="login-form">
+        <div class="main-div">
+            <div class="panel" width="100%;">
+               <img src="/img/stologo/{{logo}}" width="100%;" style="max-height: 170px; max-width: 220px;" />
+
+                <span style="font-size:30px">Admin Login</span>
+            </div>
+
+            <form id="Login" name="Login" action="adminloginpost" method="post">
+
+                    <br />
+                    <select  id="stoid" name="stoid" class="form-control border-input" >
+                        {{#each records}}
+                            <option value="{{this.ID}}">
+								{{#if this.isICOShareTypeCompany}} ICO - {{/if}}
+								{{this.title}}
+							</option>
+                        {{/each}}
+                    </select>
+                    <br/>
+
+
+                    <div class="form-group">
+                        <input type="text"  maxLength="70" class="form-control" id="username" name="username" placeholder=" Username">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" maxLength="30" class="form-control" id="password" name="password" placeholder="Password">
+                    </div>
+
+                    <br><br>
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <a id="submitButton" onclick="return login()" class="btn btn-primary">Login</a>
+
+            </form>
+            <br>
+            <span style="color:red;"> <b>{{UserMessage}}</b> </span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

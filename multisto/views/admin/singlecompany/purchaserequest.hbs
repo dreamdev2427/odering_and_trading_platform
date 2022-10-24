@@ -1,0 +1,485 @@
+{{> Header}}
+
+
+<script language="javascript">
+    var link = "";
+    const currentCurrencyBalance = {{currentCurrencyBalance}};
+    const investmentRequired = {{investmentRequired}};
+
+    $(document).ready(function() {})
+    
+    // record.ID represents the InvestorBuyPropertyAlert ID
+    function declineRequest() {
+            link = "purchaseSharesRequestDeclined?id={{record.ID}}";
+            showModelGeneralYesNoDialogBox("Are you sure you want to decline request", "Yes", "Cancel");
+    }
+    function activateInvestorInSTO() {
+        window.location.href = "activateNewInvestorInSTO?id={{record.investorID}}&rid={{record.ID}}";
+        return false;
+    }
+    function downloadSignedSubScriptionForm(file) {
+        window.location.href = "downloadfilesubscriptionform?file=" + file;
+        return false;
+    }
+    function transferShares() {
+        window.location.href =  "reviewInvestorTransaction?id={{record.investorID}}&sid={{record.ShareTypeID}}&tid={{record.ID}}";
+        return false;
+    }
+    function viewSubmittedDocument(id) {
+        window.location.href =  "/admin/viewsenddoccontracts?id="+id;
+        return false;
+    }
+    function transferSharesBlockchain() {
+        link = "transferBlockchainSharesWithCustodian?id={{record.ID}}";
+         showModelGeneralYesNoDialogBox("Are you sure you want to transfer shares in blockchain ?  <br /><br /> 1.  Have you verified investor's public address &nbsp; <b> {{record.publickey}} </b>  <br /><br /> 2. Have you transferred &nbsp; <b> {{record.Shares}} </b> &nbsp;  shares using custodian account to investor's public address ?  <br /><br />  If no then it is recommended that you first transfer shares using your custodian account and then mark this transaction as verified", "Yes - Transfer", "Cancel")
+    }
+    function generalModelOKButtonClickedClientEvent() {
+            window.location.href = link;
+            return false;
+    }
+    function goToDocuSign(docusignId) {
+      window.location.href = `{{docusignBaseUrl}}${docusignId}`;
+    }
+    function goToHelloSign(helloSignLink) {
+      window.location.href = helloSignLink;
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+
+    {{#if errorMessage}}
+        <span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+        <br /><br />
+    {{/if}}
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+          <div class="row">
+            <div class="col-md-10">
+              <h4 class="title">
+                <img src="/img/lock2.png" width="30px;" style="padding-bottom:-10px;" />
+                Purchase request from investor
+              </h4>
+            </div>
+          </div>
+				</div>
+
+				<div class="content">
+          <div class="card" style="border: 2px solid #000000">
+            <div class="header">
+              <div class="row">
+                <div class="col-md-10">
+                  <h4 class="title">
+                    Share Class Info
+                  </h4>
+                </div>
+              </div>
+            </div>
+            <hr/>
+            <div class="content">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Share Requested</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.title}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Available Company Shares</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{numberFormat record.companyShares decimalLength="ShareCountInFractions"}}"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Nominal Value</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{currencySymbol record.toCurrencyID}}  {{numberFormat record.nominalValue decimalLength="ShareCountInFractions"}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Market Value</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{currencySymbol record.toCurrencyID}}  {{numberFormat record.premimum decimalLength="ShareCountInFractions"}}"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="card" style="border: 2px solid #000000">
+            <div class="header">
+              <div class="row">
+                <div class="col-md-10">
+                  <h4 class="title">
+                    Investor Info
+                  </h4>
+                </div>
+              </div>
+            </div>
+            <hr/>
+            <div class="content">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Investor ID</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.investorID}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Name</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.FirstName}} &nbsp; {{record.LastName}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Date of Birth</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.InvDOB}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Phone</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.phone}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Email</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.email}}"/>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>City</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.town}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>State</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.state}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Country</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.country}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                </div>
+              </div>
+              <hr/>
+              <div class="row">
+                <div class="col-md-12">
+                  <h4 class="title">
+                    <img src="/img/wallet.png" width="25px">
+                    Investor Current Balance(s) with Project
+                  </h4>
+                  <br />
+                  {{#if balances.length}}
+                    {{#each balances}}
+                      <div class="row">
+                        <div class="col-md-2">
+                          <img src="/img/graydot.png" width="15px">
+                          {{this.Abbreviation}}
+                        </div>
+                        <div class="col-md-4">
+                          <input disabled value="{{this.Symbol}} {{numberFormat this.Amount decimalLength="-"}}"/>
+                        </div>
+                      </div>
+                      <br  />
+                    {{/each}}
+                  {{else}}
+                    <label>No Balances Found</label>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="border: 2px solid #000000">
+            <div class="header">
+              <div class="row">
+                <div class="col-md-10">
+                  <h4 class="title">
+                    Purchase Request Details
+                  </h4>
+                </div>
+              </div>
+            </div>
+            <hr/>
+            <div class="content">
+              <div class="row">
+                <div class="col-md-6">
+                  {{#if record.isblockchain}}
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h4 class="title">  <img src="/img/blockchainwallet.png" width="25px"> &nbsp;   Blockchain Transfer Request      </h4>
+                        <label>Investor is requesting to transfer shares through blockchain to private wallet. Here is the Ethereum public key provided. Please make sure that investor has setup his wallet correctly and owns the private key of this address</label>
+                        <br />
+                        <input disabled value="{{record.publickey}}"/>
+                      </div>
+                    </div>
+                  {{/if}}
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Date Requested</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{record.DateReceivedFormat}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Shares Requested</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{numberFormat record.Shares decimalLength="ShareCountInFractions"}}"/>
+                    </div>
+                  </div>
+                  <br/>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Investment Required</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input disabled value="{{currencySymbol record.fromCurrencyID}}   {{numberFormat investmentRequired decimalLength="-"}}"/>
+                      {{#unless InvestmentIsAvailable}}
+                        {{#if isMarketSpace}}
+                        {{else}}
+                          <img src="/img/reddot.png" width="15px">
+                          The Investor does not have the required investment amount in their internal wallet
+                        {{/if}}
+                      {{/unless}}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label>Message from Investor</label>
+                    </div>
+                    <br/>
+                    <div class="col-md-12">
+                      <textarea disabled rows="8" class="form-control border-input">
+                        {{record.Details}}
+                      </textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row topPaddingBetweenPageSections">
+		<div class="col-md-12">
+			<div class="card">
+        <div class="content">
+          <div class="row">
+            <div class="col-md-12">
+              <br />
+              <img src="/img/contracts.png" width="35px">
+              Investor has signed the subscription contracts
+              {{#each submittedDocuments}}
+              <br /><br />
+              <div class="row">
+                <div class="col-md-4">
+                  <img src="/img/greendot.png" width="15px">
+                  <b>Title: </b>
+                  {{this.title}}
+                </div>
+                <div class="col-md-8">
+                  {{#if ../internalMode}}
+                    <button type="button" onclick="viewSubmittedDocument({{this.submittedDocumentID}})"
+                            class="btn btn-info btn-fill btn-wd">
+                      View Document
+                    </button>
+                  {{/if}}
+
+                  {{#if this.docusignDocumentID}}
+                    {{#if ../docusignBaseUrl}}
+                      {{#if this.signaturefilepath}}
+                        <label>View on <b>DocuSign</b></label>
+                        <a onclick="goToDocuSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor" title="View Signed Contract on DocuSign">
+                          <img src="/img/open.png" width="25px;" />
+                        </a>
+                      {{else}}
+                        <label>
+                          This contract was signed on: <b>DocuSign</b> but has no associated link to it.
+                          <br/>
+                          Please check it manually on DocuSign's cockpit.
+                        </label>
+                      {{/if}}
+                    {{else}}
+                      <br/>
+                      <labe> Please contact your platform administrator in order to fill in the DocuSign View URL</labe>
+                    {{/if}}
+                  {{/if}}
+
+                  {{#if this.helloSignDocumentID}}
+                    {{#if ../docusignBaseUrl}}
+                      {{#if this.signaturefilepath}}
+                        <label>Download from <b>HelloSign</b></label>
+                        <a onclick="goToHelloSign('{{this.signaturefilepath}}')" class="linkStyle100 hovercolor" title="View Signed Contract on DocuSign">
+                          <img src="/img/open.png" width="25px;" />
+                        </a>
+                      {{else}}
+                        <label>
+                          This contract was signed on: <b>HelloSign</b> but has no associated link to it.
+                          <br/>
+                          Please check it manually on HelloSign's cockpit.
+                        </label>
+                      {{/if}}
+                    {{/if}}
+                  {{/if}}
+                </div>
+              </div>
+              {{/each}}
+              <br />
+            </div>
+            <div class="col-md-1"></div>
+          </div>
+        </div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row topPaddingBetweenPageSections">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+				</div>
+
+				<div class="content">
+
+          {{#unless isNewInvestor}}
+
+            {{#if InvestmentIsAvailable}}
+
+              <div class="row">
+                <div class="col-md-3">
+                  <button type="button" onclick="return transferShares()"class="btn btn-info btn-fill btn-wd">Transfer Shares </button>
+                </div>
+
+                <div class="col-md-8">
+                  Transfer shares to investor and reduce the investor wallet balance. This will also send a notification via email to the investor
+                </div>
+              </div>
+            {{else}}
+              {{#if isMarketSpace}}
+                <div class="row">
+                  <div class="col-md-8">
+                    Please make sure the investor has transfered the exact amount required, off platform.
+                  </div>
+                  <br /><br />
+                </div>
+                <div class="row">
+                  <div class="col-md-3">
+                    <button type="button" onclick="return transferShares()"class="btn btn-info btn-fill btn-wd">Transfer Shares </button>
+                  </div>
+
+                  <div class="col-md-8">
+                    Transfer shares to investor and reduce the investor wallet balance. This will also send a notification via email to the investor
+                  </div>
+                </div>
+                <br /><br />
+              {{/if}}
+
+
+            {{#if isMarketSpace}}
+            {{else}}
+              <div class="row">
+                <div class="col-md-8">
+                  No / insufficient funds available. The investor does not have the required deposits in their wallet
+                </div>
+              </div>
+            {{/if}}
+            {{/if}}
+          {{/unless}}
+          <br /><br />
+          <div class="row">
+            <div class="col-md-3">
+              {{#if isNewInvestor}}
+                <button type="button" onclick="return activateInvestorInSTO()"class="btn btn-info btn-fill btn-wd">Activate Investor In Project</button>
+              {{/if}}
+            </div>
+
+              <div class="col-md-8">
+                {{#if isNewInvestor}}
+                  <span style="color:red;">This investor never had shares in this project. Please review investor details above and approve investor in this project. <br /><br /> You can only transfer shares once this investor has been accepted in this project</span>
+                {{/if}}
+              </div>
+          </div>
+
+
+          {{#unless isNewInvestor}}
+            <div class="row">
+              <div class="col-md-3">
+                <button type="button" onclick="return declineRequest()"class="btn btn-info btn-fill btn-wd">Decline Request </button>
+              </div>
+
+              <div class="col-md-8">
+                You can decline the request. An email will be sent to the investor informing them about the decline
+              </div>
+            </div>
+          {{/unless}}
+        <br /><br />
+			</div>
+		</div>
+	</div>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,240 @@
+{{> Header}}
+
+	<script language="javascript">
+
+        var totalRecords = {{RecordCount}};
+        var totalNumberOfRecordsOnPages = {{RecordsPerPaging}};
+
+        $(document).ready(function() {
+            $("#ActivityLogs").addClass('active');
+            $( "#toDate" ).datepicker({ dateFormat: 'yy-mm-dd' });
+            $( "#fromDate" ).datepicker({ dateFormat: 'yy-mm-dd' });
+
+
+            if(getParameterByName("fromDate") != null)
+                document.getElementById("fromDate").value = getParameterByName("fromDate");
+
+            if(getParameterByName("toDate") != null)
+                document.getElementById("toDate").value = getParameterByName("toDate");
+
+            if(getParameterByName("activityType") != null)
+                $("#activityType").val( getParameterByName("activityType") );
+
+            var currentPage = 1;
+            if(getParameterByName("page") != null)
+                currentPage = parseInt(getParameterByName("page")) + 1;
+
+            var pages = Math.floor(totalRecords/totalNumberOfRecordsOnPages);
+            var remainder = totalRecords % totalNumberOfRecordsOnPages;
+            if(remainder > 0)
+                pages = pages + 1;
+
+            var a = 0;
+            for(a=1;a<=pages;a++)
+            {
+                if(currentPage == a)
+                    $("#pages").append("<option selected value='" + a + "'>" + a + "</option>")
+                else
+                    $("#pages").append("<option value='" + a + "'>" + a + "</option>")
+            }
+        })
+        function submitForm() {
+				var search = getPageSearchCriteria();
+
+				if(search == "")
+                    return resetForm();
+				else
+				{
+					window.location.href = "activitylogsto?" + search;
+					return false;
+				}
+        }
+        function resetForm() {
+            window.location.href = "activitylogsto";
+            return false;
+        }
+        function dataPageChanged() {
+
+            var search = getPageSearchCriteria();
+
+            if(search != "")
+                search = search + "&";
+
+            var pag = document.getElementById("pages").value;
+            pag = pag - 1;
+            search = search + "page=" + pag;
+
+            window.location.href = "activitylogsto?" + search;
+            return false;
+        }
+        function getPageSearchCriteria() {
+
+            var search = "";
+
+            if(document.getElementById("toDate").value != "")
+                search = "toDate=" + document.getElementById("toDate").value;
+
+            if(document.getElementById("fromDate").value != "") {
+                if(search != "")
+                    search = search + "&";
+                search = search + "fromDate=" + document.getElementById("fromDate").value;
+            }
+
+            if(document.getElementById("activityType").value != -1) {
+                if(search != "")
+                    search = search + "&";
+                search = search + "activityType=" + document.getElementById("activityType").value;
+            }
+
+
+            return search;
+        }
+
+
+	</script>
+
+{{> HeaderInnerSto}}
+
+    <div class="row">
+       <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/search.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Activity Log Search</h4>
+                </div>
+                <div class="content table-responsive table-full-width icon-section">
+                    <br />
+                    <div class="row">
+                            <div class="col-md-1"> </div>
+
+                            <div class="col-md-2">
+                                <span style="font-size:15px;"> Date
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                From </span>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <input  id="fromDate" name="fromDate" type=text class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" onkeydown="return false;" />
+                            </div>
+
+
+                            <div class="col-md-1">
+                                <span style="font-size:15px;"> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;
+                                    To  </span>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="toDate" name="toDate" type=text  class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" type=text onkeydown="return false;" />
+                            </div>
+
+
+                            <div class="col-md-1"> </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                            <div class="col-md-1"> </div>
+
+                            <div class="col-md-2">
+                                <span style="font-size:15px;">  Log type   </span>
+                            </div>
+                            <div class="col-md-3">
+                                <span style="font-size:15px;">
+                                <select id="activityType" name="activityType" class="form-control border-input" style="padding:3px; width:250px;">
+                                    <option value="-1"> All </option>
+                                    <option value="1"> System User Created </option>
+                                    <option value="2"> System User Login Authorization </option>
+                                    <option value="4"> System User Modified </option>
+                                    <option value="5"> Shares Transferred </option>
+                                    <option value="6"> Investor Authorization </option>
+                                    <option value="7"> Shares Created </option>
+                                    <option value="10"> Shares Removed / Deleted </option>
+                                    <option value="8"> Investor Approved </option>
+                                    <option value="9"> Investor KYC Document Update </option>
+                                    {{#ifIn Data.stoType '[0, 1]'}}
+                                        <option value="11"> Investor Shares Tokenover </option>
+                                        <option value="12"> Investor New Address Approved </option>
+                                        <option value="13"> Investor New Address Whitelisted </option>
+                                        <option value="14"> Investor New Address Denied </option>
+                                    {{/ifIn}}
+                                    <option value="15"> News item added/updated  </option>
+                                    <option value="16"> Bulk Email Send </option>
+                                    {{#ifIn 42 Data.AdminRights}}
+                                        <option value="40"> Dividend Payment </option>
+                                        <option value="41"> Dividend Deleted </option>
+                                    {{/ifIn}}
+                                </select>
+                                </span>
+                            </div>
+
+                            <div class="col-md-1"> </div>
+                        </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-7"> </div>
+
+                        <div class="col-md-4">
+                            <button onclick="submitForm()" class="btn btn-info btn-fill">Search Logs</button>
+                            &nbsp;&nbsp;&nbsp;
+                            <button onclick="resetForm()" class="btn btn-info btn-fill">Reset Search</button>
+                        </div>
+
+                    </div>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections" id="report">
+           <div class="col-md-12 ">
+                <div class="card">
+                    <div class="header">
+
+                        <div class="row">
+                               <div class="col-md-10">
+                                    <h4 class="title"> <img src="/img/events.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Activity Logs</h4>
+                                </div>
+                                <div class="col-md-2">
+                                    <button  data-html2canvas-ignore="true" type="button" onclick="generatePDF('report')" class="btn btn-info btn-fill">Download PDF</button>
+                                </div>
+                        </div>
+
+                    </div>
+                    <div class="content table-responsive table-full-width icon-section">
+
+                        <span style="float:right; padding-right:40px;"> <b>Records &nbsp;&nbsp;&nbsp; {{RecordCount}}</b> </span>
+
+                        <table class="table table-striped">
+                            <thead  class="listingHeaderFontSize">
+                                <th>Date</th>
+                                <th>Admin</th>
+                                <th>Investor</th>
+                                <th>Activity</th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each DataRows}}
+                                <tr>
+                                    <td style="width: 15%">{{this.LogDate}} </td>
+                                    <td style="width: 15%">{{this.UserFirstName}} {{this.UserLastName}}</td>
+                                    <td style="width: 15%">{{this.InvestorFirstName}} {{this.InvestorLastName}}</td>
+                                    <td style="width: 55%">{{this.Description}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+
+                        <div class="row"  data-html2canvas-ignore="true">
+                            <div class="col-md-9"></div> <div class="col-md-1"> &nbsp;&nbsp;  &nbsp;</div>
+                            <div class="col-md-2"><b>Go Page</b> <select onchange="dataPageChanged()" style="width:85px;" id="pages" name="pages"   class="form-control border-input"  ></select></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+{{> Footer}}

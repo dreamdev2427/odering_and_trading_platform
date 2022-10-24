@@ -1,0 +1,113 @@
+{{> Header}}
+
+    <script language="javascript">            
+        let FormOp = {{isEditing}};
+        let prevCountries = [{{#each data.countries}} "{{this}}", {{/each}}];
+        let listCountries = [{{#each listCountries}} "{{this}}", {{/each}}];
+        $(document).ready(function(){
+            if(prevCountries == ["ALL"]) $(`#countryBefore`).attr('size', '1');
+            else $(`#countryBefore`).attr('size', '30');
+            prevCountries.forEach((value)=>{
+                $(`#countryBefore`).append(`<option value="${value}">${value}</option>`);
+            });
+        })
+        
+        function cancelClicked() {
+            window.location.href = `/platform/platformsettings`;
+            return false;
+        }
+
+        function submitForm() {
+            let res = "";
+            if(document.getElementById("title").value == "")
+                res = "<li>Title is required</li>";
+            if(!document.getElementById("country").value &&  !document.getElementById("allCountries").checked)
+                res += "<li>Country Related Info is required. Either Select All or Choose from list.</li>"
+            if(res == "") 
+               document.getElementById("entityAddEdit").submit();
+            else
+            {
+                $(window).scrollTop(0);
+                $("#ErrorMessages").html(res)
+            }
+        }
+
+	</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-lg-12 col-md-7">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"><img src="/img/user.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;{{#if isEditing}}Update{{else}}Add{{/if}} Entity Type information</h4>
+            </div>
+            <div class="content">
+
+                    <ul style="color:red;"><span id="ErrorMessages">{{message}}</span></ul>
+
+                    <form id="entityAddEdit" name="entityType" action="postEntityType" method="post">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" id="title" name="title" class="form-control border-input" placeholder="Title" value="{{data.title}}">
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 pl-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="on" name="allCountries" id="allCountries">
+                                <label class="form-check-label" >
+                                    Select All Countries
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Select Countries</label>
+                            <br/>
+                            <select id="country" class="form-control form-select" aria-label="Default select example" name="country" multiple  size="30" >
+                                {{#each listCountries }}
+                                <option value="{{this}}">{{this}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    {{#if isEditing}}
+                    
+                        <div class="col-md-6">
+                            <label>Previouly Selected Countries</label>
+                            <br/>
+                            <select id="countryBefore" class="form-control form-select " aria-label="Default select example" name="country" multiple disabled>
+                            </select>
+                        </div>
+                    
+                    {{/if}}
+                    </div>
+                    
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <input type="hidden" name="FormOperation" value="{{isEditing}}">
+                    {{#if isEditing}}
+                            <input type="hidden" name="ID" value="{{data.ID}}">
+                    {{/if}}
+                        
+                    <br />
+                    <div >
+                        {{#if isEditing}}
+                            <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Update Entity Type</button>
+                        {{else}}
+                            <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Add New Entity Type</button>
+                        {{/if}}
+
+                        &nbsp;&nbsp;&nbsp; <button onclick="return cancelClicked()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+                    </form>
+
+            </div>
+        </div>
+    </div>
+{{> Footer}}

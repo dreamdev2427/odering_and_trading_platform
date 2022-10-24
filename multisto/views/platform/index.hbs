@@ -1,0 +1,158 @@
+{{> Header}}
+
+	<script language="javascript">
+        var op = 0;
+
+        $(document).ready(function() {
+            $("#DashboardMenu").addClass('active');
+        })
+        function refreshDistrobutionAccountTokens() {
+            window.location.href = "refreshDistributionAccountTokens?publicKey={{tokenInfo.Distribution}}";
+            return false;
+        }
+        function showCompanyUpdates() {
+            window.location.href = "updates";
+            return false;
+        }
+        function shawShareholdersReport() {
+            window.location.href = "shares";
+            return false;
+        }
+        function updateGlobalvariables() {
+            op = 1;
+            showModelGeneralYesNoDialogBox("Are you sure you want to update Global Variables of the whole platform. Please be-aware that this operation will affect the working of the whole platform. You must use this option if you 100% knows what are Global Variable. <br /><br /> If you are not sure or not aware of this operation please cancel and consult platform technical team for more information ", "Yes Update", "Cancel");
+        }
+
+        {{#if debug}}
+        function deleteAllInvestors() {
+            window.location.href = "deleteAllUsers";
+            return false;
+        }
+        {{/if}}
+
+        function generalModelOKButtonClickedClientEvent() {
+            if(op == 1) {
+                document.location.href="updateGloablVariables";
+                return false;
+            }
+            if(op == 2) {
+                document.location.href="dashboard?op=1";
+                return false;
+            }
+            if(op == 3) {
+                document.location.href="getTodayLogFileData";
+                return false;
+            }
+        }
+        function getMemoryData() {
+            op = 2;
+            showModelGeneralYesNoDialogBox("Do you want to see memory usage on server ?", "Yes Show", "Cancel");
+        }
+        function downloadLogFile() {
+            op = 3;
+            showModelGeneralYesNoDialogBox("Are you sure you want to download today's log file ?", "Yes Download", "Cancel");
+        }
+
+
+	</script>
+
+{{> HeaderInnerPlatform}}
+
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <div class="icon-big icon-warning text-center">
+                                <i class="ti-user"></i>
+                            </div>
+                        </div>
+                        <div class="col-xs-10">
+                            <div class="numbers">
+                                <p>STO</p>
+                                {{totalSTO}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <hr />
+                        <div class="stats">
+                            Number of Projects in Platform
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{#if debug}}
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+
+                        <div class="col-xs-12">
+                            <button type="button" onclick="return deleteAllInvestors()" class="btn btn-info btn-fill btn-wd">DELETE ALL USERS</button>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <hr />
+                        FOR TESTING ONLY! CANNOT BE REVERSED!
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="content">
+
+                    {{#if currentInvestorBulkUploadStatus}}
+                        <span style="color:red">Platform is processing bulk uploads of investors file in background . . . </span>
+                        <br /><br />
+                    {{/if}}
+
+                    {{#if platformdashboardmessage}}
+                        <span style="color:red">{{platformdashboardmessage}}</span>
+                        <br /><br />
+                    {{/if}}
+
+                    <button type="button" onclick="return getMemoryData()" class="btn btn-info btn-fill btn-wd">View Server Memory Data</button>
+                    {{#if MemoryData.rss}}
+                        <br /><br />
+                        <b>rss</b>: {{MemoryData.rss}}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <b>heapTotal</b>: {{MemoryData.heapTotal}}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <b>heapUsed</b>: {{MemoryData.heapUsed}}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <b>external</b>: {{MemoryData.external}}
+
+                    {{/if}}
+
+                    <hr />
+                    <button type="button" onclick="return downloadLogFile()" class="btn btn-info btn-fill btn-wd">Download Today's Log File</button>
+
+					&nbsp;&nbsp;&nbsp;&nbsp;
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <hr />
+                            <h4>Update Global Variables (Please use if you know 100% what this operation means)  </h4>
+                            <label>This operation will update Global Variables of the whole platform. Please use with caution. This may affect the working of the whole platform</label>
+                            <br /><br />
+                            <button type="button" onclick="return updateGlobalvariables()" class="btn btn-info btn-fill btn-wd">Update Global Variables</button>
+
+                            <br /> &nbsp;
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{{> Footer}}

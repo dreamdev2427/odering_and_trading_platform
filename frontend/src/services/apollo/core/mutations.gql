@@ -1,0 +1,70 @@
+mutation signIn($email: String!, $password: String!, $sto: Int!) {
+  signIn(email: $email, password: $password, stoID: $sto)
+}
+
+mutation signInSSO($data: SignInSSOInput!) {
+  signInSSO(data: $data)
+}
+
+mutation SignUpMarketSpace($data: SignUpMarketSpaceInput!) {
+  signUpMarketSpace(data: $data)
+}
+
+mutation upload($file: Upload!) {
+  fileUpload(file: $file) {
+    link
+    name
+  }
+}
+
+mutation FileRemove($file: String!) {
+  fileRemove(file: $file)
+}
+
+mutation signUp($data: SignUpInput!) {
+  signUp(data: $data)
+}
+
+mutation changePassword($data: ChangePasswordInput!) {
+  investorChangePassword(data: $data)
+}
+
+mutation toggleTwoFA {
+  investorToggleTwoFA
+}
+
+mutation investorPublicKeyAdd($title: String!, $blockchainID: Int!) {
+  investorPublicKeyAdd(title: $title, blockchainID: $blockchainID )
+}
+
+mutation investorPublicKeyDelete($_id: Int!) {
+  investorPublicKeyDelete(keyID: $_id)
+}
+
+mutation InvestorProfile($data: InvestorProfileInput!) {
+  investorProfile(data: $data)
+}
+
+mutation usufructuaryUpdate($data: InvestorUsufructuaryInput!) {
+  investorUsufructuaryUpdate(data: $data)
+}
+
+mutation beneficialUpdate($data: InvestorBeneficialInput!) {
+  investorBeneficialUpdate(data: $data)
+}
+
+mutation investorVerify($secret: String!) {
+  investorVerify(secret: $secret)
+}
+
+mutation investorReset($email: String!, $STO: Int!) {
+  investorReset(email: $email, stoID: $STO)
+}
+
+mutation twoFaConfirm($code: Int!) {
+  investor2FAConfirm(code: $code)
+}
+
+mutation investorSetPassword($data: SetPasswordInput!) {
+  investorSetPassword(data: $data)
+}

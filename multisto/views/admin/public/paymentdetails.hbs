@@ -1,0 +1,224 @@
+{{> Header}}
+
+<script language="javascript">
+	$(document).ready(function() {
+		//$("#inbox").addClass('active');
+	})
+
+    function backtoinvestor() {
+        window.location.href = "investorsViewSto?id={{investor.ID}}";
+        return false;
+    }
+
+    function settlepayment() {
+        if(document.getElementById("settleamount").value == "") {
+            showModelGeneralOKDialogBox("Please enter amount");
+            return;
+        }
+
+
+        if(document.getElementById("txtDate").value == "") {
+            showModelGeneralOKDialogBox("Please select payment date");
+            return;
+        }
+        document.getElementById("txtDate").value  = commonGetMySQLDateFormat(document.getElementById("txtDate").value);
+
+        document.getElementById("addpayment").submit();
+    }
+</script>
+
+
+{{> HeaderInnerSto}}
+
+    {{#if errorMessage}}
+        <span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+        <br /><br />
+    {{/if}}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Payment Details</h4>
+                        </div>
+                        <div class="col-md-3">
+                            <button onclick="backtoinvestor()" class="btn btn-info btn-fill btn-wd">Back to Investor Profile</button>
+                        </div>
+                    </div>
+				</div>
+
+				<div class="content">
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <span style="font-size:18px;">Investor</span>
+                        </div>
+
+                        <div class="col-md-10">
+                            {{investor.FirstName}} {{investor.LastName}}
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <span style="font-size:22px;">
+                        <img src="/img/graydot.png" width="18px">
+                        &nbsp;&nbsp; Payment Request Details
+                    </span>
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{textBreakLinesEnters paymentrec.Details}}
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-10">
+                            {{#if paymentrec.isSettled}}
+                                {{{paymentrec.paymentChannelDetails}}}
+                            {{else}}
+                                <b>{{paymentrec.PaymentTitle}}</b>
+                                <br />
+                                {{textBreakLinesEnters paymentrec.PaymentDetails}}
+                            {{/if}}
+                        </div>
+                    </div>
+
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Date</label>
+                        </div>
+                        <div class="col-md-10">
+                            {{paymentrec.PaymentSendDate}}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Payment</label>
+                        </div>
+                        <div class="col-md-10">
+                            {{currencySymbol paymentrec.currencyIDRequested}}
+                            {{numberFormat paymentrec.paymentRequested decimalLength="-"}}
+                        </div>
+                    </div>
+
+
+                    {{#if paymentrec.sharesOffered}}
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Shares Offered</label>
+                            </div>
+                            <div class="col-md-10">
+                                <b>{{numberFormat paymentrec.sharesOffered decimalLength="ShareCountInFractions"}}</b> &nbsp; {{paymentrec.ShareTypeText}}
+                            </div>
+                        </div>
+                    {{/if}}
+
+                    <hr />
+
+                    {{#if paymentrec.isSettled}}
+                        <span style="font-size:22px;">
+                            <img src="/img/graydot.png" width="22px">
+                            &nbsp;&nbsp; Payment Receive Notes
+                        </span>
+                        <br /><br />
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Date Payment Received</label>
+                            </div>
+                            <div class="col-md-9">
+                                {{paymentrec.PaymentReceiveDate}}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Payment Received</label>
+                            </div>
+                            <div class="col-md-9">
+                                {{currencySymbol paymentrec.currencyIDReceived}}
+                                {{numberFormat paymentrec.paymentReceived decimalLength="-"}}
+                            </div>
+                        </div>
+
+                        <br />
+                        <label>Internal Notes</label>
+                        <div class="row">
+                            <div class="col-md-12">
+                                {{textBreakLinesEnters paymentrec.InternalNotes}}
+                            </div>
+                        </div>
+
+                    {{else}}
+
+                        <span style="font-size:22px;">
+                            <img src="/img/reddot.png" width="22px">
+                            &nbsp;&nbsp; Payment not yet settled
+                        </span>
+                        <br /><br />
+
+                        <form id="addpayment" name="addpayment" action="settleinvestorpayment" method="post">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label>Amount Received</label>
+                                    <input type="textbox" onkeypress="return allowOnlyNumberInTextBoxes(event)" maxlength="10" id="settleamount" name="settleamount" class="form-control border-input" placeholder="Enter Details" />
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label>Currency</label>
+                                    <select id="settlecurrencyid" name="settlecurrencyid" class="form-control border-input" >
+                                        {{#each currency}}
+                                            <option value="{{this.ID}}"> {{this.Abbreviation}} </option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label>Date Received</label>
+                                    <input placeholder="Start Date"  id="txtDate" onkeydown="return false;" name="txtDate"  class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" />
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <label>Internal Notes</label>
+                                    <textarea maxlength="3500"  rows="5" id="internalnotes" name="internalnotes" class="form-control border-input" placeholder="Enter Details">{{paymentrec.InternalNotes}}</textarea>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="channelid" value="{{paymentrec.paymentChannelID}}" />
+                            <input type="hidden" name="id" value="{{paymentrec.ID}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        </form>
+
+                        <br /><br />
+
+                        <button onclick="settlepayment()" class="btn btn-info btn-fill btn-wd">Settle Payment</button>
+
+                    {{/if}}
+
+                    <hr />
+
+                    <span style="font-size:22px;">
+                        <img src="/img/graydot.png" width="18px">
+                        &nbsp;&nbsp; Investor Feedback
+                    </span>
+                    <br /><br />
+                    {{#if paymentrec.InvestorComments}}
+                        {{textBreakLinesEnters paymentrec.InvestorComments}}
+                    {{else}}
+                        <label>No comments from investor</label>
+                    {{/if}}
+
+					<br />&nbsp;
+                </div>
+
+			</div>
+		</div>
+	</div>
+
+{{> Footer}}

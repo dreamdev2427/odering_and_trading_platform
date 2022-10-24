@@ -1,0 +1,14 @@
+query getSumSubInvestorToken {
+    getSumSubInvestorToken
+}
+
+query getBlockPassClientID {
+    getBlockPassClientID
+}
+
+query getNetkiSignUpData {
+    getNetkiSignUpData {
+        accessCode
+        mobileAppPanel
+    }
+}

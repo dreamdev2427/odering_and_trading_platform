@@ -1,0 +1,445 @@
+{{> Header}}
+
+
+<script language="javascript">
+    var link = "";
+    var exchangeIsClose = {{exchangeIsClose}};
+
+    $(document).ready(function() {
+        $("#Trading").addClass('active');
+    });
+    function sellshare(id) {
+        {{#if exchangeIsClose}}
+                showModelGeneralOKDialogBox("Exchange is not yet open. Please contract administration")
+        {{else}}
+                window.location.href = "tradingsell?op=0&id=" + id;
+                return false;
+        {{/if}}
+    }
+    function viewSellDetails(id) {
+        window.location.href = "tradingsellview?id=" + id;
+        return false;
+    }
+    function viewSwap(id) {
+        window.location.href = "atomicswap?id=" + id;
+        return false;
+    }
+    function deleteSellDetails(id) {
+        link = "tradingselldelete?id=" + id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete this order ?", "Delete", "Cancel");
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = link;
+        return false;
+    }
+    function viewExchangeOrderDetails(id) {
+        window.location.href = "tradingbuy?id=" + id;
+        return false;
+    }
+    function deleteBuyOffer(id) {
+        link = "deleteBuyOffer?id=" + id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete your offer ?", "Yes Delete", "Cancel");
+    }
+    function opennewbuyorder() {
+        window.location.href = "opennewbuyorder";
+        return false;
+    }
+</script>
+
+{{> HeaderInner}}
+
+{{> stolistselection}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title">
+                                <img src="/img/trading.png" width="25px;" /> &nbsp; Internal Exchange
+                            </h4>
+                        </div>
+                        <div class="col-md-2">
+                            <button onclick="opennewbuyorder()" class="btn btn-info btn-info btn-fill btn-sm">Open New Buy Order</button>
+                        </div>
+                    </div>
+
+                    <label>Here you can buy or sell your shares to other investors affiliated with the same company </label>
+
+
+                </div>
+
+                <div class="content">
+
+                     <b>
+                     <div class="row">
+                         <div class="col-md-4"> Share </div>
+                         <div class="col-md-3"> Value </div>
+                         <div class="col-md-3"> Number of Shares Owned</div>
+                         <div class="col-md-2"> </div>
+                     </div></b>
+                    <br />
+                     {{#each sharesRec}}
+                            {{#if this.shares}}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {{this.title}}
+                                    </div>
+                                    <div class="col-md-3">
+                                         <img width="20px" src="/img/nominalvalue.png"/> {{currencySymbol this.currencyid}}
+                                            {{numberFormat this.nominalValue decimalLength="-"}}
+                                        &nbsp;&nbsp;
+                                        {{#if this.premimum}}
+                                            <img width="23px" src="/img/premimum.png" style="margin-left:20px;"/>  {{currencySymbol this.currencyid}}    {{numberFormat this.premimum decimalLength="-"}}
+                                        {{/if}}
+                                    </div>
+                                    <div class="col-md-3"> {{numberFormat this.shares decimalLength="ShareCountInFractions"}} </div>
+                                    <div class="col-md-2"> <button onclick="return sellshare({{this.id}})" class="btn btn-info btn-info btn-fill btn-sm">New Sell Offer</button> </div>
+                                </div>
+                            {{/if}}
+                        <br />
+                     {{/each}}
+
+                    <br />
+                    <img width="20px" src="/img/nominalvalue.png" />   Nominal Value
+                    <img width="23px" src="/img/premimum.png" style="margin-left:20px;"/>  Market Value
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#if sells.length}}
+        <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">
+                        <img src="/img/selling.png" width="25px;" />  &nbsp; My Sell Orders
+                    </h4>
+                    <label>The following trades are your sell orders open within the exchange</label>
+                </div>
+
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{#each sells}}
+                                <div class="row">
+                                    <div class="col-md-2">{{this.dateFrom}}</div>
+                                    <div class="col-md-3">{{this.title}}</div>
+                                    <div class="col-md-2">{{numberFormat this.shares decimalLength="ShareCountInFractions"}} &nbsp; shares </div>
+                                    <div class="col-md-2">
+                                        {{#if this.atomicSwapAcceptable}}
+                                            {{numberFormat this.rateFrom decimalLength="-"}}   Tokens
+                                        {{else}}
+                                            {{currencySymbol this.currencyid}}   {{numberFormat this.rateFrom decimalLength="-"}}
+                                        {{/if}}
+                                    </div>
+                                    <div class="col-md-3">
+
+                                            {{#if this.atomicSwapAcceptable}}
+                                                    {{#if this.atomicSwapCurrentStatus}}
+                                                            <button onclick="viewSwap({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">
+                                                                {{#ifEqual this.atomicSwapCurrentStatus 5}}
+                                                                        View Swap
+                                                                {{else}}
+                                                                        View Swap in Progress
+                                                                {{/ifEqual}}
+                                                            </button> &nbsp;
+                                                    {{else}}
+                                                            <button onclick="viewSellDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm"> Details / Offers</button> &nbsp;
+                                                    {{/if}}
+                                            {{else}}
+                                                    {{#ifEqual this.atomicSwapCurrentStatus 7}}
+                                                            Swap Complete &nbsp; &nbsp;
+                                                            <button onclick="deleteSellDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete</button> &nbsp;
+
+                                                    {{else}}
+                                                            <button onclick="viewSellDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm"> Details / Offers</button> &nbsp;
+                                                    {{/ifEqual}}
+                                            {{/if}}
+
+                                            {{#ifGreater this.atomicSwapCurrentStatus 1}} {{else}}
+                                                    <button onclick="deleteSellDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete</button> &nbsp;
+                                            {{/ifGreater}}
+
+                                    </div>
+                                </div>
+                                <br />
+                            {{/each}}
+                        </div>
+                    </div>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    {{#if buys.length}}
+        <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"><img src="/img/buying.png" width="25px;" />  &nbsp; My Buy Offers</h4>
+                        <label>The following trades are your buy offers open to other investors</label>
+                    </div>
+
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                {{#each buys}}
+                                    <div class="row">
+
+                                        <div class="col-md-2">{{this.dateFrom}}</div>
+                                        <div class="col-md-3">{{this.title}}</div>
+                                        <div class="col-md-2"> {{numberFormat this.sharesPartial decimalLength="ShareCountInFractions"}} &nbsp; shares   </div>
+                                        <div class="col-md-2">
+                                            {{#if this.atomicSwapAcceptable}}
+                                                {{numberFormat this.offeredRate decimalLength="-"}}   Tokens
+                                            {{else}}
+                                                {{currencySymbol this.currencyid}}   {{numberFormat this.offeredRate decimalLength="-"}}
+                                            {{/if}}
+                                        </div>
+                                        <div class="col-md-3">
+
+                                                {{#ifEqual this.atomicSwapCurrentStatus 7}}
+                                                        Swap Complete
+                                                        &nbsp;&nbsp;
+                                                        <button onclick="deleteBuyOffer({{this.offerID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete </button> &nbsp;
+                                                {{else}}
+                                                        <button onclick="viewExchangeOrderDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">
+                                                                {{#ifIn this.atomicSwapCurrentStatus '[0, 1]'}}
+                                                                        View Swap
+                                                                {{/ifIn}}
+
+                                                                {{#ifIn this.atomicSwapCurrentStatus '[2, 3, 4]'}}
+                                                                        View Swap in Progress
+                                                                {{/ifIn}}
+
+                                                                {{#ifEqual this.atomicSwapCurrentStatus 5}}
+                                                                        View Swap
+                                                                {{/ifEqual}}
+                                                        </button> &nbsp;
+                                                {{/ifEqual}}
+
+                                            {{#if this.atomicSwapAcceptable}}
+                                                    {{#unless this.atomicSwapCurrentStatus}}
+                                                        <button onclick="deleteBuyOffer({{this.offerID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete Offer</button> &nbsp;
+                                                    {{/unless}}
+                                            {{else}}
+                                                    {{#ifEqual this.atomicSwapCurrentStatus 7}} {{else}}
+                                                            <button onclick="deleteBuyOffer({{this.offerID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete Offer</button> &nbsp;
+                                                    {{/ifEqual}}
+                                            {{/if}}
+
+                                        </div>
+                                    </div>
+                                    <br />
+                                {{/each}}
+                            </div>
+                        </div>
+
+                    <br />
+                </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+
+    {{#if myBuys.length}}
+        <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"><img src="/img/buying.png" width="25px;" />  &nbsp; My Buy Orders</h4>
+                        <label>The following trades are your buy orders open to other investors</label>
+                    </div>
+
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                {{#each myBuys}}
+                                    <div class="row">
+                                        <div class="col-md-2">{{this.dateFrom}}</div>
+                                        <div class="col-md-3">{{this.title}}</div>
+                                        <div class="col-md-2"> {{numberFormat this.shares decimalLength="ShareCountInFractions"}} &nbsp; shares   </div>
+                                        <div class="col-md-2">
+
+                                            {{#if this.atomicSwapAcceptable}}
+                                                {{numberFormat this.rateFrom decimalLength="-"}}  Tokens
+                                            {{else}}
+                                                {{currencySymbol this.currencyid}}   {{numberFormat this.rateFrom decimalLength="-"}}
+                                            {{/if}}
+
+                                        </div>
+                                        <div class="col-md-3">
+
+                                                {{#ifEqual this.atomicSwapCurrentStatus 7}}
+                                                        Swap Complete &nbsp;&nbsp;
+                                                        <button onclick="deleteSellDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete</button> &nbsp;
+                                                {{else}}
+                                                        <button onclick="viewSellDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">View  Details</button> &nbsp;
+                                                        <button onclick="deleteSellDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete</button> &nbsp;
+                                                {{/ifEqual}}
+
+                                        </div>
+                                    </div>
+                                    <br />
+                                {{/each}}
+                            </div>
+                        </div>
+
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+
+    {{#if mySellOffers.length}}
+        <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"><img src="/img/buying.png" width="25px;" />  &nbsp; My Sell Offers</h4>
+                        <label>The following trades are your sell offers open to other investors</label>
+                    </div>
+
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                {{#each mySellOffers}}
+                                    <div class="row">
+                                        <div class="col-md-2">{{this.dateFrom}}</div>
+                                        <div class="col-md-3">{{this.title}}</div>
+                                        <div class="col-md-2"> {{numberFormat this.sharesPartial decimalLength="ShareCountInFractions"}} &nbsp; shares   </div>
+                                        <div class="col-md-2">
+                                            {{#if this.atomicSwapAcceptable}}
+                                                {{numberFormat this.offeredRate decimalLength="-"}}   Tokens
+                                            {{else}}
+                                                {{currencySymbol this.currencyid}}   {{numberFormat this.offeredRate decimalLength="-"}}
+                                            {{/if}}
+                                        </div>
+
+                                        <div class="col-md-3">
+
+
+                                             {{#ifEqual this.atomicSwapCurrentStatus 7}}
+                                                        Swap Complete
+                                                        &nbsp;&nbsp;
+                                                        <button onclick="deleteBuyOffer({{this.offerID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete Offer</button> &nbsp;
+                                                {{else}}
+                                                        <button onclick="viewExchangeOrderDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">
+                                                                {{#ifIn this.atomicSwapCurrentStatus '[0, 1]'}}
+                                                                        View Swap
+                                                                {{/ifIn}}
+
+                                                                {{#ifIn this.atomicSwapCurrentStatus '[2, 3, 4]'}}
+                                                                        View Swap in Progress
+                                                                {{/ifIn}}
+
+                                                                {{#ifEqual this.atomicSwapCurrentStatus 5}}
+                                                                        View Swap
+                                                                {{/ifEqual}}
+                                                        </button> &nbsp;
+                                                {{/ifEqual}}
+
+                                            {{#if this.atomicSwapAcceptable}}
+                                                    {{#unless this.atomicSwapCurrentStatus}}
+                                                        <button onclick="deleteBuyOffer({{this.offerID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete Offer</button> &nbsp;
+                                                    {{/unless}}
+                                            {{else}}
+                                                    {{#ifEqual this.atomicSwapCurrentStatus 7}} {{else}}
+                                                            <button onclick="deleteBuyOffer({{this.offerID}})" class="btn btn-info btn-info btn-fill btn-sm">Delete Offer</button> &nbsp;
+                                                    {{/ifEqual}}
+                                            {{/if}}
+
+
+                                        </div>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/if}}
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">
+                        <img src="/img/exchange.png" width="25px;" /> &nbsp; Exchange Orders
+                    </h4>
+                    <label>Recent activitywithin the exchange</label>
+                </div>
+
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{#if exchange.length}}
+
+                                {{#each exchange}}
+                                    <div class="row">
+                                        <div class="col-md-2">{{this.dateFrom}}</div>
+                                        <div class="col-md-3">{{this.title}}</div>
+                                        <div class="col-md-1">  {{numberFormat this.shares decimalLength="ShareCountInFractions"}} </div>
+                                        <div class="col-md-1">
+                                            {{#ifEqual this.type 1}}
+                                                <img src="/img/selling.png" width="20px;" /> &nbsp; Sell
+                                            {{/ifEqual}}
+                                            {{#ifEqual this.type 2}}
+                                                <img src="/img/buying.png" width="20px;" /> &nbsp; Buy
+                                            {{/ifEqual}}
+                                        </div>
+                                        <div class="col-md-2">
+                                            {{#if this.atomicSwapAcceptable}}
+                                                    {{numberFormat this.rateFrom decimalLength="-"}}  Tokens
+                                            {{else}}
+                                                    {{currencySymbol this.currencyid}}   {{numberFormat this.rateFrom decimalLength="-"}}
+                                            {{/if}}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button onclick="viewExchangeOrderDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">View Details / Make Offer</button> &nbsp;
+                                        </div>
+                                    </div>
+                                    <br />
+                                 {{/each}}
+
+                            {{else}}
+                                <label>There are no currently open orders</label>
+                            {{/if}}
+                        </div>
+                    </div>
+
+                    <br />
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}
+
+
+<!--
+    Internal Swap Statuses
+    0 = swap has not been initiated
+    1 = Atomic Swap has been accepted by seller
+    2 = Seller has commited his shares for transfer in swap contract
+    3 = Seller has send his tokens to swap contract
+    4 = Buyer has committed his tokens for transfers in swap contract
+    5 = Buyer completed Swap
+    6 = Swap was not successful and tokens given back to investor
+    7 = it was internal swap and swap is complete    this status is set in the acceptSwapInternal
+-->

@@ -1,0 +1,68 @@
+<script>
+    function updateStoVerifyInvestorComHostToken() {
+        const url = '/platform/updateStoVerifyInvestorComHostToken';
+        const json = {
+            stoId: '{{{record.ID}}}',
+            txtVerifyInvestorHostToken: document.getElementById('txtVerifyInvestorHostToken').value
+        }
+        saveToDatabase(url, json, 'updateStoVerifyInvestorComHostTokenErrorMessage')
+    }
+
+    function saveToDatabase(url, json, errorLabelId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
+        xhr.setRequestHeader("X-CSRF-Token", "{{csrfToken}}");
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+        xhr.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    location.reload();
+                } else {
+                    document.getElementById(errorLabelId).innerText = xhr.response;
+                }
+            }
+        }
+        xhr.send(JSON.stringify(json));
+    }
+</script>
+{{#if accreditationEnabled}}
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Accreditation Settings</h4>
+                    <label>Change settings for the supported accreditation providers</label>
+                </div>
+                <div class="content">
+                    {{#if verifyInvestorEnabled}}
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title">VerifyInvestor.com Settings</h4>
+                                <label>Host token for verifyInvestor.com integration</label>
+                            </div>
+                            <div class="content">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input id="txtVerifyInvestorHostToken" name="txtVerifyInvestorHostToken"
+                                               class="form-control border-input" value="{{{record.VerifyInvestorComHostToken}}}"/>
+                                        <b>
+                                            <ul>
+                                                <span style="color:red;" id="updateStoVerifyInvestorComHostTokenErrorMessage"/>
+                                            </ul>
+                                        </b>
+                                        <button type="button" onclick="updateStoVerifyInvestorComHostToken()" class="btn btn-info btn-fill">
+                                            Update Token
+                                        </button>
+                                        <br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+{{/if}}

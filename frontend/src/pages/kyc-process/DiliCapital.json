@@ -1,0 +1,598 @@
+{
+  "data": {
+    "kyc": [
+      {
+        "name": "investor-info",
+        "title": "kyc-investor-info",
+        "icon": "ti-user",
+        "pages": [
+          {
+            "name": "professional-info",
+            "title": "kyc-professional-info",
+            "icon": null,
+            "fields": [
+              {
+                "values": null,
+                "name": "company",
+                "label": "kyc-professional-info-company",
+                "placeholder": "kyc-professional-info-company",
+                "description": null,
+                "error": null,
+                "inline": false,
+                "required": false,
+                "type": "input"
+              },
+              {
+                "values": null,
+                "name": "job-title",
+                "label": "kyc-professional-info-job-title",
+                "placeholder": "kyc-professional-info-job-title",
+                "description": null,
+                "error": null,
+                "inline": false,
+                "required": false,
+                "type": "input"
+              },
+              {
+                "name": "industry",
+                "values": [
+                  {
+                    "value": "Insurance",
+                    "label": "Insurance"
+                  },
+                  {
+                    "value": "Legal",
+                    "label": "Legal"
+                  },
+                  {
+                    "value": "Menagement Consulting",
+                    "label": "Menagement Consulting"
+                  },
+                  {
+                    "value": "Marketing & Adversting",
+                    "label": "Marketing & Adversting"
+                  },
+                  {
+                    "value": "Retail",
+                    "label": "Retail"
+                  },
+                  {
+                    "value": "Telecommunication",
+                    "label": "Telecommunication"
+                  },
+                  {
+                    "value": "No industry selected",
+                    "label": "Others"
+                  },
+                  {
+                    "value": "Others",
+                    "label": "Others"
+                  }
+                ],
+                "label": "kyc-professional-select-industry-label",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "inline": false,
+                "type": "select"
+              }
+            ]
+          },
+          {
+            "name": "investing-background-info",
+            "title": "kyc-investing-background-info",
+            "icon": null,
+            "fields": [
+              {
+                "values": [
+                  {
+                    "value": "alternative-asset",
+                    "label": "kyc-background-info-alternative-asset"
+                  },
+                  {
+                    "value": "info-bonds",
+                    "label": "kyc-background-info-bonds"
+                  },
+                  {
+                    "value": "real-estate-ownership",
+                    "label": "kyc-background-info-real-estate-ownership"
+                  },
+                  {
+                    "value": "private-equity",
+                    "label": "kyc-background-info-private-equity"
+                  },
+                  {
+                    "value": "reits",
+                    "label": "kyc-background-info-reits"
+                  },
+                  {
+                    "value": "stoks-mutal-funds",
+                    "label": "kyc-background-stoks-mutalfunds"
+                  },
+                  {
+                    "value": "venture-capital",
+                    "label": "kyc-background-info-venture-capital"
+                  }
+                ],
+                "name": "general-invest-experience",
+                "label": "kyc-background-label-general-invest-exp",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "type": "check-box"
+              },
+              {
+                "values": [
+                  {
+                    "value": "<div class=\"float-left d-flex mr-5 \"><p class=\"bg-light d-inline-block minw-300 p-2 pl-2 fs-18\">GRE Investing Experience</div></div>",
+                    "label": null
+                  }
+                ],
+                "name": "cre-investing-experience-header",
+                "label": null,
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "inline": true,
+                "required": false,
+                "type": "html"
+              },
+              {
+                "name": "cre-investing-experience",
+                "values": [
+                  {
+                    "value": "None",
+                    "label": "None"
+                  },
+                  {
+                    "value": "Moderate",
+                    "label": "Moderate"
+                  },
+                  {
+                    "value": "Extensive",
+                    "label": "Extensive"
+                  },
+                  {
+                    "value": "Professinal",
+                    "label": "Professinal"
+                  }
+                ],
+                "label": "",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": true,
+                "type": "select"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "questions",
+        "title": "kyc-questions",
+        "icon": "ti-help-alt",
+        "pages": [
+          {
+            "fields": [
+              {
+                "name": "expected-withdraw",
+                "values": [
+                  {
+                    "value": "Less than 1 year",
+                    "label": "Less than 1 year"
+                  },
+                  {
+                    "value": "1-3 years",
+                    "label": "1-3 years"
+                  },
+                  {
+                    "value": "4-6 years",
+                    "label": "4-6 years"
+                  },
+                  {
+                    "value": "7-9 years",
+                    "label": "7-9 years"
+                  },
+                  {
+                    "value": "10 years or more",
+                    "label": "10 years or more"
+                  }
+                ],
+                "label": "1. When do you expect to need to withdraw a significant portion (1/3 or more) of the money in your investment portfolio?",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "knowledge-investment",
+                "values": [
+                  {
+                    "value": "I have very little knowledge of investments and financial markets",
+                    "label": "I have very little knowledge of investments and financial markets"
+                  },
+                  {
+                    "value": "I have a moderate level of knowledge of investments and financial markets",
+                    "label": "I have a moderate level of knowledge of investments and financial markets"
+                  },
+                  {
+                    "value": "I have extensive investment knowledge; understand different investment products and follow financial markets closely",
+                    "label": "I have extensive investment knowledge; understand different investment products and follow financial markets closely"
+                  }
+                ],
+                "label": "2. Which statement best describes your knowledge of investments?",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "primary-goal",
+                "values": [
+                  {
+                    "value": "I want to keep the money I have invested safe from short-term losses or readily available for short-term needs. (Safety – Investments that will satisfy this objective include GICs and money market funds)",
+                    "label": "I want to keep the money I have invested safe from short-term losses or readily available for short-term needs. (Safety – Investments that will satisfy this objective include GICs and money market funds)"
+                  },
+                  {
+                    "value": "I want to generate a steady stream of income from my investments and I am less concerned about growing the value of my investments.  (Income – Investments that will satisfy this objective include fixed income investments such as funds that invest in bonds)",
+                    "label": "I want to generate a steady stream of income from my investments and I am less concerned about growing the value of my investments.  (Income – Investments that will satisfy this objective include fixed income investments such as funds that invest in bonds)"
+                  },
+                  {
+                    "value": "I want to generate some income with some opportunity for the investments to grow in value. (Balanced – A balanced fund or a portfolio that includes at least 40% in fixed income investments and no more than 60% in equity funds  will satisfy this objective)",
+                    "label": "I want to generate some income with some opportunity for the investments to grow in value. (Balanced – A balanced fund or a portfolio that includes at least 40% in fixed income investments and no more than 60% in equity funds  will satisfy this objective)"
+                  },
+                  {
+                    "value": "I want to generate long-term growth from my investments.  (Growth – A portfolio with a relatively high proportion of funds that invest in equities will satisfy this objective if you also have a long time horizon and are willing and able to accept more risk)",
+                    "label": "I want to generate long-term growth from my investments.  (Growth – A portfolio with a relatively high proportion of funds that invest in equities will satisfy this objective if you also have a long time horizon and are willing and able to accept more risk)"
+                  }
+                ],
+                "label": "3. What is your primary goal for this portfolio:",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "annual-income",
+                "values": [
+                  {
+                    "value": "Less than $25,000 (0 points)",
+                    "label": "Less than $25,000 (0 points)"
+                  },
+                  {
+                    "value": "$25,000 – $49,999  (2 points)",
+                    "label": "$25,000 – $49,999  (2 points)"
+                  },
+                  {
+                    "value": "$50,000 – $74,999  (4 points)",
+                    "label": "$50,000 – $74,999  (4 points)"
+                  },
+                  {
+                    "value": "$75,000 – $99,999 (5 points)",
+                    "label": "$75,000 – $99,999 (5 points)"
+                  },
+                  {
+                    "value": "$100,000 – $199,999 (7 points)",
+                    "label": "$100,000 – $199,999 (7 points)"
+                  },
+                  {
+                    "value": "$200,000 or more  (10 points)",
+                    "label": "$200,000 or more  (10 points)"
+                  }
+                ],
+                "label": "4. What is your annual income (from all sources)?",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "current-future-income",
+                "values": [
+                  {
+                    "value": "Stable (8 points)",
+                    "label": "Stable (8 points)"
+                  },
+                  {
+                    "value": "Somewhat stable (4 points)",
+                    "label": "Somewhat stable (4 points)"
+                  },
+                  {
+                    "value": "Unstable (1 points)",
+                    "label": "Unstable (1 points)"
+                  }
+                ],
+                "label": "5. Your current and future income sources are:",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "financial-situation",
+                "values": [
+                  {
+                    "value": "No savings and significant debt (0 points)",
+                    "label": "No savings and significant debt (0 points)"
+                  },
+                  {
+                    "value": "Little savings and a fair amount of debt (2 points)",
+                    "label": "Little savings and a fair amount of debt (2 points)"
+                  },
+                  {
+                    "value": "Some savings and some debt (5 points)",
+                    "label": "Some savings and some debt (5 points)"
+                  },
+                  {
+                    "value": "Some savings and little or no debt  (7 points)",
+                    "label": "Some savings and little or no debt  (7 points)"
+                  },
+                  {
+                    "value": "Significant savings and little or no debt (10 points)",
+                    "label": "Significant savings and little or no debt (10 points)"
+                  }
+                ],
+                "label": "6. How would you classify your overall financial situation?",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "net-worth",
+                "values": [
+                  {
+                    "value": "Less than $50,000 (0 points)",
+                    "label": "Less than $50,000 (0 points)"
+                  },
+                  {
+                    "value": "$50,000 – $99,999 (2 points)",
+                    "label": "$50,000 – $99,999 (2 points)"
+                  },
+                  {
+                    "value": "$100,000 – $249,999 (4 points)",
+                    "label": "$100,000 – $249,999 (4 points)"
+                  },
+                  {
+                    "value": "$250,000 – $499,999 (6 points)",
+                    "label": "$250,000 – $499,999 (6 points)"
+                  },
+                  {
+                    "value": "$500,000 -$999,999 (8 points)",
+                    "label": "$500,000 -$999,999 (8 points)"
+                  },
+                  {
+                    "value": "$1,000,000 or more (10 points)",
+                    "label": "$1,000,000 or more (10 points)"
+                  }
+                ],
+                "label": "7. How would you classify your overall financial situation?",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "investment-account-percentage",
+                "values": [
+                  {
+                    "value": "Less than 25% (10 points)",
+                    "label": "Less than 25% (10 points)"
+                  },
+                  {
+                    "value": "25%-50% (5 points)",
+                    "label": "25%-50% (5 points)"
+                  },
+                  {
+                    "value": "51%-75% (4 points)",
+                    "label": "51%-75% (4 points)"
+                  },
+                  {
+                    "value": "More than 75% (2 points)",
+                    "label": "More than 75% (2 points)"
+                  }
+                ],
+                "label": "8. This investment account represents approximately what percentage of your total savings and investments.  (Total savings and investments include all the money you have in cash savings, GICs, savings bonds, mutual funds, stocks and bonds)?",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "age-group",
+                "values": [
+                  {
+                    "value": "Under 35 (20 points)",
+                    "label": "Under 35 (20 points)"
+                  },
+                  {
+                    "value": "35-54 (8 points)",
+                    "label": "35-54 (8 points)"
+                  },
+                  {
+                    "value": "55-64 (3 points)",
+                    "label": "55-64 (3 points)"
+                  },
+                  {
+                    "value": "65 or older (1 point)",
+                    "label": "65 or older (1 point)"
+                  }
+                ],
+                "label": "9. What is your age group? (Your age is an important consideration when constructing an investment portfolio.  Younger investors may have portfolios that are primarily invested in equities to maximize potential growth if they also have a higher risk tolerance and long investment time horizon.  Investors who are retired or near retirement are often less able to withstand losses and may have portfolios that are invested to maximize income and capital preservation)",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "financial-decision",
+                "values": [
+                  {
+                    "value": "Very conservative and try to minimize risk and avoid the possibility of any loss (0 points)",
+                    "label": "Very conservative and try to minimize risk and avoid the possibility of any loss (0 points)"
+                  },
+                  {
+                    "value": "Conservative but willing to accept a small amount of risk (4 points)",
+                    "label": "Conservative but willing to accept a small amount of risk (4 points)"
+                  },
+                  {
+                    "value": "Willing to accept a moderate level of risk and tolerate losses to achieve potentially higher returns (6 points)",
+                    "label": "Willing to accept a moderate level of risk and tolerate losses to achieve potentially higher returns (6 points)"
+                  },
+                  {
+                    "value": "Aggressive and typically take on significant risk and are willing to tolerate large losses for the potential of achieving higher returns (10 points)",
+                    "label": "Aggressive and typically take on significant risk and are willing to tolerate large losses for the potential of achieving higher returns (10 points)"
+                  }
+                ],
+                "label": "10. In making financial and investment decisions you are:",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "tolerate-decline",
+                "values": [
+                  {
+                    "value": "I could not tolerate any loss (0 points)",
+                    "label": "I could not tolerate any loss (0 points)"
+                  },
+                  {
+                    "value": "-$300 (-3%) (3 points)",
+                    "label": "-$300 (-3%) (3 points)"
+                  },
+                  {
+                    "value": "-$1,000 (-10%) (6 points)",
+                    "label": "-$1,000 (-10%) (6 points)"
+                  },
+                  {
+                    "value": "-$2,000 (-20%) (8 points)",
+                    "label": "-$2,000 (-20%) (8 points)"
+                  },
+                  {
+                    "value": "More than -$2,000 (more than -20%) (10 points)",
+                    "label": "More than -$2,000 (more than -20%) (10 points)"
+                  }
+                ],
+                "label": "11. The value of an investment portfolio will generally go up and down over time.  Assuming that you have invested $10,000, how much of a decline in your investment portfolio could you tolerate in a 12 month period?",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "possible-losses-gains",
+                "values": [
+                  {
+                    "value": "Always the possible losses (0 points)",
+                    "label": "Always the possible losses (0 points)"
+                  },
+                  {
+                    "value": "Usually the possible losses (3 points)",
+                    "label": "Usually the possible losses (3 points)"
+                  },
+                  {
+                    "value": "Usually the possible gains (6 points)",
+                    "label": "Usually the possible gains (6 points)"
+                  },
+                  {
+                    "value": "Always the possible gains (10 points)",
+                    "label": "Always the possible gains (10 points)"
+                  }
+                ],
+                "label": "12. When you are faced with a major financial decision, are you more concerned about the possible losses or the possible gains?",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "decision-14",
+                "values": [
+                  {
+                    "value": "Sell all of the remaining investment to avoid further losses (0 points)",
+                    "label": "Sell all of the remaining investment to avoid further losses (0 points)"
+                  },
+                  {
+                    "value": "Sell a portion of the remaining investment to protect some of your capital (3 points)",
+                    "label": "Sell a portion of the remaining investment to protect some of your capital (3 points)"
+                  },
+                  {
+                    "value": "Hold onto the investment and not sell any of the investment in the hopes of higher future returns (5 points)",
+                    "label": "Hold onto the investment and not sell any of the investment in the hopes of higher future returns (5 points)"
+                  },
+                  {
+                    "value": "Buy more of the investment now that prices are lower (10 points)",
+                    "label": "Buy more of the investment now that prices are lower (10 points)"
+                  }
+                ],
+                "label": "13. From September 2008 through November 2008, North American stock markets lost over 30%.  If you currently owned an investment that lost over 30% in 3 months you would:",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              }
+            ],
+            "name": "investment-questions",
+            "title": "kyc-investment-questions",
+            "icon": null
+          }
+        ]
+      },
+      {
+        "name": "investor-documents",
+        "title": "kyc-investor-documents",
+        "icon": "ti-cloud-up",
+        "pages": [
+          {
+            "fields": [
+              {
+                "values": [],
+                "name": "investor-documents",
+                "label": null,
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "type": "upload-identity"
+              }
+            ],
+            "name": "investor-documents-upload",
+            "title": "kyc-investor-documents",
+            "icon": null
+          }
+        ]
+      }
+    ]
+  }
+}

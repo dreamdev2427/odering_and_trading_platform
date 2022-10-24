@@ -1,0 +1,548 @@
+<script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/web3modal@1.9.0/dist/index.js"></script>
+<script type="text/javascript" src="https://unpkg.com/evm-chains@0.2.0/dist/umd/index.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/@walletconnect/web3-provider@1.2.1/dist/umd/index.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/fortmatic@2.0.6/dist/fortmatic.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
+
+<script language="javascript">
+
+    const Web3Modal = window.Web3Modal.default;
+    const WalletConnectProvider = window.WalletConnectProvider.default;
+    const Fortmatic = window.Fortmatic;
+    const evmChains = window.evmChains;
+    // Web3modal instance
+    let web3Modal;
+    // Chosen wallet provider given by the dialog window
+    let provider;
+    // Address of the selected account
+    let selectedAccount;
+    
+    const smartContractABI =  [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "balanceOf",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "transfer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }, 
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "buyRestriction",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "sellRestriction",
+              "type": "uint256"
+            }
+          ],
+          "name": "modifyKYCData",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },              
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "mint",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "burn",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "user",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256",
+              "name": "buyRestriction",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "sellRestriction",
+              "type": "uint256"
+            }
+          ],
+          "name": "bulkWhitelistWallets",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }                  
+    ]
+
+    const swapcontractabi = [{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"originator","type":"address"},{"indexed":false,"internalType":"uint256","name":"swapNumber","type":"uint256"}],"name":"Closed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"originator","type":"address"},{"indexed":false,"internalType":"uint256","name":"swapNumber","type":"uint256"}],"name":"Expired","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"originator","type":"address"},{"indexed":false,"internalType":"uint256","name":"swapNumber","type":"uint256"}],"name":"Opened","type":"event"},{"inputs":[{"internalType":"address","name":"originator","type":"address"},{"internalType":"uint256","name":"swapNumber","type":"uint256"}],"name":"close","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"originator","type":"address"},{"internalType":"uint256","name":"swapNumber","type":"uint256"}],"name":"expire","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"originator","type":"address"},{"internalType":"uint256","name":"swapNumber","type":"uint256"}],"name":"getSwapData","outputs":[{"components":[{"internalType":"address","name":"executor","type":"address"},{"internalType":"address","name":"openingToken","type":"address"},{"internalType":"uint256","name":"tokensToOpen","type":"uint256"},{"internalType":"address","name":"closingToken","type":"address"},{"internalType":"uint256","name":"tokensToClose","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"}],"internalType":"struct ERC20TokenSwapper.Swap","name":"","type":"tuple"},{"internalType":"uint256","name":"swapState","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"swapNumber","type":"uint256"},{"internalType":"address","name":"_executor","type":"address"},{"internalType":"address","name":"_openingToken","type":"address"},{"internalType":"uint256","name":"_tokensToOpen","type":"uint256"},{"internalType":"address","name":"_closingToken","type":"address"},{"internalType":"uint256","name":"_tokensToClose","type":"uint256"},{"internalType":"uint256","name":"_expiry","type":"uint256"}],"name":"open","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}];
+    var swapcontract_address = "0x3cb6df9845af79ab7c2af9530da0b046bacb6cf9";
+
+    async function Wallet_ApproveTransfers( numberOfTokens, token_contract_address, returnData  ) {
+
+      const web3 = new Web3(provider);
+
+      // Get list of accounts of the connected wallet
+      const accounts = await web3.eth.getAccounts();
+
+      await web3.eth.getTransactionCount(accounts[0], 'pending').then(obj=> {
+
+          const contract = new web3.eth.Contract(contractabi, token_contract_address);
+
+          // creating raw tranaction
+          const rawTransaction = {
+              from: accounts[0],
+              gasPrice: web3.utils.toHex(120 * 1e9),
+              gasLimit: 93399 + 1000000,
+              to: token_contract_address,
+              value: 0x0,
+              data: contract.methods.approve(swapcontract_address,  numberOfTokens ).encodeABI(),
+              nonce: web3.utils.toHex( obj ),
+          };
+
+          web3.eth.sendTransaction( rawTransaction )
+          .once('transactionHash', function(hash){ 
+              Wallet_TransactionEvent(returnData, "");
+          })
+          .once('receipt', function(receipt){ })
+          .on('confirmation', function(confNumber, receipt){  })
+          .on('error', function(error){ 
+              Wallet_ApproveTransfersFailureEvent(error)
+          })
+          .then ( obj => {
+              Wallet_ApproveTransfersSuccessEvent(obj)
+          });
+
+      })
+
+}
+    
+    async function connectWallet() {
+          //$("#trading").addClass('active');
+
+          // Check that the web page is run in a secure context,
+          // as otherwise MetaMask won't be available
+          if(location.protocol !== 'https:') {
+            // https://ethereum.stackexchange.com/a/62217/620
+            //const alert = document.querySelector("#alert-error-https");
+            //alert.style.display = "block";
+            //document.querySelector("#btn-connect").setAttribute("disabled", "disabled")
+            return;
+          }
+
+          // Tell Web3modal what providers we have available.
+          // Built-in web browser provider (only one can exist as a time)
+          // like MetaMask, Brave or Opera is added automatically by Web3modal
+          const providerOptions = {
+            walletconnect: {
+              package: WalletConnectProvider,
+              options: {
+                //infuraId: "8043bb2cf99347b1bfadfb233c5325c0",
+                //infuraId: "fe41724da6f24b76a782f376b2698ee8",
+              }
+            },
+
+            fortmatic: {
+              package: Fortmatic,
+              options: {
+                //key: "pk_test_391E26A3B43A3350"
+              }
+            }
+          };
+
+          web3Modal = new Web3Modal({
+            cacheProvider: false, // optional
+            providerOptions, // required
+            disableInjectedProvider: false, // optional. For MetaMask / Brave / Opera.
+          });
+
+          
+            try {
+                  provider = await web3Modal.connect();
+
+                  // Subscribe to accounts change
+                  provider.on("accountsChanged", (accounts) => {
+                    fetchAccountData();
+                  });
+
+                  // Subscribe to chainId change
+                  provider.on("chainChanged", (chainId) => {
+                    fetchAccountData();
+                  });
+
+                  // Subscribe to networkId change
+                  provider.on("networkChanged", (networkId) => {
+                    fetchAccountData();
+                  });
+
+                  await refreshAccountData();                
+
+            } catch(e) {
+                console.log("Could not get a wallet connection", e);
+                return;
+            }        
+        
+    }
+
+    //Event Raised in this function - Wallet_BlockchainAccountSelected(account)
+    async function fetchAccountData() {
+          // Get a Web3 instance for the wallet
+          const web3 = new Web3(provider);
+
+          // Get connected chain id from Ethereum node
+          const chainId = await web3.eth.getChainId();
+          // Load chain information over an HTTP API
+          const chainData = evmChains.getChain(chainId);
+          //document.querySelector("#network-name").textContent = chainData.name;
+
+          // Get list of accounts of the connected wallet
+          const accounts = await web3.eth.getAccounts();
+
+          // MetaMask does not give you all accounts, only the selected account
+          console.log("Got accounts", accounts);
+          selectedAccount = accounts[0];
+
+          Wallet_BlockchainAccountSelected ( selectedAccount );
+    }
+
+    async function refreshAccountData() {
+        await fetchAccountData(provider);
+    }
+
+    function getAccountBalanceFromBlockchain(address, token_contract_address) {
+
+      return new Promise((resolve, reject) => {
+
+            const web3 = new Web3(provider);
+
+            web3.eth.net.isListening().then(() => {
+
+                const contract = new web3.eth.Contract(smartContractABI, token_contract_address);
+
+                contract.methods.balanceOf(address).call().then((balance) => {
+                   resolve( balance )
+                }).catch((err) => {
+                    reject (err)
+                });
+
+            }).catch((err) => {
+              alert(err)
+              return 1;
+            });
+
+      })            
+
+    }
+
+    async function sendTokensTransactionThroughMetaMask(toAddress, numberOfTokens, token_contract_address, blockchainDecimals) {
+
+        const web3 = new Web3(provider);
+
+        // Get list of accounts of the connected wallet
+        const accounts = await web3.eth.getAccounts();
+
+				const gasPrice = await web3.eth.getGasPrice();
+
+        if(blockchainDecimals == 18) {
+            var decimalStr = numberOfTokens.toString().split('.')[1];
+            if(decimalStr != null) {
+                const intStr = numberOfTokens.toString().split('.')[0];
+                const cnt = 18 - decimalStr.length;
+                for(var z=0; z<cnt; z++)
+                    decimalStr = decimalStr + "0";
+
+                if(intStr != '0')
+                    numberOfTokens = intStr + decimalStr;
+                else
+                    numberOfTokens = decimalStr;
+            } else 
+              numberOfTokens = numberOfTokens + "000000000000000000";
+        }
+
+        await web3.eth.getTransactionCount(accounts[0], 'pending').then(obj=> {
+
+            const contract = new web3.eth.Contract(smartContractABI, token_contract_address);
+
+            // creating raw tranaction
+            const rawTransaction = {
+                from: accounts[0],
+                gasPrice: web3.utils.toHex(gasPrice),
+                gasLimit: 90000,
+                to: token_contract_address,
+                value: 0x0,
+                data: contract.methods.transfer( toAddress, numberOfTokens).encodeABI(),
+                nonce: web3.utils.toHex( obj ),
+            };
+
+
+            web3.eth.sendTransaction( rawTransaction )
+            .once('transactionHash', function(hash){ 
+                Wallet_TransactionEvent(hash, "");
+            })
+            .once('receipt', function(receipt){ })
+            .on('confirmation', function(confNumber, receipt){  })
+            .on('error', function(error){ 
+                Wallet_ApproveTransfersFailureEvent(error)
+            })
+            .then ( obj => {
+                Wallet_ApproveTransfersSuccessEvent(obj)
+            });
+
+        })
+        
+    }
+    
+    async function whitelistInvestorPublicAddressMetaMask(address, token_contract_address, dateInEPOCHFormat) {
+
+        const web3 = new Web3(provider);
+
+        // Get list of accounts of the connected wallet
+        const accounts = await web3.eth.getAccounts();
+        const contract = new web3.eth.Contract(smartContractABI, token_contract_address);
+        const methodABI = contract.methods.modifyKYCData( address, dateInEPOCHFormat, dateInEPOCHFormat).encodeABI();
+        
+				const gasPrice = await web3.eth.getGasPrice();
+
+        web3.eth.getTransactionCount(accounts[0], 'pending').then(obj=> {
+
+            const rawTransaction = {
+                from: accounts[0],
+                gasPrice: web3.utils.toHex(gasPrice),
+                gasLimit: 90000,
+                to: token_contract_address,
+                value: 0x0,
+                data: methodABI,
+                nonce: web3.utils.toHex( obj ),
+            };
+
+            web3.eth.sendTransaction( rawTransaction )
+            .once('transactionHash', function(hash){ 
+                Wallet_TransactionEvent(hash, "");
+            })
+            .once('receipt', function(receipt){ })
+            .on('confirmation', function(confNumber, receipt){  })
+            .then ( obj => {
+            });
+
+        })
+
+
+    }
+
+    async function createBurnTokensMetaMask(address, numberOfTokens, token_contract_address, blockchainDecimals, operation) {
+        // operation = 1    Mint
+        // operation = 2    Burn
+        const web3 = new Web3(provider);
+
+        // Get list of accounts of the connected wallet
+        const accounts = await web3.eth.getAccounts();
+				const gasPrice = await web3.eth.getGasPrice();
+
+        await web3.eth.getTransactionCount(accounts[0], 'pending').then(obj=> {
+            const contract = new web3.eth.Contract(smartContractABI, token_contract_address);
+
+            if(blockchainDecimals == 18) {
+                var decimalStr = numberOfTokens.toString().split('.')[1];
+                if(decimalStr != null) {
+                    const intStr = numberOfTokens.toString().split('.')[0];
+                    const cnt = 18 - decimalStr.length;
+                    for(var z=0; z<cnt; z++)
+                        decimalStr = decimalStr + "0";
+
+                    if(intStr != '0')
+                        numberOfTokens = intStr + decimalStr;
+                    else
+                        numberOfTokens = decimalStr;
+                } else 
+                  numberOfTokens = numberOfTokens + "000000000000000000";
+            }
+
+            // creating raw tranaction
+            const rawTransaction = {
+                from: accounts[0],
+                gasPrice: web3.utils.toHex(gasPrice),
+                gasLimit: 90000,
+                to: token_contract_address,
+                value: 0x0,                
+                nonce: web3.utils.toHex( obj ),
+            };
+
+            if(operation == 1)
+              rawTransaction.data = contract.methods.mint(address, numberOfTokens).encodeABI();
+            else
+              rawTransaction.data = contract.methods.burn(address, numberOfTokens).encodeABI();              
+
+            web3.eth.sendTransaction( rawTransaction )
+            .once('transactionHash', function(hash){ 
+                Wallet_TransactionEvent(hash, operation);
+            })
+            .once('receipt', function(receipt){ })
+            .on('confirmation', function(confNumber, receipt){  })
+            .then ( obj => {
+            });
+
+        })
+
+
+    }
+
+    async function deployERC1404TokenMetaMask( numberOfTokens, tokenName, tokenSymbol, restrictInvestorCount, chkTokenDivisible, shareCertificate, companyHomePage, companyLegalDocs, ERC1404ByteCode, ERC1404ByteSize ) {
+       
+        const web3 = new Web3(provider);
+
+        // Get list of accounts of the connected wallet
+        const accounts = await web3.eth.getAccounts();
+
+				var gasPrice = await web3.eth.getGasPrice();
+
+        await web3.eth.getTransactionCount(accounts[0], 'pending').then(obj=> {
+
+            const encodedParameters = web3.eth.abi.encodeParameters(
+              ['uint256', 'string', 'string', 'uint256', 'uint256', 'string', 'string', 'string'],
+              [numberOfTokens, tokenName, tokenSymbol, restrictInvestorCount, chkTokenDivisible, shareCertificate, companyHomePage, companyLegalDocs]
+            ).slice(2);
+
+            // creating raw tranaction
+            const rawTransaction = {
+                from: accounts[0],
+                gasPrice: web3.utils.toHex(gasPrice),
+                gasLimit: ERC1404ByteSize,
+                data: ERC1404ByteCode + encodedParameters,
+                nonce: web3.utils.toHex( obj ),
+            };
+
+            web3.eth.sendTransaction( rawTransaction )
+            .once('transactionHash', function(hash){ 
+                Wallet_TransactionEvent(hash, "");
+            })
+            .once('receipt', function(receipt){ })
+            .on('confirmation', function(confNumber, receipt){  })
+            .then ( obj => {
+            });
+
+        })
+
+
+    }
+
+    async function setBulkWhitelistAddresses( token_contract_address, whitelistAddressJSONArray, buyRestriction, sellRestriction ) {
+
+        const web3 = new Web3(provider);
+
+        // Get list of accounts of the connected wallet
+        const accounts = await web3.eth.getAccounts();
+        const contract = new web3.eth.Contract(smartContractABI, token_contract_address);
+        const methodABI = contract.methods.bulkWhitelistWallets( whitelistAddressJSONArray, buyRestriction, sellRestriction).encodeABI();
+
+				const gasPrice = await web3.eth.getGasPrice();
+
+        web3.eth.getTransactionCount(accounts[0], 'pending').then(obj=> {
+
+            const rawTransaction = {
+                from: accounts[0],
+                gasPrice: web3.utils.toHex(gasPrice),
+                gasLimit: 90000,
+                to: token_contract_address,
+                value: 0x0,
+                data: methodABI,
+                nonce: web3.utils.toHex( obj ),
+            };
+
+            web3.eth.sendTransaction( rawTransaction )
+            .once('transactionHash', function(hash){ 
+                Wallet_TransactionEvent(hash, "");
+            })
+            .once('receipt', function(receipt){ })
+            .on('confirmation', function(confNumber, receipt){  })
+            .then ( obj => {
+            });
+
+        })
+
+    }
+
+
+</script>

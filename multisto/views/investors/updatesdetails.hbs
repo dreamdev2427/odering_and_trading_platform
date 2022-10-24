@@ -1,0 +1,36 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function(){
+			$("#updates").addClass('active');
+		})
+
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">  <img src="/img/news.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  {{record.TITLE}}</h4>
+                    <b>{{record.UpdateDate}}</b>
+                </div>
+
+                <div class="content">
+
+                    <br />
+
+                    {{{record.Details}}}
+
+                    <br /><br />
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> FooterInner}}
+{{> Footer}}

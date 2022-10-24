@@ -1,0 +1,223 @@
+{{> Header}}
+
+{{> HeaderInnerPlatform}}
+
+<script language="javascript">
+
+    const currentAccountID = {{currentAccountID}};
+
+    function showPortfolios(id) {
+        window.location = "polymeshAccounts?id=" + id;
+        return true;
+    }
+
+    function newAccount() {
+       $('#makepayment').appendTo("body").modal( { backdrop: 'static', keyboard: false });
+    }
+
+    function saveAccount() {
+        if( document.getElementById("newAccountName").value == "" ) {
+            alert("Please enter Account Name");
+            return;
+        }
+        if( document.getElementById("accountMnemonics").value == "" ) {
+            alert("Please enter mnemonics");
+            return;
+        }        
+
+        document.getElementById("frmNewAccount").submit();
+    }
+
+    function closeAccount() {
+        window.location = "polymeshAccounts";
+        return true;
+    }
+
+    function newPortfolioPopup() {
+        $('#newPortfolio').appendTo("body").modal( { backdrop: 'static', keyboard: false });
+    }
+
+    function newPortfolio() {
+        if( document.getElementById("newPortfolioTitile").value == "" ) {
+            alert("Please enter Portfolio");
+            return;
+        }        
+
+        document.getElementById("frmNewPortfolio").submit();
+    }
+
+</script>
+
+{{#unless currentAccountID}}
+    <div class="row">
+        <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title"> <img src="/img/maincompany.png" width="35px" /> &nbsp; List of Accounts</h4>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" onclick="return newAccount()" class="btn btn-info btn-fill">New Account</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content">
+
+                    {{#each accounts}}
+
+                        <div class="row">
+                            <div class="col-md-4">                        
+                                <h5>{{this.title}}   </h5>
+                            </div>
+                            <div class="col-md-8">                                                        
+                                <button type="button" onclick="return showPortfolios({{this.id}})" class="btn btn-info btn-fill btn-sm">Open</button>
+                            </div>
+                        </div>                            
+
+                    {{/each}}
+
+
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+{{/unless}}
+
+{{#if currentAccountID}}
+    <div class="row">
+        <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title"> <img src="/img/maincompany.png" width="35px" /> &nbsp; List of Portfolios of Account {{currentAccountTitle}} </h3>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" onclick="return closeAccount()" class="btn btn-info btn-fill">Close</button>
+                            &nbsp;&nbsp;
+                            <button type="button" onclick="return newPortfolioPopup()" class="btn btn-info btn-fill">New Portfolio</button>
+                        </div>                        
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <br />
+                    {{#each portfolios}}
+                        <div class="row">
+                            <div class="col-md-8">
+                                &nbsp;&nbsp;&nbsp;                        
+                                {{this.title}}   
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-info btn-fill btn-sm">Custodian Management</button>
+                            </div>
+                        </div>                            
+                        <br />
+                    {{/each}}
+
+                    <br />
+                </div>
+        </div>
+        </div>
+    </div>
+{{/if}}
+
+<div class = "modal fade" id="makepayment" tabindex = "-1" role = "dialog" aria-labelledby = "makepayment" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title"> <img src="/img/bank.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;
+                Add New Account
+			 </h4>
+         </div>
+
+         <div  class="modal-body">
+            <form id="frmNewAccount" name="frmNewAccount" method="post" action="saveNewPolymeshAccount">
+
+                <div class="row">
+                    <span>
+                        <div  class="col-md-7">
+                            <label >Enter New Account Name</label><br />
+                            <input class="form-control border-input" maxlength="120"    id="newAccountName" name="newAccountName" placeholder="">
+                        </div>
+                    </span>
+                </div>
+                <br />
+                <div class="row">                    
+                    <span>
+                        <div  class="col-md-12">
+                            <label >Enter Account Mnemonics</label><br />
+                            <input class="form-control border-input" maxlength="3000"    id="accountMnemonics" name="accountMnemonics" placeholder="">
+                        </div>
+                    </span>
+                </div>
+
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+            </form>   
+            <br />         
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" name=0 onclick="saveAccount()">
+                Save
+            </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<div class = "modal fade" id="newPortfolio" tabindex = "-1" role = "dialog" aria-labelledby = "newPolymeshPortfolio" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title"> <img src="/img/bank.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;
+                Add New Portfolio
+			 </h4>
+         </div>
+
+         <div  class="modal-body">
+            <form id="frmNewPortfolio" name="frmNewPortfolio" method="post" action="saveNewPolymeshPortfolio">
+
+                <div class="row">
+                    <span>
+                        <div  class="col-md-7">
+                            <label >Enter New Portfolio Name</label><br />
+                            <input class="form-control border-input" maxlength="120"    id="newPortfolioTitile" name="newPortfolioTitile" placeholder="">
+                        </div>
+                    </span>
+                </div>
+                <br />
+
+  
+                <input type="hidden" name="accountID" value="{{currentAccountID}}" />
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+            </form>   
+            <br />         
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" name=0 onclick="newPortfolio()">
+                Save
+            </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+
+
+
+
+
+{{> Footer}}

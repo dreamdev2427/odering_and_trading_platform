@@ -1,0 +1,163 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			$("#CompanyUpdates").addClass('active');               
+
+            SummernoteBasicDataInitialize('notes', 'Enter News Text', 700); 
+		})
+		function submitForm() {
+			var fileInput = document.getElementById("file");
+			var filePath = fileInput.value;
+
+			var isEditingActive = parseInt({{{json isEditing}}})
+
+			var res = "";
+			if(isEditingActive) {
+				if (document.getElementById("title").value == "") {
+					showModelGeneralOKDialogBox("Title is required");
+					return;
+				}
+				else if (document.getElementById("notes").value == "") {
+					showModelGeneralOKDialogBox("Update details required");
+					return;
+				}
+				else
+					document.getElementById("systemNotes").submit();
+				
+			} else {
+				if (document.getElementById("title").value == "") {
+					showModelGeneralOKDialogBox("Title is required");
+					return;
+				}
+				else if (document.getElementById("notes").value == "") {
+					showModelGeneralOKDialogBox("Update details required");
+					return;
+				} else if (filePath == null || filePath == '') {
+					showModelGeneralOKDialogBox('Please select image to upload');
+					return;
+				}
+				else
+					document.getElementById("systemNotes").submit();
+			}
+
+		}
+		function cancelClicked() {
+          window.location.href = "updates";
+          return false;			
+		}
+        function viewNews(id) {
+          window.location.href = "updateDetails?id=" + id;
+          return false;			            
+        }
+	</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+	<div class="col-md-12 ">
+		<div class="card">
+			<div class="header">
+                
+                <div class="row">
+                    <div class="col-md-10">                
+                        <h4 class="title">
+                            {{#if isEditing}}  Edit Company News  {{else}}  Add New Company News  {{/if}}
+                        </h4>
+                    </div>
+                    <div class="col-md-2">                
+                        {{#if isEditing}}
+                            <button onclick="return viewNews({{updateRecord.ID}})" class="btn btn-info btn-fill btn-wd">View News</button>
+                        {{/if}} 
+                    </div>
+                </div>
+			</div>
+			 <div class="content">
+				 
+					<ul style="color:red;"><span id="ErrorMessages">{{message}}</span></ul>
+			
+					<form id="systemNotes" name="systemNotes" action="updatesPost?_csrf={{csrfToken}}" enctype="multipart/form-data" method="post">
+
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Title</label>
+										<input type="text" id="title" name="title" maxLength="254"  class="form-control border-input" placeholder="Enter News Title" value="{{updateRecord.TITLE}}">
+									</div>
+								</div>
+							</div>
+                        
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Details</label>
+										<textarea  name="notes" id="notes" maxLength="4990"  class="form-control  border-input" placeholder="Enter News Text" rows="8">{{updateRecord.details}}</textarea>
+									</div>
+								</div>
+							</div> 
+
+							<input type="hidden" name="FormOperation" value="{{isEditing}}">
+							{{#if isEditing}}
+								    <input type="hidden" name="ID" value="{{updateRecord.ID}}">
+                                    <input type="hidden" name="sendBulkEmail" value="0">
+                            {{else}}
+                                    <input style="width:20px; height:20px;" type="checkbox" name="chkSendBulkEmail" value="1"> &nbsp;&nbsp; <label>Send Bulk Email</label>
+							{{/if}}	
+
+							{{#if isEditing}}
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Newsletter Photo</label>
+										<div class="upload-btn-wrapper" style="display: flex;fle-direction: row">
+											<button class="btnfile btn-sm">Update Cover Photo</button>
+											<input id="file" accept="image/*" name="cover" type="file"  value="{{updateRecord.coverphoto}}">
+											&nbsp;&nbsp;&nbsp;&nbsp;
+										</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+									<img src="{{updateRecord.coverphoto}}" style="width: 200px;height: 200px;">
+                                    </div>
+								</div>
+							</div>
+							{{else}}
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Newsletter Photo</label>
+										<div class="upload-btn-wrapper" style="display: flex;fle-direction: row">
+											<button class="btnfile btn-sm">Upload Cover Photo</button>
+											<input id="file" accept="image/*" name="cover" type="file">
+											&nbsp;&nbsp;&nbsp;&nbsp;
+										</div>
+									</div>
+								</div>
+							{{/if}}
+
+
+							<div class="text-center">
+									<button type="button" onclick="return submitForm()"class="btn btn-info btn-fill btn-wd">Save News</button>
+
+								&nbsp;&nbsp;&nbsp; <button onclick="return cancelClicked()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+							</div>							
+
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+					</form>
+                 
+                 <br />&nbsp;
+                                  
+			</div>
+		</div>
+	</div>
+</div>
+
+{{> Footer}}
+
+
+
+
+
+

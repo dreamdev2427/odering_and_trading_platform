@@ -1,0 +1,51 @@
+version: '3.3'
+services:
+  app:
+    build: .
+    restart: always
+    environment:
+      - URL: "vf-rx0.venturefusion.io:2087",
+      - NODE_ENV: staging,
+      - Browser_Caption: DigiShares Investor Dashboard,
+      - Browser_CaptionNotLogin: DigiShares,
+      - Browser_CaptionInvestor: DigiShares Issuer Dashboard,
+      - Stellar_Server: https://horizon-testnet.stellar.org,
+      - SESSION_SECRET: ^#$5sX(Hf6KUo!#65^,
+      - COOKIE_PARSERSECRET: 6xH$*CYY*u44gcUN57%H,
+      - SERVER_PORT: 3001,
+      - PASSWORD_SALT: 7fa73b47df808d36c5fe328546ddef8b9011b2c6,
+      - Dashboard_Config: DigiShares,
+      - DB_SERVER: db,
+      - DB_USER: developer,
+      - DB_PASSWORD: 5KfKtEvBMWea7BFp,
+      - DB_Database: devdb,
+      - SMTP_FromAddress: sa@digishares.io, 
+      - SMTP_Host: smtp.yandex.ru, 
+      - SMTP_Port: 465, 
+      - SMTP_User: sa@digishares.io, 
+      - SMTP_Password: jGffTy4@#, 
+      - SMTP_MaxFileSize: 3
+      - REDIS_URL: redis://redis:6379,
+      - CommonDomainName: digishares.io,
+
+    ports:
+      - 3001:3001
+    depends_on:
+      - db
+      - redis
+  db:
+    image: mariadb:latest
+    restart: always
+    volumes:
+      - ./data/db.sql:/docker-entrypoint-initdb.d/db.sql
+      - ./data/payload.sql:/docker-entrypoint-initdb.d/db.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=dfkjshFD87esdh324l
+      - MYSQL_DATABASE=multisto
+      - MYSQL_PASSWORD=sAdlkjaslkFDS173
+      - MYSQL_USER=ds
+  redis:
+    image: redis:5.0
+    restart: always
+    ports:
+      - 6379:6379

@@ -1,0 +1,282 @@
+<script language="javascript">
+  $(document).ready(function(){
+    SummernoteBasicDataInitialize(`netkiMobileAppPanel`, '');
+    initiateSwitches()
+  });
+
+  function initiateSwitches() {
+    const chkSendInstructionalEmail = JSON.parse('{{{netkiSendEmail}}}');
+    if (chkSendInstructionalEmail === true) {
+      document.getElementById('chkSendInstructionalEmail').setAttribute("checked", "true");
+      showEmailDetails();
+    } else {
+      document.getElementById('chkSendInstructionalEmail').removeAttribute("checked");
+    }
+
+    const netkiAttachMobileAppPanelToEmail = JSON.parse('{{{netkiAttachMobileAppPanelToEmail}}}');
+    if (netkiAttachMobileAppPanelToEmail === true) {
+      document.getElementById('chkAttachMobileAppPanelToEmail').setAttribute("checked", "true");
+    } else {
+      document.getElementById('chkAttachMobileAppPanelToEmail').removeAttribute("checked");
+    }
+  }
+  function submitChanges() {
+    document.getElementById('saveParams').submit();
+  }
+  function fetchAccessCodes() {
+    window.location.href = "/platform/getNetkiAccessCodes";
+    return false;
+  }
+  function deleteAccessCodes() {
+    window.location.href = "/platform/deleteNetkiAccessCodes";
+    return false;
+  }
+  function showEmailDetails() {
+    if ($('#chkSendInstructionalEmail').is(":checked"))
+      $("#emailDetails").show();
+    else
+      $("#emailDetails").hide();
+  }
+</script>
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-10">
+          <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Netki Parameters</h4>
+          <label>Please follow the instructions and make sure all fields are filled in:</label>
+        </div>
+        <div class="col-md-1">
+          <button onclick="submitChanges()" class="btn btn-info btn-fill">Save All</button>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <form method="post" id="saveParams" action="postChangeNetkiSettings">
+        <div class="row">
+          <div class="col-md-12">
+            <b>Webhook</b>
+            <br/>
+            <label>
+              Please fill in the webhook settings on your netki dashboard, with your api base url followed by /api/netkiWebhookPost
+              <br/>
+              For example: https://digishares.io/api/netkiWebhookPost
+              <br/>
+              The Webhook can be found here:
+              <a href="https://compliance.netki.com/business-settings">
+                https://compliance.netki.com/business-settings
+              </a>
+              Under the Callback URL field.
+              <br/>
+              <b>Note:</b> In order for the callbacks to fire, please check the "Callback Enabled" option as well.
+            </label>
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Username</b>
+            <br/>
+            <label>This is the sane username used to authenticate on the netki platform here:
+              <a href="https://compliance.netki.com/">
+                https://compliance.netki.com/
+              </a>
+              <br/>
+              The username is needed in order to fetch all of the access codes provided by netki.
+            </label>
+            <br/>
+            <input name="username" class="form-control border-input" value="{{username}}">
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Password</b>
+            <br/>
+            <label>This is the sane password used to authenticate on the netki platform here:
+              <a href="https://compliance.netki.com/">
+                https://compliance.netki.com/
+              </a>
+              <br/>
+              The password is needed in order to fetch all of the access codes provided by netki.
+              <br/>
+              <b>
+                Note: The password is stored in an encrypted manner and will not be displayed here.
+                <br/>
+                Please leave this field empty if you do not wish to change it.
+              </b>
+            </label>
+            <br/>
+            <input name="password" class="form-control border-input">
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <b>Investor indications to the mobile app</b>
+            <br/>
+            <label>
+              This field is used to provide the investor some indication on where to get the mobile app from and how to use it in order
+              to sign up with netki.
+              <br/>
+              This field supports HTML iframe tags for a nicer looking interface.
+            </label>
+            <br/>
+            <br/>
+            <textarea id="netkiMobileAppPanel" name="netkiMobileAppPanel" maxlength="3500" rows="5"
+                      class="form-control border-input"
+                      style="width:100%;">{{netkiMobileAppPanel}}</textarea>
+          </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-1">
+                <label class="switch big-switch">
+                  <input onchange="showEmailDetails()" class="input-sm" id="chkSendInstructionalEmail" name="chkSendInstructionalEmail" type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="col-md-11">
+                <p>Send Instructional Email To The Investor</p>
+              </div>
+            </div>
+
+            <div class="row" style="display: none" id="emailDetails">
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-12">
+                    <b>Email Title</b>
+                    <br/>
+                    <label>
+                      This field represents the title of the email received by the investor after they signed up
+                    </label>
+                    <br/>
+                    <br/>
+                    <input name="emailHeader" class="form-control border-input" value="{{netkiEmailHeader}}">
+                  </div>
+                </div>
+                <hr/>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <b>Email body</b>
+                    <br/>
+                    <label>
+                      This field represents the body of the email received by the investor after sign up
+                      <br/>
+                      This field supports HTML iframe tags for a nicer looking interface.
+                    </label>
+                    <br/>
+                    <br/>
+                    <textarea id="emailBody" name="emailBody" maxlength="3500" rows="5"
+                              class="form-control border-input"
+                              style="width:100%;">{{netkiEmailBody}}</textarea>
+                  </div>
+                </div>
+                <hr/>
+
+                <div class="row">
+                  <div class="col-md-1">
+                    <label class="switch big-switch">
+                      <input class="input-sm" id="chkAttachMobileAppPanelToEmail" name="chkAttachMobileAppPanelToEmail" type="checkbox">
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                  <div class="col-md-11">
+                    <p>Attach the "Investor indications to the mobile app" field described above, to the bottom of the email body</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+      </form>
+    </div>
+  </div>
+
+  {{#if username}}
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="title">  <img src="/img/link.png" width="30px;" style="padding-bottom:4px;" /> Netki Controls</h4>
+            <label>Here you can test the integration of your account.</label>
+          </div>
+          <div class="col-md-3">
+            <button onclick="fetchAccessCodes()" class="btn btn-info btn-fill">Fetch Access Codes</button>
+          </div>
+          <div class="col-md-3">
+            <button onclick="deleteAccessCodes()" class="btn btn-danger btn-fill">Delete Access Codes</button>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <b>
+              <div class="row">
+                <div class="col-md-4">
+                  <p> Total Access Codes: {{accessCodes.length}} </p>
+                </div>
+                <div class="col-md-4">
+                  <p> New Access Codes: {{unUsedAccessCodes.length}} </p>
+                </div>
+                <div class="col-md-4">
+                  <p> Used Access Codes: {{subtractTovalue accessCodes.length unUsedAccessCodes.length}}</p>
+                </div>
+              </div>
+              <br/>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>
+                      Access Code
+                    </th>
+                    <th>
+                      Investor ID (empty means unused)
+                    </th>
+                    <th>
+                      Child Access Code
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each accessCodes}}
+                    <tr>
+                      <td>
+                        {{this.access_code}}
+                      </td>
+                      <td>
+                        {{#ifEqual this.investorID -1}}
+                          <label>
+                            Used in Testing
+                          </label>
+                        {{else}}
+                          {{this.investorID}}
+                        {{/ifEqual}}
+                      </td>
+                      <td>
+                        {{this.childAccessCode}}
+                      </td>
+                    </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </b>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>

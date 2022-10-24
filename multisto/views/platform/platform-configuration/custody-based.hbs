@@ -1,0 +1,43 @@
+<div class="card col"
+  {{#ifEqual platformConfiguration 3}}
+     style="
+  border-style: solid;
+  border-color: green;
+"
+  {{/ifEqual}}
+>
+  <div>
+    {{#ifEqual platformConfiguration 3}}
+      <span class="checkmark">
+        <div class="checkmark_circle"></div>
+        <div class="checkmark_stem"></div>
+        <div class="checkmark_kick"></div>
+      </span>
+    {{/ifEqual}}
+    <h2 class="mx-auto px-4 py-1 rounded-bottom shadow-sm">Custody Based</h2>
+    <hr/>
+    <h3 class="card-title pricingTable-header">
+      <ul>
+        <li>Internal wallets</li>
+        <li>Running balances</li>
+        <li>Both for crypto and fiat</li>
+      </ul>
+    </h3>
+    <hr/>
+    <ul >
+      <li class="li-separator">
+        Customer funds in custodied omnibus wallet
+      </li>
+      <li class="li-separator">
+        Customers’ security tokens in custodied omnibus wallet
+      </li>
+      <li class="li-separator">
+        Issuer crypto funds in same custodied omnibus wallet to keep things simple (Mercury not legal since issuers can’t legally keep customer funds on their account)
+      </li>
+      <li class="li-separator">
+        Issuer’s security tokens in same custodied omnibus wallet
+      </li>
+    </ul>
+    <button class="btn btn-info btn-fill btn-wd" onclick=changePlatformConfigurationMode(3)>Select</button>
+  </div>
+</div>

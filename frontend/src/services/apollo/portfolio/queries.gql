@@ -1,0 +1,3 @@
+query portfolioValue($stoID: Int!) {
+  portfolioValue(stoID: $stoID)
+}

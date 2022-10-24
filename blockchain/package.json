@@ -1,0 +1,22 @@
+{
+  "version": "0.1.0",
+  "dependencies": {
+    "babel-polyfill": "6.26.0",
+    "babel-preset-env": "1.7.0",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-stage-2": "6.24.1",
+    "babel-preset-stage-3": "6.24.1",
+    "babel-register": "6.26.0",
+    "ganache-cli": "^6.12.2",
+    "solc": "^0.8.14",
+    "truffle": "5.5.12",
+    "web3": "1.2.11"
+  },
+  "scripts": {
+    "test contracts": "forge test -vvvv",
+    "compile contracts": "truffle compile",
+    "deploy contracts": "truffle migrate",
+    "reset deployed contracts": "truffle migrate --reset",
+    "start ganache": "ganache-cli -m 'race bridge north visit curve rwheel kiss analyst mule melody potato coast' --db ./ganache_db -p 7545"
+  }
+}

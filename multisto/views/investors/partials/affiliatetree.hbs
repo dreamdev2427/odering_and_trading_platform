@@ -1,0 +1,158 @@
+<script src="/assets/js/jquery-ui.min.js" type="text/javascript"></script>
+<link href="/assets/css/data-tooltip.css" rel="stylesheet">
+
+<style>
+	.main {
+		margin: 100px;
+		margin-top: 0px;
+		align-items: center;
+		justify-content:center;
+	}
+	.investorNode {
+		justify-content: center;
+		text-align: center;
+		align-items: center;
+		padding: 0px;
+	}
+    .investor {
+        margin: 4px;
+        text-align: center;
+    }
+	.investor-li {
+		display: inline;
+		padding-left: 4px;
+		padding-right: 4px;
+		border-top: 2px solid #333;
+		position: relative;
+	}
+	.investor-li:only-child {
+		border-top: 0px;
+	}
+	.investor-li:first-child::after {
+		content: "";
+		width:50%;
+		height:2.1px;
+		background-color:white;
+		position: absolute;
+		left:-2px;
+		top:-2px;
+	}
+	.investor-li:last-child::after {
+		content: "";
+		width:50%;
+		height:2.1px;
+		background-color:white;
+		position: absolute;
+		right:0;
+		top:-2px;
+	}
+	.directs {
+		display: inline-flex;
+		justify-content: center;
+		padding: 0px;
+		{{!-- border-top: 2px solid #333; --}}
+		margin-left: 4px;
+		margin-right: 4px;
+	}
+    .rejected {
+        color: red;
+    }
+    .pending {
+        color: gray;
+    }
+    /* Override */
+    [data-tooltip]:before {
+        text-align: left;
+        padding: 10px;
+    }
+	.line-vert {
+		border-right: 2px solid #333;
+		width:50%;
+		height: 16px;
+		margin: -4px 0px -4px 0px;
+		padding: 0px;
+	}
+	.hidden {
+		display: none;
+	}
+	.spacer {
+		margin-bottom: 64px;
+	}
+</style>
+
+{{!-- Note: node parameter follows InvestorTreeNodeDto structure  --}}
+<script language="javascript">
+	function displayTree() {
+		$('#treeLocation').empty();
+		var first = {{{networkTree}}};
+		console.log(first);
+		displayNode(first, $('#treeLocation'));
+		$(`#investorArea-${first.ID} > .line-vert`).remove();
+	}
+	function displayNode(node, currentContainer) {
+		var container = $('#investorNode').clone(true).appendTo(currentContainer);
+		container.removeClass('hidden');
+		container.attr(`id`, `investorNode-${node.ID}`);
+
+		var parentArea = container.children('#parent');
+
+		var parentIcon = $('#investorArea').clone(true);
+		if (node.level === -1) {
+			parentIcon.children('.line-vert').remove();
+		}
+		parentIcon.appendTo(parentArea);
+		parentIcon.removeClass('hidden');
+		parentIcon.attr('id', `investorArea-${node.ID}`);
+		parentIcon.attr(`data-tooltip-location`, `${(node.level < 2) ? 'top':'top'}`);
+		parentIcon.attr('data-tooltip', `${(node.name) ? node.name : '[unknown]'}
+ID: ${node.ID}
+KYC: ${(node.isKYC) ? 'Approved' : 'Pending'}
+Directs: ${(node.directs) ? node.directs.length : 0}
+${(node.level === "-1") ? '' : ('Level: ' + (node.level))}${(node.eligible) ? `
+Active` : ``}`);
+		parentIcon.append(`<p>${(node.name) ? node.name : '?'}</p>`);
+
+		if (node.directs && node.directs.length > 0) {
+			parentArea.append(`<div class="line-vert"></div>`);
+			
+			var directsArea = container.children('#directs');
+			directsArea.attr('id', `directs-${node.ID}`);
+			if (node.directs.length < 1) {
+				directsArea.css('border-top', '0px');
+			}
+
+			node.directs.forEach((subNode) => {
+				directsArea.append(`<li id="li-${subNode.ID}" class="investor-li"></li>`);
+				var li = $(`#li-${subNode.ID}`);
+				displayNode(subNode, li);
+			});
+		} else {
+			container.children('#directs').remove()
+		}
+	}
+</script>
+
+<div id="investorNode" class="investorNode hidden">
+	<div id="parent" class="parent investor">
+		{{!-- Parent investorArea injected here --}}
+	</div>
+	<ul id="directs" class="directs">
+		{{!-- Each of parent's directs (subtree) injected here --}}
+	</ul>
+</div>
+
+<div id="investorArea" class="hidden">
+	<div class="line-vert"></div>
+	{{!-- <i class="ti-user"></i> --}}
+	<img src="/img/affiliate/inv3.png" width="32px" height="32px" />
+</div>
+
+<main class="main">
+	<div class="spacer"></div>
+	<ul class="directs">
+		<li id="treeLocation" class="investor-li"></div>
+	</ul>
+	<script language="javascript">
+		displayTree();
+	</script>
+</main>

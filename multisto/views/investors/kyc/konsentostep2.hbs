@@ -1,0 +1,300 @@
+<script language="javascript">
+	
+	var UploadFile_Size = {{Data.UploadFile_Size}};
+    var tempID = 0;
+    
+	$("document").ready(function(){
+		if( $("#concentErrorMessage").text() != "" )
+			window.scrollTo(0,document.body.scrollHeight);
+        
+        commonChangeFileNamesOnKYCScreens();
+	})
+    function downloadDocument(fileID, index) {
+        window.location.href = "downloadDocumentFromKYCRecord?stepid=IDDoc&fileID=" + fileID + "&index=" + index;
+        return false;                                                      
+    }
+	function submitUploadFile(uploadID) {
+		var fileInput = null;
+
+		if(uploadID == 1)
+			fileInput = document.getElementById('fileID');
+		else
+			fileInput = document.getElementById('fileAddress');
+		
+		if(fileInput.value == "")
+			alert("Please select a file to upload");
+		else
+			document.getElementById("FileUpload" + uploadID).submit();
+	}
+	function fileValidation(uploadID) {
+		
+		var fileInput = null;
+
+		if(uploadID == 1)
+			fileInput = document.getElementById('fileID');
+		else
+			fileInput = document.getElementById('fileAddress');
+
+		var filePath = fileInput.value;
+		
+		var error = false;
+		
+
+		var allowedExtensions = /(\.tif|\.tiff|\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf)$/i;
+		if( fileInput.files[0].size > UploadFile_Size * 1048576 ) {
+			alert("File size cannot be larger than " + UploadFile_Size + "MB");
+			error = true;
+		}
+		else if(!allowedExtensions.exec(filePath)){
+			alert('Please select doc, docx, pdf or image file only');
+			error = true;
+		}
+
+		if(error == true) {
+			fileInput.value = '';
+			$('#upload-file' + uploadID).html("No File Selected");
+			return false;			
+		}
+		else
+			$('#upload-file' + uploadID).html(fileInput.files[0].name)
+	}
+    function submitForm(id){
+        var radios = document.getElementsByName('userAgree');
+        for (var i = 0, length = radios.length; i < length; i++) {
+            if (radios[i].checked) {
+                if(radios[i].value == "Yes") {
+                    document.getElementById('applyFor').value = id;
+                    document.getElementById('frmwizardpost').submit();
+                    return false;                    
+                }
+                if(radios[i].value == "No") {
+                      showModelGeneralOKDialogBox("Your details are saved in our database. Thank you");
+                      return false;                    
+                }
+            }
+        }
+        
+        showModelGeneralOKDialogBox("Please give your consent");
+    }
+
+    function callMultiFileUpdate(id) {
+        if(id == 1) {
+            tempID = 1;
+            checkAndUpdateMultiFileUpload('photos111', 'upload-file1',  MultifileMultifileExtensions1, MultifileMultifileExtensions1msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);
+        } else if (id == 2) {
+            tempID = 2;
+            checkAndUpdateMultiFileUpload('photos222', 'upload-file2',  MultifileMultifileExtensions1, MultifileMultifileExtensions1msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);            
+        }
+    }
+    function multipleFilesUploadingDoneEvent(data) {
+        document.getElementById("filesForID" + tempID).value = JSON.stringify(data);
+        document.getElementById("FileUpload" + tempID).submit();
+    }    
+    function deleteInvestorDocumentsFromKYC(filenode, index) {
+        window.location.href = "deleteInvestorDocumentsFromKYC?stepid={{currentPageID}}&filenode=" + filenode + "&index=" + index;
+        return false;            
+    }    
+    
+
+    function isGuid(stringToTest) {
+        /*if (stringToTest[0] === "{") {
+            stringToTest = stringToTest.substring(1, stringToTest.length - 1);
+        }
+        var regexGuid = /^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$/gi;
+        return regexGuid.test(stringToTest);*/
+        
+        return true
+    }        
+    
+</script>
+
+
+
+<div class="row">
+    <div class="col-md-12">         
+
+        <div id="demo" class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">1 - {{{__ "Prove your identity"}}}</h4>
+                    </div>
+                    <div  class="content">
+                            <br />
+                            {{{__ "Please verify your identity so we can comply with international financial regulations"}}} 
+
+                            <br /><br />
+                            {{{__ "Please upload a scanned copy of your passport in high quality"}}} 
+
+                            <br /><br />
+
+                            {{#if this.stepData.fileID}}
+                                    {{#each stepData.fileID}}
+                                        <div class="row" style="padding-top:10px;">
+                                            <div class="col-md-7">
+                                                - &nbsp;&nbsp; <span class="ClassFileName"> {{this}} </span>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <button onclick="return downloadDocument('fileID', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button> 
+                                                
+                                                &nbsp;&nbsp;
+                                                <button onclick="return deleteInvestorDocumentsFromKYC('fileID', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Delete</button>                                                
+                                            </div>
+                                        </div>
+                                    {{/each}}
+                                <br />
+                                <b>{{{__ "Or upload another file"}}}</b>   <br />
+                                <br />
+                            {{/if}}
+
+                            <div class="upload-btn-wrapper">
+                                <button class="btnfile">{{{__ "Select File"}}}</button>
+                                <input   id="photos111"   name="photos111" multiple="multiple" type="file"  onchange="callMultiFileUpdate(1)" >
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <span style="color: green; font-size: 12px; " id="upload-file1">{{{__ "No File Selected"}}}</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('photos111', 'fileUplodProgressUpload1', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="progress" style="display: none;">
+                                      <div id="fileUplodProgressUpload1" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                    </div>                   
+                                </div>
+                            </div>
+
+                            <form id="FileUpload1" name="FileUpload1"  action="/wizardPostFile" method="post">
+                                <input type="hidden" name="files" id="filesForID1" value="" >
+                                <input type="hidden" name="fileFieldName" id="fileFieldName" value="fileID">
+                                <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                            </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">2 - {{{__ "Prove your address"}}}</h4>
+                    </div>
+                    <div class="content">
+                                <br />
+                                {{{__ "Please upload a scanned copy of a utility bill or similar that documents your address"}}}
+
+                                <br /><br />
+
+                            {{#if this.stepData.fileAddress}}
+                                    {{#each stepData.fileAddress}}
+                                        <div class="row" style="padding-top:10px;">
+                                            <div class="col-md-7">
+                                                - &nbsp;&nbsp; <span class="ClassFileName"> {{this}} </span>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <button onclick="return downloadDocument('fileAddress', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">{{{../__ "Download"}}}</button>
+
+                                                &nbsp;&nbsp;
+                                                <button onclick="return deleteInvestorDocumentsFromKYC('fileAddress', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Delete</button>
+                                            </div>
+                                        </div>
+                                    {{/each}}
+                                <br />
+                                <b>{{{__ "Or upload another file"}}}</b>   <br />
+                                <br />
+                            {{/if}}
+
+                            <div class="upload-btn-wrapper">
+                                <button class="btnfile">{{{__ "Select File"}}}</button>
+                                <input   id="photos222"   name="photos222" multiple="multiple" type="file"  onchange="callMultiFileUpdate(2)" >
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <span style="color: green; font-size: 12px; " id="upload-file2">{{{__ "No File Selected"}}}</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input class="btn btn-info btn-fill" onclick="uploadMultiplefilesToServer('photos222', 'fileUplodProgressUpload2', 3, '/uploadFiles')" name="Photo Uploads" value="Upload File(s)" />
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="progress" style="display: none;">
+                                      <div id="fileUplodProgressUpload2" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                    </div>                   
+                                </div>
+                            </div>
+
+                            <form id="FileUpload2" name="FileUpload2"  action="/wizardPostFile" method="post">
+                                <input type="hidden" name="files" id="filesForID2" value="" >
+                                <input type="hidden" name="fileFieldName" id="fileFieldName" value="fileAddress">
+                                <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                            </form>
+
+
+                            <br />
+
+                            <div class="footer">
+
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row topPaddingBetweenPageSections">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title">3 - {{{__ "Submit your profile"}}}</h4>
+                            </div>
+                            <div class="content">
+
+                                       {{{__ "Herewith you confirm the correctness of the information you have provided"}}}
+                                
+ 
+                                        <br /><br />
+
+                                        <b><span id="concentErrorMessage" style="color:red;">{{message}}</span></b>
+
+                                        <form action="wizardSubmit" method="post" id="frmwizardpost" name="frmwizardpost">           
+                                              <br />
+                                              <b>{{{__ "Please select yes to apply"}}}</b>
+                                              <br /><br />
+                                            <input type="radio" id="userAgree1" name="userAgree" value="Yes" /> &nbsp;&nbsp;&nbsp;&nbsp; 
+                                            {{{__ "Yes, I accept the terms of use of the Konsento Platform"}}}
+                                            
+                                              <br /><br />
+                                              <input type="radio" id="userAgree2" name="userAgree" value="No" />  &nbsp;&nbsp;&nbsp;&nbsp; <b>{{{__ "Please inform me about future investment opportunities"}}}</b>
+                                              <br /><br />
+
+                                            
+                                                <input type="hidden" name="getEmails" id="getEmails" value="yes" />
+                                                <input type="hidden" name="applyFor" id="applyFor" value="1" />
+                                                <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                                                <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                                                <button type="button" onclick="return submitForm(4)" class="btn btn-info btn-fill btn-wd" >Apply as Private Client</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   
+
+                                                <button type="button" onclick="return submitForm(5)" class="btn btn-info btn-fill btn-wd" >Apply as     
+                                                Professional Client</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                                <button type="button" onclick="return submitForm(6)" class="btn btn-info btn-fill btn-wd" >Apply as Business Entity</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                          
+                                        </form>
+                                        <br />
+                                    <div class="footer"></div>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+
+        {{>multifileupload}}
+    </div>
+</div>
+

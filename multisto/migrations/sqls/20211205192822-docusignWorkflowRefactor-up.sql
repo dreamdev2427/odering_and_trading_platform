@@ -1,0 +1,1 @@
+ALTER TABLE documentsADD docusignDocumentID varchar(50);ALTER TABLE documentfieldsADD docusignFieldDataLabel varchar(100);

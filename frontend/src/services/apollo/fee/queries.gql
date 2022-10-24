@@ -1,0 +1,13 @@
+query fetchFees($stoID: Int!, $beneficiary: FEE_BENEFICIARY, $type: FEE_TYPE, $status: COMMISSION_TYPE) {
+  fetchFees(stoID: $stoID, beneficiary: $beneficiary, type: $type, status: $status) {
+    ID
+    beneficiary
+    type
+    amount
+    status
+  }
+}
+
+query getInvitationLink {
+  getInvitationLink
+}

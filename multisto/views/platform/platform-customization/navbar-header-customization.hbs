@@ -1,0 +1,62 @@
+{{> Header}}
+
+<script language="javascript">
+
+  const customNavbar = JSON.parse(decodeURIComponent("{{customNavbar}}")).fetchCustomizedComponent;
+
+  $(document).ready(function() {
+    document.getElementById('componentID').setAttribute('value', customNavbar.ID);
+    document.getElementById('componentTitle').setAttribute('value', customNavbar.component);
+    $("textarea#componentCustomization").val(customNavbar.body);
+  })
+
+  function saveNavbarHeaderCustomization() {
+    document.getElementById('setNavbarHeaderTags').submit();
+  }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more' />Customize the navigation bar header</h4>
+      <label>Customize the navigation bar header with custom HTML tags</label>
+    </div>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <form id="setNavbarHeaderTags" action="/platform/postNavbarHeaderCustomization" method="post">
+            <div class="row">
+              <div class="col-md-11">
+                <div class="row">
+                  <div class="col-md-11">
+                    Insert HTML tags
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-11">
+                    <label>
+                        The HTML tags are displayed at the top of the navigation bar, they will be shown across the full length of the navigation bar itself.
+                    </label>
+                  </div>
+                </div>
+                <div class="row">
+                    <div class="col-md">
+                        <textarea id="componentCustomization" name="componentCustomization" rows="5" class="form-control border-input" style="width:100%;"></textarea>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="componentID" name="componentID" value="" />
+            <input type="hidden" id="componentTitle" name="componentTitle" value="" />
+            <input type="hidden" name="redirectUrl" value="/platform/navbarHeaderCustomization" />
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          </form>
+          <button onclick="saveNavbarHeaderCustomization()" class="btn btn-info btn-fill">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{> Footer}}

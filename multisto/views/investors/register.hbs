@@ -1,0 +1,290 @@
+{{> Header}}
+
+    <script src="../libs/validations.js" type="text/javascript"></script>
+
+	<script language="javascript">
+
+		$(document).ready(function() {
+            investorTypeChange();
+            var referalID = "0";
+            
+            if( commonGetQueryStringValue("referralid") != null )
+                referalID = commonGetQueryStringValue("referralid");
+            if( commonGetQueryStringValue("referralID") != null )
+                referalID = commonGetQueryStringValue("referralID");   
+			
+            if( commonGetQueryStringValue("geniusID") != null )
+                referalID = commonGetQueryStringValue("geniusID");
+            if( commonGetQueryStringValue("geniusid") != null )
+                referalID = commonGetQueryStringValue("geniusid");   			
+			
+            
+            document.getElementById("referalID").value = referalID;
+		})
+		function submitForm() {
+			var res = "";
+
+            document.getElementById("firstname").value = document.getElementById("firstname").value.trim();
+            document.getElementById("lastname").value = document.getElementById("lastname").value.trim();
+            document.getElementById("email").value = document.getElementById("email").value.trim();
+            
+            
+            if(document.getElementById("investorType").value == "1") {
+                if(document.getElementById("companyName").value == "")
+                    res = "<li>Company Name is required</li>";
+            }
+            
+			if(document.getElementById("firstname").value == "")
+				res = res + "<li>First Name is required</li>";
+			if(document.getElementById("firstname").value.length < 2)
+				res = res + "<li>First Name must be atleast 2 characters</li>";
+            
+			if(document.getElementById("lastname").value == "")
+				res = res + "<li>Last Name is required</li>";
+			if(document.getElementById("lastname").value.length < 2)
+				res = res + "<li>Last Name must be atleast 2 characters</li>";
+            
+			if(document.getElementById("email").value == "")
+				res = res + "<li>Email address is required</li>";
+			else if(!validations_validateEmail(document.getElementById("email").value))
+				res = res + "<li>Email address is not valid</li>";
+
+			if(document.getElementById("password").value == "")
+				res = res + "<li>Password is required</li>";
+			else if(document.getElementById("password").value.length < 10)
+				res = res + "<li>Password must be at least 10 characters long</li>";
+            else if(document.getElementById("password").value.length > 100)
+				res = res + "<li>Password must be maximum of 100 characters long</li>";
+			else if(document.getElementById("retypepassword").value == "")
+				res = res + "<li>Re-Type password</li>";  
+			else if(document.getElementById("password").value != document.getElementById("retypepassword").value)
+			{
+				res = res + "<li>Password re-typed incorrectly</li>";    
+				document.getElementById("retypepassword").value == "";
+			}
+
+            
+            var matchedCase = new Array();
+            matchedCase.push("[$@$!%*#?&]"); // Special Charector
+            matchedCase.push("[A-Z]");      // Uppercase Alpabates
+            matchedCase.push("[0-9]");      // Numbers
+            matchedCase.push("[a-z]");     // Lowercase Alphabates
+            var ctr = 0;
+            for (var i = 0; i < matchedCase.length; i++) {
+                if (new RegExp(matchedCase[i]).test(document.getElementById("password").value)) {
+                    ctr++;
+                }
+            }
+            if(ctr != 4) {
+                res = res + "<li>Password must be more secure. It must contain at least 1 upper case latter, 1 lower case letter, 1 special letter (@ # % ! etc) and 1 number";    
+            }
+
+			if(res == "")
+				document.getElementById("registrationForm").submit();
+			else
+			{
+				$(window).scrollTop(800);
+				$("#ErrorMessages").html(res)
+			}
+
+		}
+		function investorLogin() {
+            window.location.href = "/";
+            return false;
+		}
+        function investorTypeChange() {
+            if(document.getElementById("investorType").value == "0") {
+                $("#companyNameDiv").hide();
+                $(".individualLabel").show();
+                $(".companySpanArea").hide();
+            } else {
+                $("#companyNameDiv").show();
+                $(".individualLabel").hide();
+                $(".companySpanArea").show();                
+            }
+        }
+
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h3>Create your free investor account now
+                    <button onclick="investorLogin()" class="btn btn-info btn-fill btn-wd" style="float: right;">Investor Login</button>  
+                    </h3>
+
+                </div>
+                <div class="content">
+
+                        <img src="/img/stobanners/{{Data.logo}}" width="100%" />
+
+                        <br />
+                        <b><span style="color:red;">{{userNameTaken}} </span></b>
+                        <br /><br />
+
+                        <h4 class="title">Registration Instructions</h4>
+
+                        <br />
+                        <br />
+                    
+                        {{{registrationtext}}}
+                    
+                        <br />
+                        
+                        Start your registration process and get verified to invest through the platform
+                        <br /><br />
+                        Here are the steps
+                        <br /><br />
+
+                        <div class="row">
+                            <div class="col-md-1 text-nowrap">
+                                <b><img src="/img/graydot.png" width="10px" /> &nbsp; Step 1</b>
+                            </div>
+                            <div class="col-md-10">
+                                    Create your personal investor profile by filling out the following simple form. Your profile will be created with your personal email address as username.
+                                    <br />&nbsp;
+                            </div>                                        
+                        </div>                 
+
+                        <div class="row">
+                            <div class="col-md-1 text-nowrap">
+                                    <img src="/img/graydot.png" width="10px" /> &nbsp; <b>Step 2</b>
+                            </div>
+                            <div class="col-md-10">
+                                After submitting the registration form, you will be directed to an email verification page. Please check your email box and open the email from {{Data.SiteParameter_PageTitle}} which contains a verification code. Enter your code to verify your email address.
+                                <br />&nbsp;
+                            </div>                                        
+                        </div>                 
+
+                        <div class="row">
+                            <div class="col-md-1 text-nowrap">
+                                    <img src="/img/graydot.png" width="10px" /> &nbsp; <b>Step 3</b>
+                            </div>
+                            <div class="col-md-10">
+                                After email verification you will be logged into your personal profile dashboard where you can follow some simple steps through a KYC (Know Your Customer) verification process as required by regulators.
+                                    <br />&nbsp;
+                            </div>                                        
+                        </div>                 
+
+                        <div class="row">
+                            <div class="col-md-1 text-nowrap">
+                                    <img src="/img/graydot.png" width="10px" /> &nbsp; <b>Step 4</b>
+                            </div>
+                            <div class="col-md-10">
+                                    After entering the required KYC information and documents, please submit your profile to be reviewed by {{Data.SiteParameter_PageTitle}}.
+                                    <br />&nbsp;
+                            </div>                                        
+                        </div>                 
+
+                        <div class="row">
+                            <div class="col-md-1 text-nowrap">
+                                    <img src="/img/graydot.png" width="10px" /> &nbsp; <b>Step 5</b>
+                            </div>
+                            <div class="col-md-10">
+                                    After approval from {{Data.SiteParameter_PageTitle}} your profile will be activated and you will be notified by email. You will then be able to purchase {{Data.SiteParameter_PageTitle}} shares
+                                    <br />&nbsp;
+                            </div>                                        
+                        </div>                 
+
+                    <br />
+
+                    <div style="width:70%;" class="imageBoxWIthoutWidth">
+                    <h3>Registration Form</h3>
+                    <form id="registrationForm" name="registrationForm" action="/registerPost" method="post">
+
+                        <ul style="color:red;"><span id="ErrorMessages"> </span></ul>
+
+                        <!--  <option id="0">Private"</option  <option id="1">Company"</option    -->
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label>Are you </label>
+                                    <select id="investorType" name="investorType" onchange="investorTypeChange()" class="form-control border-input">
+                                        {{#each InvestorCategory}}
+                                            <option value="{{@key}}">{{this}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            </div>                                        
+                        </div>
+
+                        <div class="row" id="companyNameDiv">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>Company Name</label>
+                                    <input type="text" maxlength="60" id="companyName" name="companyName" class="form-control border-input" placeholder="Enter Company Name" value={{companyName}}>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>First Name <span class="companySpanArea"> of Company Representative</span></label> 
+                                    <input type="text" maxlength="60" id="firstname" name="firstname" class="form-control border-input" placeholder="Enter your first name" value={{firstName}}>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>Last Name</label>
+                                    <input type="text" maxlength="60" id="lastname" name="lastname" class="form-control border-input" placeholder="Enter your last name" value={{lastName}}>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>Email Address <span class="companySpanArea"> of Company</span> </label>
+                                    <input type="text" maxlength="70" id="email" name="email" class="form-control border-input" placeholder="Enter your email address"> 
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>Password</label>
+                                    <input type="password" id="password" name="password" class="form-control border-input" placeholder="Enter your password">
+                                    <label>Password must contain at least 1 upper case latter, 1 lower case letter, 1 special letter (@ # % ! etc) and 1 number</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <label>Re-type Password</label>
+                                    <input type="password" id="retypepassword" name="retypepassword" class="form-control border-input" placeholder="Re-type password">
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+                        
+                        <input type="hidden" id="referalID" name="referalID" value="" />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Submit</button>
+
+                    </form>
+                    </div>
+                        <br /><br /><br />
+ 
+                    <div class="footer">
+                        <hr>
+                        <div class="stats">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

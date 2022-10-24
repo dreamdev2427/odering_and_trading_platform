@@ -1,0 +1,50 @@
+query InvestorInvestingEntities {
+  investorInvestingEntities {
+    ID
+    investorID
+    typeID
+    type {
+      ID
+      title
+      countries
+    }
+    taxId
+    name
+    nickname
+    accredited
+    paymentMethod
+    address
+    city
+    postalCode
+    country
+    state
+    isApprovedByAdmin
+    members {
+      ID
+      investorID
+      entityID
+      firstName
+      lastName
+      role
+      signatory
+      email
+    }
+    isApprovedByAdmin
+  }
+}
+query InvestorEntityTypes {
+  investorInvestingEntityTypes {
+    ID
+    title
+    countries
+  }
+}
+query GetInvestingEntity($id: Int!) {
+  investorInvestingEntity(entityID: $id) {
+    name
+    address
+    city
+    country
+    nickname
+  }
+}

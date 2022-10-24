@@ -1,0 +1,198 @@
+{{> Header}}
+
+	<script language="javascript">
+        var currentop = 0;    //1 = approve            0 = reject     operation
+        var isBlockchain = {{Record.isblockchain}};
+
+        var isMetaMaskConnected = 0;
+        var metaMaskAddress = "";
+
+        $(document).ready(function() {
+            $("#NewTokens").addClass('active');   
+        })
+        function gobackhomepage() {
+            window.location.href = "/admin/dashboardsto";    
+            return false;
+        }
+        function approveShareCreation() {
+            if (document.getElementById('chkCreateShares').checked) {
+                currentop = 1;
+                showModelGeneralYesNoDialogBox("Are you sure you want to create <b> {{Record.tokens}} {{Record.title}} </b>" , "Create Shares", "Cancel");
+            } else {
+                showModelGeneralOKDialogBox("Please click the checkbox to indicate your consent for share(s) creation");
+            }
+        }
+        function generalModelOKButtonClickedClientEvent() {
+            if(currentop == 1) {
+                document.getElementById("op").value = "1";
+                if(isBlockchain == 1) {
+                    $('#modelPrivateKeySelector').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+                    initializePublicKeyFileObject();
+                } else 
+                    document.getElementById("approvesharesform").submit();            
+            } else {
+                document.getElementById("op").value = "0";
+                document.getElementById("desc").value = document.getElementById("txtrejectionarea").value;
+                document.getElementById("approvesharesform").submit();
+            }
+        }
+        function callbackPublicKeyFileAndPasswordCollected(fileContents, password) {
+            document.getElementById("password").value = password;
+            document.getElementById("filecontents").value = fileContents;            
+            document.getElementById("approvesharesform").submit();    
+        }         
+        function rejectShareCreation() {            
+            currentop = 0;
+            showModelGeneralYesNoDialogBox("Are you sure you want to delete share creation request" , "Delete Shares", "Cancel");    
+        }
+        function connectMetaMask() {
+            connectWallet();
+        }    
+        function Wallet_BlockchainAccountSelected(account) {
+            $("#metaMaskSection").show();
+            $("#metaMaskAccountAddress").html( account );
+
+            isMetaMaskConnected = 1;
+            metaMaskAddress = account;
+
+            //getAccountBalanceFromBlockchain(account, smartContractAddress).then((data)=> {
+                //alert(data)
+            //})
+
+        }
+        function Wallet_TransactionEvent(hash, data) {
+            document.getElementById("blockchainTransactionID").value = hash;   
+            document.getElementById("metaMaskTransaction").value = "1";
+            document.getElementById("whitelistInvestorNewAddress").submit();
+        }
+	</script>
+
+{{> HeaderInnerSto}}
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/lock.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Approve Shares</h4>
+                </div>
+                <div class="content">
+
+                    <form id="buytrading" action="/tradingbuypost" method="post">
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Date request received</label>
+                            </div>
+                            <div class="col-md-4">
+                                {{Record.LogDate}}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Share type</label>
+                            </div>
+                            <div class="col-md-4">
+                                {{Record.title}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Number of shares to create</label>
+                            </div>
+                            <div class="col-md-4">
+                                {{Record.tokens}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Request send by</label>
+                            </div>
+                            <div class="col-md-4">
+                                {{Record.FirstName}} {{Record.LastName}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Details</label>
+                            </div>
+                            <div class="col-md-4">
+                                {{Record.description}}
+                            </div>
+                        </div>
+                        <br />
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label>  <input type="checkbox"  id="chkCreateShares"> &nbsp;&nbsp;&nbsp; Click checkbox to indicate your consent to create new shares </label>
+                            </div>
+                        </div>
+                        
+                        <br />
+                        
+                        <hr />
+
+                        <button type="button" class="btn btn-info btn-fill btn-wd" onclick="connectMetaMask()">Connect MetaMask</button> 
+                        &nbsp;&nbsp;&nbsp;
+                        <span id="metaMaskSection" style="display:none;">
+                            <img src="/img/greendot.png" width="20px;"> Meta Mask is connected
+
+                            <br /><br />
+
+                            <span id="metaMaskAccountAddress"></span> 
+                            &nbsp;&nbsp;&nbsp;
+                            ( Please make sure this is the correct address to send transaction )
+
+                        </span>
+
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" onclick="approveShareCreation()" class="btn btn-info btn-fill">Approve Shares</button>
+                                &nbsp;&nbsp;
+                                <button type="button" onclick="gobackhomepage()" class="btn btn-info btn-fill">Cancel</button>
+                            </div>
+                        </div>                    
+                        
+                        
+                        <br />
+                        <hr />
+                        <br />
+                        <b>OR Reject shares creation request</b>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Rejection Note</label>
+                                <textarea id="txtrejectionarea" rows="4" cols="80" class="form-control border-input"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" onclick="rejectShareCreation()" class="btn btn-info btn-fill">Reject Shares</button>
+                            </div>
+                        </div>                         
+                        
+                    </form>
+                    <br />&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<form id="approvesharesform" name="approvesharesform" action="/admin/approveShareCreation" method="post" >
+    <input type="hidden" id="id" name="id" value="{{Record.ID}}" />
+    <input type="hidden" id="op" name="op" value="" />
+    <input type="hidden" id="desc" name="desc" value="" />
+    <input type="hidden" id="filecontents" name="filecontents" value="" />
+    <input type="hidden" id="password" name="password" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+
+{{> atomicswap}}
+{{> privateKeySelectorDialog}} 
+{{> Footer}}

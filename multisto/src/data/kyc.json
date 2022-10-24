@@ -1,0 +1,74 @@
+{
+  "name": "KYC Process",
+
+  "KYCProcedures": {
+    "normal": {
+      "steps": [1, 2, 3, 4, 5]
+    }
+  },
+
+  "fileSections": {
+    "normal": ["IDDoc", "UtiltiyDoc"]
+  },
+
+  "Steps": [
+    {
+      "liID": "investorInfo",
+      "SideTitle": "1 - Personal Info",
+      "icon": "ti-layout-grid2",
+      "pageTemplate": "step0",
+      "stepLink": "wizard?step=0",
+      "isDocumentUploading": 0
+    },
+
+    {
+      "liID": "kycamount",
+      "SideTitle": "2 - Investment",
+      "icon": "ti-money",
+      "pageTemplate": "step1",
+      "stepLink": "wizard?step=1",
+      "isDocumentUploading": 0,
+      "Variables": [
+        {
+          "name": "TotalAmount",
+          "type": "string",
+          "length": "10",
+          "mandatory": 0
+        },
+        {
+          "name": "Currency",
+          "type": "string",
+          "length": "10",
+          "mandatory": 1
+        },
+        {
+          "name": "investorType",
+          "type": "string",
+          "length": "10",
+          "mandatory": 1
+        }
+      ]
+    },
+
+    {
+      "liID": "IDDoc",
+      "SideTitle": "3 - Upload / Submit ",
+      "icon": "ti-upload",
+      "pageTemplate": "step2",
+      "stepLink": "wizard?step=2",
+      "isDocumentUploading": 1,
+      "Variables": [
+        {
+          "name": "fileID",
+          "type": "file",
+          "length": "-"
+        },
+        {
+          "name": "fileAddress",
+          "type": "file",
+          "length": "-"
+        }
+      ]
+    }
+  ]
+}

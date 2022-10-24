@@ -1,0 +1,100 @@
+{{> Header}}
+
+<script language="javascript">
+    function statusHandler(id, statusCode){
+        document.getElementById('accID').value = +id;
+        document.getElementById('status').value = +statusCode;
+        document.getElementById('accreditationform').submit();
+        }
+  
+</script>
+
+
+{{> HeaderInnerSto}}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+
+            <div class="header">
+                <div class="row">
+                    <label> Accept / Decline Accreditation Requests<label />
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4 class="title">
+                                Accreditation Requests
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+                    <table id="investingEntities" class="table table-hover" style="overflow: auto;">
+                        <thead class="listingHeaderFontSize thead">
+                            <th>ID</th>
+                            <th>Official Name</th>
+                            <th>Nickname</th>
+                            <th>Entity Type</th>
+                            <th>Tax ID</th>
+                            <th>Accredited</th>
+                            <th>Payment Method</th>
+                            <th>Address</th>
+                            <th>City</th>
+                            <th>Zip</th>
+                            <th>Country</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each entities}}
+                            <tr>
+                                <td>{{this.ID}}</td>
+                                <td>{{this.name}}</td>
+                                <td>{{this.nickname}}</td>
+                                <td>{{this.typeID}}</td>
+                                <td>{{this.taxId}}</td>
+                                <td>
+                                    <label class="switch">
+                                        <input name="isAccreditedToggle" type="checkbox">                                        >
+                                        <span class="slider round"></span>
+                                    </label>
+                                </td>
+                                <td>{{this.paymentMethod}}</td>
+                                <td>{{this.address}}</td>
+                                <td>{{this.city}}</td>
+                                <td>{{this.postalCode}}</td>
+                                <td>{{this.country}}</td>
+                                <td>
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-default btn-sm" onclick="statusHandler({{this.ID}}, 1)">
+                                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-default btn-sm" onclick="statusHandler({{this.ID}}, 3)">
+                                         <span class="glyphicon glyphicon-remove" aria-hidden="true" ></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                    <div id="entityMembers" data-value="" style="display: none" />
+                </div>
+            </div>
+
+            <form method="post" id="accreditationform" action="/admin/setApiAccreditationStatus" onsubmit="return false" hidden>
+                <input name="id" value="" id="accID" />
+                <input name="status" value="" id="status" />
+                <input type="hidden" name="_csrf" value="{{csrf}}" />
+            </form>
+
+        </div>
+    </div>
+</div>
+{{> Footer}}

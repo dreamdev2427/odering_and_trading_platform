@@ -1,0 +1,290 @@
+{{> Header}}
+
+<script language="javascript">
+    var emailsExtracted = [];
+
+    $(document).ready(function() {
+        $("#voting").addClass('active');      
+        SummernoteBasicDataInitialize('details', 'Enter Text', 200);       
+    })
+ 
+    function submitForm() {
+
+        if( document.getElementById("title").value == "") {
+           showModelGeneralOKDialogBox("Please enter title");   
+           return false;   
+        }
+        
+        if( document.getElementById("subject").value == "") {
+           showModelGeneralOKDialogBox("Please enter email subject");   
+           return false;   
+        }        
+
+        if( document.getElementById("txtOpenDate").value == ""){
+           showModelGeneralOKDialogBox("Please enter Open Date"); 
+           return false;   
+        }
+        if(commonGetMySQLDateFormat(document.getElementById("txtOpenDate").value) == "") {
+            showModelGeneralOKDialogBox("date formate not correct");
+            return false;   
+        }else
+            document.getElementById("openDate").value = commonGetMySQLDateFormat(document.getElementById("txtOpenDate").value);
+
+        if( document.getElementById("txtCloseDate").value == "") {
+           showModelGeneralOKDialogBox("Please enter Close Date"); 
+           return false;   
+        }
+        if(commonGetMySQLDateFormat(document.getElementById("txtCloseDate").value) == "") {
+            showModelGeneralOKDialogBox("date formate not correct");
+            return false;   
+        } else
+            document.getElementById("closeDate").value = commonGetMySQLDateFormat(document.getElementById("txtCloseDate").value);
+
+        if( document.getElementById("emails").value == "") {
+           showModelGeneralOKDialogBox("Please enter email addresses"); 
+           return false;   
+        }
+        
+        if( validateEmails( document.getElementById("emails").value ) == true ) {
+            var z = JSON.stringify(emailsExtracted);
+            document.getElementById("emailaddressesJSON").value = z;
+        } else {
+            showModelGeneralOKDialogBox("There is some problem in email addresses. Please check all email addresses are in correct format"); 
+            return false;    
+        }
+        
+        var d1 = Date.parse(document.getElementById("openDate").value);
+        var d2 = Date.parse(document.getElementById("closeDate").value);
+        var curDate = Date.parse(Date());
+
+        if(d1 < curDate && d2 < curDate) {
+            if(d1 < curDate) {
+                alert ("Both opening and close date cannot be in past");
+                return false;            
+            }
+        }
+        
+        if (d1 > d2) {
+            alert ("Opening date cannot be greater than closing date");
+            return false;
+        }
+         
+        if (d1 === d2) {
+            alert ("Opening and Closing dates cannot be same");
+            return false;
+        }
+        
+        
+        var result = "";
+        var textBoxes = document.getElementsByClassName('txtOption');
+        if(textBoxes.length < 2)
+        {
+            showModelGeneralOKDialogBox("Please enter atleast 2 items");
+            return;
+        }                
+
+        var values = [];
+        for (var i=0; i<textBoxes.length; i++) {
+            if(textBoxes[i].value == "")
+            {
+                showModelGeneralOKDialogBox("Please enter Option Value");
+                return false;
+            }
+
+            values.push(textBoxes[i].value);
+        }        
+        
+        document.getElementById("optionValues").value = JSON.stringify(values);
+        //alert("done");
+        
+        document.getElementById("frmVotingCampaigns2").submit();
+    }
+    function validateEmails(string) {
+        var result = string.replace(/\s/g, "").split(/,|;/);        
+        emailsExtracted = [];
+        for(var i = 0;i < result.length;i++) {
+            if(result[i] != "") {
+                if(checkemailformat(result[i]))
+                    emailsExtracted.push( { "email": result[i] } );
+                else
+                    return false;
+            }
+        }       
+        return true;
+    }    
+    function addoption() {
+        $("#divOtions").append('<div class="row"><div class="col-md-10"><input  class="form-control border-input txtOption" type=text /></div><div class="col-md-2"><button class="btn btn-info btn-fill btn-sm deleteButton"> Delete </button> </div><br/>&nbsp;</div>');
+
+        setDeleteEventButton();
+        return false;
+    }
+    function setDeleteEventButton() {
+        $('.deleteButton').on('click', function(){
+            $(this).parent().parent().remove();
+        });
+    }
+    function backTomainpage() {
+        window.location.href = "voting?type=2";
+        return false;           
+    }
+    
+</script>
+
+{{> HeaderInnerSto}}
+
+	<div class="col-md-12">
+		<div class="card">
+
+            <div class="header">
+                <div class="row">                    
+                    <div class="col-md-12">
+                        <h4 class="title">
+                            <img src="/img/voting.png" width="35px;" style="padding-bottom:-10px;" /> &nbsp; Public Polls
+                        </h4> <label>Public Polls are voting campaigns in which users not registered in the platform are invited to participate in a decision making process </label>
+                    </div>
+                </div>                
+            </div>
+
+			<div class="content">
+                <br />
+                <form id="frmVotingCampaigns2" action="polleditpost" method="post">
+
+                    <div class="row">
+
+                            <div class="col-md-2">                                
+                                <label> Title </label>
+                            </div>				
+
+                            <div class="col-md-9">                                
+                                <input id="title" maxlength="500"  placeholder="Enter title" name="title" class="form-control border-input" type=text />
+                            </div>                        
+                    </div>
+                    <br />
+                    <div class="row">
+
+                            <div class="col-md-2">                                
+                                <label> Email Subject </label>
+                            </div>				
+
+                            <div class="col-md-9">   
+                                <label>Following text will be used as email subject to recipients</label>
+                                <input  id="subject"  maxlength="500"  placeholder="Enter email subject" name="subject" class="form-control border-input" type=text />
+                            </div>                        
+                    </div>
+                    <br />                    
+                    <div class="row">
+
+                            <div class="col-md-2">                                
+                                <label> Open Date </label>
+                            </div>
+
+                            <div class="col-md-3">                                
+                                {{#ifEqual open 2}}
+                                    {{Record.opendate}}
+                                    <input type="hidden"  onkeydown="return false;" id="txtOpenDate" name="txtOpenDate"  value="{{Record.opendate}}" />
+                                {{else}}
+                                    <input placeholder="Start Date"  id="txtOpenDate" onkeydown="return false;" name="txtOpenDate"  value="{{Record.opendate}}" class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" />
+                                {{/ifEqual}}
+                            </div>                        
+                    </div>
+                    <br />
+                    <div class="row">
+
+                            <div class="col-md-2">                                
+                                <label> Close Date </label>
+                            </div>				
+
+
+                            <div class="col-md-3">                                
+                                <input  id="txtCloseDate"  placeholder="End Date" onkeydown="return false;" name="txtCloseDate" value="{{Record.closedate}}" class="form-control border-input datepicker-here" type=text data-language="en"   data-date-format="MM dd yyyy" autocomplete="off" />
+                            </div>                        
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Email Text</label> <br />
+                            <textarea  class="form-control border-input" id="details" name="details" rows="10" cols="93"></textarea>
+                        </div>                        
+                    </div>                    
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12">  
+                            <label> Email Addresses </label>
+                            <br />
+                            <label>Please enter all email addresses (separated by comma) belonging to people you want to include in this public poll. To all of these email addresses a customized message will be sent </label> <br/>
+                            <textarea class="form-control border-input" id="emails" name="emails" rows="10" cols="93"></textarea>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2">                                
+                                        <span style="font-size:15px;">  <label> Options </label>
+                                            </span>
+                                    </div>
+
+                        <div id="divOtions" class="col-md-6">   
+                                        
+                                        {{#if isEditing}}
+                                            
+                                            {{#each OptionRecord}}
+                                                <div class="row">        
+                                                    {{#ifEqual ../open 2}}
+                                                        <b>{{this.optiontxt}}</b> <br /><br />
+                                                    {{else}}
+                                                        <div class="col-md-10"><input value="{{this.optiontxt}}"  class="form-control border-input txtOption" type=text /></div>
+                                                        <div class="col-md-2"><button  class="btn btn-info btn-fill btn-sm deleteButton"> Delete </button> </div>
+                                                        <br />&nbsp;
+                                                    {{/ifEqual}}
+                                                </div>
+                                            {{/each}}
+                                        
+                                        {{else}}
+                                            <div class="row">
+                                                <div class="col-md-10"><input  class="form-control border-input txtOption" type=text /></div>
+                                                <div class="col-md-2"><button  class="btn btn-info btn-fill btn-sm deleteButton"> Delete </button> </div>
+                                                <br />&nbsp;
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-10"><input  class="form-control border-input txtOption" type=text /></div>
+                                                <div class="col-md-2"><button  class="btn btn-info btn-fill btn-sm deleteButton"> Delete </button> </div>
+                                                <br />&nbsp;
+                                            </div>                                                                
+                                        {{/if}}
+                                        
+                                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">  </div>				
+
+                        {{#ifEqual open 1}}
+                            <div class="col-md-6"><button onclick="return addoption()" class="btn btn-info btn-fill btn-sm">Add Option</button>   </div>
+                        {{/ifEqual}}
+                    </div>
+
+                    <input type="hidden" id="emailaddressesJSON" name="emailaddressesJSON" value="" />
+                    <input type="hidden" id="openDate" name="openDate" value="" />
+                    <input type="hidden" id="closeDate" name="closeDate" value="" />
+                    <input type="hidden" id="optionValues" name="optionValues" value=""/>
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-md-8"> </div>                                
+
+                        <div class="col-md-4">      
+                            <button onclick="return submitForm()" class="btn btn-info btn-fill">Start Campaign</button> 
+                            &nbsp;&nbsp;&nbsp;
+                            <button onclick="return backTomainpage()" class="btn btn-info btn-fill"> &nbsp;&nbsp; Cancel  &nbsp;&nbsp; </button> 
+                        </div>								
+                    </div>                    
+                    
+                </form>
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+                
+{{> Footer}}
+                

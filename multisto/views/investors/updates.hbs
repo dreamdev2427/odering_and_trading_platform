@@ -1,0 +1,67 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function(){
+			$("#updates").addClass('active');
+		})
+		function getDetails(id) {		
+            window.location.href = "/updateDetails?id=" + id;
+            return false;			
+		}
+		
+	</script>
+
+{{> HeaderInner}}
+
+{{> stolistselection}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-7">
+                                <h4 class="title">  <img src="/img/list.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  {{{__ "Company-Updates"}}}</h4>
+                                {{#if UpdateRecords.length}}<label>{{{__ "Company-News-Updates-from-Administration"}}}</label>{{/if}}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    
+                    {{#if UpdateRecords.length}}
+                    
+                            <table class="table table-striped">
+                                <thead class="listingHeaderFontSize">
+                                    <th>{{{__ "Date"}}}</th>
+                                    <th>{{{__ "Title"}}}</th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+                                    {{#each UpdateRecords}}
+                                    <tr>
+                                        <td style="width: 15%; vertical-align: top;">{{this.UpdateDate}} </td>
+                                        <td style="width: 75%; vertical-align: top;">{{this.TITLE}}</td>
+                                        <td>
+                                            <button onclick="return getDetails({{this.ID}})" class="btn btn-info btn-info btn-fill btn-sm">{{{../__ "View-Details"}}}</button>
+                                        </td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                    {{else}}
+                        
+                            <label>No News Found</label>
+                    
+                            <br />&nbsp;
+                    {{/if}}
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

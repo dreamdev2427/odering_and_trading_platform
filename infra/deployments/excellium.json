@@ -1,0 +1,7 @@
+{
+    "id": "excellium",
+    "version": "staging",
+    "apiHostname": "api.xdassets.io",
+    "frontendHostname": "investor.xdassets.io",
+    "multistoHostname": "admin.xdassets.io"
+}

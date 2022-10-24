@@ -1,0 +1,133 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function() {
+        $("#referralnetwork").addClass('active');                
+    })
+
+    function openDialog(id, firstName, lastName) {
+        $('#changeReferralModal').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        $('#textArea').html(`Please enter the email of the investor who recommended #${id} ${firstName} ${lastName}`);
+        $('#investorId').attr("value", id);
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+{{!-- Dialog box --}}
+<div class = "modal fade" id="changeReferralModal" tabindex = "-1" role = "dialog" aria-labelledby = "changeReferralModal" aria-hidden = "true">
+
+    <div class = "modal-dialog">
+        <div class = "modal-content">
+
+            <div class="modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">{{Data.SiteParameter_PageTitle}}</h4>
+            </div>
+
+            <div class="modal-body">
+                <form id="investorReferralForm" name="investorReferralForm" action="referrer" method="post">
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <span style="font-size:18px;" id="changeReferralModalMessageArea"> </span>
+                    <div id="textArea">
+
+                    </div>
+                    <br />
+                    <input id="referrerEmail" name="referrerEmail" type="text" class="form-control border-input" value="" />
+                    <input id="investorId" name="investorId" type="hidden" value="" />
+                    <br /> &nbsp;&nbsp;<br /> &nbsp;&nbsp;
+
+                    <button type = "button" class = "btn btn-primary pull-right" data-dismiss = "modal"> &nbsp; Cancel &nbsp; </button>             
+                    <input id="submit" type="submit" class="btn btn-primary btn-fill" value="Set referrer" />
+                    <br /> &nbsp;&nbsp;<br /> &nbsp;&nbsp;
+                </form>
+            </div>
+        </div><!-- /.modal-content -->         
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{{!-- Content --}}
+{{#if successMessage}}
+    <div class="row">
+        <div class="col-md-12 ">
+            <div class="card">
+                {{successMessage}}
+            </div>
+        </div>        
+    </div>
+{{/if}}
+{{#if errorMessage}}
+    <div class="row">
+        <div class="col-md-12 ">
+            <div class="card">
+                {{errorMessage}}
+            </div>
+        </div>        
+    </div>
+{{/if}}
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/relative2.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Referral Network</h4>
+            </div>
+
+            <div class="content">
+
+                {{#if referralNetwork.length}}
+                    <b><div class="row">
+                        <div class="col-md-1">#</div>
+                        <div class="col-md-2">First Name</div>
+                        <div class="col-md-2">Last Name</div>
+                        <div class="col-md-2">Referred By</div>
+                        <div class="col-md-3">Email</div>
+                        <div class="col-md-2">Phone</div>
+                    </div></b><br />
+
+                        {{#each referralNetwork}}
+                                <div class="row">
+                                    <div class="col-md-1">{{this.id}}</div>
+                                    <div class="col-md-2">{{this.firstName}}</div>
+                                    <div class="col-md-2">{{this.lastName}}</div>
+                                    <div class="col-md-2">
+                                        {{#ifEqual this.referrer "No Referrer"}}
+                                            No Referrer
+                                            {{#if this.eligibleForChange}}
+                                                <button
+                                                    class="btn btn-sm"
+                                                    id="btn-{{this.id}}"
+                                                    onclick="openDialog({{this.id}},'{{this.firstName}}','{{this.lastName}}')"
+                                                >Set</button>
+                                            {{/if}}
+                                        {{else}}
+                                            {{this.referrer}}
+                                            {{#if this.eligibleForChange}}
+                                                <br />
+                                                <button
+                                                    class="btn btn-sm btn-block"
+                                                    id="btn-{{this.id}}"
+                                                    onclick="openDialog({{this.id}},'{{this.firstName}}','{{this.lastName}}')"
+                                                >Change</button>
+                                            {{/if}}
+                                        {{/ifEqual}}
+                                        {{#unless this.eligibleForChange}}
+                                            🔒
+                                        {{/unless}}
+                                    </div>
+                                    <div class="col-md-3">{{this.email}}</div>
+                                    <div class="col-md-2">{{this.phone}}</div>
+                                </div>
+                                <br />
+                        {{/each}}
+                    </form>
+                    <br /><br />
+                {{else}}
+                    <label>No Records Found</label>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

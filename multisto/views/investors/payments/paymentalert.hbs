@@ -1,0 +1,113 @@
+{{> Header}}
+
+	<script language="javascript">
+
+        $(document).ready(function() {
+            //$("#trading").addClass('active');
+        })
+        
+        
+        function submitForm() {            
+            if(document.getElementById("feedback").value == "") {
+                showModelGeneralOKDialogBox("Please enter your feedback");
+                return;
+            }
+
+            document.getElementById("paymentalert").submit();
+        }
+        
+        
+        function backtodashboard() {
+            window.location.href = "dashboard";
+            return false;
+        }
+        
+        
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/lock.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Payment Alert</h4>
+                </div>
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{textBreakLinesEnters paymentrec.Details}}
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">                        
+                        <div class="col-md-10">
+                            <b>{{paymentrec.PaymentTitle}}</b>
+                            <br />
+                            {{textBreakLinesEnters paymentrec.PaymentDetails}}
+                        </div>
+                    </div>  
+                    
+                    
+                    <br /><br />                   
+                    <div class="row">                        
+                        <div class="col-md-2">
+                            <label>Date</label> 
+                        </div>
+                        <div class="col-md-10">
+                            {{paymentrec.PaymentSendDate}}
+                        </div>
+                    </div>
+
+                    <div class="row">                        
+                        <div class="col-md-2">
+                            <label>Payment</label> 
+                        </div>
+                        <div class="col-md-10">
+                            {{currencySymbol paymentrec.currencyIDRequested}}
+                            {{numberFormat paymentrec.paymentRequested decimalLength="0"}}
+                        </div>
+                    </div>
+                    {{#if paymentrec.sharesOffered}}
+                        <div class="row">                        
+                            <div class="col-md-2">
+                                <label>Shares Offered</label> 
+                            </div>
+                            <div class="col-md-10">
+                                <b>{{numberFormat paymentrec.sharesOffered decimalLength="0"}}</b> &nbsp; {{paymentrec.ShareTypeText}} 
+                            </div>
+                        </div>
+                    {{/if}}
+                                        
+
+                    <hr />                    
+
+                    <form id="paymentalert" action="investorpaymentalertedit" method="post">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <label>Enter your Feedback</label>
+                                <textarea maxlength="2500" rows=6 class="form-control border-input" id="feedback" name="feedback" placeholder="Enter your feedback">{{paymentrec.InvestorComments}}</textarea>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" onclick="submitForm()" class="btn btn-info btn-fill"> &nbsp; Confirm Payment Executed &nbsp; </button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                               <button type="button" onclick="backtodashboard()" class="btn btn-info btn-fill"> &nbsp; Cancel 
+                                &nbsp; </button>
+                            </div>
+                        </div>                
+                        
+                        <input type="hidden" name="id" value="{{paymentrec.ID}}" />    
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+                    
+                    <br />&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

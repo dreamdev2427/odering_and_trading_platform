@@ -1,0 +1,664 @@
+{{> Header}}
+
+    <script language="javascript">
+        $(document).ready(function() {
+                $("#DashboardMenu").addClass('active');
+            })
+        function refreshDistrobutionAccountTokens() {
+                window.location.href = "refreshDistributionAccountTokens?publicKey={{tokenInfo.Distribution}}";
+                return false;
+            }
+        function showCompanyUpdates() {
+                window.location.href = "updates";
+                return false;
+            }
+        function shawShareholdersReport() {
+                window.location.href = "shares";
+                return false;
+            }
+        function showChangeAddressRequests() {
+                window.location.href = "showChangeAddressRequests";
+                return false;
+            }
+        function showNewContracts() {
+                window.location.href = "shownewcontractsforinvestors";
+                return false;
+            }
+        function showNewContracts() {
+                window.location.href = "shownewcontractsforinvestors";
+                return false;
+            }
+        function openshareapprovescreen(id) {
+            window.location.href = "approveshares?id=" + id;
+            return false;
+        }
+        function refreshBlockchain() {
+            window.location.href = "refreshBlockchainBalances"
+            return false;
+        }
+        function viewDepositDetails(id) {
+                window.location.href = "showINvestorTransferDetailsForApproval?id=" + id;
+                return false;
+        }
+        function openBuyOrder() {
+            window.location.href = "currentOrders";
+            return false;
+        }
+
+        function payments() {
+            window.location.href = "paymentchannels";
+            return false;
+        }
+
+        function polymeshtransfer() {
+            window.location.href = "polymeshtransactions";
+            return false;
+        }
+
+        function bulkwhitelisting() {
+            window.location.href = "bulkWhitelistAddressList";
+            return false;
+        }
+
+    </script>
+
+	<style type="text/css">
+		.MainHeadingFontSize { font-size: 21px }
+		.SubHeadingFontSize {font-size: 12px}
+	</style>
+
+{{> HeaderInnerSto}}
+
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <div class="icon-big icon-warning text-center">
+                                <i class="ti-view-list"></i>
+                            </div>
+                        </div>
+                        <div class="col-xs-10">
+                            <div class="numbers">
+                                <p>{{{__ "Total-Shares"}}}</p>
+                                <span class="MainHeadingFontSize"> {{numberFormat tokenInfo.Totals decimalLength="0"}} </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <hr />
+                        <div class="stats">
+                            {{#ifEqual Data.stoType 0}}
+                                <img src="/img/blockchainwallet.png" width="18px;" title="Tokenized Shares"  />
+								{{numberFormat tokenInfo.totalShares decimalLength="0"}} &nbsp;&nbsp;
+
+                                <img src="/img/nonblockchain.png" width="18px;" title="Non-tokenized Shares"  />
+                                {{numberFormat tokenInfo.NonBlockchainSharesTotal decimalLength="0"}}
+                            {{/ifEqual}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <div class="icon-big icon-info text-center">
+                                <i class="ti-share"></i>
+                            </div>
+                        </div>
+                        <div class="col-xs-10">
+                            <div class="numbers">
+                                <p>Shareholder Shares</p>
+								<span class="MainHeadingFontSize">{{numberFormat tokenInfo.TotalTransfered decimalLength="0"}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        <hr />
+                        <div class="stats">
+                            {{#ifEqual Data.stoType 0}}
+                                <img src="/img/blockchainwallet.png" width="18px;" title="Tokenized Shares"  />
+                                {{numberFormat tokenInfo.sharesTransfered decimalLength="0"}} &nbsp;&nbsp;
+                                <img src="/img/nonblockchain.png" width="18px;" title="Non-tokenized Shares"  />
+                                {{numberFormat tokenInfo.NonBSharesNotSold decimalLength="0"}}
+                            {{/ifEqual}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <div class="icon-big icon-danger text-center">
+                                <i class="ti-pin-alt"></i>
+                            </div>
+                        </div>
+                        <div class="col-xs-10">
+                            <div class="numbers">
+                                <p>Company Shares</p>
+								<span class="MainHeadingFontSize">{{numberFormat tokenInfo.TotalInHand decimalLength="0"}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <hr />
+                        <div class="stats">
+                            {{#ifEqual Data.stoType 0}}
+                                <img src="/img/blockchainwallet.png" width="18px;" title="Tokenized Shares"  />
+                                {{numberFormat tokenInfo.tokenInHand decimalLength="0"}} &nbsp;&nbsp;
+                                <img src="/img/nonblockchain.png" width="18px;" title="Non-tokenized Shares"  />
+                                {{numberFormat tokenInfo.NonBlockchainDistribution decimalLength="0"}}
+                            {{/ifEqual}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <div class="icon-big icon-warning text-center">
+                                <i class="ti-user"></i>
+                            </div>
+                        </div>
+                        <div class="col-xs-10">
+                            <div class="numbers">
+                                <p>Total Investors</p>
+								<span class="MainHeadingFontSize">{{investorInfo.Total}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <hr />
+                        <div class="stats">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{#if platformConfiguration}}
+        
+        {{#ifIn Data.stoType '[0, 1]'}}
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-2">
+                                <div class="icon-big icon-info text-center">
+                                    <i class="ti-id-badge"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-10">
+                                <div class="numbers">
+                                    <p>Whitelisted</p>
+									<span class="MainHeadingFontSize">{{investorInfo.TotalWhitelisted}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                Blockchain wallets
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-2">
+                                <div class="icon-big icon-info text-center">
+                                    <i class="ti-id-badge"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-10">
+                                <div class="numbers">
+                                    <p>Blocked</p>
+									<span class="MainHeadingFontSize">{{investorInfo.TotalBlocked}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                Blockchain blocked wallets
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/ifIn}}
+
+        {{/if}}
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <div class="icon-big icon-danger text-center">
+                                <i class="ti-eye"></i>
+                            </div>
+                        </div>
+                        <div class="col-xs-10">
+                            <div class="numbers">
+                                <p>7 Day Activity Log</p>
+								<span class="MainHeadingFontSize"> {{investorInfo.logCount}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <hr />
+                        <div class="stats">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            <div class="icon-big icon-danger text-center">
+                                <i class="ti-eye"></i>
+                            </div>
+                        </div>
+                        <div class="col-xs-10">
+                            <div class="numbers">
+                                <p>New Emails</p>
+								<span class="MainHeadingFontSize">{{investorInfo.newEmails}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <hr />
+                        <a href="inbox" >
+                            New emails in inbox
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{#ifEqual Data.stoID 0 }}
+    <div class="col-lg-3 col-sm-6">
+        <div class="card">
+            <div class="content">
+                <div class="row">
+                    <div class="col-xs-2">
+                        <div class="icon-big icon-warning text-center">
+                            <i class="ti-user"></i>
+                        </div>
+                    </div>
+                    <div class="col-xs-10">
+                        <div class="numbers">
+                            <p>New Accreditation Requests</p>
+                            <span class="MainHeadingFontSize">{{entityCount}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <hr />
+                        {{#if entityCount }}
+                         <a href="viewaccreditionrequests" >View</a>
+                        {{/if}}    
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/ifEqual}}
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img src='/img/stologo/{{tokenInfo.stoLogo}}' style="max-width:150px; max-height:70px;">
+                            <br />
+                            <label>{{companyType}} Company</label>
+                        </div>
+                        <div class="col-md-2">
+                                <button  type="button" onclick="bulkwhitelisting()" class="btn btn-info btn-fill">Bulk Whitelist</button>
+                        </div>                        
+                        
+                        <div class="col-md-2">
+                                {{#if polymeshTransactionCount}}
+                                    <button  type="button" onclick="polymeshtransfer()" class="btn btn-info btn-fill">Polymesh Transfers</button>
+                                {{/if}}        
+                        </div>
+                        <div class="col-md-3">
+                            {{#ifIn 41 Data.AdminRights}}
+                                <button  type="button" onclick="payments()" class="btn btn-info btn-fill">Payment Channels</button>
+                            {{/ifIn}}
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                        <table class="table" >
+                            <thead style="font-size:10px;">
+                                <th style="vertical-align: top;"></th>
+                                <th style="vertical-align: top;">Description</th>
+                                <th style="vertical-align: top;">Voting Rights</th>
+                                <th style="vertical-align: top;">Nominal Value</th>
+                                <th style="vertical-align: top;">Market Value</th>
+                                <th style="vertical-align: top;">Total Shares</th>
+                                <th style="vertical-align: top;">Shareholder Shares</th>
+                                <th style="vertical-align: top;">Company Shares</th>
+                            </thead>
+                            <tbody style="font-size:14px;">
+                                {{#each shareTypesRecords}}
+                                    <tr>
+                                        <td style="width: 2%; vertical-align: top;">
+                                            {{#if this.isblockchain}}
+                                                <img src="/img/blockchainwallet.png" title="Tokenized Shares" width="22px;" />
+                                            {{else}}
+                                                <img src="/img/nonblockchain.png"  title="Non-tokenized Shares" width="25px;" />
+                                            {{/if}}
+                                        </td>
+                                        <td style="width: 38%; vertical-align: top;">
+                                            {{this.title}}
+                                        </td>
+                                        <td style="width: 5%; vertical-align: top;">
+                                            {{#if this.isVotingRightsApplicable}}
+                                                Yes
+                                            {{else}}
+                                                n/a
+                                            {{/if}}
+                                        </td>
+                                        <td style="width: 10%; vertical-align: top;">
+                                            {{currencySymbol this.currencyid}}  {{numberFormat this.nominalValue decimalLength="-"}}
+                                        </td>
+                                        <td style="width: 10%; vertical-align: top;">
+                                            {{#if premimum}}
+                                                {{currencySymbol this.currencyid}}  {{numberFormat this.premimum decimalLength="-"}}
+                                            {{else}}
+                                                n/a
+                                            {{/if}}
+                                        </td>
+                                        <td style="width: 10%; vertical-align: top;">
+                                             {{numberFormat this.totalShares decimalLength="ShareCountInFractions"}}
+                                        </td>
+                                        <td style="width: 10%; vertical-align: top;">
+                                            {{numberFormat this.issuedShares decimalLength="ShareCountInFractions"}}
+                                        </td>
+                                        <td style="width: 10%; vertical-align: top;">
+                                            {{numberFormat this.companyShares decimalLength="ShareCountInFractions"}}
+                                        </td>
+                                {{/each}}
+                            </tbody>
+                        </table>
+
+                        </div>
+                    </div>
+
+                    {{#ifIn 18 Data.AdminRights}}
+                        {{#if newShareCreateRequest.length}}
+                            <hr />
+                            <h5><img src="/img/addmore.png" width="20px"> &nbsp;&nbsp;&nbsp; Additional share creation requests
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <label>New share creation requestes found. Please view and approve creation of shares</label> <br />
+                            </h5>
+                            <table class="table table-striped">
+                                        <thead style="font-size:12px;">
+                                            <th><b>Date</b></th>
+                                            <th><b>Share Type</b></th>
+                                            <th><b>Shares</b></th>
+                                            <th><b>Requested by</b></th>
+                                            <th><b>Desc</b></th>
+                                            <th></th>
+                                        </thead>
+                                        <tbody>
+                                            {{#each newShareCreateRequest}}
+                                            <tr>
+                                                <td style="width: 15%; vertical-align: top;">{{this.LogDate}} </td>
+                                                <td style="width: 35%; vertical-align: top;">
+                                                    {{this.title}}
+                                                    <br />
+                                                    <img width="20px" src="/img/nominalvalue.png" />&nbsp; {{currencySymbol this.currencyid}}
+															{{numberFormat this.nominalvalue decimalLength="-"}}
+                                                    &nbsp;&nbsp;&nbsp;
+                                                    {{#if this.premimum}}
+                                                        <img width="20px" src="/img/premimum.png" /> {{currencySymbol this.currencyid}} &nbsp;
+															{{numberFormat this.premimum decimalLength="-"}}
+                                                    {{/if}}
+                                                </td>
+                                                <td style="width: 5%; vertical-align: top;"> {{this.tokens}}</td>
+                                                <td style="width: 15%; vertical-align: top;">{{this.FirstName}} {{this.LastName}}</td>
+                                                <td style="width: 25%; vertical-align: top;">{{this.description}}</td>
+                                                <td style="width: 5%; vertical-align: top;">
+                                                    <button onclick="openshareapprovescreen({{this.ID}})" class="btn btn-info btn-fill btn-sm">View / Approve</button>
+                                                </td>
+                                            </tr>
+                                            {{/each}}
+                                        </tbody>
+                                    </table>
+                        {{/if}}
+                    {{/ifIn}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#ifIn 41 Data.AdminRights}}
+        {{#if newPaymentsReceivedAlerts.length}}
+                <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"> <img src="/img/summay.png" width="25px;" style="padding-bottom:7px;" /> &nbsp;  Payment Alert</h4>
+                    </div>
+                    <div class="content">
+                               <label> You have received requests from the following investors. Please click View to see the details, verify the receipt of the payments made through the bank or crypto account options and confirm the payment has been received/made</label>
+
+
+                                <table class="table table-striped">
+                                    <thead class="listingHeaderFontSize">
+                                        <th>Alert Type</th>
+                                        <th>Date</th>
+                                        <th>Investor</th>
+                                        <th>Account</th>
+                                        <th>Amount</th>
+                                        <th></th>
+                                    </thead>
+                                    <tbody>
+
+                                        {{#each newPaymentsReceivedAlerts }}
+                                                <tr>
+                                                    {{#ifEqual this.isWithdrawFundsRequest 1}}
+                                                        <td style="width: 20%; vertical-align: top; background-color: ">
+                                                            <h5><img src="/img/minus.png" width="20px" ;=""> Withdraw </h5>
+                                                        </td>
+                                                    {{else}}
+                                                        <td style="width: 20%; vertical-align: top;">
+                                                            <h5><img src="/img/add.png" width="20px" ;=""> Deposit </h5>
+                                                        </td>
+                                                    {{/ifEqual}}
+                                                    <td style="width: 20%; vertical-align: top;"> {{this.alertDateReceived}} </td>
+                                                    <td style="width: 20%; vertical-align: top;">
+                                                        {{#if this.investorType}}
+                                                            {{this.CompanyName}}
+                                                        {{else}}
+                                                            {{this.FirstName}} {{this.LastName}}
+                                                        {{/if}}
+
+                                                    </td>
+                                                    <td style="width: 20%; vertical-align: top;"> {{this.title}} </td>
+                                                    <td style="width: 15%; vertical-align: top;">  {{currencySymbol this.currencyID}} &nbsp; {{numberFormat this.Amount decimalLength="-"}}</td>
+                                                    <td style="width: 25%; vertical-align: top;"> <button onclick="return viewDepositDetails({{this.ID}})"  class="btn btn-info btn-fill btn-sm">View / Update</button> </td>
+                                                </tr>
+                                            {{/each}}
+
+                                    </tbody>
+                                </table>
+
+                    </div>
+
+                    <br />
+
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    {{/ifIn}}
+
+    {{#ifIn 3 Data.AdminRights}}
+            {{#if newPropertyReceivedAlertsCount}}
+                    <div class="row topPaddingBetweenPageSections">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="header">
+                                    <h4 class="title"> <img src="/img/trading.png" width="25px;" style="padding-bottom:7px;margin-right:0.2rem;" /> Transaction Alerts</h4>
+                                </div>
+                                <div class="content">
+                                        <span style="font-size:16px;margin-right:0.2rem;"> {{newPropertyReceivedAlertsCount}} </span><label> transaction request(s) are pending. Please click button to view and process purchase order</label>
+                                        <br /><br />
+                                        <button  type="button" onclick="openBuyOrder()" class="btn btn-info btn-fill btn-sm">View Purchase Requests</button>
+
+                                </div>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+            {{/if}}
+    {{/ifIn}}
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/summay.png" width="25px;" style="padding-bottom:7px;" /> &nbsp;  Shares Summary</h4>
+                </div>
+                <div class="content">
+
+                    {{#if blockchainRefreshing}}
+                        <span style="color:red;"><b>System is refreshing investor balances from blockchain</b> </span>
+                    {{/if}}
+
+
+                    {{#ifEqual Data.stoType 0}}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5> <img src="/img/blockchainwallet.png" width="25px;"  style="padding-bottom:5px;"/> &nbsp; Tokenized Shares  &nbsp;&nbsp;&nbsp; <button  type="button" onclick="refreshBlockchain()" class="btn btn-info btn-fill btn-sm">Refresh Blockchain</button>   </h5>
+
+
+                                <div class="row">
+                                    <div class="col-md-6"><label>Total</label></div>
+                                    <div class="col-md-6">
+                                        <b>{{numberFormat tokenInfo.totalShares decimalLength="-"}} </b>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6"><label>Sold to Investors</label> </div>
+                                    <div class="col-md-6">
+                                        <b>{{numberFormat tokenInfo.sharesTransfered decimalLength="-"}}  </b>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6"><label>Company Owned Shares</label> </div>
+                                    <div class="col-md-6">
+                                        <b>{{numberFormat tokenInfo.tokenInHand decimalLength="-"}} </b>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5> <img src="/img/nonblockchain.png" width="25px;"  style="padding-bottom:5px;"/> &nbsp; Non-tokenized Shares</h5>
+                                <div class="row">
+                                    <div class="col-md-6"><label> Total </label></div>
+                                        <div class="col-md-6">  <b> {{numberFormat tokenInfo.NonBlockchainSharesTotal decimalLength="ShareCountInFractions"}} </b>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6"><label>Sold to Investors</label> </div>
+                                        <div class="col-md-6">
+                                            <b>{{numberFormat tokenInfo.NonBSharesNotSold decimalLength="ShareCountInFractions"}} </b>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6"><label>Company Owned Shares</label> </div>
+                                    <div class="col-md-6">
+                                        <b>{{numberFormat tokenInfo.NonBlockchainDistribution decimalLength="ShareCountInFractions"}} </b>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br >
+                    {{/ifEqual}}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5> <img src="/img/total.png" width="25px;"  style="padding-bottom:5px;"/> Total Shares</h5>
+                            <div class="row">
+                                <div class="col-md-6"><label>Total Shares</label></div>
+                                <div class="col-md-6">  <b> {{numberFormat tokenInfo.Totals decimalLength="ShareCountInFractions"}} </b> </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6"><label>Sold to Investors</label> </div>
+                                <div class="col-md-6"><b>{{numberFormat tokenInfo.TotalTransfered decimalLength="ShareCountInFractions"}} </b> </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6"><label>Company Owned Shares</label> </div>
+                                <div class="col-md-6"><b>{{numberFormat tokenInfo.TotalInHand decimalLength="ShareCountInFractions"}} </b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/events.png" width="22px;" style="padding-bottom:7px;" /> &nbsp; Activities in 7 Days</h4>
+                </div>
+                <div class="content">
+                    <table class="table">
+                        <thead  class="listingHeaderFontSize">
+                            <th>Date</th>
+                            <th>Admin</th>
+                            <th>Investor</th>
+                            <th>Activity</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each LogsRecords}}
+                            <tr>
+                                <td style="width: 20%; vertical-align: top;">{{this.LogDate}} </td>
+                                <td style="width: 15%; vertical-align: top;">{{this.UserFirstName}} {{this.UserLastName}}</td>
+                                <td style="width: 15%; vertical-align: top;">{{this.InvestorFirstName}} {{this.InvestorLastName}}</td>
+                                <td style="width: 50%; vertical-align: top;">{{this.Description}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}
+

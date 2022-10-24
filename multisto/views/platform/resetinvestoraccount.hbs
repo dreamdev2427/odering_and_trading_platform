@@ -1,0 +1,142 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        //$("#sto").addClass('active');                
+    })    
+
+    function submitForm() {
+        if(document.getElementById("invid").value == "") {
+            alert("Please enter investor id");
+            return;
+        }        
+        
+        window.location.href = "/platform/resetInvestorShareType?id={{id}}&investorid=" + document.getElementById("invid").value;
+    }
+    function deleteHistory() {
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete investor share transfer and investment history and also transfer &nbsp;&nbsp;&nbsp; <b>{{investorRec.shares}} {{shareRec.sharetitle}}</b> &nbsp;&nbsp;&nbsp; balance back to company account ?", "Yes Delete", "Cancel")
+    }   
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = "/platform/resetInvestorShareTypePost?id={{id}}&investorid={{investorRec.investorID}}";
+    }
+    
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-12">
+                        <h4 class="title">Delete Investor Transaction History</h4>
+                        <label>Search Investor with ID and if platform finds investor shares in this Share Type / Class you can delete his share transfer history</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <label>Please verify following information is correct</label>
+                
+                <br />
+                <label>Share Class / Type </label> &nbsp;&nbsp; <span style="font-size:16px;">{{shareRec.sharetitle}}</span>
+                <br />
+                <label>STO / Company </label> &nbsp;&nbsp; <span style="font-size:16px;">{{shareRec.stotitle}}</span>
+
+                <br /><br /><br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label>Enter Investor ID</label>
+                                    <input type="text" maxLength="100" id="invid" name="invid" class="form-control border-input" placeholder="Role Title">
+                                </div>
+                            
+                                <div class="col-md-2">
+                                    <br />
+                                    <button type="button" onclick="return submitForm()"class="btn btn-info btn-fill btn-wd">Search Investor</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>                                        
+                </div> 
+
+
+                {{#if showInvSec}}
+                    {{#if investorRecFound}}
+                        <br /><br />
+                        <img src="/img/graydot.png" width="20px" >
+                        &nbsp;&nbsp;&nbsp;
+                        <span style="font-size:18px;">Investor Found with Share Details for &nbsp;&nbsp;&nbsp; {{shareRec.sharetitle}} </span>
+                        <br /><br />
+                        <label>Investor Name</label> &nbsp;&nbsp; {{investorRec.firstname}} {{investorRec.lastname}}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        ( {{investorRec.email}} )
+                        <br />
+                        <label>Investor Current Share Balance </label> &nbsp;&nbsp; {{investorRec.shares}} &nbsp;&nbsp; ( {{shareRec.sharetitle}} )     
+                
+                        <br /><br />
+                        <hr />
+                        <img src="/img/graydot.png" width="20px" >
+                        &nbsp;&nbsp;&nbsp;
+                        <span style="font-size:18px;">Investor Investment History</span>
+                        <br /><br />                          
+                        <div class="row">
+                            <div class="col-md-2">
+                                <b>Tokens Transferred</b>
+                            </div>                                    
+                            <div class="col-md-2">
+                                <b>Amount Invested </b>
+                            </div>
+                            <div class="col-md-3">
+                                <b>Description</b>
+                            </div>
+                        </div>
+                        <br />    
+                        {{#if investmentRecs.length}}
+                            {{#each investmentRecs}}
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {{this.TokensTransferred}}
+                                    </div>                                    
+                                    <div class="col-md-2">
+                                        {{currencySymbol this.CurrencyID}} {{this.nominalValue}}
+                                        &nbsp;&nbsp;
+                                        {{this.AmountInvested}} 
+                                    </div>
+                                    <div class="col-md-7">
+                                        {{this.Description}}
+                                    </div>
+                                </div>
+                                <br />
+                            {{/each}}
+                        {{else}}
+                            <label>No Investment Records Found</label>
+                        {{/if}} 
+                        
+                        <br />
+                        <span style="color:red;">
+                            Please note that all of above investor history will be deleted and this operation will not be reversed. Please make sure the investor is valid and you really want to delete / reset his share transfer and investment history
+                            <br />
+                            <br />
+                            Also note investor's current &nbsp;&nbsp;&nbsp; <b>{{investorRec.shares}} {{shareRec.sharetitle}}</b> &nbsp;&nbsp;&nbsp; balance will be transfer back to company account
+                        </span>
+                        <br /><br />
+                        <button type="button" onclick="return deleteHistory()"class="btn btn-info btn-fill btn-wd">Delete Investor History</button>
+                
+                    {{else}}
+                        <label>No Investor Shares found or investor does not belong to this STO</label>
+                    {{/if}}
+                {{/if}}
+                
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>								
+</div>
+
+{{> Footer}}

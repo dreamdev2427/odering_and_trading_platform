@@ -1,0 +1,41 @@
+<script>
+    function changeHideContractsTilPostPurchase(isChecked) {
+      document.getElementById('hideContractsTilPostPurchase-intValue').value = +isChecked;
+      document.getElementById('hideContractsTilPostPurchase-redirectUrl').value = window.location.href;
+      document.getElementById('postHideContractsTilPostPurchase').submit();
+    }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more'/> Hide Contracts Until Finished Purchase</h4>
+        <label>When this is turned on, the investor will not be able to see the contracts they have signed until the share purchase in question gets approved by the administrator</label>
+      </div>
+      <div class="content">
+        <form method="post" id="postHideContractsTilPostPurchase" action="postParamUpdateToApi">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="switch">
+                <input id="isPropertySortingEnabled"
+                       onclick=changeHideContractsTilPostPurchase(this.checked) type="checkbox"
+                  {{#if hideContractsTilPostPurchase}}
+                       checked
+                  {{/if}}
+                >
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" id="hideContractsTilPostPurchase-intValue" name="intValue"/>
+          <input type="hidden" id="hideContractsTilPostPurchase-stringValue" name="stringValue" value=""/>
+          <input type="hidden" name="param" value="hideContractsTilPostPurchase" />
+          <input type="hidden" id="hideContractsTilPostPurchase-redirectUrl" name="redirectUrl" value="" />
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

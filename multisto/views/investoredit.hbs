@@ -1,0 +1,405 @@
+{{> Header}}
+
+	<script language="javascript">
+
+            var FormOp = {{isEditing}};
+            var CurrentCountry = "{{InvestorRecord.country}}";
+            var CurrentCountryCitizenship = "{{InvestorRecord.countryOfCitizenship}}"
+            var investoryAuthorization = "{{InvestorRecord.KYCCurrentStatus}}";
+            {{#if InvestorRecord.investorType}}
+                var investorType = {{InvestorRecord.investorType}};
+            {{else}}
+                var investorType = 0;
+            {{/if}}
+
+			$(document).ready(function() {
+				$("#InvestorsMenu").addClass('active');
+
+                if(FormOp != 0) {
+                        if(CurrentCountry != '') {
+                            var element = document.getElementById("country");
+                            element.value = CurrentCountry;
+                        }
+
+                        var element2 = document.getElementById("countryOfCitizenship");
+                        if(CurrentCountryCitizenship != '') {
+                            element2.value = CurrentCountryCitizenship;
+                        } else
+                            element2.value = "";
+
+
+                    if(investorType == 0) {
+                        $("#companySectionDiv").hide();
+                        $(".companyInvestorText").hide();
+                        $("#dateOfBirthDiv").show();
+                    } else {
+                        $("#companySectionDiv").show();
+                        $(".companyInvestorText").show();
+                        $("#dateOfBirthDiv").hide();
+                    }
+                } else
+                    switchInvestorType();
+
+
+                $('#notes').keypress(function(event) {
+                    if (event.keyCode == 13) {
+                        event.preventDefault();
+                    }
+                });
+
+			});
+            function cancelClicked() {
+                if(FormOp == 0)
+                    window.location.href = "/admin/investorssto";
+                else
+                    window.location.href = "/admin/investorsViewSto?id=" + document.getElementById('ID').value;
+
+                return false;
+            }
+            function submitForm() {
+                        var res = "";
+
+                        if(document.getElementById("FirstName").value == "")
+                            res = res + "<li>First Name is required</li>";
+                        if(document.getElementById("LastName").value == "")
+                            res = res + "<li>Last Name is required</li>";
+
+                        if(FormOp == 0) {
+                            if(document.getElementById("investorType").value == "1") {
+                                if(document.getElementById("companyName").value == "")
+                                    res = res + "<li>Company Name is required</li>";
+                                if(document.getElementById("titleWithinCompany").value == "")
+                                    res = res + "<li>Title within company is required</li>";
+                            }
+
+                        } else {
+                            if(investorType == 1) {
+                                if(document.getElementById("companyName").value == "")
+                                    res = res + "<li>Company Name is required</li>";
+                                if(document.getElementById("titleWithinCompany").value == "")
+                                    res = res + "<li>Title within company is required</li>";
+                            }
+                        }
+
+                        /*if(document.getElementById("PassportNumber").value == "" && document.getElementById("NationalID").value == "")
+                            res = res + "<li>Either Passport number or National ID number is required. Both cannot be empty</li>";
+                        if(document.getElementById("country").value == "")
+                            res = res + "<li>Country is required</li>";
+                        if(document.getElementById("phone").value == "")
+                            res = res + "<li>Phone number is required</li>";
+                        if(document.getElementById("dob").value == "")
+                            res = res + "<li>Date of birth is required</li>";
+                        if(document.getElementById("town").value == "")
+                            res = res + "<li>City/Town is required</li>";
+                        if(document.getElementById("state").value == "")
+                            res = res + "<li>State is required</li>";*/
+
+
+                        if(res == "") {
+                            if(FormOp == 0) {
+                                if(document.getElementById("email").value == "no")
+                                    showModelGeneralYesNoDialogBox("You are creating this profile without email address. This investor will never be able to access his profile or receive emails for his account. Only admin can access and manage his profile. <br /> <br /> Are you sure you want to proceed ?", "Yes Create", "Cancel");
+                                else
+                                    submitform()
+                            } else
+                                submitform()
+                        } else {
+                            $(window).scrollTop(0);
+                            $("#ErrorMessages").html(res)
+                        }
+
+            }
+            function switchInvestorType() {
+                if(document.getElementById("investorType").value == "0") {
+                    $("#companySectionDiv").hide();
+                    $(".companyInvestorText").hide();
+                    $("#dateOfBirthDiv").show();
+                } else {
+                    $("#companySectionDiv").show();
+                    $(".companyInvestorText").show();
+                     $("#dateOfBirthDiv").hide();
+                }
+            }
+
+            function generalModelOKButtonClickedClientEvent() {
+                submitform()
+            }
+
+            function submitform() {
+                if(document.getElementById("dob").value.trim() != "")
+                    document.getElementById("dob").value = commonGetMySQLDateFormat(document.getElementById("dob").value);
+
+                document.getElementById("investorForm").submit();
+            }
+
+	</script>
+
+{{> HeaderInnerSto}}
+
+    <div class="col-lg-12 col-md-7">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/add.png" width="23px"> &nbsp; {{#if isEditing}} Edit the Investor's Personal Information {{else}} Add New Investor Profile{{/if}}</h4>
+                {{#unless isEditing}}<label>To create new investor profile, you first create an investor profile here, then add documents, set password and then send an email to investor with link and password</label>{{/unless}}
+            </div>
+
+            <div class="content">
+
+                <ul style="color:red;"><span id="ErrorMessages">{{messages}}</span></ul>
+
+                <form id="investorForm" name="investorForm" action="addnewinvestor" method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Email *<span class='companyInvestorText'> ( of Company ) </span></label>
+                                &nbsp;&nbsp;&nbsp;
+                                {{#if isEditing}}
+                                    {{InvestorRecord.email}}
+                                {{else}}
+                                    <input type="hidden" id="email" name="email" value="{{email}}">
+                                    {{#ifEqual email "no"}}
+                                        Investor without Email Address
+                                    {{else}}
+                                        {{email}}
+                                    {{/ifEqual}}
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+
+                    {{#unless isEditing}}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Investor Type</label>
+                                        <select id="investorType" name="investorType" onchange="switchInvestorType()" class="form-control border-input">
+                                            {{#each InvestorCategory}}
+                                                <option value="{{@key}}">{{this}}</option>
+                                            {{/each}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                    {{else}}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Investor ID</label> &nbsp;&nbsp;&nbsp;
+                                    {{InvestorRecord.ID}}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Investor Type</label> &nbsp;&nbsp;&nbsp;
+                                    {{InvestorTypeText}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="investorType" value={{InvestorRecord.investorType}} />
+
+                    {{/unless}}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>First Name  <span class='companyInvestorText'> of Company Representative </span> *</label>
+                                <input type="text" maxLength="60" id="FirstName" name="FirstName" class="form-control border-input" placeholder="First Name" value="{{InvestorRecord.FirstName}}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Last Name *</label>
+                                <input type="text" maxLength="60" id="LastName" name="LastName" class="form-control border-input" placeholder="Last Name" value="{{InvestorRecord.LastName}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <span id="companySectionDiv">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Company Name &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="text" maxLength="700" id="companyName" name="companyName" class="form-control border-input" placeholder="Company Name" value="{{InvestorRecord.CompanyName}}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Title within Company</label>
+                                    <input type="text" maxLength="60" id="titleWithinCompany" name="titleWithinCompany" class="form-control border-input" placeholder="Title Within Company" value="{{InvestorRecord.TitleWithinCompany}}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Power to bind the company ? &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="checkbox" maxLength="60" id="powerToBindCompany" name="powerToBindCompany"  style="height:20px; width:20px;"
+                                        {{#if InvestorRecord.PowerToBindCompany}}
+                                             checked="checked"
+                                        {{/if}}
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Passport Number</label>
+                                <input type="text" maxLength="45" id="PassportNumber" name="PassportNumber" class="form-control border-input" placeholder="Passport Number" value="{{InvestorRecord.PassportNumber}}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>National ID</label>
+                                <input type="text" maxLength="60" id="NationalID" name="NationalID" class="form-control border-input" placeholder="National ID Number" value="{{InvestorRecord.NationalID}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Street Address <span class='companyInvestorText'> ( of Company ) </span> </label>
+                                <input type="text" maxLength="150" name="Address" class="form-control border-input" placeholder="Home Address" value="{{InvestorRecord.Address}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Zip Code <span class='companyInvestorText'> ( of Company ) </span></label>
+                                <input type="text"  maxlength="28" id="zip" name="zip" class="form-control border-input" placeholder="Zip" value="{{InvestorRecord.zip}}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>City / Town <span class='companyInvestorText'> ( of Company ) </span></label>
+                                <input type="text" maxLength="70" name="town" id="town" class="form-control border-input" placeholder="City/Town" value="{{InvestorRecord.town}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>State <span class='companyInvestorText'> ( of Company ) </span></label>
+                                <input type="text" maxLength="50" name="state" id="state" class="form-control border-input" placeholder="State" value="{{InvestorRecord.state}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Country <span class='companyInvestorText'> ( of Company ) </span></label>
+                                        <select class="form-control border-input" id="country" name="country">
+                                                {{#if ListCountry}}
+                                                    <option value="{{ListCountry}}">{{ListCountry}}</option>
+                                                {{/if}}
+
+                                                {{#each countryList}}
+                                                        <option value="{{this.[0]}}">  {{this.[1]}}  </option>
+                                                {{/each}}
+                                        </select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Phone Number <span class='companyInvestorText'> ( of Company ) </span> *</label>
+                                <input type="text" maxLength="30" id="phone" name="phone" class="form-control border-input" placeholder="Phone Number" value="{{InvestorRecord.phone}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{#unless InvestorRecord.investorType}}
+                            {{#ifIn Data.CurrentClientID '[3]'}}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                                <label> Country of Citizenship </label>
+                                                    <select class="form-control border-input" id="countryOfCitizenship" name="countryOfCitizenship">
+                                                            {{#if ListCountry}}
+                                                                <option value="{{ListCountry}}">{{ListCountry}}</option>
+                                                            {{/if}}
+
+                                                            {{#each countryList}}
+                                                                    <option value="{{this.[0]}}">  {{this.[1]}}  </option>
+                                                            {{/each}}
+                                                    </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            {{else}}
+                                  <input type="hidden" id="countryOfCitizenShip" name="countryOfCitizenShip" value="" >
+                            {{/ifIn}}
+                    {{else}}
+                            <input type="hidden" id="countryOfCitizenShip" name="countryOfCitizenShip" value="" >
+                    {{/unless}}
+
+
+                    <div class="row" id="dateOfBirthDiv">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Date of Birth</label>
+                                    <input type="text" maxLength="120" id="dob" name="dob" class="form-control border-input datepicker-here" data-language='en' value="{{InvestorRecord.DOB}}"  data-date-format="MM dd yyyy" type=text autocomplete="off" placeholder="Enter Date of Birth" value=""  onkeydown="return false;"  >
+                            </div>
+                        </div>
+                    </div>
+
+                    {{#unless isEditing}}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Investor Category</label>
+                                    <select id="KYCCurrentStatus" name="KYCCurrentStatus" class="form-control border-input">
+
+                                        {{#each STOInvestorTypes}}
+                                            <option value="{{this.id}}">{{this.type}}</option>
+                                        {{/each}}
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    {{/unless}}
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Investor Notes</label>
+                                <textarea id="notes" maxlength="2000"  name="notes" class="form-control  border-input" placeholder="Enter Investor Notes" rows="8">{{InvestorRecord.notes}}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <input type="hidden" name="FormOperation" id="FormOperation" value="{{isEditing}}">
+                    {{#if isEditing}}
+                        <input type="hidden" id="ID" name="ID" value="{{InvestorRecord.ID}}">
+                    {{/if}}
+
+                    <div class="text-center">
+                        {{#if isEditing}}
+                            <button type="button" onclick="return submitForm()" class="btn btn-info btn-fill btn-wd">Save Investor</button>
+                        {{else}}
+                            <button type="button" onclick="return submitForm()"class="btn btn-info btn-fill btn-wd">Add New Investor</button>
+                        {{/if}}
+
+                        &nbsp;&nbsp;&nbsp; <a onclick="return cancelClicked()" class="btn btn-info btn-fill btn-wd">Cancel</a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

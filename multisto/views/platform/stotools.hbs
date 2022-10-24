@@ -1,0 +1,326 @@
+{{> Header}}
+
+<style>
+    input[type=checkbox]
+    {
+        /* Double-sized Checkboxes */
+        -ms-transform: scale(2); /* IE */
+        -moz-transform: scale(2); /* FF */
+        -webkit-transform: scale(2); /* Safari and Chrome */
+        -o-transform: scale(2); /* Opera */
+        padding: 10px;
+    }
+</style>
+
+<script language="javascript">
+
+    $(document).ready(function() {
+        $("#copyStoParams").addClass('active');
+        initializeStosDropdown();
+    })
+
+    function initializeStosDropdown() {
+        const decodedJson = decodeURIComponent("{{stoList}}");
+        const jsonObj = JSON.parse(decodedJson);
+
+        // adding the stos to the dropdown
+        let dataListInnerHtml = '';
+        jsonObj.forEach(element => {
+            dataListInnerHtml += `<option value="${element.ID} - ${element.title}">`;
+        });
+        const copyStosDropdown = document.getElementById('copyStosDropdown');
+        const pasteStosDropdown = document.getElementById('pasteStosDropdown');
+        copyStosDropdown.innerHTML = dataListInnerHtml;
+        pasteStosDropdown.innerHTML = dataListInnerHtml;
+
+        // selecting the first sto as the default for the dropdown
+        const defaultStosSelected = `${jsonObj[0].ID} - ${jsonObj[0].title}`;
+        const copyStosInput = document.getElementById('copyStosInput');
+        const pasteStosInput = document.getElementById('pasteStosInput');
+        copyStosInput.value = defaultStosSelected;
+        copyStosInput.onfocus = function() { copyStosInput.value =''; }; // on focus - clear input
+        pasteStosInput.value = defaultStosSelected;
+        pasteStosInput.onfocus = function() { pasteStosInput.value =''; }; // on focus - clear input
+        updateStoDetails(defaultStosSelected);
+    }
+    function copyStoSettings() {
+        let copyStosInputValue = document.getElementById('copyStosInput').value;
+        let pasteStosInputValue = document.getElementById('pasteStosInput').value;
+        copyStosInputValue = copyStosInputValue.substr(0, copyStosInputValue.indexOf(' '));
+        pasteStosInputValue = pasteStosInputValue.substr(0, pasteStosInputValue.indexOf(' '));
+        if (copyStosInputValue !== pasteStosInputValue) {
+            document.getElementById('fieldsToBeCopied').value = checkFieldsToBeCopied();
+            document.getElementById('copySettingsStoId').value = copyStosInputValue;
+            document.getElementById('pasteSettingsStoId').value = pasteStosInputValue;
+            document.getElementById('usersToBeCopied').value = checkUsersToBeCopied();
+            document.getElementById('copyStoSettingsForm').submit();
+        } else {
+            document.getElementById('copyStoParamsErrorMessage').innerText = "Both selected STOs are the same";
+        }
+    }
+    function checkFieldsToBeCopied() {
+        let fieldsToBeCopeid = [];
+        const logo = document.getElementById('logo');
+        if (logo.checked) {
+            fieldsToBeCopeid.push(logo.id);
+        }
+        const disclaimer = document.getElementById('disclamer');
+        if (disclaimer.checked) {
+            fieldsToBeCopeid.push(disclaimer.id);
+        }
+        const emailFooterText = document.getElementById('emailFooterText');
+        if (emailFooterText.checked) {
+            fieldsToBeCopeid.push(emailFooterText.id);
+        }
+        const registrationtext = document.getElementById('registrationtext');
+        if (registrationtext.checked) {
+            fieldsToBeCopeid.push(registrationtext.id);
+        }
+        const registrationsuccesstext = document.getElementById('registrationsuccesstext');
+        if (registrationsuccesstext.checked) {
+            fieldsToBeCopeid.push(registrationsuccesstext.id);
+        }
+        const EmailTxtInvestorBulkUpload = document.getElementById('EmailTxtInvestorBulkUpload');
+        if (EmailTxtInvestorBulkUpload.checked) {
+            fieldsToBeCopeid.push(EmailTxtInvestorBulkUpload.id);
+        }
+        const smtpSettings = document.getElementById('smtpSettings');
+        if (smtpSettings.checked) {
+            fieldsToBeCopeid.push.apply(fieldsToBeCopeid, ['SMTP_Host', 'SMTP_Port', 'SMTP_User', 'SMTP_Password', 'SMTP_FromAddress']);
+        }
+
+        return JSON.stringify(fieldsToBeCopeid);
+    }
+    function checkUsersToBeCopied() {
+        const usersToBeCopied = [];
+        const checkboxes = document.getElementsByName('usersCheckbox');
+        for(let i=0, n=checkboxes.length;i<n;i++) {
+            if (checkboxes[i].checked) {
+                usersToBeCopied.push(checkboxes[i].value);
+            }
+        }
+        return JSON.stringify(usersToBeCopied);
+    }
+    function updateStoDetails(value) {
+        const selectedStoId = parseInt(value.substr(0, value.indexOf(' ')));
+        const decodedJson = decodeURIComponent("{{stoList}}");
+        const jsonObj = JSON.parse(decodedJson);
+        const sto = jsonObj.find(element => element.ID === selectedStoId);
+
+        document.getElementById('logoImg').src = `/img/stologo/${sto.logo}`;
+        document.getElementById('disclamerText').value = sto.disclamer;
+        document.getElementById('emailFooterText').value = sto.emailFooter;
+        document.getElementById('registrationtextText').value = sto.registrationtext;
+        document.getElementById('registrationsuccesstextText').value = sto.registrationsuccesstext;
+        document.getElementById('EmailTxtInvestorBulkUploadText').value = sto.EmailTxtInvestorBulkUpload;
+        document.getElementById('smtpSettingsText').value = `${sto.SMTP_Host}
+${sto.SMTP_Port}
+${sto.SMTP_User}
+${sto.SMTP_Password}
+${sto.SMTP_FromAddress}`;
+        updateUsersDiv(selectedStoId);
+    }
+    function updateUsersDiv(selectedStoId) {
+        document.getElementById('usersDivContent').innerHTML = '';
+        const decodedJson = decodeURIComponent("{{usersList}}");
+        const jsonObj = JSON.parse(decodedJson);
+        let html = '';
+        jsonObj.forEach(user => {
+            if (user.stoid === selectedStoId) {
+                html += `<div class="row">
+                            <div class="col-md-1">
+                                <input type="checkbox" value="${user.ID}" name='usersCheckbox' unchecked/>
+                            </div>
+                            <div class="col-md-5">
+                                ${user.Username}
+                            </div>
+                            <div class="col-md-1">`;
+
+                if (user.isActive) {
+                    html += '<img src="/img/greendot.png" width="22px" />';
+                } else {
+                    html += '<img src="/img/reddot.png" width="20px" />';
+                }
+                html += `
+                            </div>
+                            <div class="col-md-5">
+                                ${user.FirstName} ${user.LastName}
+                            </div></div><br>`;
+            }
+        });
+        document.getElementById('usersDivContent').innerHTML += html;
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+    <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"><img src="/img/contracts2.png" width="25px;"> Copy Project Parameters</h4>
+            </div>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label>Copy Project Settings From</label>
+                            <input onchange="updateStoDetails(this.value)" id="copyStosInput" class="form-control border-input" list="copyStosDropdown">
+                            <datalist id="copyStosDropdown"></datalist>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <br>
+                        <button onclick="copyStoSettings()" class="btn btn-info btn-fill btn-wd">Copy Checked Details</button>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label>Paste STO settings Into</label>
+                            <input id="pasteStosInput" class="form-control border-input" list="pasteStosDropdown">
+                            <datalist id="pasteStosDropdown"></datalist>
+                        </div>
+                    </div>
+                    <b><ul><span style="color:red;" id="copyStoParamsErrorMessage"></span></ul></b>
+                </div>
+
+                <div class="row">
+                    <div id ="paramsDiv"  class="col-md-6">
+                        <label>Copy Project params preview</label>
+                        <br>
+                        <br>
+                        <div class="row">
+                            <b>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4">Parameter</div>
+                                <div class="col-md-6">Preview</div>
+                            </b>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="checkbox" id="logo" name="paramsCheckbox" unchecked>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Logo</label>
+                            </div>
+                            <div class="col-md-6">
+                                <img id="logoImg" style="max-width:120px; max-height:55px;">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="checkbox" id="disclamer" name="paramsCheckbox" unchecked>
+                            </div>
+                            <div class="col-md-4">
+                                <label >Disclaimer</label>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea rows="4" disabled id="disclamerText"></textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="checkbox" id="emailFooter" name="paramsCheckbox" unchecked>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Email Footer</label>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea rows="4" disabled id="emailFooterText"></textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="checkbox" id="registrationtext" name="paramsCheckbox" unchecked>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Registration Text</label>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea rows="4" disabled id="registrationtextText"></textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="checkbox" id="registrationsuccesstext" name="paramsCheckbox" unchecked>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Successful Registration Text</label>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea rows="4" disabled id="registrationsuccesstextText"></textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="checkbox" id="EmailTxtInvestorBulkUpload" name="paramsCheckbox" unchecked>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Email Text for Investor Bulk Upload</label>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea rows="4" disabled id="EmailTxtInvestorBulkUploadText"></textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <input type="checkbox" id="smtpSettings" name="paramsCheckbox" unchecked>
+                            </div>
+                            <div class="col-md-4">
+                                <label>SMTP settings</label>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea rows="6" disabled id="smtpSettingsText"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Copy Project Users Preview</label>
+                        <br>
+                        <br>
+                        <div class="row">
+                            <b>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-5">
+                                    Username
+                                </div>
+                                <div class="col-md-1">
+                                    Active
+                                </div>
+                                <div class="col-md-5">
+                                    Name
+                                </div>
+                            </b>
+                        </div>
+                        <br>
+
+                        <div id="usersDivContent">
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="copyStoSettingsForm" method="post" action="/platform/postCopyStoParameters">
+    <input type="hidden" id="usersToBeCopied" name="usersToBeCopied" value="">
+    <input type="hidden" id="fieldsToBeCopied" name="fieldsToBeCopied" value="">
+    <input type="hidden" id="pasteSettingsStoId" name="pasteSettingsStoId" value="{{record.ID}}">
+    <input type="hidden" id="copySettingsStoId" name="copySettingsStoId" value="">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

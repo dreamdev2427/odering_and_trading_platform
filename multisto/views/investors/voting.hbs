@@ -1,0 +1,229 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function(){
+			$("#votings").addClass('active');
+		})
+
+	</script>
+
+{{> HeaderInner}}
+
+{{> stolistselection}}
+
+
+        {{#if futureVotingRec.length}}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                            <h4 class="title">  <img src="/img/voting.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Future-Votings-Meetings"}}}</h4>
+                    </div>
+
+                    <div class="content">
+                        {{#if futureVotingRec.length}}
+                          <div class="row">
+                            <b>
+                              <div class="col-md-1">
+                                Type
+                              </div>
+                              <div class="col-md-4">
+                                Title
+                              </div>
+                              <div class="col-md-1">
+                                Project Title
+                              </div>
+                              <div class="col-md-2">
+                                Open Date
+                              </div>
+                              <div class="col-md-2">
+                                Close Date
+                              </div>
+                            </b>
+                          </div>
+                          <br/>
+                            {{#each futureVotingRec}}
+                                <div class="row">
+                                <div class="col-md-1">
+                                    {{#if this.type}}
+                                        {{{../__ "Meeting"}}}
+                                    {{else}}
+                                        {{{../__ "Poll"}}}
+                                    {{/if}}
+                                </div>
+                                <div class="col-md-4">
+                                    {{this.title}}
+                                </div>
+                                  <div class="col-md-1">
+                                    {{this.stoTitle}}
+                                  </div>
+
+                                <div class="col-md-2">
+                                    {{this.opendate}}
+                                </div>
+
+                                <div class="col-md-2">
+                                    {{#unless this.type}}
+                                        {{this.closedate}}
+                                    {{/unless}}
+                                </div>
+
+                                <div class="col-md-2">
+                                    {{#if this.type}}
+                                        <a href='/meetingdetails?id={{this.id}}' class="btn btn-info btn-fill btn-sm"> &nbsp;&nbsp; {{{../__ "View-Meeting-Agenda"}}}  &nbsp;&nbsp;</a>
+                                    {{else}}
+                                        <a href='/votingdetails?id={{this.id}}&stoid={{this.stoid}}' class="btn btn-info btn-fill btn-sm btn-wd"> {{{../__ "View-Details"}}} </a>
+                                    {{/if}}
+                                </div>
+                            </div>
+                                <br />
+                            {{/each}}
+                        {{else}}
+                            <label>{{{__ "No-Records-Found"}}}</label>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+
+        {{#if currentVotingRec.length}}
+        <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">  <img src="/img/voting.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Current-Polls-and-Meetings"}}}</h4>
+                    </div>
+
+                    <div class="content">
+                        {{#if currentVotingRec.length}}
+                          <div class="row">
+                            <b>
+                              <div class="col-md-1">
+                                Type
+                              </div>
+                              <div class="col-md-4">
+                                Title
+                              </div>
+                              <div class="col-md-1">
+                                Project Title
+                              </div>
+                              <div class="col-md-2">
+                                Open Date
+                              </div>
+                              <div class="col-md-2">
+                                Close Date
+                              </div>
+                            </b>
+                          </div>
+                          <br/>
+                            {{#each currentVotingRec}}
+                            <div class="row">
+                                <div class="col-md-1">
+                                    {{#if this.type}}
+                                        {{{../__ "Meeting"}}}
+                                    {{else}}
+                                        {{{../__ "Poll"}}}
+                                    {{/if}}
+                                </div>
+                                <div class="col-md-4">
+                                    {{this.title}}
+                                </div>
+
+                              <div class="col-md-1">
+                                {{this.stoTitle}}
+                              </div>
+                                <div class="col-md-2">
+                                    {{this.opendate}}
+                                </div>
+
+                                <div class="col-md-2">
+                                    {{#unless this.type}}
+                                        {{this.closedate}}
+                                    {{/unless}}
+                                </div>
+
+                                <div class="col-md-2">
+                                    {{#if this.type}}
+                                        <a href='/meetingdetails?id={{this.id}}' class="btn btn-info btn-fill btn-sm"> &nbsp;&nbsp; {{{../__ "View-Meeting-Agenda"}}} &nbsp;&nbsp;</a>
+                                    {{else}}
+                                        <a href='/votingdetails?id={{this.id}}&stoid={{this.stoid}}' class="btn btn-info btn-fill btn-sm btn-wd"> {{{../__ "View-Cast-Vote"}}} </a>
+                                    {{/if}}
+                                </div>
+                            </div>
+                            <br />
+                        {{/each}}
+                        {{else}}
+                            <label>{{{__ "No-Records-Found"}}}</label>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+
+        <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">  <img src="/img/voting.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Past-Votings-Meetings"}}}</h4>
+                    </div>
+
+                    <div class="content">
+                        {{#if pastVotingRec.length}}
+                          <div class="row">
+                            <b>
+                              <div class="col-md-1">
+                                Type
+                              </div>
+                              <div class="col-md-4">
+                                Title
+                              </div>
+                              <div class="col-md-1">
+                                Project Title
+                              </div>
+                              <div class="col-md-2">
+                                Open Date
+                              </div>
+                              <div class="col-md-2">
+                                Close Date
+                              </div>
+                            </b>
+                          </div>
+                          <br/>
+                            {{#each pastVotingRec}}
+                            <div class="row">
+                                <div class="col-md-1">
+                                    {{#if this.type}} {{{../__ "Meeting"}}} {{else}} {{{../__ "Poll"}}} {{/if}}
+                                </div>
+                                <div class="col-md-4"> {{this.title}} </div>
+
+                              <div class="col-md-1">
+                                {{this.stoTitle}}
+                              </div>
+                                <div class="col-md-2"> {{this.opendate}} </div>
+
+                                <div class="col-md-2">
+                                    {{#unless this.type}} {{this.closedate}} {{/unless}}
+                                </div>
+
+                                <div class="col-md-2">
+                                    {{#if this.type}}
+                                        <a href='/meetingdetails?id={{this.id}}' class="btn btn-info btn-fill btn-sm btn-wd"> &nbsp;&nbsp; {{{../__ "View-Meeting"}}} &nbsp;&nbsp;</a>
+                                    {{else}}
+                                        <a href='/votingdetails?id={{this.id}}&stoid={{this.stoid}}' class="btn btn-info btn-fill btn-sm btn-wd"> {{{../__ "View-Poll"}}} </a>
+                                    {{/if}}
+                                </div>
+                            </div>
+                            <br />
+                        {{/each}}
+                        {{else}}
+                            <label>{{{__ "No-Records-Found"}}}</label>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{{> Footer}}

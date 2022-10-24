@@ -1,0 +1,773 @@
+{{> Header}}
+
+<script language="javascript">
+    var bulkEmailSending = 0;
+    const viewRegisteredKYCInvestor = {{viewRegisteredKYCInvestor}};
+    //0=invited investor     1=regular kyc of the company
+    var currentOPID = 0;
+
+    $(document).ready(function() {
+        if( commonGetQueryStringValue("link") == "0")
+            $("#KYC").addClass('active');
+        else
+            $("#InvestorsMenu").addClass('active');
+
+        SummernoteBasicDataInitialize('emailText2', 'Enter Email Text', 300);
+    })
+    function authroizeInvestor() {
+      showModelGeneralOKDialogBox("Status changed");
+      setTimeout(function() {
+        document.getElementById("authorizationform").submit();
+      }, 1000);
+    }
+    function saveinvestments() {
+        if (document.getElementById("txtShares").value != "") {
+            if( isNaN ( document.getElementById("txtShares").value ) ) {
+                showModelGeneralOKDialogBox("shares not a number");
+                return;
+            }
+        } else
+            document.getElementById("txtShares").value = "0";
+
+
+        if (document.getElementById("txtInvestment").value != "") {
+            if( isNaN( document.getElementById("txtInvestment").value ) ) {
+                showModelGeneralOKDialogBox("Investment not a number");
+                return;
+            }
+        } else
+            document.getElementById("txtInvestment").value = "0";
+
+        document.getElementById("expectedInvestment").submit();
+    }
+    function downloadDocument(stepid, fileID, index) {
+        window.location.href = "/admin/downloadDocumentFromKYCRecord?id={{investorRec.ID}}&fileID=" + fileID + "&index=" + index + "&stepid=" + stepid;
+        return false;
+    }
+    function sendEmailToInvestor() {
+        if(bulkEmailSending == 1)
+            return;
+
+        currentOPID = 3;
+        if(document.getElementById("emailText2").value == "") {
+            showModelGeneralOKDialogBox("Enter email text");
+            return;
+        } else {
+            bulkEmailSending = 1;
+            if(  document.getElementById("files3").files.length > 0 )
+                uploadMultiplefilesToServer('files3', 'fileUplodProgressUpload3', 3, '/admin/uploadFiles');
+            else
+                sendFormToServer();
+        }
+    }
+    function fileValidation(id) {
+        checkAndUpdateMultiFileUpload("files" + id, "upload-file" + id,  MultifileMultifileExtensions1, MultifileMultifileExtensions1msg, MultifileMultifileMaxFiles1, MultifileMultifileMaxFileSizeMB1);
+    }
+    function uploadIdentifyDoc(id) {
+        currentOPID = id;
+        uploadMultiplefilesToServer("files" + id, "fileUplodProgressUpload" + id, 3, '/admin/uploadFiles');
+    }
+    function multipleFilesUploadingDoneEvent(data) {
+        if(currentOPID == 1 || currentOPID == 2)
+            document.getElementById("files").value = JSON.stringify(data);
+        else
+            document.getElementById("emailAttachments").value = JSON.stringify(data);
+
+        sendFormToServer();
+    }
+    function sendFormToServer() {
+        if(currentOPID == 1 || currentOPID == 2) {
+            document.getElementById("fileType").value = currentOPID;
+            document.getElementById("frmuploadfiles").submit();
+        } else {
+            document.getElementById("link").value = commonGetQueryStringValue("link");
+            document.getElementById("emailText").value = document.getElementById("emailText2").value;
+            document.getElementById("frmSendEmail").submit();
+        }
+    }
+    function rejectUpgrade() {
+        showModelGeneralYesNoDialogBox("Are you sure you want to reject and delete investor's upgrade request", "Yes Delete", "Cancel")
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = "/admin/rejectInvestorUpgradeRequest?id={{investorRec.ID}}";
+        return false;
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+
+{{>multifileupload}}
+
+    {{#if errorMessage}}
+        <span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+        <br /><br />
+    {{/if}}
+
+    {{#if viewRegisteredKYCInvestor}} <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/shares.png" width="25px;" style="padding-bottom:-20px;" /> &nbsp;   Investor KYC Process</h4>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+                <div class="content">
+
+                    <label>  Current Status </label>  &nbsp;&nbsp;&nbsp;  {{currentAuthStatus}}  &nbsp;   ( {{InvestorTypeText}} )
+                    <span style="padding-left:100px;"></span>
+
+                    {{#if investorRec.KYCApplied}}
+                        <label> Applied as </label>  &nbsp;&nbsp;&nbsp; {{authType}} Investor
+                        <span style="padding-left:10px;"></span>
+                        <button onclick="return rejectUpgrade()" class="btn btn-sm btn-info btn-fill">Reject Upgrade</button>
+                    {{/if}}
+
+                    <br /><br />
+                    <label> Applied &nbsp;&nbsp;&nbsp; </label>  {{investorRec.KYCUpdateDate}}
+
+                </div>
+            </div>
+        </div>
+    </div> {{/if}}
+
+    <div class="col-md-12 {{#if viewRegisteredKYCInvestor}}topPaddingBetweenPageSections{{/if}}">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/user.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;  Personal Information</h4>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+
+                <div class="content">
+                    {{#if viewRegisteredKYCInvestor}}
+                        {{#if investorRec.isKYC}}
+                            {{#if investorRec.investorType}}
+                                {{investorRec.CompanyName}}
+                            {{else}}
+                                {{investorRec.FirstName}} {{investorRec.LastName}}
+                            {{/if}}
+                            <br /><br />
+                            <label> Investor profile is active and personal information is available in View tab </label>
+                        {{else}}
+                            {{> InvestorView}}
+                        {{/if}}
+                    {{else}}
+                        {{> InvestorView}}
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#if viewRegisteredKYCInvestor}}<div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/summay.png" width="25px;" />&nbsp; Information on future investment intentions of investor into the company </h4>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Currency</label>  &nbsp;&nbsp;&nbsp;  {{kyc.kycamount.Currency}} {{kyc.currency}}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Amount</label>  &nbsp;&nbsp;&nbsp;  {{kyc.kycamount.TotalAmount}} {{kyc.amount}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <thead>
+                                    <th style="width:25%;"></th>
+                                    <th></th>
+                                </thead>
+                                <tr>
+                                    <td style="vertical-align:top;">
+                                        <label>Investor Type</label>
+                                    </td>
+                                    <td>{{kyc.kycamount.investorType}} {{kyc.type-investor}}</td>
+                                </tr>
+                                {{!-- Didn't work --}}
+                                {{#if kycExtended.general-invest-experience}}
+                                    <tr>
+                                        <td style="vertical-align:top;">
+                                            <label>General Investing Experience</label>
+                                        </td>
+                                        <td>
+                                            {{#each kycExtended.general-invest-experience}}
+                                                <input type="checkbox" disabled checked /> {{kyc this}}<br/>
+                                            {{/each}}
+                                        </td>
+                                    </tr>
+                                {{/if}}
+                                {{#if kycExtended.cre-investing-experience}}
+                                    <tr>
+                                        <td style="vertical-align:top;">
+                                            <label>CRE Investing Experience</label>
+                                        </td>
+                                        <td>{{kycExtended.cre-investing-experience}}</td>
+                                    </tr>
+                                {{/if}}
+                                {{#if kycExtended.expected-total-investments}}
+                                    <tr>
+                                        <td style="vertical-align:top;">
+                                            <label>Expected total investments</label>
+                                        </td>
+                                        <td>{{kycExtended.expected-total-investments}}</td>
+                                    </tr>
+                                {{/if}}
+                                {{#if kycExtended.expected-amount-investments}}
+                                    <tr>
+                                        <td style="vertical-align:top;">
+                                            <label>Expected amount investments</label>
+                                        </td>
+                                        <td>{{kycExtended.expected-amount-investments}}</td>
+                                    </tr>
+                                {{/if}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>{{/if}}
+
+    {{#if viewRegisteredKYCInvestor}}
+    {{#if kycExclusive}}
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/summay.png" width="25px;" />&nbsp; General KYC Information </h4>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+                <div class="content">
+                    <table class="table table-striped">
+                        <thead>
+                            <th style="width: 25%;"></th>
+                            <th></th>
+                        </thead>
+                        {{#each kycExclusive}}
+                            <tr>
+                                <td>
+                                    <label>{{kyc key}}</label>
+                                </td>
+                                <td>
+                                    {{#ifArray value}}
+                                        {{#each value}}
+                                            <input type="checkbox" disabled checked /> {{kyc this}}<br/>
+                                        {{/each}}
+                                    {{else}}
+                                        {{../value}}
+                                    {{/ifArray}}
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/docsigned2.png" width="25px;" />&nbsp; Identity Documents </h4>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+                <div class="content">
+                    <table class="table table-striped">
+                        <thead>
+                            <th style="width: 25%;"></th>
+                            <th></th>
+                        </thead>
+                        {{#each kycExtended.identity}}
+                            <tr>
+                                <td>
+                                    <label>
+                                        {{#if type}} {{type}} {{side}}
+                                        {{else}} {{name}} {{/if}}
+                                    </label>
+                                </td>
+                                <td>
+                                    <button
+                                        class="btn btn-info btn-fill "
+                                        onclick="window.location.href='{{{link}}}';"
+                                    >
+                                        Download
+                                    </button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                        {{#each kycExtended.investor-documents}}
+                            <tr>
+                                <td>
+                                    <label>
+                                        {{#if type}} {{type}} {{side}}
+                                        {{else}} {{name}} {{/if}}
+                                    </label>
+                                </td>
+                                <td>
+                                    <button
+                                        class="btn btn-info btn-fill "
+                                        onclick="window.location.href='{{{link}}}';"
+                                    >
+                                        Download
+                                    </button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                        {{#each kycExtended.identity-docs}}
+                            <tr>
+                                <td>
+                                    <label>
+                                        {{#if type}} {{type}} {{side}}
+                                        {{else}} {{name}} {{/if}}
+                                    </label>
+                                </td>
+                                <td>
+                                    <button
+                                        class="btn btn-info btn-fill "
+                                        onclick="window.location.href='{{{link}}}';"
+                                    >
+                                        Download
+                                    </button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/docsigned2.png" width="25px;" />&nbsp;
+                        {{#ifEqual KYCPersonalInfoScreen 1}}
+                                Proof of Identity <small>(old dashboard)</small>
+                        {{/ifEqual}}
+
+                        {{#ifEqual KYCPersonalInfoScreen 2}}
+                                {{#ifEqual investorRec.investorType 0}}
+                                        Proof of Identity <small>(old dashboard)</small>
+                                {{else}}
+                                        Proof of Existence <small>(old dashboard)</small>
+                                {{/ifEqual}}
+                        {{/ifEqual}}
+                </h4>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+                <div class="content">
+                    {{#if kyc.IDDoc.fileID}}
+                            {{#each kyc.IDDoc.fileID}}
+                                <div class="row" style="padding-top:10px;">
+                                    <div class="col-md-5">
+                                        {{addTovalue @index 1}}. &nbsp; {{this}}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button onclick="return downloadDocument('IDDoc', 'fileID', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Download</button>
+                                    </div>
+                                </div>
+                            {{/each}}
+                    {{else}}
+                        <label>No file found</label>
+                    {{/if}}
+
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                     <div class="upload-btn-wrapper">
+                                         <button class="btnfile">Select File</button>
+                                         <input id="files1" name="files1" type="file" onchange="fileValidation(1)" >
+                                         &nbsp;&nbsp;
+                                         <span style="color: green; font-size: 12px; " id="upload-file1">No File Selected</span>
+                                     </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <button type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal" onclick="uploadIdentifyDoc(1)" id="createButton"> Upload File </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div id="fileUplodProgressUpload1" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/docsigned2.png" width="25px;" />&nbsp;
+
+                        {{#ifEqual KYCPersonalInfoScreen 1}}
+                                Proof of Address <small>(old dashboard)</small>
+                        {{/ifEqual}}
+
+                        {{#ifEqual KYCPersonalInfoScreen 2}}
+                                {{#ifEqual investorRec.investorType 0}}
+                                        Proof of Address <small>(old dashboard)</small>
+                                {{else}}
+                                        Proof of Principal Place of Business <small>(old dashboard)</small>
+                                {{/ifEqual}}
+                        {{/ifEqual}}
+
+                </h4>
+            </div>
+            <div class="content table-responsive table-full-width icon-section">
+                <div class="content">
+
+                    {{#if kyc.IDDoc.fileAddress}}
+                            {{#each kyc.IDDoc.fileAddress}}
+                                <div class="row" style="padding-top:10px;">
+                                    <div class="col-md-5">
+                                        {{addTovalue @index 1}}. &nbsp; {{this}}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button onclick="return downloadDocument('IDDoc', 'fileAddress', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Download</button>
+                                    </div>
+                                </div>
+                            {{/each}}
+                    {{else}}
+                        <label>No file found</label>
+                    {{/if}}
+
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                     <div class="upload-btn-wrapper">
+                                         <button class="btnfile">Select File</button>
+                                         <input id="files2" name="files2" type="file" onchange="fileValidation(2)" >
+                                         &nbsp;&nbsp;
+                                         <span style="color: green; font-size: 12px; " id="upload-file2">No File Selected</span>
+                                     </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <button type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal" onclick="uploadIdentifyDoc(2)" id="createButton"> Upload File </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div id="fileUplodProgressUpload2" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#ifEqual KYCPersonalInfoScreen 2}}
+
+            {{#if kyc.AccreditedPage.IndDocPri}}
+                            <div class="col-md-12 topPaddingBetweenPageSections">
+                                <div class="card">
+                                    <div class="header">
+                                        <h4 class="title">  <img src="/img/docsigned2.png" width="25px;" />&nbsp;Investor Questionnaire</h4>
+                                    </div>
+                                    <div class="content table-responsive table-full-width icon-section">
+                                        <div class="content">
+
+                                            {{#if kyc.AccreditedPage.IndDocPri}}
+                                                    {{#each kyc.AccreditedPage.IndDocPri}}
+                                                        <div class="row" style="padding-top:10px;">
+                                                            <div class="col-md-5">
+                                                                {{addTovalue @index 1}}. &nbsp; {{this}}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <button onclick="return downloadDocument('AccreditedPage', 'IndDocPri', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Download</button>
+                                                            </div>
+                                                        </div>
+                                                    {{/each}}
+                                            {{else}}
+                                                <label>No file found</label>
+                                            {{/if}}
+
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-md-12">
+
+                                                    <div class="row">
+                                                        <div class="col-md-5">
+                                                             <div class="upload-btn-wrapper">
+                                                                 <button class="btnfile">Select File</button>
+                                                                 <input id="files2" name="files2" type="file" onchange="fileValidation(2)" >
+                                                                 &nbsp;&nbsp;
+                                                                 <span style="color: green; font-size: 12px; " id="upload-file2">No File Selected</span>
+                                                             </div>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <button type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal" onclick="uploadIdentifyDoc(2)" id="createButton"> Upload File </button>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div id="fileUplodProgressUpload2" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    {{/if}}
+
+    {{/ifEqual}}
+
+    {{#if kyc.IDDoc.passport}}
+            <div class="col-md-12 topPaddingBetweenPageSections">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">  <img src="/img/docsigned2.png" width="25px;" />&nbsp;
+                                Passport
+                        </h4>
+                    </div>
+                    <div class="content table-responsive table-full-width icon-section">
+                        <div class="content">
+
+                                    {{#each kyc.IDDoc.passport}}
+                                        <div class="row" style="padding-top:10px;">
+                                            <div class="col-md-5">
+                                                {{addTovalue @index 1}}. &nbsp; {{this}}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <button onclick="return downloadDocument('IDDoc', 'passport', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Download</button>
+                                            </div>
+                                        </div>
+                                    {{/each}}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+
+    {{#if kyc.IDDoc.ProofofIncome}}
+            <div class="col-md-12 topPaddingBetweenPageSections">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">  <img src="/img/docsigned2.png" width="25px;" />&nbsp;
+                                Proof of Income <small>(old dashboard)</small>
+                        </h4>
+                    </div>
+                    <div class="content table-responsive table-full-width icon-section">
+                        <div class="content">
+
+                                    {{#each kyc.IDDoc.ProofofIncome}}
+                                        <div class="row" style="padding-top:10px;">
+                                            <div class="col-md-5">
+                                                {{addTovalue @index 1}}. &nbsp; {{this}}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <button onclick="return downloadDocument('IDDoc', 'ProofofIncome', {{@index}})" type="button" class="btn btn-info btn-fill btn-sm">Download</button>
+                                            </div>
+                                        </div>
+                                    {{/each}}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+
+
+
+    {{#if viewRegisteredKYCInvestor}}<div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/email.png" width="25px;" />&nbsp; Send Email to Investor</h4>
+            </div>
+
+            <div class="content table-responsive table-full-width icon-section">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <textarea id="emailText2" name="emailText2" rows="5" class="form-control border-input"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="upload-btn-wrapper">
+                        <label>Note: &nbsp; Attachments will only be send to investor inbox. Platform will only save email text in inbox</label><br />
+                        <button class="btnfile">Select File</button>
+                        <input   id="files3"   name="files3" multiple="multiple" type="file"  onchange="fileValidation(3)" >
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span style="color: green; font-size: 12px; " id="upload-file3">No File Selected</span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="progress" style="display: none;">
+                              <div id="fileUplodProgressUpload3" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="sendEmailToInvestor()" class="btn btn-info btn-fill btn-wd">Send Email</button>
+                    <br />
+                </div>
+            </div>
+
+        </div>
+    </div>{{/if}}
+
+    {{#if viewRegisteredKYCInvestor}}<div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"><img src="/img/trading.png" width="25px;" style="padding-bottom:-20px;" /> &nbsp; Investor Expected Investment </h4>
+            </div>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-7">
+                            <form action="investorExpectedInvestment" method="post" id="expectedInvestment">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <label>Maximum investment amount in the company over the course of 12 months. By filling in the fields below, we will limit the amount of shares or currency that the investor is able to invest into the company.</label>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Share</label>
+                                        <input type="text" id="txtShares" name="txtShares"  class="form-control border-input" value="{{investorRec.expectedShares}}" />
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-4">
+                                        <label>Investment &nbsp;&nbsp; ({{currencySymbol DefaultSTOCurreny}})</label>
+                                        <input type="text" id="txtInvestment" name="txtInvestment"  class="form-control border-input" value="{{investorRec.expectedInvestment}}"/>
+                                    </div>
+                                </div>
+                                <br />
+
+                                <input type="hidden" name="id" value="{{investorRec.ID}}" />
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                            </form>
+
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <button onclick="saveinvestments()" class="btn btn-info btn-fill">Save</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    <div class="col-md-5">
+                            <b>Current Settings Found </b>
+
+                            <div class="row topPaddingBetweenPageSections">
+                                <div class="col-md-5"><label>Expected Shares</label></div>
+                                <div class="col-md-6">{{numberFormat investorRec.expectedShares decimalLength="ShareCountInFractions"}}</div>
+                            </div>
+
+                            <div class="row topPaddingBetweenPageSections">
+                                <div class="col-md-5"><label>Expected Investment</label></div>
+                                <div class="col-md-6">{{currencySymbol DefaultSTOCurreny}} {{numberFormat investorRec.expectedInvestment decimalLength="-"}} </div>
+                            </div>
+
+                        </div>
+                </div>
+            </div>
+
+            <br />&nbsp;
+        </div>
+    </div>{{/if}}
+
+{{#ifIn 9 Data.AdminRights}}
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"><img src="/img/trading.png" width="25px;" style="padding-bottom:-20px;" /> &nbsp; Investor Authorization</h4>
+            </div>
+
+            <div class="content">
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <form action="investorKYCAuthroize" method="post" id="authorizationform">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <label>Select Authorization</label>
+                                        <select id="authType" name="authType"  class="form-control border-input">
+                                            {{#each STOInvestorTypes}}
+                                                <option value="{{this.id}}"> {{this.type}} </option>
+                                            {{/each}}
+                                        </select>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <button onclick="authroizeInvestor()" class="btn btn-info btn-fill btn-wd">Authorize Investor</button>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="op" value="{{viewRegisteredKYCInvestor}}" />
+                                <input type="hidden" name="id" value="{{investorRec.ID}}" />
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        </form>
+                    </div>
+
+                    {{#if viewRegisteredKYCInvestor}}
+                        <div class="col-md-5">
+                            <b>Current Settings Found </b>
+
+                            <div class="row topPaddingBetweenPageSections">
+                                <div class="col-md-5"><label>Current KYC status</label></div>
+                                <div class="col-md-6">{{currentAuthStatus}}</div>
+                            </div>
+                        </div>
+                    {{/if}}
+                </div>
+
+            </div>
+
+            <br /> &nbsp;
+        </div>
+    </div>
+{{/ifIn}}
+
+<form id="frmSendEmail" name="frmSendEmail" action="/admin/sendEmailToInvestor"  method="post">
+    <input type="hidden" id="emailText" name="emailText" value="" />
+    <input type="hidden" id="link" name="link" value="" />
+    <input type="hidden" id="id1" name="id1" value="1" />
+    <input type="hidden" id="id2" name="id2" value="{{investorRec.ID}}" />
+    <input type="hidden" id="emailAttachments" name="files" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+<form id="frmuploadfiles" name="frmuploadfiles" action="/admin/uploadInvestorKYCDoc"  method="post">
+    <input type="hidden" id="fileType" name="fileType" value="" />
+    <input type="hidden" id="id" name="id" value="{{investorRec.ID}}" />
+    <input type="hidden" id="files" name="files" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

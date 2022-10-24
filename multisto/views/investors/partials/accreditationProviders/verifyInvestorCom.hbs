@@ -1,0 +1,53 @@
+<script async src="{{verifyInvestorComUrl}}"></script>
+<!--
+this link is for the free/dev testing
+https://verifyinvestor-staging.herokuapp.com/verify-investor-embedded-api.min.js
+this link is for the production site
+https://www.verifyinvestor.com/verify-investor-embedded-api.min.js
+-->
+
+<style media="all" >
+  iframe{
+    max-height: calc(100vh - 150px) !important;
+    overflow-y: hidden !important;
+    z-index: 3 !important;
+  }
+  body{
+    overflow-y:hidden !important;
+    max-height: calc(100vh - 150px) !important;
+  }
+  div{
+    overflow-y:hidden !important;
+    max-height: calc(100vh) !important;
+  }
+  #verify-investor-modal-dialog{
+    z-index: 3 !important;
+    margin-right: 15% !important;
+    margin-top: 5% !important;
+    float: right !important;
+    min-width: 50% !important;
+  }
+  .card{
+    z-index: 0 !important;
+  }
+  .verify-investor-modal-backdrop{
+    z-index: 1 !important;
+  }
+</style>
+
+<script>
+    window.onload = function(){
+        const investButton = document.getElementById('invest');
+        investButton.addEventListener('click', () => {
+            const token = '{{{verifyInvestorComToken}}}';
+            const identifier = '{{{investorId}}}-{{{stoId}}}'; // optional
+            window.verifyInvestor(token, identifier);
+        });
+    }
+</script>
+
+<div style="z-index: 0">
+    <button id="invest" class="btn btn-info btn-fill btn-wd">
+        Verify Investor Com
+    </button>
+</div>

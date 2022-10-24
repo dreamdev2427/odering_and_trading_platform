@@ -1,0 +1,71 @@
+{{> Header}}
+
+<script>
+  function changeParamStatus(paramName) {
+    const isEnabled = document.getElementById(paramName).checked;
+    document.getElementById('isParamEnabled').value = +isEnabled;
+    document.getElementById('paramName').value = paramName;
+    document.getElementById('changeMode').submit();
+  }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more' /> Investor Modules</h4>
+      <label>Change the available modules that an investor can interact with</label>
+      <br/>
+      <b>* Mandatory modules which can NOT be disabled</b>
+    </div>
+    <div class="content">
+      <div class="content table-responsive table-full-width icon-section">
+        <table class="table table-striped">
+          <tbody>
+            {{#if moduleSwitches}}
+              {{#each moduleSwitches}}
+                <tr>
+                  <td>
+                    <div class="row">
+                      <div class="col-md-1">
+                        <label class="switch">
+                          <input id="{{this.ID}}" name="{{this.ID}}"
+                                 onclick=changeParamStatus(this.id) type="checkbox"
+                            {{#if this.checked}}
+                                 checked
+                            {{/if}}
+                            {{#if this.isMandatory}}
+                              disabled
+                            {{/if}}
+                          >
+                          <span class="slider round"></span>
+                        </label>
+                      </div>
+                      <div class="col-md-11">
+                        <div class="row">
+                          {{this.title}}
+                        </div>
+                        <div class="row">
+                          <label>
+                            {{this.description}}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {{/each}}
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <form id="changeMode" method="post" action="/platform/changeInvestorModulesSwitches">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <input type="hidden" id="paramName" name="paramName" />
+    <input type="hidden" id="isParamEnabled" name="isParamEnabled" />
+  </form>
+</div>
+{{> Footer}}

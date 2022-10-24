@@ -1,0 +1,134 @@
+{{> Header}}
+
+	<script language="javascript">
+
+		$(document).ready(function(){
+
+		})
+
+
+        function changeImage(img) {
+            document.getElementById("mainimage").src = img;
+        }
+
+        function buyproperty() {
+			window.location.href = "buycombineproperty?id=" + {{record.id}};
+			return false;
+        }
+
+
+        function buypropertydocownload(doc) {
+            document.getElementById('my_iframe').src = doc;
+        }
+
+	</script>
+
+{{> HeaderInner}}
+
+    {{#if messages}}
+        <span style="color:red; font-size:18px;">{{messages}}</span>
+        <br /><br />
+    {{/if}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title">  <img src="/img/agendaitem.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;
+
+                                {{#ifEqual Data.CurrentClientID 5}}
+                                    {{{__ "Investment"}}}
+                                {{else}}
+                                    {{#ifEqual Data.CurrentClientID 9}}
+                                        {{{__ "Opportunity"}}}
+                                    {{else}}
+                                        {{{__ "Project"}}}
+                                    {{/ifEqual}}
+                                {{/ifEqual}}
+                                {{{__ "Details"}}}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="content">
+
+                    <div class="row">
+
+                        <div class="col-md-5">
+                                <img  id="mainimage" src="/img/stobanners/{{record.propertypicture}}"  width="100%">
+
+                                <br /><br />
+
+                                <img onclick="changeImage('img/stobanners/{{record.propertypicture}}')" src="img/stobanners/{{record.propertypicture}}" width="20%" max-height="10px">
+                                            &nbsp;&nbsp;
+                                <span style="line-height:100px;">
+                                    {{#each images}}
+                                            <img onclick="changeImage('img/stobanners/{{this.Link}}')"   src="img/stobanners/{{this.Link}}" width="20%" max-height="10px">
+                                            &nbsp;&nbsp;
+                                    {{/each}}
+                                </span>
+
+                                {{#if docs.length}}
+                                        <br /><br /><br />
+                                        <b>Project Documents</b>
+                                        <br /><br />
+
+                                        {{#each docs}}
+                                            <div class="row">
+                                                    <div class="col-md-7">
+                                                            {{this.Title}}
+                                                    </div>
+
+                                                    <div class="col-md-4">
+
+                                                        <a class="btn btn-info btn-fill btn-sm" href="/img/stobanners/{{this.Link}}" download>Download</a>
+
+                                                    </div>
+                                            </div>
+                                            <br />
+                                        {{/each}}
+                                {{/if}}
+
+                        </div>
+
+                        <div class="col-md-7">
+                            <span style="font-size:28px;">{{record.title}}</span>
+                            <br /><br />
+                            {{record.details}}
+                            <br /><br />
+                            {{{record.PropertyFullDetails}}}
+                            <br /><br />
+                            <a href="buycombineproperty"></a>
+
+
+							{{#if record.isBuyButtonEnabled}}
+									<button onclick="return buyproperty()" class="btn btn-info btn-fill">
+                                    {{#ifEqual Data.CurrentClientID 5}}
+                                        {{{__ "Invest"}}}
+                                    {{else}}
+                                        {{#ifEqual Data.CurrentClientID 9}}
+                                            {{{__ "Invest in"}}} {{{__ "Opportunity"}}}
+                                        {{else}}
+                                            {{{__ "Invest in"}}} {{{__ "Project"}}}
+                                        {{/ifEqual}}
+                                    {{/ifEqual}}
+                                    </button>
+							{{/if}}
+
+                            <br /><br /><br /><br />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

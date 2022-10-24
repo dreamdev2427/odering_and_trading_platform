@@ -1,0 +1,152 @@
+{{> Header}}
+
+<script language="javascript">
+    var linkToDelete = "";
+
+    $(document).ready(function(){
+        SummernoteMiniDataInitialize('txtsuggestion', 'Enter Email Text', 300); 
+        SummernoteMiniDataInitialize('commentTectEdit', 'Enter Email Text', 300); 
+    })
+    function summitsuggestion() {
+        //document.getElementById("selectedOption" + id).value = v;
+        document.getElementById("sendsuggestion").submit();        
+    }
+    function deleteComment(id) {
+        linkToDelete = "documentDeleteComment?id=" + id + "&recid={{recordID}}";
+        showModelGeneralYesNoDialogBox("Are your sure you want to delete your comment ?", "Delete", "Cancel");
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = linkToDelete;
+    }
+    function editComment(id) {
+        document.getElementById("commentid").value = id;
+        $('#modelChangeCommentss').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        $("#commentTectEdit").summernote("code",  $("#comment" + id).html());
+    }
+    function sendCommentChanges() {
+        document.getElementById("commenttext").value = document.getElementById("commentTectEdit").value;
+        document.getElementById("forchangecommenttext").submit();  
+    }
+</script>
+
+{{> HeaderInner}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/document2.png" width="28px" ;=""> &nbsp;  {{{__ "Contract Details"}}}</h4>
+            </div>
+            <div class="content">
+                <b>{{record.title}}</b>
+                <br /><br />
+                <span id="maindocument">
+                    {{{record.contents}}}
+                </span>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"><img src="/img/comments.png" width="25px" ;=""> &nbsp; {{{__ "Comments and Suggestions"}}} </h4>
+                <label>{{{__ "Please review the above document and make your suggestions"}}}</label>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-7">
+                        {{#each comments}}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <img src="/img/greendot.png" width="20px"> &nbsp;&nbsp;&nbsp; 
+                                    <label>Commented by</label> &nbsp; 
+                                    <span style="font-size:18px; color:blue"> {{this.FirstName}} {{this.Lastname}} </span>
+                                    &nbsp;&nbsp; on &nbsp; {{this.datecomment}}   &nbsp;&nbsp;
+                                    <br />
+                                    <span id="comment{{this.commentID}}">{{{this.comment}}}</span>
+                                    <br />
+                                    {{#ifEqual this.investorid ../loginUserID}}
+                                        <button type="button" onclick="editComment({{this.commentID}})" class="btn btn-info btn-sm btn-fill ">{{{../__ "Edit Comment"}}}</button>  &nbsp;&nbsp;                                 
+                                        <button type="button" onclick="deleteComment({{this.commentID}})" class="btn btn-info btn-sm btn-fill ">{{{../__ "Delete Comment"}}}</button> 
+                                    {{/ifEqual}}
+                                    <br /><br />
+                                    {{#ifGreater this.replybyid 0}}
+                                        <div class="row">
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-10">
+                                                <label>Response by Admin</label> &nbsp;<br/>
+                                                <i><q style="font-size:14px;">
+                                                 {{this.reply}} 
+                                                </q></i> 
+                                            </div>
+                                        </div>
+                                    {{/ifGreater}}                            
+                                </div>
+                            </div>
+                            <br /><hr /><br />
+                            {{/each}}
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <h4><img src="/img/add.png" width="25px" ;=""> &nbsp; {{{__ "Add Your Comments / Suggestion"}}} </h4>
+
+                        <form id="sendsuggestion" name="sendsuggestion" action="documentsuggestion" method="post">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>{{{__ "You can enter your comments or suggestions in below text area"}}}</label>
+                                        <textarea maxlength="1000" id="txtsuggestion" name="txtsuggestion" rows="6" class="form-control border-input" placeholder="Enter your suggestion"></textarea>
+                                    </div>
+                                </div>                                     
+                            </div>
+
+                            <div class="text-left">                                    
+                                <button type="button" onclick="summitsuggestion()" class="btn btn-info btn-fill btn-wd">{{{__ "Add New Suggestion"}}}</button>
+                            </div>  
+
+                            <input type="hidden" id="id" name="id" value="{{record.ID}}" >
+                            <input type="hidden" id="_csrf" name="_csrf" value="{{csrfToken}}" >
+                         </form>
+                    </div>     
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class = "modal fade" id="modelChangeCommentss" tabindex = "-1" role = "dialog" aria-labelledby = "modelChangeCommentss" aria-hidden = "true">
+    <div class = "modal-dialog  modal-lg">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">Change Your Comment</h4>
+         </div>
+
+         <div  class="modal-body">
+             <textarea  id="commentTectEdit" rows="10" maxlength="1500" class="form-control border-input"></textarea>
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="sendCommentChanges()"> Save</button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>                 
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<form id="forchangecommenttext" name="forchangecommenttext" action="/changecommenttext"  method="post">    
+    <input type="hidden" id="commentid" name="id" value="" />
+    <input type="hidden" name="recid" value="{{recordID}}" />
+    <input type="hidden" id="commenttext"  name="comment" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+
+{{> Footer}}

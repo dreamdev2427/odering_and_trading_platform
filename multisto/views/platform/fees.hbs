@@ -1,0 +1,320 @@
+{{> Header}}
+
+<style>
+    .message {
+        border: 2px solid gray;
+        background-color: #EEE;
+        color: #555;
+        border-radius: 8px;
+        padding: 16px;
+        font-size: large;
+    }
+    .error {
+        border-color: #FAA;
+        background-color: #FEE;
+        color: #A33;
+    }
+    .success {
+        border-color: #AFA;
+        background-color: #EFE;
+        color: #3A3;
+    }
+    .thead {
+        position: sticky;
+        top: 0;
+    }
+    .btn-custom {
+        border-radius: 8px;
+        margin: 18px;
+    }
+    .has-error .form-control {
+        background-color: #fffcf5 !important;
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.11.0/af-2.3.7/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/b-print-2.0.0/cr-1.5.4/date-1.1.1/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.2.0/sp-1.4.0/sl-1.3.3/datatables.min.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.11.0/af-2.3.7/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/b-print-2.0.0/cr-1.5.4/date-1.1.1/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.2.0/sp-1.4.0/sl-1.3.3/datatables.min.js"></script>
+
+<script language="javascript">
+  $(document).ready(function() {
+    $("#fees").addClass('active');
+    $('#datatable').DataTable();
+
+    const modal = $('#fee-modal');
+    const _csrf = '{{csrfToken}}';
+    let feeID = null;
+    const stoIDInput = $('#fee-stoID');
+    const beneficiaryInput = $('#fee-beneficiary');
+    const typeInput = $('#fee-type');
+    const amountInput = $('#fee-amount');
+    const statusInput = $('#fee-status');
+
+    stoIDInput.on('focus', () => {
+      if (stoIDInput.parent().hasClass('has-error')) {
+        stoIDInput.parent().removeClass('has-error');
+      }
+    });
+
+    beneficiaryInput.on('focus', () => {
+      if (beneficiaryInput.parent().hasClass('has-error')) {
+        beneficiaryInput.parent().removeClass('has-error');
+      }
+    });
+
+    typeInput.on('focus', () => {
+      if (typeInput.parent().hasClass('has-error')) {
+        typeInput.parent().removeClass('has-error');
+      }
+    });
+
+    amountInput.on('focus', () => {
+      if (amountInput.parent().hasClass('has-error')) {
+        amountInput.parent().removeClass('has-error');
+      }
+    });
+
+    statusInput.on('focus', () => {
+      if (statusInput.parent().hasClass('has-error')) {
+        statusInput.parent().removeClass('has-error');
+      }
+    });
+
+    $('.js-add').on('click', () => {
+      modal.modal({ backdrop: 'static', keyboard: true });
+    });
+
+    $(document).on('click', '.js-edit', (e) => {
+      const data = $(e.currentTarget).data();
+      feeID = data.id;
+      stoIDInput.val(data.stoid);
+      beneficiaryInput.val(data.beneficiary);
+      typeInput.val(data.type);
+      amountInput.val(data.amount);
+      statusInput.val(data.status);
+      modal.modal({ backdrop: 'static', keyboard: true });
+    });
+
+    $(document).on('click', '.js-delete', (e) => {
+      const data = $(e.currentTarget).data();
+      const deleteID = data.id;
+      $.post('/platform/deleteFee', { deleteID, _csrf })
+        .done(() => {
+          window.location.href = "fees"
+        });
+    });
+
+    modal.on('hidden.bs.modal', () => {
+      stoIDInput.val(0);
+      beneficiaryInput.val('BROKER');
+      typeInput.val('REGISTRATION');
+      amountInput.val('');
+      statusInput.val('FLAT');
+    });
+
+    $('.js-save').on('click', () => {
+      let hasError = false;
+      const ID = feeID;
+      const stoID = stoIDInput.val();
+      const beneficiary = beneficiaryInput.val();
+      const type = typeInput.val();
+      const amount = amountInput.val();
+      const status = statusInput.val();
+
+      if (!stoID) {
+        stoIDInput.parent().addClass('has-error');
+        hasError = true;
+      }
+      if (!beneficiary) {
+        beneficiaryInput.parent().addClass('has-error');
+        hasError = true;
+      }
+      if (!type) {
+        typeInput.parent().addClass('has-error');
+        hasError = true;
+      }
+      if (!amount) {
+        amountInput.parent().addClass('has-error');
+        hasError = true;
+      }
+      if (!status) {
+        statusInput.parent().addClass('has-error');
+        hasError = true;
+      }
+
+      if (hasError) {
+        return;
+      }
+
+      $.post('/platform/postFee', { ID, stoID, beneficiary, type, amount, status, _csrf })
+        .done(() => {
+          modal.modal('hide');
+          window.location.href = "fees"
+        });
+    });
+  });
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+  <div class="col-md-12">
+    {{#if errorMessage}}
+      <p class="message error">{{errorMessage}}</p>
+    {{/if}}
+    {{#if successMessage}}
+      <p class="message success">{{successMessage}}</p>
+    {{/if}}
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="title"><img src="/img/fees.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Fees</h4>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-primary pull-right js-add">Add Fee</button>
+          </div>
+        </div>
+      </div>
+      <div class="content" style="overflow: auto;">
+        {{#if feesCount}}
+        <div class="row">
+          <div class="col-xs-12">
+            <br/>
+            <table id="datatable" class="table table-striped" style="overflow: auto;">
+              <thead class="thead">
+                <th class="thead">Project</th>
+                <th class="thead">Beneficiary</th>
+                <th class="thead">Type</th>
+                <th class="thead">Amount</th>
+                <th class="thead">Commission Type</th>
+                <th class="thead"></th>
+                <th class="thead"></th>
+              </thead>
+              <tbody>
+                {{#each fees}}
+                <tr>
+                  <td>{{this.project_title}}</td>
+                  <td>{{this.beneficiary}}</td>
+                  <td>{{this.type}}</td>
+                  {{#ifEqual this.status "PERCENTAGE"}}
+                  <td>{{this.amount}}%</td>
+                  {{else}}
+                  <td>{{currencySign}} {{this.amount}}</td>
+                  {{/ifEqual}}
+                  <td>{{this.status}}</td>
+                  <td>
+                    <button
+                      class="btn btn-default js-edit"
+                      data-id="{{this.ID}}"
+                      data-stoid="{{this.stoID}}"
+                      data-beneficiary="{{this.beneficiary}}"
+                      data-type="{{this.type}}"
+                      data-amount="{{this.amount}}"
+                      data-status="{{this.status}}"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-default js-delete"
+                      data-id="{{this.ID}}"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {{else}}
+          <label>No Records Found</label>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="fee-modal" tabindex="-1" role="dialog" aria-labelledby="fee-modal" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Fee Details</h4>
+      </div>
+      <div class="modal-body">
+        <form id="fee-form" autocomplete="off">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="fee-stoID" class="control-label">Project</label>
+                <select id="fee-stoID" name="stoID" class="form-control border-input" required>
+                {{#each stoList}}
+                  {{#ifEqual this.ID 0}}
+                  <option value="{{this.ID}}">All Projects</option>
+                  {{else}}
+                  <option value="{{this.ID}}">{{this.title}}</option>
+                  {{/ifEqual}}
+                {{/each}}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="fee-beneficiary" class="control-label">Beneficiary</label>
+                <select id="fee-beneficiary" name="beneficiary" class="form-control border-input" required>
+                  <option value="BROKER">Broker</option>
+                  <option value="PLATFORM">Platform</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="fee-type" class="control-label">Type</label>
+                <select id="fee-type" name="type" class="form-control border-input" required>
+                  <option value="REGISTRATION">Registration</option>
+                  <option value="DEPOSIT">Deposit</option>
+                  <option value="BUY SHARES">Buy Shares</option>
+                  <option value="BUY EXCHANGE">Buy Exchange</option>
+                  <option value="SELL EXCHANGE">Sell Exchange</option>
+                  <option value="SELL BACK">Sell Back</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="fee-amount" class="control-label">Amount</label>
+                <input id="fee-amount" name="amount" type="number" step="1" min="0" class="form-control border-input" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="fee-status" class="control-label">Commission Type</label>
+                <select id="fee-status" name="status" class="form-control border-input" required>
+                  <option value="FLAT">Flat</option>
+                  <option value="PERCENTAGE">Percentage</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary js-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> Footer}}

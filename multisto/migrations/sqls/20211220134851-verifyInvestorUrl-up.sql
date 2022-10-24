@@ -1,0 +1,1 @@
+INSERT INTO params(param, isglobal, datatype, intValue, stringValue) VALUES ('verifyInvestorComUrl', 1, 3, 0, '{backendURL: "", frontendURL: ""}');

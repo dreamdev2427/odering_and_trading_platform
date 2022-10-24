@@ -1,0 +1,104 @@
+{{> Header}}
+
+	<script language="javascript">
+		
+        $(document).ready(function() {
+            //$("#ActivityLogs").addClass('active');                
+        });
+
+        function editSection(id) {
+              window.location.href = "/stopublicedit?id=" + id + "&op=2";
+              return false;    
+        }
+
+        function addSection(stoid) {
+              window.location.href = "/stopublicedit?stoid=" + stoid + "&op=1";
+              return false;    
+        }
+
+        function deleteSection(id, stoid) {
+              window.location.href = "/stopublicdelete?id=" + id + "&stoid=" + stoid;
+              return false;                
+        }
+
+        function enableDisableSection(id, stoid, en) {
+              window.location.href = "/stopublicenabled?id=" + id + "&stoid=" + stoid + "&en=" + en;
+              return false;                            
+        }
+
+	</script>
+
+{{> HeaderInner}}
+		
+    <div class="row">		
+       <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="img/search.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; STO Main Contents
+                    <button onclick="return editSection({{mainrecord.ID}})" class="btn btn-info btn-fill pull-right">Edit Section</button></h4>
+                </div>
+                <div class="content table-responsive table-full-width icon-section">
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <h4>{{mainrecord.title}}</h4>
+                            {{{mainrecord.contents}}}
+                        </div>
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">			
+           <div class="col-md-12 ">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"> <img src="img/events.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Public Page Sections
+                        <button onclick="return addSection({{mainrecord.stoid}})" class="btn btn-info btn-fill pull-right">Add Section</button>
+                        </h4>
+                    </div>
+                    <div class="content table-responsive table-full-width icon-section">					
+
+                        <table class="table table-striped">
+                            <thead>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each records}}
+                                    <tr>
+                                        <td style="width:50%">{{this.title}} </td>
+                                        <td style="width:15%"> 
+                                            {{#if this.isActive}}
+                                                <img src="img/greendot.png" width="20px" >&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <button onclick="return enableDisableSection({{this.ID}}, {{this.stoid}}, 0)" class="btn btn-info btn-fill btn-sm">Hide Section</button>
+                                            {{else}}
+                                                <img src="img/reddot.png" width="20px" >&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <button onclick="return enableDisableSection({{this.ID}}, {{this.stoid}}, 1)" class="btn btn-info btn-fill btn-sm">Show Section</button>
+                                            {{/if}}
+                                        </td>
+                                        <td style="width:10%"> <button onclick="return editSection({{this.ID}})" class="btn btn-info btn-fill btn-sm">Edit Section</button> </td>
+                                        <td style="width:10%"> <button onclick="return deleteSection({{this.ID}}, {{this.stoid}})" class="btn btn-info btn-fill btn-sm">Delete </button> </td>                                        
+                                        <td style="width:15%"> <button  class="btn btn-info btn-fill btn-sm"> up </button> <button  class="btn btn-info btn-fill btn-sm"> down </button> </td>    
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+
+                        <br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <img src="img/greendot.png" width="20px" > Publicly Visible Section 
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <img src="img/reddot.png" width="20px" > Hidden 
+                        <br />&nbsp;
+                    </div>
+                </div>
+            </div>
+    </div>
+
+{{> Footer}}

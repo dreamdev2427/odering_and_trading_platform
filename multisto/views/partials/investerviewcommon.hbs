@@ -1,0 +1,518 @@
+
+{{#ifEqual Data.KYCPersonalInfoScreen 1 }}
+  <div class="card" style="border: 2px solid #000000">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-10">
+          <h4 class="title">
+            Personal Info
+          </h4>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="form-group">
+            <label>ID</label>
+            <br/>
+            <input disabled value="{{investorRec.ID}}"/>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Name {{#if investorRec.investorType}} of Company Representative{{/if}}</label>
+            <br/>
+            <input disabled value="{{investorRec.FirstName}} {{investorRec.LastName}}"/>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <br/>
+            <input disabled value="{{investorRec.DOB}}"/>
+          </div>
+        </div>
+
+        {{#ifEqual Data.CurrentClientID 6}}
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Place of Birth</label>
+              <br/>
+              <input disabled value="{{investorRec.DOBCountry}}"/>
+            </div>
+          </div>
+        {{/ifEqual}}
+
+      </div>
+      {{#if investorRec.investorType}}
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Company Name</label>
+                <br/>
+                <input disabled value="{{investorRec.CompanyName}}"/>
+              </div>
+            </div>
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label>Title within Company</label>
+                    <br/>
+                    <input disabled value="{{investorRec.TitleWithinCompany}}"/>
+
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label>Do you have the power to bind the company ?</label>
+                    <br/>
+                      {{#if investorRec.PowerToBindCompany}}
+                        <input disabled value="Yes"/>
+                      {{else}}
+                        <input disabled value="No"/>
+                      {{/if}}
+                  </div>
+              </div>
+          </div>
+      {{/if}}
+
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Passport Number</label>
+            <br/>
+            <input disabled value="{{investorRec.PassportNumber}}"/>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>National ID</label>
+            <br/>
+            <input disabled value="{{investorRec.NationalID}}"/>
+          </div>
+        </div>
+        {{#ifEqual isDriversLicenseEnabled 1}}
+          <div class="col-md-3">
+            <div class="form-group">
+              <label>Drivers License Number</label>
+              <br/>
+              <input disabled value="{{investorRec.driversLicenseID}}"/>
+            </div>
+          </div>
+        {{/ifEqual}}       
+      </div>
+      {{#ifEqual Data.CurrentClientID 6}}
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tax ID</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.TaxIDNo}}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Tax Residency Country</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.taxResidencyCountry}}
+            </div>
+          </div>
+        </div>
+
+        {{#if investorRec.PoliticallyExposedPerson }}
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Politically Exposed Person</label>   &nbsp;&nbsp;&nbsp; Yes
+                &nbsp;&nbsp;&nbsp;
+                <label>Person</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.PoliticallyExposedPersonPost}}
+              </div>
+            </div>
+          </div>
+        {{/if}}
+
+      {{/ifEqual}}
+    </div>
+  </div>
+  <div class="card" style="border: 2px solid #000000">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-10">
+          <h4 class="title">
+            Contact Info
+          </h4>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Phone Number {{#if investorRec.investorType}}(of Company){{/if}}</label>
+            <br/>
+            <input disabled value="{{investorRec.phone}}"/>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Email {{#if investorRec.investorType}}(of Company){{/if}}</label>
+            <br/>
+            {{#if investorRec.email}}
+              <input size="50" disabled value="{{investorRec.email}}"/>
+            {{else}}
+              <input disabled value="Investor profile without email"/>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="border: 2px solid #000000">
+    <div class="header">
+      <div class="row">
+        <div class="col-md-10">
+          <h4 class="title">
+            Address Info
+          </h4>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Country {{#if investorRec.investorType}}(of Company){{/if}}</label>
+            <br/>
+            <input disabled value="{{investorRec.country}}"/>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>State {{#if investorRec.investorType}}(of Company){{/if}}</label>
+            <br/>
+            <input disabled value="{{investorRec.state}}"/>
+          </div>
+        </div>
+
+
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Zip {{#if investorRec.investorType}}(of Company){{/if}}</label>
+            <br/>
+            <input disabled value="{{investorRec.zip}}"/>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Town / City {{#if investorRec.investorType}}(of Company){{/if}}</label>
+            <br/>
+            <input disabled value="{{investorRec.town}}"/>
+          </div>
+        </div>
+        <br/>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Street Address {{#if investorRec.investorType}}(of Company){{/if}} </label>
+            <br/>
+            <input disabled value="{{investorRec.Address}}"/>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Address </label>
+            <br/>
+            <input disabled value="{{investorRec.Address}}"/>
+          </div>
+        </div>
+      </div>
+      {{#unless InvestorRecord.investorType}}
+        {{#ifIn Data.CurrentClientID '[3]'}}
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Country of Citizenship</label>
+                <br/>
+                <input disabled value="{{investorRec.countryOfCitizenship}}"/>
+              </div>
+            </div>
+          </div>
+        {{/ifIn}}
+      {{/unless}}
+    </div>
+  </div>
+  <hr/>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-group">
+        <label>Notes</label>
+        <br/>
+        <textarea disabled rows="8" class="form-control border-input">
+          {{investorRec.notes}}
+        </textarea>
+      </div>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+
+{{/ifEqual}}
+
+
+
+{{#ifEqual Data.KYCPersonalInfoScreen 2 }}
+
+    {{#if investorRec.investorType}}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Company Name &nbsp;&nbsp;&nbsp;</label>
+                        {{investorRec.CompanyName}}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>ID</label> &nbsp;&nbsp;&nbsp;  {{investorRec.ID}}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Type &nbsp;&nbsp;&nbsp;</label>
+                        {{#ifEqual investorRec.TrustOrBusinessEntity 1}}Corporation{{/ifEqual}}
+
+                        {{#ifEqual investorRec.TrustOrBusinessEntity 2}} Trust {{/ifEqual}}
+
+                        {{#ifEqual investorRec.TrustOrBusinessEntity 3}} Limited Partnership, LLC, etc {{/ifEqual}}
+
+                        {{#ifEqual investorRec.TrustOrBusinessEntity 4}} U.S.-Based Employee Benefit Plan under ERISA {{/ifEqual}}
+
+                        {{#ifEqual investorRec.TrustOrBusinessEntity 5}} Other {{/ifEqual}}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Country the organization a resident for tax purposes</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.country}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Email</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.email}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Date of Incorporation/Formation</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.DateIncorporation}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Tax Identification Number</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.TaxIDNo}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Government-issued Identification Number</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.GovtIDNo}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Government ID is your Tax ID Number</label>   &nbsp;&nbsp;&nbsp;
+                        {{#if investorRec.GovtIDNoIsTaxNo}}  Yes {{else}} No {{/if}}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Principal Country Of Business</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.PrincipalCountryOfBusiness}}
+                    </div>
+                </div>
+            </div>
+
+            <span style="font-size:18px;">Primary Contact</span>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Name</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.NamePrimaryContact}}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Phone</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.PhonePrimaryContact}}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Email</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.EmailPrimaryContact}}
+                    </div>
+                </div>
+            </div>
+
+            <span style="font-size:18px;">Secondary Contact</span>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Name</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.NameSecondaryContact}}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Phone</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.PhoneSecondaryContact}}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Email</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.EmailSecondaryContact}}
+                    </div>
+                </div>
+            </div>
+
+
+    {{else}}
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Name</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.FirstName}} {{investorRec.MiddleName}}  {{investorRec.LastName}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>ID</label> &nbsp;&nbsp;&nbsp;  {{investorRec.ID}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Passport Number</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.PassportNumber}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>National ID</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.NationalID}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Phone Number</label>  &nbsp;&nbsp;&nbsp;  {{investorRec.phone}} &nbsp;&nbsp;&nbsp;
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>
+                            {{#ifEqual Data.CurrentClientID 6}}
+                                Telegram Handle
+                            {{else}}
+                                Fax
+                            {{/ifEqual}}
+                        </label>  &nbsp;&nbsp;&nbsp;
+                            {{investorRec.FaxNumber}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Date of Birth</label>  &nbsp;&nbsp;&nbsp;  {{investorRec.DOB}} &nbsp;&nbsp;&nbsp;
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Email </label>  &nbsp;&nbsp;&nbsp;
+                        {{#if investorRec.email}}
+                            {{investorRec.email}}
+                        {{else}}
+                            Investor profile without email
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Address </label>  &nbsp;&nbsp;&nbsp;  {{investorRec.Address}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Zip </label>  &nbsp;&nbsp;&nbsp;  {{investorRec.zip}}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Town / City </label>  &nbsp;&nbsp;&nbsp;  {{investorRec.town}}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>State </label>  &nbsp;&nbsp;&nbsp;  {{investorRec.state}}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Country </label>  &nbsp;&nbsp;&nbsp;  {{investorRec.country}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Current Occupation</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.Occupation}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Employer Name</label>   &nbsp;&nbsp;&nbsp;   {{investorRec.EmployerName}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Employer Address </label>  &nbsp;&nbsp;&nbsp;  {{investorRec.EmployerAddress}}
+                    </div>
+                </div>
+            </div>
+
+
+
+    {{/if}}
+
+{{/ifEqual}}
+
+
+

@@ -1,0 +1,49 @@
+<script>
+  function changeChannelType(mode) {
+    document.getElementById('paymentChannelType').value = mode;
+    document.getElementById('changeChannelType').submit();
+  }
+
+</script>
+
+<div class="card">
+  <div class="header">
+    <div class="row">
+      <div class="col-md-8">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt="add more"/> Payment Channel Type </h4>
+        <label>Change the service provider of this payment channel</label>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <button onclick="changeChannelType(1)" class="btn
+            {{#ifEqual paymentChannelType 1}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Internal</button>
+          <button onclick="changeChannelType(0)" class="btn
+            {{#ifEqual paymentChannelType 0}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Mercury</button>
+            <button onclick="changeChannelType(2)" class="btn
+            {{#ifEqual paymentChannelType 2}}
+              btn-info
+            {{else}}
+              btn-secondary
+            {{/ifEqual}} btn-fill">Metamask</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<form id="changeChannelType" method="post" action="/admin/changePaymentChannelMode">
+  <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+  <input type="hidden" id="paymentChannelType" name="paymentChannelType" />
+  <input type="hidden" id="ID" name="ID" value="{{Record.ID}}"/>
+</form>

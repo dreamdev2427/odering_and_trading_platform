@@ -1,0 +1,20 @@
+#verify-investor-iframe{
+    max-height: calc(100vh - 150px) !important;
+    overflow-y: hidden !important;
+}
+#verify-investor-modal-dialog{
+    display: grid;
+    overflow:hidden !important;
+    z-index: 1 !important;
+    margin-right: 15% !important;
+    float: right !important;
+    min-width: 50% !important;
+    max-height: calc(100vh) !important;
+}
+.verify-investor-modal-backdrop{
+    z-index: -1 !important;
+    collapse:false !important;
+}
+.main-panel{
+    z-index: auto !important;
+}

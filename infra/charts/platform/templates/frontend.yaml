@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-frontend
+  labels:
+    app: {{ .Release.Name }}-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-frontend
+    spec:
+      containers:
+        - image: "gcr.io/storied-chimera-334509/digishares-platform/frontend:{{ include "version.current" . }}"
+          name: {{ .Release.Name }}-frontend-m
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 10m
+              ephemeral-storage: 150Mi
+              memory: 100Mi
+            limits:
+              cpu: 50m
+              ephemeral-storage: 150Mi
+              memory: 200Mi
+          ports:
+            - containerPort: 80
+          env:
+            - name: VERSION
+              value: "{{ include "version.current" . }}"
+            - name: REACT_APP_STO_MODE
+              value: "MULTI"
+            - name: REACT_APP_GRAPHQL_URI
+              value: "https://{{ include "hostnames.api" . }}/"
+            - name: NODE_ENV
+              value: "development"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-frontend-internal"
+spec:
+  type: NodePort
+  selector:
+    app: "{{ .Release.Name }}-frontend"
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "{{ .Release.Name }}-frontend-ingress"
+  annotations:
+    networking.gke.io/managed-certificates: "{{ .Release.Name }}-managed-cert"
+spec:
+  tls:
+    - hosts:
+        - "{{ include "hostnames.frontend" . }}"
+      secretName: {{ .Release.Name }}-tls
+  rules:
+    - host: "{{ include "hostnames.frontend" . }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: "{{ .Release.Name }}-frontend-internal"
+                port:
+                  number: 80
+  ingressClassName: nginx
+
+  {{ if .Values.smoke }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-frontend-smoke
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  selector:
+    app: "{{ .Release.Name }}-frontend"
+  type: LoadBalancer
+  {{ end }}

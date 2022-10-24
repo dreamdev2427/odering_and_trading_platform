@@ -1,0 +1,11 @@
+mutation MessageCreate($data: ChatInput!) {
+  messageCreate(data: $data)
+}
+
+mutation UpdateChatsToSeen($sender: SENDER_TYPE!, $stoID: Int!) {
+  updateChatsToSeen(sender: $sender, stoID: $stoID)
+}
+
+mutation UpdatePriceNegotiationChatsToSeen($context: CHAT_CONTEXT!, $contextID: Int!, $counterpartID: Int!) {
+  updatePriceNegotiationChatsToSeen(context: $context, contextID: $contextID, counterpartID: $counterpartID)
+}

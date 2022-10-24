@@ -1,0 +1,249 @@
+            </div>
+
+        </div>
+
+
+
+    <div class = "modal fade" id="modelGeneralOKMessageModelBox" tabindex = "-1" role = "dialog" aria-labelledby = "modelGeneralOKMessageModelBox" aria-hidden = "true">
+
+        <div class = "modal-dialog">
+          <div class = "modal-content">
+
+             <div class="modal-header">
+                <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+                <h4 class = "modal-title" id = "myModalLabel">{{Data.SiteParameter_PageTitle}}</h4>
+             </div>
+
+             <div class="modal-body">
+                 <span style="font-size:18px;" id="modelGeneralOKMessageArea"> </span>
+                 <br /> &nbsp;&nbsp;<br /> &nbsp;&nbsp;
+
+                <button type = "button" class = "btn btn-info btn-fill pull-right" data-dismiss = "modal"> &nbsp; OK &nbsp; </button>
+                 <br /> &nbsp;&nbsp;<br /> &nbsp;&nbsp;
+
+             </div><!-- /.modal-content -->
+
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+    </div>
+
+
+
+
+    <!-- Modal -->
+    <div class = "modal fade" id="modelCommonYesNoTwoOptionDialogBox" tabindex = "-1" role = "dialog"
+       aria-labelledby = "myModalLabel" aria-hidden = "true">
+
+       <div class = "modal-dialog">
+          <div class = "modal-content">
+
+             <div class = "modal-header">
+                <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+                <h4 class = "modal-title" id = "myModalLabel">{{Data.SiteParameter_PageTitle}}</h4>
+             </div>
+
+             <div class = "modal-body" id="commonDialogYesNoDivTextArea"></div>
+
+             <div class = "modal-footer">
+                <button type = "button" class="btn btn-info btn-fill" data-dismiss="modal" id="modelCommonYesOptionButton" onclick="generalModelOKButtonClicked()"> Remove Shares </button>
+                <button type = "button" class = "btn btn-info btn-fill"  id="modelCommonNoOptionButton" data-dismiss = "modal"> Cancel </button>
+             </div>
+
+          </div><!-- /.modal-content -->
+       </div><!-- /.modal-dialog -->
+
+    </div><!-- /.modal -->
+
+
+    <div class = "modal fade" id="modalLinkDocumentToShareClass" tabindex = "-1" role = "dialog"
+       aria-labelledby = "myModalLabel" aria-hidden = "true">
+
+       <div class = "modal-dialog">
+          <div class = "modal-content">
+
+             <div class = "modal-header">
+                <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+                <h4 class = "modal-title" id = "myModalLabel">Choose share class to link the document with.</h4>
+             </div>
+
+             <div class = "modal-body" id="DialogLinkDocumentDivArea">
+                 <form id="ShareTypes" method="POST" action="linkDocumentToShareType">
+                    <select id="shareType" name="shareType" class="form-control border-input">
+                        {{#each shareTypes}}
+                            <option value="{{this.ID}}">{{title}}</option>
+                        {{/each}}
+                    </select>
+                    <input type="hidden" id = "documentId" name="documentId" value="" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <input type="hidden" name="stoId" value="{{id}}" />
+                 </form>
+             </div>
+
+             <div class = "modal-footer">
+                <button type = "button" class="btn btn-info btn-fill" data-dismiss="modal" id="modelCommonYesOptionButton" onclick="changeDocumentShareClass({{this.ID}})"> Link to Share Class </button>
+                <button type = "button" class = "btn btn-info btn-fill"  id="modelCommonNoOptionButton" data-dismiss = "modal"> Cancel </button>
+             </div>
+
+          </div><!-- /.modal-content -->
+       </div><!-- /.modal-dialog -->
+
+    </div><!-- /.modal -->
+
+
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <nav class="pull-left">
+                    <ul>
+
+                    </ul>
+                </nav>
+                <div>
+                    <br /><center>
+                        {{{Data.disclaimer}}}
+                  {{#if Data.poweredByLabel}}
+                    <br/>
+                    {{{Data.poweredByLabel}}}
+                    <br/>
+                  {{else}}
+                    <br />
+                    Powered by <a href="https://digishares.io"> DigiShares </a>
+                    <br/>
+                  {{/if}}
+                        <small>Revision: {{Data.revision}}</small>
+					</center><br />
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</div>
+
+
+
+
+
+<script language="javascript" >
+
+    function showModelGeneralOKDialogBox(msg) {
+        $("#modelGeneralOKMessageArea").html(msg);
+        $('#modelGeneralOKMessageModelBox').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        return false;
+    }
+
+    function showModelGeneralYesNoDialogBox(msg, yesMsg, noMsg) {
+        $("#commonDialogYesNoDivTextArea").html(msg + "</br></br>&nbsp;");
+        $("#modelCommonYesOptionButton").html(yesMsg);
+        $("#modelCommonNoOptionButton").html(noMsg);
+
+        $('#modelCommonYesNoTwoOptionDialogBox').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        return false;
+    }
+
+    function changeDocumentShareClass(id) {
+        document.getElementById("ShareTypes").submit();
+    }
+
+    function generalModelOKButtonClicked() {
+        generalModelOKButtonClickedClientEvent();
+    }
+
+    function scrollToId(id, speed) {
+        $('html,body').animate({
+            scrollTop: $("#" + id).offset().top
+        }, speed ?? 'slow');
+    }
+
+    function roundNumber(amount, zeroes) {
+        if (Number.isNaN(+amount)) return NaN;
+        amount = +amount;
+        zeroes = +zeroes;
+        if (!zeroes || Number.isNaN(zeroes) || zeroes < 0) zeroes = 2;
+        const multiplier = Math.pow(10, zeroes);
+        return (amount * multiplier / multiplier).toFixed(zeroes);
+    }
+
+    function localeNumber(value, zeroes) {
+        zeroes = +zeroes;
+        if (Number.isNaN(zeroes) || zeroes < 0) zeroes = 2;
+        return (+value).toLocaleString(navigator.language, { maximumFractionDigits: zeroes });
+    }
+
+    function localeCurrency(value, currency) {
+        if (!currency || currency === "undefined") return localeNumber(value);
+        return (+value).toLocaleString(navigator.language, { style: 'currency', currency: currency });
+    }
+
+</script>
+{{!-- 
+    This is a really dirty hack but I can not make it work any other way
+    It clears the yes/no dialog modal footer and re-adds the buttons, otherwise they do not change no matter what.
+    I think the show modal function re-adds them somehow
+--}}
+<script language="javascript">
+    function changeModalYesButton(text, addClass, successFn) {
+
+        const btnOK = $("#modelCommonYesOptionButton");
+        const btnNO = $("#modelCommonNoOptionButton");
+        const modalFtr = $("#modelCommonYesNoTwoOptionDialogBox .modal-footer");
+        modalFtr.empty();
+
+        btnOK.empty().append(text);
+
+        btnOK.removeClass();
+        btnOK.addClass("btn btn-fill");
+        if (addClass)
+            btnOK.addClass(addClass);
+        else
+            btnOK.addClass("btn-info");
+        btnNO.addClass("btn-info");
+
+        if (successFn) {
+            generalModelOKButtonClickedClientEvent = successFn;
+            btnOK.removeAttr('onclick');
+            btnOK.off('click');
+            btnOK.on('click', successFn);
+        }
+
+        modalFtr.append(btnOK);
+        modalFtr.append(btnNO);
+    }
+</script>
+{{!-- 
+    This is a really dirty hack but I can not make it work any other way
+    It clears the yes/no dialog modal footer and re-adds the buttons, otherwise they do not change no matter what.
+    I think the show modal function re-adds them somehow
+--}}
+<script language="javascript">
+    function changeModalYesButton(text, addClass, successFn) {
+
+        const btnOK = $("#modelCommonYesOptionButton");
+        const btnNO = $("#modelCommonNoOptionButton");
+        const modalFtr = $("#modelCommonYesNoTwoOptionDialogBox .modal-footer");
+        modalFtr.empty();
+
+        btnOK.empty().append(text);
+
+        btnOK.removeClass();
+        btnOK.addClass("btn btn-fill");
+        if (addClass)
+            btnOK.addClass(addClass);
+        else
+            btnOK.addClass("btn-info");
+        btnNO.addClass("btn-info");
+
+        if (successFn) {
+            generalModelOKButtonClickedClientEvent = successFn;
+            btnOK.removeAttr('onclick');
+            btnOK.off('click');
+            btnOK.on('click', successFn);
+        }
+
+        modalFtr.append(btnOK);
+        modalFtr.append(btnNO);
+    }
+</script>
+
+</body></html>

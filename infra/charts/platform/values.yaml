@@ -1,0 +1,9 @@
+id: "default"
+version: "staging"
+staging_tag: "1.372.0"
+production_tag: "1.115.0"
+apiHostnames: "default"
+frontendHostnames: "default"
+multistoHostnames: "default"
+domain: "digishares.cloud"
+smoke: false

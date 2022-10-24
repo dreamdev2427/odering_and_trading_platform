@@ -1,0 +1,74 @@
+{
+  "plugins": [
+    "@typescript-eslint",
+    "import"
+  ],
+  "extends": [
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "parser": "@typescript-eslint/parser",
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "moduleDirectory": [
+          "node_modules"
+        ]
+      }
+    },
+    "import/extensions": [
+      ".js"
+    ]
+  },
+  "rules": {
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/no-inferrable-types": 0, // it is necessary to explictely state the type so that type-graphql decorators can infer it
+    "@typescript-eslint/no-explicit-any": 0, // some legacy v1 code still has any's
+    "import/order": 2,
+    "import/no-unresolved": "off",
+    "import/no-named-as-default": "off",
+    "no-undef": 1,
+    "no-console": "off",
+    "class-methods-use-this": "off",
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "Function": false
+        },
+        "extendDefaults": true
+      }
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      { "selector": "enum", "format": ["UPPER_CASE"] } // when you see the uppercase then it’s definitely an enum
+    ],
+    "no-unused-vars": 0,
+    "no-const-assign": 1,
+    "import/named": 1,
+    "arrow-parens": [
+      "error",
+      "always"
+    ],
+    "no-dupe-keys": 2,
+    "prefer-const": 2,
+    "eol-last": ["error", "always"]
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "define": true,
+    "Set": true,
+    "Promise": true,
+    "NodeJS": true
+  }
+}

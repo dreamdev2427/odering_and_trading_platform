@@ -1,0 +1,36 @@
+<script>
+  function postisHTTPSStartEnabled(isChecked) {
+    document.getElementById('isHTTPSStartEnabled-intValue').value = +isChecked;
+    document.getElementById('isHTTPSStartEnabled-redirectUrl').value = window.location.href;
+    document.getElementById('postisHTTPSStartEnabled').submit();
+  }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;"
+                        alt='add more' /> Enable HTTPS start for the admin platform</h4>
+                <label>Enable/Disable HTTPS starting</label>
+            </div>
+            <div class="content">
+                <form method="post" id="postisHTTPSStartEnabled" action="postParamUpdateToApi">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="switch">
+                                <input type="checkbox" onclick="postisHTTPSStartEnabled(this.checked)"
+                                    {{#if isHTTPSStartEnabled}} checked {{/if}} />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="isHTTPSStartEnabled-intValue" name="intValue" />
+                    <input type="hidden" id="isHTTPSStartEnabled-stringValue" name="stringValue" value="" />
+                    <input type="hidden" id="isHTTPSStartEnabled-param" name="param" value="LocalHttpsStart" />
+                    <input type="hidden" id="isHTTPSStartEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

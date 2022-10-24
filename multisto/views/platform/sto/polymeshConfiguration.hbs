@@ -1,0 +1,502 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        //$("#sto").addClass('active');
+    })
+
+    var defaultPortfolioBalance = {{defaultPortfolioBalance}};
+
+    function backlist() {
+        window.location.href = "shareslist?id={{record.stoid}}";
+    }
+
+    function saveAtestations() {
+
+        if(document.getElementById("did").value == "") {
+            showModelGeneralOKDialogBox("DID is needed");
+            return;
+        }
+
+        if(document.getElementById("title").value == "") {
+            showModelGeneralOKDialogBox("title is needed");
+            return;
+        }
+
+        if(document.getElementById("details").value == "") {
+            showModelGeneralOKDialogBox("details is needed");
+            return;
+        }
+
+        if (document.getElementById('Accredited2').checked ||
+            document.getElementById('Affiliate2').checked ||
+            document.getElementById('BuyLockup2').checked ||
+            document.getElementById('SellLockup2').checked ||
+            document.getElementById('KnowYourCustomer2').checked ||
+            document.getElementById('Exempted2').checked ||
+            document.getElementById('Blocked2').checked ||
+            document.getElementById('Jurisdiction2').checked
+        ) {
+            document.getElementById("frmatest").submit();
+        } else {
+            showModelGeneralOKDialogBox("Please select one or more restrictions");
+        }
+
+    }
+
+    function deleteAtestations(id, sid) {
+        window.location.href = `deleteAtestationRecord?id=${id}&sid=${sid}`;
+    }
+
+    function saveRestrictions() {
+
+        if (document.getElementById('Accredited').checked ||
+            document.getElementById('Affiliate').checked ||
+            document.getElementById('BuyLockup').checked ||
+            document.getElementById('SellLockup').checked ||
+            document.getElementById('KnowYourCustomer').checked ||
+            document.getElementById('Exempted').checked ||
+            document.getElementById('Blocked').checked ||
+            document.getElementById('Jurisdiction').checked
+        ) {
+            document.getElementById("frmRestrictions").submit();
+        } else {
+            showModelGeneralOKDialogBox("Please select one or more restrictions");
+        }
+
+    }
+
+    function transferPortfolioPopup() {
+        document.getElementById("txtPolyTokenAmount").value = "";
+        $('#transferPortfolio').appendTo("body").modal( { backdrop: 'static', keyboard: false });
+    }
+
+    function moveFundsFromToPortfolio() {
+
+        if(document.getElementById("txtPolyTokenAmount").value == "") {
+            showModelGeneralOKDialogBox("Please enter amount");
+            return;
+        }
+
+        if( isNaN(document.getElementById("txtPolyTokenAmount").value) ) {
+            showModelGeneralOKDialogBox("Please enter numeric amount");
+            return;
+        }
+
+        const amt = parseFloat( document.getElementById("txtPolyTokenAmount").value )
+        if(amt <= 0) {
+            showModelGeneralOKDialogBox("Please enter amount to send ");
+            return;
+        }
+
+        if(amt > defaultPortfolioBalance) {
+            showModelGeneralOKDialogBox("Amount cannot be greater than " + defaultPortfolioBalance);
+            return;
+        }
+
+        var select = document.getElementById('selectPortfolioSelect');
+        var value = select.options[select.selectedIndex].value;
+
+        document.getElementById("polymestAmountToSend").value = document.getElementById("txtPolyTokenAmount").value;
+        document.getElementById("polymeshPortfolioIDToSend").value = value;
+
+        document.getElementById("frmTransferTokens").submit();
+    }    
+
+    function refreshPortfolios() {
+        window.location.href = "polymeshConfigurations?id={{recordID}}&op=1";
+        return true;
+    }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+{{#if polymeshMessage}}  <span style="color:red;"> {{polymeshMessage}} </span>  <br /><br />  {{/if}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                        <h4 class="title"><img src="/img/polymeshicon.jpg" width="32px" /> &nbsp; Polymesh Configurations</h4>
+                        <label>Token related information</label>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button onclick="return backlist()" class="btn btn-info btn-fill">Back to Shares List</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <div class="row">
+                   <div class="col-md-2">
+                        <label>Title</label>
+                   </div>
+                   <div class="col-md-9">
+                    {{record.title}}
+                   </div>
+                </div>
+
+
+                <div class="row">
+                   <div class="col-md-2">
+                        <label>Asset Ticker</label>
+                   </div>
+                   <div class="col-md-9">
+                    {{record.AssetTag}}
+                   </div>
+                </div>
+                <br />
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<br /><br />
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                        <h4 class="title"><img src="/img/polymeshicon.jpg" width="32px" /> &nbsp;  Polymesh Token Restrictions</h4>
+                        <label>Using this form set transfer restrictions</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="content">
+                {{#if isTokenRestrictionsSet}}
+                    <img src="/img/greendot.png" width="20px" />
+                    Token has been set with following restrictions. Green dot indicates respective restriction applies
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{#if tokenRestriction.Accredited}} <img src="/img/greendot.png" width="20px" /> {{/if}} Accredited &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{#if tokenRestriction.Affiliate}} <img src="/img/greendot.png" width="20px" /> {{/if}} Affiliate &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{#if tokenRestriction.BuyLockup}} <img src="/img/greendot.png" width="20px" /> {{/if}} BuyLockup &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{#if tokenRestriction.SellLockup}} <img src="/img/greendot.png" width="20px" /> {{/if}} SellLockup &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{#if tokenRestriction.KnowYourCustomer}} <img src="/img/greendot.png" width="20px" /> {{/if}} KnowYourCustomer &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{#if tokenRestriction.Exempted}} <img src="/img/greendot.png" width="20px" /> {{/if}} Exempted &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{#if tokenRestriction.Blocked}} <img src="/img/greendot.png" width="20px" />{{/if}} Blocked &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{#if tokenRestriction.Jurisdiction}} <img src="/img/greendot.png" width="20px" />
+                                Jurisdiction ( {{tokenRestriction.JurisdictionPlace}} )
+                            {{else}}
+                                Jurisdiction
+                            {{/if}}   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </div>
+                    </div>
+                {{else}}
+                    <img src="/img/reddot.png" width="20px" />
+                    Token is not yet set with restrictions. Please use following form to set transfer restrictions on token
+                {{/if}}
+
+                <br /><br />
+                <h5>Setup Token Restrictions</h5>
+                <label>Use following form to reset restrictions in blockchain. Each change in restriction requires a blockchain transaction that will be send</label>
+
+
+                <form id="frmRestrictions" name="frmRestrictions" action="/platform/updatePolymeshRestrictions" method="post">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="checkbox" id="Accredited" name="Accredited" value="Accredited" />  &nbsp; Accredited
+                            <br />
+                            <input type="checkbox" id="Affiliate" name="Affiliate" value="Affiliate" />  &nbsp; Affiliate
+                            <br />
+                            <input type="checkbox" id="BuyLockup" name="BuyLockup" value="BuyLockup" />  &nbsp; BuyLockup
+                            <br />
+                            <input type="checkbox" id="SellLockup" name="SellLockup" value="SellLockup" />  &nbsp; Sell Lockup
+                            <br />
+                            <input type="checkbox" id="KnowYourCustomer" name="KnowYourCustomer" value="KnowYourCustomer" />  &nbsp; Know Your Customer
+                            <br />
+                            <input type="checkbox" id="Exempted" name="Exempted" value="Exempted" />  &nbsp; Exempted
+                            <br />
+                            <input type="checkbox" id="Blocked" name="Blocked" value="Blocked" />  &nbsp; Blocked
+                            <br />
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input type="checkbox" id="Jurisdiction" name="Jurisdiction" value="Jurisdiction" />  &nbsp; Jurisdiction
+                                </div>
+                                <div class="col-md-2">
+                                    <select name="JurisdictionPlace" style="width:70px">
+                                        <option value="Pk">Pk</option>
+                                        <option value="Us">Us</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+
+
+                    <br />
+                    <a onclick="return saveRestrictions()" class="btn btn-info btn-fill btn-wd">Update Token Restrictions</a>
+                    <br /><br />
+
+                    <input type="hidden" name="id" value="{{record.id}}" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<br /><br />
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                        <h4 class="title"><img src="/img/polymeshicon.jpg" width="32px" /> &nbsp;   Attestation Providers Management</h4>
+                        <label>Add / Remove Attestation providers</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="content">
+
+                {{#if atesters.length}}
+                     {{#each atesters}}
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-2"> <label>Title</label></div>
+                                    <div class="col-md-2">{{this.title}} </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-2"> <label>DID</label></div>
+                                    <div class="col-md-2">{{this.did}} </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-2"> <label>Details</label></div>
+                                    <div class="col-md-2">{{this.details}} </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-12">
+                                {{#if this.Accredited}} <img src="/img/greendot.png" width="20px" /> {{/if}} Accredited &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{#if this.Affiliate}} <img src="/img/greendot.png" width="20px" /> {{/if}} Affiliate &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{#if this.BuyLockup}} <img src="/img/greendot.png" width="20px" /> {{/if}} BuyLockup &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{#if this.SellLockup}} <img src="/img/greendot.png" width="20px" /> {{/if}} SellLockup &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{#if this.KnowYourCustomer}} <img src="/img/greendot.png" width="20px" /> {{/if}} KnowYourCustomer &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{#if this.Jurisdiction}} <img src="/img/greendot.png" width="20px" /> {{/if}} Jurisdiction &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{#if this.Exempted}} <img src="/img/greendot.png" width="20px" /> {{/if}} Exempted &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                {{#if this.Blocked}} <img src="/img/greendot.png" width="20px" />{{/if}} Blocked &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </div>
+                        </div>
+                        <br />
+                        {{this.id}}
+                        <button size="sm" onclick="return deleteAtestations({{this.ID}}, {{../record.id}})" class="btn btn-info btn-fill btn-wd">Delete</button>
+                        <hr />
+                     {{/each}}
+                {{else}}
+                        <img src="/img/reddot.png" width="20px" />
+                        No Attestors providers found. Please use following form to set atestation providers
+                {{/if}}
+
+                <br /><br /><br />
+                <h4>Add a new service providers</h4>
+
+                <form id="frmatest" name="frmatest" action="/platform/addpolymeshatestation" method="post">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>Enter DID of the new Atestation provider </label>
+                                <input type="text"  maxLength="200" rows="5" id="did" name="did" class="form-control border-input" placeholder="DID of new atestation provider" value="" >
+                            </div>
+
+                            <div class="form-group">
+                                <label>Enter Title </label>
+                                <input type="text"  maxLength="200" rows="5" id="title" name="title" class="form-control border-input" placeholder="DID of new atestation provider" value="" >
+                            </div>
+
+                            <div class="form-group">
+                                <label>Details </label>
+                                <input type="text"  maxLength="200" rows="5" id="details" name="details" class="form-control border-input" placeholder="DID of new atestation provider" value="" >
+                            </div>
+
+                            <br />
+                            <input type="checkbox" id="Accredited2" name="Accredited" value="Accredited" />  &nbsp; Accredited
+                            <br />
+                            <input type="checkbox" id="Affiliate2" name="Affiliate" value="Affiliate" />  &nbsp; Affiliate
+                            <br />
+                            <input type="checkbox" id="BuyLockup2" name="BuyLockup" value="BuyLockup" />  &nbsp; BuyLockup
+                            <br />
+                            <input type="checkbox" id="SellLockup2" name="SellLockup" value="SellLockup" />  &nbsp; Sell Lockup
+                            <br />
+                            <input type="checkbox" id="KnowYourCustomer2" name="KnowYourCustomer" value="KnowYourCustomer" />  &nbsp; Know Your Customer
+                            <br />
+                            <input type="checkbox" id="Jurisdiction2" name="Jurisdiction" value="Jurisdiction" />  &nbsp; Jurisdiction
+                            <br />
+                            <input type="checkbox" id="Exempted2" name="Exempted" value="Exempted" />  &nbsp; Exempted
+                            <br />
+                            <input type="checkbox" id="Blocked2" name="Blocked" value="Blocked" />  &nbsp; Blocked
+                        </div>
+                    </div>
+
+
+                    <br />
+                    <a onclick="return saveAtestations()" class="btn btn-info btn-fill btn-wd">Add new Atestation Provider</a>
+                    <br /><br />
+
+                    <input type="hidden" name="id" value="{{record.id}}" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<br /><br />
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                        <h4 class="title"><img src="/img/polymeshicon.jpg" width="32px" /> &nbsp;   Venues</h4>
+                        <label>Add / Remove Transaction Venues</label>
+                    </div>
+                </div>
+            </div>                    
+
+                    <div class="content">
+                        <h4> <img src="/img/greendot.png" width="20px" /> &nbsp;&nbsp; Distribution Venue</h4>                        
+                        Venue  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; {{record.title}}DistributionVenue
+                        <br />
+                        Venue ID &nbsp; &nbsp; {{record.polyMeshDistributionVenueID}}
+                        <br />
+                        <br />
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+<br /><br />
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-9">
+                        <h4 class="title"><img src="/img/polymeshicon.jpg" width="32px" /> &nbsp;   Portfolios</h4>
+                        <label>Add / Remove Portfolios</label>
+                    </div>
+                   <div class="col-md-3">
+                        {{#if defaultPortfolioBalance}}
+                            <button size="sm" onclick="return transferPortfolioPopup()" class="btn btn-info btn-fill btn-sm">Transfer Tokens</button>
+                        {{/if}}
+                        &nbsp;&nbsp;
+                        <button size="sm" onclick="return refreshPortfolios()" class="btn btn-info btn-fill btn-sm">Refresh</button>
+                    </div>
+                        
+                </div>
+            </div>                    
+
+                    <div class="content">
+                        {{#each portfolioBalances}}
+                            <div class="row">
+                                <div class="col-md-3">                        
+                                    {{this.title}}
+                                </div>
+                                <div class="col-md-3">                                                            
+                                    {{this.balance}}                                    
+                                </div>
+                                <div class="col-md-6">
+                                    {{#ifEqual this.title "Default"}}
+                                    {{else}}
+                                        <button size="sm" onclick="" class="btn btn-info btn-fill btn-sm">Transfer</button>
+                                    {{/ifEqual}}                                                                                                
+
+                                </div>                                
+                            </div>
+                            <br />
+                        {{/each}}
+                        <br />
+                    </div>
+
+                </div>
+            </div>
+
+</div>
+
+
+<div class = "modal fade" id="transferPortfolio" tabindex = "-1" role = "dialog" aria-labelledby = "transferPortfolio" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title"> <img src="/img/bank.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;
+                Transfer Shares to another Portfolio 
+			 </h4>
+         </div>
+
+         <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <label >Enter Amount to transfer</label><br />
+                            <label>You can transfer Max {{defaultPortfolioBalance}}</label>
+                            <input class="form-control border-input" maxlength="120" id="txtPolyTokenAmount" name="txtPolyTokenAmount" placeholder="">                            
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">                        
+                        <div class="col-md-7">
+                            <label >Select Portfolio</label><br />
+                            <select class="form-control border-input" id="selectPortfolioSelect" name="selectPortfolioSelect">
+                                {{#each portfolioBalances}}
+                                    {{#ifEqual this.title "Default"}}
+                                    {{else}}
+                                        <option value="{{this.id}}">{{this.title}}</option>     
+                                    {{/ifEqual}}
+                                {{/each}}                        
+                            </select>
+                        </div>
+                    </div>                        
+        </div> 
+        <br />         
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" name=0 onclick="moveFundsFromToPortfolio()">Transfer</button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Cancel </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<form id="frmTransferTokens" name="frmTransferTokens" method="post" action="transferPolymeshFundsBetweenPortfolios">
+    <input type="hidden" name="polymestAmountToSend" id="polymestAmountToSend" value="" />
+    <input type="hidden" name="polymeshPortfolioIDToSend" id="polymeshPortfolioIDToSend" value="" />
+    <input type="hidden" name="polymeshAssetTag" id="polymeshAssetTag" value="{{record.AssetTag}}" />        
+    <input type="hidden" name="recordID" id="id" value="{{recordID}}" />    
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+
+{{> Footer}}

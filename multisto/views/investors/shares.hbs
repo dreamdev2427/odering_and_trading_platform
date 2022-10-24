@@ -1,0 +1,49 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			$("#Shares").addClass('active');                
+		})
+	</script>
+
+{{> HeaderInner}}
+
+	<div class="col-md-12 ">
+		<div class="card">
+			<div class="header">
+				<h4 class="title">Share Register</h4>
+			</div>
+			
+			<div class="content">
+
+				<h3> &nbsp;&nbsp; Total Shares &nbsp;&nbsp;&nbsp;&nbsp; {{TotalCompanyShares}}</h3>
+				<h5> 
+					&nbsp;&nbsp;&nbsp;&nbsp;  Company Shares  &nbsp;&nbsp;&nbsp;&nbsp;  {{CompanyShares}}  &nbsp;( {{CompanyPercent}}% )
+				</h5>
+
+				<br />
+				
+				<table class="table table-striped">
+					<thead>
+						<th><b>Name</b></th>
+						<th><b>Shares</b></th>
+						<th><b>%</b></th>
+					</thead>
+					<tbody>
+
+						{{#each DataRows}}
+						<tr>
+							<td style="width: 25%">{{this.FirstName}} {{this.LastName}}</td>
+							<td style="width: 15%"> {{numberFormat this.Shares decimalLength="ShareCountInFractions"}} </td>
+							<td>{{this.Percent}}</td>    
+						</tr>
+						{{/each}}
+					</tbody>
+				  </table>		
+				
+			</div>
+			
+		</div>
+	</div>
+
+{{> Footer}}

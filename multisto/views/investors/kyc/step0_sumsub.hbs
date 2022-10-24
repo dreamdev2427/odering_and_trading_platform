@@ -1,0 +1,111 @@
+<script src = "https://static.sumsub.com/idensic/static/sns-websdk-builder.js"></script>
+<script>
+    function populateFields(){
+        const sumsubElem = document.getElementById("sumsubStatusId");
+        sumsubElem.innerHTML = `SumSub status: `;
+        switch ('{{sumsubResponseJson}}') {
+            case 'waiting':
+                sumsubElem.innerHTML +=
+                    `<img src="/img/yellowdot.png" width="10px" > Waiting For Review`;
+                break;
+            case 'inreview':
+                sumsubElem.innerHTML +=
+                    `<img src="/img/bluedot.png" width="10px" > In Review`;
+                break;
+            case 'resubmit':
+                sumsubElem.innerHTML +=
+                    `<img src="/img/reddot.png" width="10px" > Resubmision Required`;
+                break;
+            case 'approved':
+                sumsubElem.innerHTML +=
+                    `<img src="/img/greendot.png" width="10px" > Approved`;
+                break;
+            default:
+                sumsubElem.innerHTML +=
+                    `<img src="/img/graydot.png" width="10px" > Not Signed in`;
+        }
+    }
+
+    window.onload = function(){
+        switch ({{kycProvider}}){
+            case 0:
+                break;
+            case {{kycProvider}} != 0:
+                populateFields();
+                summonSumSub();
+                break;
+        }
+    }
+
+    function summonSumSub(){
+        document.getElementById("sumSubCard").style.display = "block";
+        let snsWebSdkInstance = snsWebSdk.init(
+            '{{sumSubAccessToken}}',
+            () => this.getNewAccessToken()
+        ).withConf({
+            lang: 'en',
+            email: '{{InvestorRecord.email}}',
+            i18n: {"document":{"subTitles":{"IDENTITY": "Upload a document that proves your identity"}}},
+            onMessage: (type, payload) => {
+                console.log('WebSDK onMessage', type, payload)
+            },
+            uiConf: {
+                customCssStr: ":root {\n  --black: #000000;\n   --grey: #F5F5F5;\n  --grey-darker: #B2B2B2;\n  --border-color: #DBDBDB;\n}\n\np {\n  color: var(--black);\n  font-size: 16px;\n  line-height: 24px;\n}\n\nsection {\n  margin: 40px auto;\n}\n\ninput {\n  color: var(--black);\n  font-weight: 600;\n  outline: none;\n}\n\nsection.content {\n  background-color: var(--grey);\n  color: var(--black);\n  padding: 40px 40px 16px;\n  box-shadow: none;\n  border-radius: 6px;\n}\n\nbutton.submit,\nbutton.back {\n  text-transform: capitalize;\n  border-radius: 6px;\n  height: 48px;\n  padding: 0 30px;\n  font-size: 16px;\n  background-image: none !important;\n  transform: none !important;\n  box-shadow: none !important;\n  transition: all 0.2s linear;\n}\n\nbutton.submit {\n  min-width: 132px;\n  background: none;\n  background-color: var(--black);\n}\n\n.round-icon {\n  background-color: var(--black) !important;\n  background-image: none !important;\n}"
+            },
+            onError: (error) => {
+                console.error('WebSDK onError', error)
+            },
+        })
+        .withOptions({ addViewportTag: false, adaptIframeHeight: true})
+        .on('stepCompleted', (payload) => {
+            console.log('stepCompleted', payload)
+        })
+        .on('onError', (error) => {
+            console.log('onError', payload)
+        })
+        .onMessage((type, payload) => {
+            console.log('onMessage', type, payload)
+        })
+        .build();
+        snsWebSdkInstance.launch('#sumSubContent')
+    }
+</script>
+
+
+<div id="externalKyc" class="row ">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+
+            </div>
+            <div class="content">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{{__ "My Investor ID"}}}</label> &nbsp;&nbsp;&nbsp; {{InvestorRecord.ID}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content">
+                        <div>
+                            <b>{{{__ "Verify with one of the Platform's supported services"}}}</b>
+                            <br /><br />
+                            <button onclick="return summonSumSub()" id="sumsub-kyc-connect" class="btn btn-info btn-fill btn-wd">Connect with SumSub</button>
+                            <br /><br />
+                        </div>
+                        <p id="sumsubStatusId"></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div id="sumSubCard" style="display: none" class="card">
+            <div class="content">
+                <div id="sumSubContent">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,641 @@
+{
+  "data": {
+    "kyc": [
+      {
+        "name": "investor-info",
+        "title": "kyc-investor-info",
+        "icon": "ti-user",
+        "pages": [
+          {
+            "name": "professional-info",
+            "title": "kyc-professional-info",
+            "icon": null,
+            "fields": [
+              {
+                "values": null,
+                "name": "company",
+                "label": "kyc-professional-info-company",
+                "placeholder": "kyc-professional-info-company",
+                "description": null,
+                "error": null,
+                "inline": false,
+                "required": false,
+                "type": "input"
+              },
+              {
+                "values": null,
+                "name": "job-title",
+                "label": "kyc-professional-info-job-title",
+                "placeholder": "kyc-professional-info-job-title",
+                "description": null,
+                "error": null,
+                "inline": false,
+                "required": false,
+                "type": "input"
+              },
+              {
+                "name": "industry",
+                "values": [
+                  {
+                    "value": "Insurance",
+                    "label": "Insurance"
+                  },
+                  {
+                    "value": "Legal",
+                    "label": "Legal"
+                  },
+                  {
+                    "value": "Menagement Consulting",
+                    "label": "Menagement Consulting"
+                  },
+                  {
+                    "value": "Marketing & Adversting",
+                    "label": "Marketing & Adversting"
+                  },
+                  {
+                    "value": "Retail",
+                    "label": "Retail"
+                  },
+                  {
+                    "value": "Telecommunication",
+                    "label": "Telecommunication"
+                  },
+                  {
+                    "value": "No industry selected",
+                    "label": "No industry selected"
+                  },
+                  {
+                    "value": "Others",
+                    "label": "Other"
+                  }
+                ],
+                "label": "kyc-professional-select-industry-label",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "inline": false,
+                "type": "select"
+              }
+            ]
+          },
+          {
+            "name": "investing-background-info",
+            "title": "kyc-investing-background-info",
+            "icon": null,
+            "fields": [
+              {
+                "values": [
+                  {
+                    "value": "alternative-asset",
+                    "label": "kyc-background-info-alternative-asset"
+                  },
+                  {
+                    "value": "info-bonds",
+                    "label": "kyc-background-info-bonds"
+                  },
+                  {
+                    "value": "real-estate-ownership",
+                    "label": "kyc-background-info-real-estate-ownership"
+                  },
+                  {
+                    "value": "private-equity",
+                    "label": "kyc-background-info-private-equity"
+                  },
+                  {
+                    "value": "reits",
+                    "label": "kyc-background-info-reits"
+                  },
+                  {
+                    "value": "stoks-mutal-funds",
+                    "label": "kyc-background-stoks-mutalfunds"
+                  },
+                  {
+                    "value": "venture-capital",
+                    "label": "kyc-background-info-venture-capital"
+                  }
+                ],
+                "name": "general-invest-experience",
+                "label": "kyc-background-label-general-invest-exp",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "type": "check-box"
+              },
+              {
+                "values": [
+                  {
+                    "value": "<div class=\"float-left d-flex mr-5 \"><p class=\"bg-light d-inline-block minw-300 p-2 pl-2 fs-18\">GRE Investing Experience</div></div>",
+                    "label": null
+                  }
+                ],
+                "name": "cre-investing-experience-header",
+                "label": null,
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "inline": false,
+                "required": false,
+                "type": "html"
+              },
+              {
+                "name": "cre-investing-experience",
+                "values": [
+                  {
+                    "value": "None",
+                    "label": "None"
+                  },
+                  {
+                    "value": "Moderate",
+                    "label": "Moderate"
+                  },
+                  {
+                    "value": "Extensive",
+                    "label": "Extensive"
+                  },
+                  {
+                    "value": "Professinal",
+                    "label": "Professinal"
+                  }
+                ],
+                "label": "",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": true,
+                "type": "select"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "investing-preferences",
+        "title": "kyc-investing-preferences",
+        "icon": "ti-bar-chart",
+        "pages": [
+          {
+            "fields": [
+              {
+                "values": [
+                  {
+                    "value": "Built-to-Rent",
+                    "label": "Built-to-Rent"
+                  },
+                  {
+                    "value": "Co-Living",
+                    "label": "Co-Living"
+                  },
+                  {
+                    "value": "Data Center",
+                    "label": "Data Center"
+                  },
+
+                  {
+                    "value": "Flex R&D",
+                    "label": "Flex R&D"
+                  },
+
+                  {
+                    "value": "Flex/Office",
+                    "label": "Flex/Office"
+                  },
+
+                  {
+                    "value": "Hospitally",
+                    "label": "Hospitality"
+                  },
+
+                  {
+                    "value": "Industrial",
+                    "label": "Industrial"
+                  },
+
+                  {
+                    "value": "Land",
+                    "label": "Land"
+                  },
+
+                  {
+                    "value": "Manufactured Housing",
+                    "label": "Manufactured Housing"
+                  },
+
+                  {
+                    "value": "Medical Office",
+                    "label": "Medical Office"
+                  },
+
+                  {
+                    "value": "Mixed Use",
+                    "label": "Mixed Use"
+                  },
+
+                  {
+                    "value": "Multy-Asset",
+                    "label": "Multy-Asset"
+                  },
+                  {
+                    "value": "Multifamily",
+                    "label": "Multifamily"
+                  },
+
+                  {
+                    "value": "Office",
+                    "label": "Office"
+                  },
+
+                  {
+                    "value": "Parking Garage",
+                    "label": "Parking Garage"
+                  },
+
+                  {
+                    "value": "Retail",
+                    "label": "Retail"
+                  },
+
+                  {
+                    "value": "Senior Housing",
+                    "label": "Senior Housing"
+                  },
+
+                  {
+                    "value": "Single Family",
+                    "label": "Single Family"
+                  },
+                  {
+                    "value": "Speciality",
+                    "label": "Speciality"
+                  },
+                  {
+                    "value": "Storage",
+                    "label": "Storage"
+                  },
+
+                  {
+                    "value": "Student Housing",
+                    "label": "Student Housing"
+                  }
+                ],
+                "name": "investment-interest-property-types",
+                "label": "kyc-investment-interest-property-types",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "inline": true,
+                "type": "check-box"
+              },
+              {
+                "values": [
+                  {
+                    "value": "US",
+                    "label": "US"
+                  },
+                  {
+                    "value": "My State",
+                    "label": "My State"
+                  },
+                  {
+                    "value": "Midwest",
+                    "label": "Midwest"
+                  },
+                  {
+                    "value": "Northeast",
+                    "label": "Northeast"
+                  },
+                  {
+                    "value": "Northwest",
+                    "label": "Northwest"
+                  },
+                  {
+                    "value": "Southeast",
+                    "label": "Southeast"
+                  },
+                  {
+                    "value": "Southwest",
+                    "label": "Southwest"
+                  },
+                  {
+                    "value": "Southern",
+                    "label": "Southern"
+                  },
+                  {
+                    "value": "Western",
+                    "label": "Western"
+                  }
+                ],
+                "name": "investment-interest-region",
+                "label": "kyc-investment-interest-region",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "inline": true,
+                "type": "check-box"
+              },
+              {
+                "values": [
+                  {
+                    "value": "Primary",
+                    "label": "Primary"
+                  },
+
+                  {
+                    "value": "Secondary",
+                    "label": "Secondary"
+                  },
+
+                  {
+                    "value": "Tertiary",
+                    "label": "Tertiary"
+                  }
+                ],
+                "name": "investment-interest-market-size",
+                "label": "kyc-investment-interest-market-size",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "inline": true,
+                "type": "check-box"
+              },
+              {
+                "values": [
+                  {
+                    "value": "Funds",
+                    "label": "Funds"
+                  },
+                  {
+                    "value": "Properties",
+                    "label": "Properties"
+                  }
+                ],
+                "name": "investment-interest-vehicles",
+                "label": "kyc-investment-interest-vehicles",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "inline": true,
+                "type": "check-box"
+              },
+              {
+                "values": [
+                  {
+                    "value": "Less than 1 Year",
+                    "label": "Less than 1 Year"
+                  },
+                  {
+                    "value": "1-2 Years",
+                    "label": "1-2 Years"
+                  },
+                  {
+                    "value": "3-5 Years",
+                    "label": "3-5 Years"
+                  },
+
+                  {
+                    "value": "6-9 Years",
+                    "label": "6-9 Years"
+                  },
+
+                  {
+                    "value": "10+ Years",
+                    "label": "10+ Years"
+                  }
+                ],
+                "name": "investment-interest-hold-period",
+                "label": "kyc-investment-interest-hold-period",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "inline": true,
+                "type": "check-box"
+              },
+              {
+                "values": [
+                  {
+                    "value": "Aggressive",
+                    "label": "Aggressive"
+                  },
+                  {
+                    "value": "Growth",
+                    "label": "Growth"
+                  },
+                  {
+                    "value": "Income",
+                    "label": "Income"
+                  }
+                ],
+                "name": "investment-interest-objectives",
+                "label": "kyc-investment-interest-objectives",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "inline": true,
+                "type": "check-box"
+              }
+            ],
+            "name": "investment-interests",
+            "title": "kyc-investment-interest",
+            "icon": null
+          },
+          {
+            "fields": [
+              {
+                "name": "expected-total-investments",
+                "values": [
+                  {
+                    "value": "Undecided",
+                    "label": "Undecided"
+                  },
+                  {
+                    "value": "Less than $100,000",
+                    "label": "Less than $100,000"
+                  },
+                  {
+                    "value": "$100,000 - $249,999",
+                    "label": "$100,000 - $249,999"
+                  },
+                  {
+                    "value": "$250,000 - $499,999",
+                    "label": "$250,000 - $499,999"
+                  },
+                  {
+                    "value": "$500,000 - $999,999",
+                    "label": "$500,000 - $999,999"
+                  },
+                  {
+                    "value": "$1,000,000+",
+                    "label": "$1,000,000+"
+                  }
+                ],
+                "label": "kyc-expected-total-investments",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "expected-amount-investments",
+                "values": [
+                  {
+                    "value": "Undecided",
+                    "label": "Undecided"
+                  },
+                  {
+                    "value": "$10,000 - $24,999",
+                    "label": "$10,000 - $24,999"
+                  },
+                  {
+                    "value": "$25,000 - $49,999",
+                    "label": "$25,000 - $49,999"
+                  },
+                  {
+                    "value": "$50,000 - $99,999",
+                    "label": "$50,000 - $99,999"
+                  },
+                  {
+                    "value": "$100,000 - $249,999",
+                    "label": "$100,000 - $249,999"
+                  },
+                  {
+                    "value": "$250,000 - $499,999",
+                    "label": "$250,000 - $499,999"
+                  },
+                  {
+                    "value": "$500,000 - $999,999",
+                    "label": "$500,000 - $999,999"
+                  },
+                  {
+                    "value": "$1,000,000+",
+                    "label": "$1,000,000+"
+                  }
+                ],
+                "label": "kyc-expected-amount-investments",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              },
+              {
+                "name": "risk-tolerant",
+                "values": [
+                  {
+                    "value": "Undecided",
+                    "label": "Undecided"
+                  },
+                  {
+                    "value": "Risk Averse",
+                    "label": "Risk Averse"
+                  },
+                  {
+                    "value": "Moderate",
+                    "label": "Moderate"
+                  },
+                  {
+                    "value": "Risk Tolerant",
+                    "label": "Risk Tolerant"
+                  }
+                ],
+                "label": "kyc-risk-tolerant",
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": false,
+                "type": "select"
+              }
+            ],
+            "name": "investment-objectives",
+            "title": "kyc-investment-objectives",
+            "icon": null
+          }
+        ]
+      },
+      {
+        "name": "electronic-consent",
+        "title": "kyc-electronic-consent",
+        "icon": "ti-write",
+        "pages": [
+          {
+            "name": "document-delivery",
+            "title": "kyc-document-delivery",
+            "icon": null,
+            "fields": [
+              {
+                "values": [
+                  {
+                    "value": "<p>Below please indicate your desired means for receiving Schedule K-1 tax documents for your investments. Electronic-only K-1 delivery consent applies to all investments managed via this portal and remains in effect until changed. To change your preference, simply return to this page and update your designation. All of your K-15, regardless of your indicated delivery preference, will be posted to this portal and will be available for review and download. You will receive an email when a K-1 is available for your review. This email will contain a link to securely access and download the document. You will also find all K-1s for all investments centrally listed in the portal on the View Tax Documents page found under your name in the upper left corner of the portal. Additionally, each K-1 will be accessible in the respective Investor Room for each investment listed on My Investments. K-1s for your investments will remain on this portal throughout the investment period and may optionally remain accessible for years thereafter. No special hardware or software beyond what is required to access this portal is required to view or access your K-1s electronically. When downloading multiple K-1s, you may be required to obtain additional software such as WinZip or 7-Zip to uncompress a.zip file, however most modern computers support extracting.zip files natively. Printed K-1s will be mailed to the address entered and editable on your Account Profile. If you do not indicate a K-1 delivery preference below, you will be mailed a printed K-1, however your K-1s will also be accessible electronically via this investor portal. For further assistance, or to obtain an additional printed K-1, please contact your investment sponsor directly.</p>",
+                    "label": null
+                  }
+                ],
+                "name": "kyc-document-delivery-text",
+                "label": null,
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": false,
+                "type": "html"
+              },
+              {
+                "values": [
+                  {
+                    "value": "consent",
+                    "label": "kyc-document-delivery-consent"
+                  },
+                  {
+                    "value": "elect",
+                    "label": "kyc-document-delivery-elect"
+                  }
+                ],
+                "name": "schedule-k1",
+                "label": null,
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "inline": true,
+                "type": "radio"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "investor-documents",
+        "title": "kyc-investor-documents",
+        "icon": "ti-cloud-up",
+        "pages": [
+          {
+            "fields": [
+              {
+                "values": [],
+                "name": "investor-documents",
+                "label": null,
+                "placeholder": null,
+                "description": null,
+                "error": null,
+                "required": true,
+                "type": "upload"
+              }
+            ],
+            "name": "investor-documents-upload",
+            "title": "kyc-investor-documents",
+            "icon": null
+          }
+        ]
+      }
+    ]
+  }
+}

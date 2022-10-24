@@ -1,0 +1,226 @@
+{{> Header}}
+
+
+
+<script language="javascript">
+
+    var dataShares = {
+        datasets: [{
+            data: [
+
+                {{#ifEqual Record.votetype 1}}
+                    {{#each SharesRecord}}
+                        {{this.recordcount}},
+                    {{/each}}
+                {{/ifEqual}}
+
+                {{#ifEqual Record.votetype 2}}
+                    {{#each SharesRecord}}
+                        {{this.count}},
+                    {{/each}}
+                {{/ifEqual}}
+
+                {{#ifEqual Record.votetype 3}}
+                    {{#each SharesRecord}}
+                        {{this.investment}},
+                    {{/each}}
+                {{/ifEqual}}
+
+            ],
+					backgroundColor: [
+                        'red', 'green', 'blue', 'yellow', 'gray', 'silver', 'white', 'Olive', 'pink', 'aqua'
+					],
+					label: 'Dataset 2'
+        }],
+
+        // These labels appear in the legend and in the tooltips when hovering different arcs
+                labels: [
+                    {{#each SharesRecord}}
+                        "{{this.optiontxt}}",
+                    {{/each}}
+                ]
+    };
+
+
+    $(document).ready(function() {
+        $("#voting").addClass('active');
+
+        var ctx2 = document.getElementById('myChart2');
+        var myPieChart2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: dataShares,
+            options: {
+                legend: {
+                    labels: {
+                        fontColor: 'black',
+                        fontSize: 13,
+                    }
+                }
+            }
+        });
+
+    })
+
+    function castVote(id, oid, stoid) {
+        window.location.href = "/castVote?id=" + id + "&oid=" + oid + "&stoid=" + stoid;
+        return false;
+    }
+</script>
+
+{{> HeaderInner}}
+
+<div class="row" id="report">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title">  <img src="/img/voting.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp;{{{__ "Voting Details"}}}</h4>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" onclick="generatePDF('report')" class="btn btn-info btn-fill" data-html2canvas-ignore="true">{{{__ "Print / Download PDF"}}}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <div class="row" >
+                    <div class="col-md-12">
+                        <h3>{{Record.title}}</h3>
+                        <label>
+                            {{#ifEqual Record.votetype 1}}
+                                {{{__ "Voting per user"}}}
+                            {{/ifEqual}}
+                            {{#ifEqual Record.votetype 2}}
+                                {{{__ "Voting according to the number of shares"}}}
+                            {{/ifEqual}}
+                            {{#ifEqual Record.votetype 3}}
+                                {{{__ "Voting according to the amount invested"}}}
+                            {{/ifEqual}}
+                        </label>
+                        <br /><br />
+                        <label>{{{__ "Voting Started"}}} </label> &nbsp;&nbsp;&nbsp; {{Record.opendate}} <br />
+                        <label>{{{__ "Voting Finish"}}} </label>  &nbsp;&nbsp;&nbsp; {{Record.closedate}} <br />
+                        <br />
+                        {{Record.contents}}
+                    </div>
+                </div>
+
+                <div class="row" >
+                    <div class="col-md-7">
+
+                        {{#ifEqual open 2}}
+                            <br />
+                            {{#ifEqual Record.votetype 2}}
+                                {{#if InvestorShares}}
+                                    <span style="color:black; font-size:18px;">Your vote will contribute {{numberFormat InvestorShares decimalLength="0"}} shares to selected option</span>
+                                {{else}}
+                                    <span style="color:red; font-size:18px;">You cannot cast your vote because you do not have any shares in this STO</span>
+                                {{/if}}
+                            {{/ifEqual}}
+
+
+                            {{#ifEqual Record.votetype 3}}
+                                {{#if InvestorShares}}
+                                    <span style="color:black; font-size:18px;">Your vote will contribute {{numberFormat InvestorInvestment decimalLength="0"}} investment votes to selected option</span>
+                                {{else}}
+                                    <span style="color:red; font-size:18px;">You cannot cast your vote because you do not have any shares in this STO</span>
+                                {{/if}}
+                            {{/ifEqual}}
+
+                            <br />
+                        {{/ifEqual}}
+
+                        <h4>{{{__ "Available-Options"}}}</h4>
+
+                        {{#ifEqual Record.votetype 1}}
+                            {{#each OptionRecord}}
+                                <div class="row">
+                                    <div class="col-md-6">{{addTovalue @index 1}}. {{this.optiontxt}}</div>
+                                    <div class="col-md-6">
+                                        {{#ifEqual ../open 2}}
+                                            <button onclick="castVote({{../id}}, {{this.id}}, {{../stoid}})" class="btn btn-info btn-fill btn-sm"> &nbsp; {{{../__ "Vote"}}} &nbsp; </button>
+                                        {{/ifEqual}}
+                                        &nbsp;&nbsp;
+                                        {{this.count}} Votes &nbsp; ( {{this.PercentInvestorCount}} % )
+                                    </div>
+                                </div>
+                                <br />
+                            {{/each}}
+                        {{/ifEqual}}
+
+                        {{#ifIn Record.votetype '[2, 3]'}}
+                            {{#each SharesRecord}}
+                                <div class="row">
+                                    <div class="col-md-6"><b>{{addTovalue @index 1}}</b>. &nbsp;&nbsp; {{this.optiontxt}}</div>
+
+                                    <div class="col-md-6">
+                                        {{#ifEqual ../open 2}}
+                                            {{#if ../InvestorShares}}
+                                                <button onclick="castVote({{../id}}, {{this.id}}, {{../stoid}})" class="btn btn-info btn-fill btn-sm"> &nbsp; {{{../__ "Vote"}}} &nbsp; </button>
+                                            {{/if}}
+                                        {{/ifEqual}}
+
+                                        &nbsp;&nbsp;
+                                        {{#ifEqual ../Record.votetype 2}}
+                                            {{numberFormat this.count decimalLength="0"}} Shares    ( {{this.Percent}} % )
+                                        {{/ifEqual}}
+
+                                        {{#ifEqual ../Record.votetype 3}}
+                                            {{numberFormat this.investment  decimalLength="0"}} ( {{this.PercentInvestment}} % )
+                                        {{/ifEqual}}
+
+                                    </div>
+                                </div>
+                                <br />
+                            {{/each}}
+                        {{/ifIn}}
+
+                        <br />
+
+                        {{#if InvestorShares}}
+                            {{#if userSelection}}
+                                <span style="color:green; font-size:18px;">You voted for "{{userSelectionOption}}" <br />
+                                {{#ifEqual open 2}}
+                                    You can still change your selection by clicking different vote button
+                                {{/ifEqual}}</span>
+                            {{else}}
+                                {{#ifEqual open 2}}
+                                    <span style="color:red; font-size:18px;">You have not made any selection. Please select one option and click Vote</span>
+                                {{/ifEqual}}
+                            {{/if}}
+                        {{/if}}
+
+                        <h4>{{{__ "Summary"}}}</h4>
+
+                        <div class="row">
+                            <div class="col-md-7">  {{{__ "Votes exercised"}}}  </div>
+                            <div class="col-md-4">  {{VotesCasted}}  </div>
+                        </div><br />
+
+                        <div class="row">
+                            <div class="col-md-7"> {{{__ "Total Investors"}}} </div>
+                            <div class="col-md-4"> {{TotalInvestorsInSTO}} </div>
+                        </div><br />
+
+                        <div class="row">
+                            <div class="col-md-7"> {{{__ "Votes not yet exercised"}}} </div>
+                            <div class="col-md-4"> {{subtractTovalue TotalInvestorsInSTO VotesCasted}} </div>
+                        </div><br />
+
+                    </div>
+                    <div class="col-md-4">
+                        <canvas id="myChart2" width="100" height="100"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <br />&nbsp;
+        </div>
+    </div>
+</div>
+
+
+{{> Footer}}

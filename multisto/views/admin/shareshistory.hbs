@@ -1,0 +1,190 @@
+{{> Header}}
+
+<script language="javascript">
+
+    const currentShareID = {{currentShareID}};
+
+    $(document).ready(function() {
+        $("#ShareRegister").addClass('active');
+        let element = document.getElementById("reportShareType");
+        element.value = currentShareID;
+    })
+
+    function changeReportData() {
+        window.location.href = "shareshistory?sid=" + document.getElementById("reportShareType").value;
+    }
+
+    function switchSummary() {
+        window.location.href = "sharessummary";
+        return false;
+    }
+
+    function switchShareRegister() {
+        window.location.href = "shares";
+        return false;
+    }
+</script>
+
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+	<div class="col-md-12 topPaddingBetweenPageSections"  style="width:2100px;">
+		<div class="card">
+            <div class="header">
+                <div class="row" >
+                    <div class="col-md-2">
+
+                    </div>
+
+                    <div class="col-md-1" data-html2canvas-ignore="true"></div>
+
+                    <div class="col-md-5" data-html2canvas-ignore="true">
+                        <label>Select Company Share </label>
+                        <select onchange="changeReportData()" id="reportShareType" class="form-control border-input" style="padding:3px; width:550px;">
+                            {{#each shareTypes}}
+                                <option value="{{this.ID}}">
+                                    {{this.title}}
+                                    &nbsp;&nbsp;&nbsp;
+                                    Nominal &nbsp;&nbsp;{{currencySymbol this.currencyid}} {{this.nominalValue}}
+                                    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                                    Market
+                                    &nbsp;&nbsp; {{currencySymbol this.currencyid}} {{this.premimum}}
+                                </option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3" data-html2canvas-ignore="true">
+                        {{#ifIn 10 Data.AdminRights}}
+                            <button onclick="return switchShareRegister()"  class="btn btn-info btn-fill">Share Register</button>
+                        {{/ifIn}}
+                        &nbsp;
+                        {{#ifIn 22 Data.AdminRights}}
+                            <button onclick="return switchSummary()"  class="btn btn-info btn-fill">Summary</button>
+                        {{/ifIn}}
+                    </div>
+
+                    <div class="col-md-1"  data-html2canvas-ignore="true">
+                        <button type="button" onclick="generatePDF('report')" class="btn btn-info btn-fill">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+
+			<div class="content" id="report"  >
+
+                <h4 class="title">
+                    <img src="/img/report.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Share History Register
+                </h4>
+
+                <br />
+                <center><b>
+                    {{Data.SiteParameter_PageTitle}}
+                    <br />
+                    Share Capital {{currencySymbol currentShareType.currencyid}}  &nbsp; {{numberFormat totalCapital decimalLength="-"}} <br />
+                    divided into {{numberFormat totalShares decimalLength="ShareCountInFractions"}} {{currentShareType.title}} at <br />
+                    Nominal Value &nbsp; {{currencySymbol currentShareType.currencyid}} {{currentShareType.nominalValue}}
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    Market Value &nbsp;  {{currencySymbol currentShareType.currencyid}} {{currentShareType.premimum}}
+
+                    <br /><br />
+                    Status &nbsp; {{dateReport}}
+                </b></center>
+
+
+				<br /><br />
+				<table class="table">
+					<thead  class="listingHeaderFontSize" >
+                        <tr>
+                            <th style="width:10%; vertical-align: top;">First Name, Last Name, Address of Shareholder</th>
+                            <th style="width:10%; vertical-align: top;">First Name, Last Name, Address of Legal Owner if Shareholder is Usufructuary of Shares</th>
+                            <th style="width:10%; vertical-align: top;">Certificate-Nr.</th>
+                            <th style="width:10%; vertical-align: top;">Share-Nr.</th>
+                            <th style="width:4%; vertical-align: top;">Shares</th>
+                            <th style="width:4%; vertical-align: top;">Active</th>
+                            <th style="width:8%; vertical-align: top;">Date of Mutation</th>
+                            <th style="width:30%; vertical-align: top;" colspan="4">
+                                Beneifical Owner <br />
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th style="width:12%; vertical-align: top;">First name, last name, address</th>
+                            <th style="width:6%; vertical-align: top;">Date of birth</th>
+                            <th style="width:6%; vertical-align: top;">Nationality </th>
+                            <th style="width:6%; vertical-align: top;">E-Mail-Adresse</th>
+                        </tr>
+					</thead>
+					<tbody>
+
+                    {{#each records}}
+                        <tr >
+                            <td style="{{#unless isActive}}text-decoration: line-through{{/unless}}; border-right:1px solid #E8E8E8; vertical-align: top;">
+
+                                {{#if this.investorType}}
+                                   {{this.CompanyName}}
+                                {{else}}
+                                    {{this.HolderFirstName}} {{this.HolderLastName}}
+                                {{/if}}
+
+                                <br/>
+                                {{this.HolderAddress}}
+                                {{this.HolderZip}} {{this.HolderTown}}  {{this.HolderCountry}}
+                            </td>
+
+                            <td style="{{#unless isActive}}text-decoration: line-through{{/unless}}; border-right:1px solid #E8E8E8; vertical-align: top;">
+                                {{this.UsufructuariesFirstName}} {{this.UsufructuariesLastName}}
+                                <br/>
+                                {{this.UsufructuariesAddress}}
+                                {{this.UsufructuariesCity}} {{this.UsufructuariesCountry}} {{this.UsufructuariesEmail}}
+                            </td>
+
+                            <td style="{{#unless isActive}}text-decoration: line-through{{/unless}}; border-right:1px solid #E8E8E8; vertical-align: top;">
+                                {{this.CertificateSerials}}
+                            </td>
+
+                            <td style="{{#unless isActive}}text-decoration: line-through{{/unless}}; border-right:1px solid #E8E8E8; vertical-align: top;">
+                                {{this.ShareSerials}}
+                            </td>
+
+                            <td style="{{#unless isActive}}text-decoration: line-through{{/unless}}; border-right:1px solid #E8E8E8; vertical-align: top;">
+                                 {{numberFormat this.shares decimalLength="ShareCountInFractions"}}
+                            </td>
+
+
+                            <td style="{{#unless isActive}}text-decoration: line-through{{/unless}}; border-right:1px solid #E8E8E8; vertical-align: top;">
+                                {{#if this.isActive}}  Yes  {{else}}  No  {{/if}}
+                            </td>
+
+                            <td style="{{#unless isActive}}text-decoration: line-through{{/unless}}; border-right:1px solid #E8E8E8; vertical-align: top;">
+                                {{this.datePurchase}}
+                            </td>
+
+                            <td style=" vertical-align: top; {{#unless isActive}}text-decoration: line-through{{/unless}}">
+                                {{this.BeneificalFirstName}} {{this.BeneificalLastName}}
+                                <br/>
+                                {{this.BeneificalAddress}}
+                                {{this.BeneificalCity}} {{this.BeneificalCountry}}
+                            </td>
+                            <td style=" vertical-align: top;{{#unless isActive}}text-decoration: line-through{{/unless}};"> {{this.BeneificalDOB}} </td>
+                            <td style=" vertical-align: top;{{#unless isActive}}text-decoration: line-through{{/unless}};"> {{this.BeneificalNationality}} </td>
+                            <td style=" vertical-align: top;{{#unless isActive}}text-decoration: line-through{{/unless}};"> {{this.BeneificalEmail}} </td>
+                        </tr>
+                    {{/each}}
+
+					</tbody>
+				  </table>
+                <br />
+
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+{{> Footer}}

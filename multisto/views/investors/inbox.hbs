@@ -1,0 +1,84 @@
+{{> Header}}
+
+<script language="javascript">
+
+  $(document).ready(function () {
+    $("#inbox").addClass('active');
+  })
+  function compose(val, id) {
+    window.location.href = "/email?op=" + val + "&id=" + id;
+    return false;
+  }
+
+</script>
+
+{{> HeaderInner}}
+
+{{> stolistselection}}
+
+{{#if messages}}
+<span style="color:red; font-size:18px;">{{messages}}</span>
+<br /><br />
+{{/if}}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-9">
+            <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{{__
+              "Inbox"}}}</h4>
+            {{#if messageList}}<label>{{{__ "Communicate-with-the-company"}}}</label>{{/if}}
+          </div>
+          <div class="col-md-3">
+            <button onclick="return compose(1, 0)" class="btn btn-info btn-fill btn-sm">{{{__
+              "Send-Message-to-Company"}}} </button>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="content">
+
+        {{#if messageList}}
+        <table class="table table-striped">
+          <thead>
+            <th>#</th>
+            <th>Date</th>
+            <th>Title</th>
+            <th>Actions</th>
+          </thead>
+          <tbody>
+            {{#each Records}}
+            <tr>
+              <td style="width: 20%; vertical-align: top;">{{this.ID}} </td>
+              <td style="width: 20%; vertical-align: top;">{{this.Date}} </td>
+              <td style="width: 65%; vertical-align: top;overflow: hidden;">{{this.Title}}</td>
+              <td style="width: 50%; vertical-align: top;">
+                {{#if this.isResponded}}
+                <button onclick="return compose(0, {{this.ID}})" class="btn btn-info btn-fill btn-sm">{{{../__
+                  "View-Response"}}}</button>
+                {{else}}
+                <button onclick="return compose(0, {{this.ID}})" class="btn btn-info btn-fill btn-sm">{{{../__
+                  "View"}}}</button>
+                {{/if}}
+              </td>
+              <td></td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        {{else}}
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label>{{{__ "No-messages-found"}}}</label>
+        <br />&nbsp;
+        {{/if}}
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,98 @@
+{{> Header}}
+
+<script language="javascript">
+  $(document).ready(function () {
+    $("#inbox").addClass('active');
+  })
+  function reply(id, investorID) {
+    window.location.href = "email?id=" + id + "&investorID=" + investorID;
+    return false;
+  }
+
+  function bulkEmail() {
+    window.location.href = "bulkEmail";
+    return false;
+  }    
+</script>
+
+
+{{> HeaderInnerSto}}
+
+{{#if errorMessage}}
+<span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+<br /><br />
+{{/if}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+
+      <div class="header">
+        <div class="row">
+          <div class="col-md-10">
+            <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Inbox
+            </h4>
+          </div>
+
+          <div class="col-md-2">
+            {{#if showBulkEmailInBox}}
+            <button onclick="bulkEmail()" class="btn btn-info btn-fill" style="">Send Bulk Email</button>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <table class="table table-striped">
+          <thead class="listingHeaderFontSize">
+            <th></th>
+            <th>#</th>
+            <th>Date</th>
+            <th>Investor</th>
+            <th>Title</th>
+            <th></th>
+          </thead>
+          <tbody>
+            {{#each Records}}
+            <tr>
+              <td>
+                {{#unless this.isResponded}}
+                <img src="/img/email_new.png" width="25px;" style="padding-bottom:5px;" />
+                {{/unless}}
+              </td>
+              <td style="width: 5%; vertical-align: top;">{{this.ID}} </td>
+              <td style="width: 20%; vertical-align: top;">{{this.Date}} </td>
+              <td style="width: 20%; vertical-align: top;">{{this.FirstName}} {{this.LastName}}</td>
+              <td style="width: 65%; vertical-align: top;overflow: hidden;">{{this.Title}}</td>
+              <td style="width: 65%; vertical-align: top;">
+                {{#unless this.isResponded}}
+                <button onclick="return reply({{this.ID}}, {{this.InvestorID}})" class="btn btn-info btn-fill btn-sm">
+                  &nbsp; View / Reply &nbsp; </button>
+                {{else}}
+                <button onclick="return reply({{this.ID}}, {{this.InvestorID}})" class="btn btn-info btn-fill btn-sm">
+                  &nbsp; View &nbsp; </button>
+                {{/unless}}
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+
+
+        &nbsp;&nbsp;&nbsp; <img src="/img/email_new.png" width="25px;" /> &nbsp;&nbsp; Not yet answered
+
+        <!--<div class="row">
+                        <div class="col-md-3">
+                            <input type="date" style="font-size:20px;"  name="dateofbirth" id="dateofbirth" data-date-format="DD - MMMM - YYYY" class="form-control border-input" value="2017-06-01"> 
+                        </div>
+                    </div>-->
+
+
+        <br />&nbsp;
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{{> Footer}}

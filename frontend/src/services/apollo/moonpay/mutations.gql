@@ -1,0 +1,3 @@
+mutation MoonpayAddTransactionDefault($status: String!, $moonpayId: String!) {
+  moonpayAddTransactionDefault(status: $status, moonpayID: $moonpayId)
+}

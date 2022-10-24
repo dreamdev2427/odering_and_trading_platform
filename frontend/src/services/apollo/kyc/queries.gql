@@ -1,0 +1,30 @@
+query JsonKYC {
+    kyc {
+        name
+        title
+        icon
+        pages {
+            fields {
+                values {
+                    value
+                    label
+                }
+                name
+                label
+                placeholder
+                description
+                error
+                required
+                type
+            }
+            name
+            title
+            icon
+        }
+    }
+}
+
+
+query investorKyc {
+    investorKyc
+}

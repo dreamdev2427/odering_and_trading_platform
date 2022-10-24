@@ -1,0 +1,65 @@
+    {{#ifEqual Data.InvestorCombinePropertiesMode 1}}
+        <script language="javascript">
+
+            $(document).ready(function() {
+
+                    /*     window.location.href returns the href (URL) of the current page
+                            window.location.hostname returns the domain name of the web host
+                            window.location.pathname returns the path and filename of the current page
+                            window.location.protocol returns the web protocol used (http: or https:)
+                    */
+                
+                   if(window.location.host != "") {
+                        let element = document.getElementById("changeSTOCompanyDropDown");
+                        element.value = window.location.protocol  + "//" +  window.location.host;
+                   }
+
+            });
+
+            function changeSTOCompanyDropDownEvent() {
+                    var e = document.getElementById("changeSTOCompanyDropDown");
+                    var val = e.options[e.selectedIndex].value;
+
+                    var fullpath = val;
+                    fullpath = fullpath +  window.location.pathname 
+
+                    if( window.location.search != "" )
+                        fullpath = fullpath + "/" + window.location.search;
+
+                    window.location.href = fullpath;
+            }
+
+        </script>                                
+
+        <div class="row">
+            <div class="col-md-6"></div>     
+            <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-4" style="padding-top: 10px; ">
+                            <b>Select 
+                            
+                                    {{#ifEqual Data.CurrentClientID 9}}                            
+                                        Opportunity 
+                                    {{else}}
+                                        Project  
+                                    {{/ifEqual}}                                 
+                            
+                            </b>  
+                        </div>
+                        <div class="col-md-8">
+                            
+                                    <select id="changeSTOCompanyDropDown" name="changeSTOCompanyDropDown" onchange="changeSTOCompanyDropDownEvent()" class="form-control border-input" >
+                                            {{#each Data.investorSTOs}}
+                                                    <option value="{{this.stolinkfull}}">{{this.title}}</option>    
+                                            {{/each}}
+
+                                    </select>
+
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <br />
+    {{/ifEqual}}
+
+

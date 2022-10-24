@@ -1,0 +1,43 @@
+mutation createNewBuyOrder($order: ExchangeBuyOrderInput!) {
+  createBuyOrder(order: $order)
+}
+
+mutation createNewSellOrder($order: ExchangeSellOrderInput!) {
+  createSellOrder(order: $order)
+}
+
+mutation updateSellOrder($orderID: Int!, $data: ExchangeUpdateOrderInput!) {
+  updateSellOrder(orderID: $orderID, data: $data)
+}
+
+mutation deleteOrder($orderID: Int!) {
+  deleteOrder(orderID: $orderID)
+}
+
+mutation deleteOffer($orderID: Int!) {
+  deleteOffer(orderID: $orderID)
+}
+
+mutation startSwap($offerID: Int!) {
+  startSwap(offerID: $offerID)
+}
+
+mutation createNewOffer($offer: ExchangeOfferInput!) {
+  createOffer(offer: $offer)
+}
+
+mutation acceptInternalSwap($offerID: Int!) {
+  acceptInternalSwap(offerID: $offerID)
+}
+
+mutation acceptBlockchainSwap($walletAddress: String!, $orderID: Int!) {
+  acceptBlockchainSwap(walletAddress: $walletAddress, orderID: $orderID)
+}
+
+mutation CompanyTransferShares($data: TransferShareInput!) {
+  companyTransferShares(data: $data)
+}
+
+mutation UpdateOrderStatus($atomicSwapCurrentStatus: AtomicSwapStatus!, $orderId: Int!) {
+  updateOrderStatus(atomicSwapCurrentStatus: $atomicSwapCurrentStatus, orderID: $orderId)
+}

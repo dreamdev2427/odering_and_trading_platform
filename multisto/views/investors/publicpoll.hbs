@@ -1,0 +1,180 @@
+{{> Header}}
+
+<html>
+<head>
+    <title></title>
+
+    <script language="javascript">
+        $(document).ready(function() {
+            {{#if showvoting}}
+
+                var data = {
+                    datasets: [{
+                        data: [
+                            {{#each OptionRecord}}
+                                {{this.count}},
+                            {{/each}}            
+                        ],
+                                backgroundColor: [
+                                    'red', 'green', 'blue'
+                                ],
+                                label: 'Dataset 1'
+                    }],
+
+                    // These labels appear in the legend and in the tooltips when hovering different arcs
+                            labels: [
+                                {{#each OptionRecord}}
+                                    "{{this.optiontxt}}",
+                                {{/each}}            
+                            ]
+                };        
+                var ctx = document.getElementById('myChart');
+                var myPieChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data,
+                    options: {
+                        legend: {
+                            labels: {
+                                fontColor: 'black',
+                                fontSize: 13,
+                            }
+                        }
+                    }            
+                });
+                
+            
+                if(commonGetQueryStringValue("op") != null) {
+                    $('#modelGeneralOKMessageModelBox').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+                }
+                
+            {{/if}}
+
+        });
+        function votenow(option) {
+            var url = window.location.protocol + "//" + window.location.hostname + "/pollpost?";
+            url = url + "id=" + commonGetQueryStringValue("id");
+            url = url + "&opt=" + option;
+
+            window.location.href = url;
+        }
+                
+    </script>
+</head>
+    <body>
+
+        <div  style="padding-left: 7%; padding-right: 7%; padding-top:1%;">
+            {{#if showvoting}}
+                <div class="row topPaddingBetweenPageSections">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title"> <img src="/img/lock.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Public Poll</h4>
+                            </div>
+                            <div class="content">
+                                <br />
+                                <b>{{Record.title}}</b>
+
+                                <br /><br />
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label>Voting Start </label> 
+                                    </div>
+                                    <div class="col-md-8">
+                                        {{Record.opendate}}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label>Voting Finish </label>  
+                                    </div>    
+                                    <div class="col-md-8">
+                                        {{Record.closedate}}                                
+                                    </div>
+                                </div>
+                                <br /><br />                            
+                                {{{Record.contents}}}
+                                <br /><br />
+                                <b>Please select a option and click Vote. You can also change your option during voting</b>
+                                <br /><br />
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        {{#each OptionRecord}}
+                                            <div class="row">
+                                                <div class="col-md-7">  {{addTovalue @index 1}}. {{this.optiontxt}}  </div>
+                                                <div class="col-md-4">  
+                                                    {{this.count}} Votes  
+                                                    &nbsp;&nbsp; 
+                                                    <button type="button" onclick="votenow({{this.id}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Vote  &nbsp;</button>
+                                                </div>
+                                            </div><br />
+                                        {{/each}}
+                                        <br /><br />
+                                        <div class="row">
+                                            <div class="col-md-4">  Votes Casted  </div>
+                                            <div class="col-md-4">  {{VotesCasted}}  </div>
+                                        </div><br />
+                                        <div class="row">
+                                            <div class="col-md-4"> Total Users </div> 
+                                            <div class="col-md-4"> {{TotalUsers}} </div>
+                                        </div><br />
+                                        <div class="row">
+                                            <div class="col-md-4"> Votes not Casted </div> 
+                                            <div class="col-md-4"> {{subtractTovalue TotalUsers VotesCasted}} </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <canvas id="myChart" width="100" height="100"></canvas>
+                                    </div>
+                                </div> 
+
+                                <br />&nbsp;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{else}}
+                <br />
+                <center><h2>No voting campaign found <br /><br />or<br /><br /> Voting campaign not yet active</h2></center>
+            {{/if}}
+        </div>
+        
+        
+
+    <div class = "modal fade" id="modelGeneralOKMessageModelBox" tabindex = "-1" role = "dialog" aria-labelledby = "modelGeneralOKMessageModelBox" aria-hidden = "true">
+
+        <div class = "modal-dialog">
+          <div class = "modal-content">
+
+             <div class="modal-header">
+                <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+                <h4 class = "modal-title" id = "myModalLabel">Thank you</h4>
+             </div>
+
+             <div class="modal-body">
+                 <span style="font-size:18px;" > 
+                    
+                    <br />
+                    Thank you for voting. Your vote has been saved 
+                    <br /> <br />
+                    You can change your option by clicking the option button any time until the poll is open for voting
+                 
+                 </span>
+                 <br /> &nbsp;&nbsp;<br /> &nbsp;&nbsp;
+
+                <button type = "button" class = "btn btn-info btn-fill pull-right" data-dismiss = "modal"> &nbsp; OK &nbsp; </button>             
+                 <br /> &nbsp;&nbsp;<br /> &nbsp;&nbsp;
+
+             </div><!-- /.modal-content -->         
+
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+    </div>
+        
+        
+        
+    </body>
+</html>

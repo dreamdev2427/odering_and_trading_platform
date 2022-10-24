@@ -1,0 +1,15 @@
+DELETE FROM activitytype WHERE ID = 18;
+DELETE FROM activitytype WHERE ID = 19;
+DELETE FROM activitytype WHERE ID = 20;
+DELETE FROM activitytype WHERE ID = 21;
+DELETE FROM activitytype WHERE ID = 22;
+DELETE FROM activitytype WHERE ID = 23;
+DELETE FROM activitytype WHERE ID = 24;
+DELETE FROM activitytype WHERE ID = 25;
+DELETE FROM activitytype WHERE ID = 26;
+DELETE FROM activitytype WHERE ID = 27;
+DELETE FROM activitytype WHERE ID = 28;
+DELETE FROM activitytype WHERE ID = 29;
+DELETE FROM activitytype WHERE ID = 30;
+DELETE FROM activitytype WHERE ID = 31;
+DELETE FROM activitytype WHERE ID = 32;

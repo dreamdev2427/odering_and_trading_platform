@@ -1,0 +1,72 @@
+{{> Header}}
+
+<script language="javascript">
+    var isMessageBeingSend = 0;
+
+    $(document).ready(function() {
+        $("#tellafriend").addClass('active');        
+        SummernoteBasicDataInitialize('txtinvitation', 'Enter Email Text', 300);       
+    })
+    function tellafriend() {
+
+        if(isMessageBeingSend == 1)
+            showModelGeneralOKDialogBox('{{{__ "Message is being send. Please wait"}}}');
+        else if(document.getElementById("txtinvitation").value == "" || document.getElementById("txtinvitation").value == "<p><br></p>")
+            showModelGeneralOKDialogBox('{{{__ "Please type invitation text"}}}');
+        else if( document.getElementById("emailaddress").value == "") 
+            showModelGeneralOKDialogBox('{{{__ "Please enter email address"}}}');
+        else if(!checkemailformat( document.getElementById("emailaddress").value ) )
+            showModelGeneralOKDialogBox('{{{__ "Email addrsss is not valid"}}}');
+        else {
+            isMessageBeingSend = 1;
+            document.getElementById("tellafriendemail").submit();
+        }
+
+    }
+
+</script>
+
+{{> HeaderInner}}
+
+    <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b> 
+
+    <div class="row" id="tellafrien">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/user.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Invite-a-friend"}}}</h4>
+                    <label>{{{__ "Do-you-know-investors-in-or-managers-of-private-companies"}}}</label>
+                </div>
+                <div class="content">
+
+                    <form id="tellafriendemail" action="/sendemail" method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>{{{__ "Email-Address"}}}</label>
+                            <input type="textbox" maxlength="70" class="form-control border-input" id="emailaddress" name="emailaddress" placeholder='{{{__ "Email-Address"}}}'>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>{{{__ "Enter-invitation-text"}}}</label>
+                            <textarea rows="8" cols="" class="form-control border-input" id="txtinvitation" name="txtinvitation"  id="txtinvitation" placeholder="">{{investorRec.inviteFriendEmailText}}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" onclick="tellafriend()" class="btn btn-info btn-fill">{{{__ "Send-Proposal"}}}</button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

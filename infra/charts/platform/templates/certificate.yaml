@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-certificate
+spec:
+  dnsNames:
+    - "{{ include "hostnames.frontend" . }}"
+    - "{{ include "hostnames.api" . }}"
+    - "{{ include "hostnames.multisto" . }}"
+  secretName: {{ .Release.Name }}-tls
+  issuerRef:
+    name: letsencrypt-cluster-issuer
+    kind: ClusterIssuer

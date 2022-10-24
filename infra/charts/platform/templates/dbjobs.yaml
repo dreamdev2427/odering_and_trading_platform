@@ -1,0 +1,88 @@
+#apiVersion: batch/v1
+#kind: Job
+#metadata:
+#  name: {{ .Release.Name }}-create-db
+#  annotations:
+#    "helm.sh/hook": post-install
+#  labels:
+#    jobgroup: jobexample
+#spec:
+#  template:
+#    metadata:
+#      name: kubejob
+#      labels:
+#        jobgroup: jobexample
+#    spec:
+#      containers:
+#        - name: {{ .Release.Name }}-db-job-c
+#          image: "gcr.io/storied-chimera-334509/digishares-platform/db-create:{{ include "version.current" . }}"
+#          imagePullPolicy: Always
+#          args: ["createdb", "customizedb"]
+#          env:
+#            - name: VERSION
+#              value: "{{ include "version.current" . }}"
+#            - name: DB_USER
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: dbsecrets
+#                  key: username
+#            - name: DB_PASSWORD
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: dbsecrets
+#                  key: password
+#            - name: DB_DATABASE
+#              value: digishares
+#            - name: DB_SERVER
+#              value: {{ .Release.Name }}-mysql-service.testkits.svc.cluster.local
+##              valueFrom:
+##                configMapKeyRef:
+##                  name: dbsecrets
+##                  key: ip
+#            - name: VALUES_HOSTNAME
+#              value: {{ .Values.id }}
+#      restartPolicy: OnFailure
+#---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-drop-db
+  annotations:
+    "helm.sh/hook": post-delete
+  labels:
+    jobgroup: jobexample
+spec:
+  template:
+    metadata:
+      name: dropbjob
+      labels:
+        jobgroup: jobexample
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-db-job-drop
+          image: "gcr.io/storied-chimera-334509/digishares-platform/db-create:{{ include "version.current" . }}"
+          imagePullPolicy: Always
+          args: ["dropdb"]
+          env:
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: dbsecrets
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: dbsecrets
+                  key: password
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: dbsecrets
+                  key: database
+            - name: DB_SERVER
+              value: {{ .Release.Name }}-mysql-service.testkits.svc.cluster.local
+      #              valueFrom:
+      #                configMapKeyRef:
+      #                  name: dbsecrets
+      #                  key: ip
+      restartPolicy: OnFailure

@@ -1,0 +1,294 @@
+{{> Header}}
+
+<script language="javascript">
+    const searchElementIds = ['searchName', 'searchEmail', 'searchDateFrom', 'searchDateTo'];
+    const orderElementIds = ['orderName', 'orderDate', 'orderEmail'];
+
+    const totalRecords = {{RecordCount}};
+    const totalNumberOfRecordsOnPages = {{RecordsPerPaging}};
+
+    $(document).ready(function() {
+        $("#registerlist").addClass('active');
+        initializePageNumberValue();
+        initializeSearchAndOrderElementValues(searchElementIds);
+        initializeSearchAndOrderElementValues(orderElementIds);
+    })
+
+    function initializeSearchAndOrderElementValues(elementIdArray) {
+        for(i=0; i<elementIdArray.length; i++) {
+            const element = document.getElementById(elementIdArray[i]);
+            if (element) {
+                element.addEventListener("keyup", function(event) {
+                    event.preventDefault();
+                    if (event.keyCode === 13) {
+                        document.getElementById("searchBtn").click();
+                    }
+                });
+            }
+            const param = getParameterByName(elementIdArray[i]);
+            if (param) {
+                element.value = param;
+                if (elementIdArray[i].includes('order')) {
+                    if (param==='asc') {
+                        element.className = 'ti-arrow-up';
+                    } else {
+                        element.className = 'ti-arrow-down';
+                    }
+                }
+            }
+        }
+    }
+    function initializePageNumberValue() {
+        let currentPage = 1;
+        if(getParameterByName("recordsPage") != null)
+            currentPage = parseInt(getParameterByName("recordsPage"));
+        let pages = Math.floor(totalRecords/totalNumberOfRecordsOnPages);
+        let remainder = totalRecords % totalNumberOfRecordsOnPages;
+        if(remainder > 0)
+            pages = pages + 1;
+        if (!pages)
+            pages = 1;
+        let beggining = 0;
+        let length = 0;
+        switch (currentPage) {
+            case 1: beggining = currentPage; length = currentPage + 10; break;
+            case pages: beggining = currentPage - 5; length = pages; break;
+            default: beggining = Math.max(currentPage - 5, 1); length = Math.min(currentPage + 5, pages); break;
+        }
+        if (beggining > 1) {
+            $("#pages").append(`<option value='${1}'>${1}</option>`);
+            $("#pages").append(`<optgroup label="..."></optgroup>`);
+        }
+        for(a=beggining;a<=length && a <= pages;a++)
+        {
+            if(currentPage == a)
+                $("#pages").append(`<option selected value='${a}'>${a}</option>`)
+            else
+                $("#pages").append(`<option value='${a}'>${a}</option>`)
+        }
+        if (length < pages) {
+
+            $("#pages").append(`<optgroup label="..."></optgroup>`);
+            $("#pages").append(`<option value='${pages}'>${pages}</option>`);
+        }
+    }
+
+    function deleteRec(id) {
+            window.location.href = "deleteRegisterRecord?id=" + id;
+            return false;
+    }
+
+    function resendVerification(id, email) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/resendCode");
+        xhr.setRequestHeader("X-CSRF-Token", "{{csrfToken}}");
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+        const json = {
+            isFromAdmin: true,
+            registrationID: id
+        };
+        xhr.onreadystatechange = function() {//Call a function when the state changes.
+            if(xhr.readyState == 4) {
+                const errMsgSpan = document.getElementById('ResendSecretErrorMessage');
+                if (xhr.status == 200) {
+                    errMsgSpan.style.color = 'green';
+                    errMsgSpan.innerText = `Secret Resent to investor email: ${email}`;
+                } else {
+                    errMsgSpan.style.color = 'red';
+                    errMsgSpan.innerText = xhr.response;
+                }
+            }
+        }
+        xhr.send(JSON.stringify(json));
+    }
+
+    function dataPageChanged() {
+        let page = '';
+        if(page != "")
+            page = page + "&";
+        const pag = document.getElementById("pages").value;
+        page = page + "recordsPage=" + pag;
+        const search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        window.location.href = composeLink('registerlist', page, search, order);
+        return false;
+    }
+    function composeLink(base, page, search, order) {
+        let link = `${base}?`;
+        if (page) {
+            link += `${page}`;
+        }
+        if (search && search.length > 0) {
+            link += `&${search}`;
+        }
+        if (order && order.length > 0) {
+            link += `&${order}`;
+        }
+        return link;
+    }
+    function getPageCriteria(elementIdArray) {
+        let query = '';
+        for (i=0; i < elementIdArray.length; i++) {
+            const element = document.getElementById(elementIdArray[i]);
+            if (element !== null && element.value !== undefined && element.value !== '') {
+                let toAddValue = document.getElementById(elementIdArray[i]).value;
+                if (elementIdArray[i].includes('date')) {
+                    toAddValue = commonGetMySQLDateFormat(toAddValue);
+                }
+                query = addToQuery(query, elementIdArray[i], toAddValue);
+            }
+        }
+        return query;
+    }
+
+    function addToQuery(query, toAddName, toAddValue) {
+        if (query !== '' && toAddValue !== '') {
+            query += '&';
+        }
+        if (toAddValue !== '') {
+            query += `${toAddName}=${toAddValue}`;
+        }
+        return query;
+    }
+    function searchUnfinishedRegisters() {
+        const search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        window.location.href = composeLink('registerlist', null, search, order);
+    }
+    function exportToCsv() {
+        const search = getPageCriteria(searchElementIds);
+        const order = getPageCriteria(orderElementIds);
+        window.location.href = composeLink('exportUnfinishedRegistersToCsv', null, search, order);
+    }
+    function updateOrder(element) {
+        const iTag = element.getElementsByTagName('i')[0];
+        if (iTag.value==='asc') {
+            iTag.value = 'desc';
+            iTag.className = 'ti-arrow-down';
+        } else {
+            iTag.value = 'asc';
+            iTag.className = 'ti-arrow-up';
+        }
+        searchUnfinishedRegisters();
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title"> <img src="/img/relative.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  New Registrations</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <br>
+                        <button type="button" onclick="return exportToCsv()" class="btn btn-info btn-fill btn-wd">
+                            Export To Csv
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <b>Go To Page</b>
+                        <select onchange="dataPageChanged()" id="pages" name="pages" class="form-control border-input"  ></select>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Search Name</label>
+                        <input id="searchName" class="form-control border-input">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Search Email</label>
+                        <input min="0" id="searchEmail" class="form-control border-input">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Date From</label>
+                        <input  id="searchDateFrom" name="affiliateInvestmentFromDate" onkeydown="return false;"  value=""
+                                class="form-control border-input datepicker-here" data-language='en'
+                                data-date-format="MM dd yyyy" type=text autocomplete="off"
+                                data-timepicker="true" data-time-format='hh:ii aa'/>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Date To</label>
+                        <input  id="searchDateTo" name="affiliateInvestmentFromDate" onkeydown="return false;"  value=""
+                                class="form-control border-input datepicker-here" data-language='en'
+                                data-date-format="MM dd yyyy" type=text autocomplete="off"
+                                data-timepicker="true" data-time-format='hh:ii aa'/>
+                    </div>
+                    <div class="col-md-4">
+                        <br>
+                        <button type="button" id="searchBtn" onclick="return searchUnfinishedRegisters()" class="btn btn-info btn-fill btn-wd">
+                            Search
+                        </button>
+                    </div>
+                </div>
+                <br>
+            </div>
+            <br>
+            <b><ul><span style="color:red;" id="ResendSecretErrorMessage"></span></ul></b>
+
+            <div class="content">
+
+                {{#if DataRows.length}}
+                            <b><div class="row">
+                                <div class="col-md-1">#</div>
+                                <div class="col-md-4" onclick="updateOrder(this)">
+                                    Name
+                                    <i id="orderName" value="0"></i>
+                                </div>
+                                <div class="col-md-2" onclick="updateOrder(this)">
+                                    Date
+                                    <i id="orderDate" value="0"></i>
+                                </div>
+                                <div class="col-md-3" onclick="updateOrder(this)">
+                                    Email
+                                    <i id="orderEmail" value="0"></i>
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-1"></div>
+                            </div></b><br />
+
+                            {{#each DataRows}}
+                                <div class="row">
+                                    <div class="col-md-1">{{@key}}</div>
+                                     <div class="col-md-4">{{this.FirstName}} {{this.LastName}} </div>
+                                    <div class="col-md-2">{{this.dateregister}} </div>
+                                    <div class="col-md-3">{{this.Email}}</div>
+                                    <div class="col-md-2">
+                                        <div class="col-md-5">
+                                            <button type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"
+                                                    onclick="deleteRec({{this.ID}})">
+                                                Delete
+                                            </button>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <button type = "button" class = "btn btn-info btn-fill btn-sm" data-dismiss = "modal"
+                                                    style="white-space: normal;" onclick="resendVerification({{this.ID}}, '{{this.Email}}')">
+                                                Resend Verification
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                            {{/each}}
+                            <br /><br />
+                {{else}}
+                        <label>No Records Found</label>
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{> Footer}}

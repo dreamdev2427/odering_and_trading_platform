@@ -1,0 +1,118 @@
+{{> Header}}
+
+<script language="javascript">
+
+	$(document).ready(function() {
+
+	})
+    function backToInvestor() {
+        window.location.href = "investorsViewSto?id={{Record.ID}}";
+        return false;
+    }
+    function downloadDocument() {
+        window.location.href = "downloadCaseFileFromWeb?id={{Record.RecID}}";
+        return false; 
+    }
+
+</script>
+
+
+{{> HeaderInnerSto}}
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+                
+				<div class="header">
+                    <div class="col-md-10">                                
+                        <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Force Recovery</h4>
+                    </div>
+				</div>
+                
+				<div class="content">
+
+                    <br />
+                    
+                    {{#if Record.isPartial}}
+                        <h3>Partial Tokens Recovery Details</h3>
+                    {{else}}
+                        <h4>Account Close Details</h4>
+                    {{/if}}
+                    
+                    <br />
+                    
+                    <div class="row">
+                        <div class="col-md-2">                            
+                            <b>Title</b>
+                        </div>                        
+                        <div class="col-md-10">                            
+                            {{Record.CaseTitle}}
+                        </div>
+                    </div>
+                    <br />                    
+                    <div class="row">
+                        <div class="col-md-2">                            
+                            <b>Shares Recovered</b>
+                        </div>
+                        <div class="col-md-10">                            
+                            {{Record.tokens}}
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2">                            
+                            <b>Date Recovery</b>
+                        </div>
+                        <div class="col-md-10">                            
+                            {{Record.Date}}
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2">                            
+                            <b>Investor</b>
+                        </div>
+                        <div class="col-md-10">                            
+                            {{Record.FirstName}} {{Record.LastName}}
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2">                            
+                            <b>Case Details</b>
+                        </div>
+                        <div class="col-md-10">                            
+                            {{Record.CaseDetails}}
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2">                            
+                            <b>Case Notes</b>
+                        </div>
+                        <div class="col-md-10">                            
+                            {{Record.CaseNotes}}
+                        </div>
+                    </div>
+                    <br />&nbsp;
+                    <div class="row">
+                        <div class="col-md-2">                            
+                            <b>Case File</b>
+                        </div>
+                        <div class="col-md-10">                            
+                            <button onclick="return downloadDocument()" class="btn btn-info btn-fill btn-sm">Download File</button>
+                        </div>
+                    </div>
+                    <br />&nbsp;
+
+                    <div class="text-center">
+                        <button onclick="return backToInvestor()" class="btn btn-info btn-fill btn-wd">Back</button>
+                    </div>
+                    <br />
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+{{> Footer}}

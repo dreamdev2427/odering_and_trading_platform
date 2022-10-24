@@ -1,0 +1,27 @@
+query inboxData($sto: Int!, $offset: Int!, $limit: Int) {
+  investorInboxes(stoID: $sto, offset: $offset, limit: $limit) {
+    ID
+    stoID
+    investorID
+    title
+    details
+    date
+    isResponded
+    response
+    responseDate
+  }
+}
+
+query inboxMessage($_id: Int!) {
+  investorInbox(ID: $_id) {
+    ID
+    stoID
+    investorID
+    title
+    details
+    date
+    response
+    isResponded
+    responseDate
+  }
+}

@@ -1,0 +1,74 @@
+{{> Header}}
+
+<script language="javascript">
+    var dellink = "";
+    
+    $(document).ready(function() {
+        $("#doclinks").addClass('active');                
+    })    
+    function download(id) {
+        window.location.href = "downloadlinkdocument?id=" + id;
+        return false; 
+    }
+    function deletefile(id, listid) {
+        dellink = "deletelinkdocument?id=" + id + "&listid={{listid}}";
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete the file ?", "Yes Delete", "Cancel");        
+    }
+    
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = dellink;
+        return false;         
+    }
+
+    
+</script>
+
+{{> HeaderInnerPlatform}}
+
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Upload Documents</h4>
+            </div>
+            
+            <div class="content">
+
+                {{#if Records.length}}
+                    <table class="table table-striped">
+                        <thead>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each Records}}
+                                <tr>
+                                    <td style="width: 3%; "> 
+                                        {{#if this.isNew}}
+                                            <img src="/img/greendot.png" width="20px">
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 12%; "> {{this.dateuploaded2}} </td>
+                                    <td style="width: 60%; "> {{this.title}} </td>
+                                    <td style="width: 25%; "> 
+                                        <button type = "button" class = "btn btn-info btn-fill btn-sm" onclick="deletefile('{{this.ID}}')"> Delete </button>                       &nbsp;&nbsp;
+                                        <button type = "button" class = "btn btn-info btn-fill btn-sm" onclick="download('{{this.ID}}')" > Download </button> 
+                                    </td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                    <br />
+                    <img src="/img/greendot.png" width="20px"> &nbsp;&nbsp; New Documents
+                    <br />&nbsp;
+                {{else}}
+                    <br />
+                    <label>No Documents Found </label>
+                {{/if}}
+
+            </div>
+        </div>
+    </div>								
+
+{{> Footer}}

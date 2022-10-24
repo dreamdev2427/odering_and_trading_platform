@@ -1,0 +1,145 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			$("#dvidends").addClass('active');               
+		})
+        
+        function backToList(id) {
+          window.location.href = "listdividend";
+          return false;			            
+        }
+        function submitForm() {
+            
+            if(document.getElementById("title").value == "") {
+                    showModelGeneralOKDialogBox("Please enter dividend title");
+                    return;
+            }
+            
+            if(document.getElementById("txtDate").value == "") {
+                    showModelGeneralOKDialogBox("Please enter dividend distribution date");
+                    return;
+            }
+
+            if(document.getElementById("txtAmount").value == "") {
+                    showModelGeneralOKDialogBox("Please enter total amount being distributed");
+                    return;
+            } else {
+                 if( isNaN(document.getElementById("txtAmount").value) ) {
+                        showModelGeneralOKDialogBox("Total amount entered is not a valid number");
+                        return;
+                 }
+            }
+            
+            
+            if(document.getElementById("notes").value == "") {
+                    showModelGeneralOKDialogBox("Please enter dividend Details");
+                    return;
+            }            
+            
+            
+            document.getElementById("txtDate").value =  commonGetMySQLDateFormat( document.getElementById("txtDate").value );
+            
+            document.getElementById("frmDividend").submit();
+        }
+	</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+	<div class="col-md-12 ">
+		<div class="card">
+			<div class="header">
+                
+                <div class="row">
+                    <div class="col-md-10">                
+                        <h4 class="title">
+                            <img src="/img/dividends.png" width="30px" >
+                            &nbsp;                             
+                            DIvidends
+                        </h4>                        
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+			</div>
+			 <div class="content">
+
+					<ul style="color:red;"><span id="ErrorMessages">{{message}}</span></ul>
+
+					<form id="frmDividend" name="systemNotes" action="adddividendpost" method="post">
+                                                
+							<div class="row">
+								<div class="col-md-10">
+									<div class="form-group">
+										<label>Title</label>
+										<input type="text" id="title" name="title" maxLength="254"  class="form-control border-input" placeholder="Enter News Title" >
+									</div>
+								</div>
+							</div>
+                        
+							<div class="row">
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Total Amount Paid   </label>
+                                            <input type="text" id="txtAmount" name="txtAmount" maxLength="10"  class="form-control border-input" placeholder="Enter Amount" >                                             
+									</div>
+								</div>
+                                
+                                <div class="col-md-1"> <br /> <br /> <span style="font-size:18px;"> {{currencySymbol currencyID}} </span> </div>
+                                
+								<div class="col-md-3">
+									<div class="form-group">
+										<label>Date</label>
+                                            <input  id="txtDate" name="txtDate" onkeydown="return false;"  value="" class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" />
+									</div>
+								</div>                                
+                              
+							</div>              
+                                                
+                            <div class="row">                        
+                                <div class="col-md-3">
+                                    <label>Payout according to</label>
+                                    <select id="payoutselect" name="payoutselect" class="form-control border-input" style="min-width:400px; background:transparent;  padding:5px; font-size:15px;">
+                                            <option value="1"> Total Shares in Company </option>
+                                            <option value="2"> Shares Distributed to Investors </option>                                    
+                                    </select>
+                                </div>                            
+                            </div>  
+							<br />
+						
+
+
+                            <br />
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Details</label>
+										<textarea  name="notes" id="notes" maxLength="4990"  class="form-control  border-input" placeholder="Enter News Text" rows="8"></textarea>
+									</div>
+								</div>
+							</div> 
+
+							<div class="text-center">
+									<button type="button" onclick="return submitForm()"class="btn btn-info btn-fill btn-wd">Save Dividend</button>
+
+								&nbsp;&nbsp;&nbsp; <button onclick="return backToList()" class="btn btn-info btn-fill btn-wd">Cancel</button>
+							</div>			
+
+                            <input type="hidden" name="currencyID" value="{{currencyID}}" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+					</form>
+
+                    <br />&nbsp;
+
+			</div>
+		</div>
+	</div>
+</div>
+
+{{> Footer}}
+
+
+
+
+
+

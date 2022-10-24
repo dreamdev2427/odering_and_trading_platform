@@ -1,0 +1,77 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#documents").addClass('active');
+    })
+
+    function opencontract(docid, id) {
+        window.location.href = "senddoc?docid=" + docid + "&id=" + id;
+    }
+    
+    function opensignedcontract(docid, id) {
+        window.location.href = "senddoccontracts?docid=" + docid + "&id=" + id;        
+    }
+
+</script>
+
+<style>
+    .linkStyle100 {
+        color:#696969; 
+        font-size:16px;   
+        cursor: pointer;
+        padding:5px;
+    }
+
+    .hovercolor:hover {
+        background-color: #DCDCDC;
+    }
+</style>
+
+{{> HeaderInnerSto}}
+
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                        <h4 class="title"> <img src="/img/contracts2.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Contracts List </h4>        
+                        <label>List of contract offers send to investors</label>
+                </div>
+                
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            
+                            {{#each records}}
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        {{this.title}} 
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{this.datefrom}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{this.datato}}
+                                    </div>                                    
+                                    <div class="col-md-1">
+                                        {{#if this.open}}
+                                            <button type="button" onclick="return opencontract({{this.documentid}}, {{this.ID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Edit &nbsp; </button>
+                                        {{/if}}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" onclick="return opensignedcontract({{this.documentid}}, {{this.ID}})" class="btn btn-info btn-fill btn-sm"> &nbsp; Newly Signed &nbsp; </button>                  
+                                    </div>
+                                </div>
+                            <br />
+                            {{/each}}
+                            
+                        </div>
+                    </div>                    
+                </div>
+                
+                <br/>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

@@ -1,0 +1,232 @@
+{{> Header}}
+
+<style>
+    .message {
+        border: 2px solid gray;
+        background-color: #EEE;
+        color: #555;
+        border-radius: 8px;
+        padding: 16px;
+        font-size: large;
+    }
+    .error {
+        border-color: #FAA;
+        background-color: #FEE;
+        color: #A33;
+    }
+    .success {
+        border-color: #AFA;
+        background-color: #EFE;
+        color: #3A3;
+    }
+    .thead {
+        position: sticky;
+        top: 0;
+    }
+    .is-read {
+        background-color: #ffffff !important;
+    }
+    .is-unread {
+        background-color: #e2f0fe !important;
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.11.0/af-2.3.7/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/b-print-2.0.0/cr-1.5.4/date-1.1.1/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.2.0/sp-1.4.0/sl-1.3.3/datatables.min.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.11.0/af-2.3.7/b-2.0.0/b-colvis-2.0.0/b-html5-2.0.0/b-print-2.0.0/cr-1.5.4/date-1.1.1/fc-3.3.3/fh-3.1.9/kt-2.6.4/r-2.2.9/rg-1.1.3/rr-1.2.8/sc-2.0.5/sb-1.2.0/sp-1.4.0/sl-1.3.3/datatables.min.js"></script>
+
+<script language="javascript">
+  $(document).ready(function () {
+    $("#chat").addClass('active');
+    $('#datatable').DataTable();
+    $('#messagesdatatable').DataTable();
+    const _csrf = '{{csrfToken}}';
+
+    $(document).on('click', '.js-reply', (e) => {
+      const data = $(e.currentTarget).data();
+      const investorID = data.investorid;
+      $.post('/admin/updateToSeen', { investorID, _csrf })
+        .done(() => {
+          window.location.href = "chatHistory?investorID=" + investorID;
+      });
+    });
+
+    $(document).on('click', '.js-delete', (e) => {
+      const data = $(e.currentTarget).data();
+      const investorID = data.investorid;
+      $.post('/admin/deleteChatHistory', { investorID, _csrf })
+      .done(() => {
+        window.location.href = "chat";
+      });
+    });
+    
+    $(document).on('click', '.js-send', (e) => {
+      const message = document.getElementById("messageText").value;
+      if(!message) {
+        return false;
+      } else {
+        $.post('/admin/sendToAll', { sender: "ADMIN", receiver: "INVESTOR", message, type: "MESSAGE", location: null, _csrf })
+          .done(() => {
+            document.getElementById("messageText").value = "";
+            showModelGeneralOKDialogBox("Your Message Was Sent!");
+            window.location.href = "chat";
+          });
+      }
+    });
+
+    $(document).on('keydown', '.js-send', (e) => {
+      if (e.key === 'Enter') {
+        const message = document.getElementById("messageText").value;
+        if(!message) {
+          return false;
+        } else {
+          $.post('/admin/sendToAll', { sender: "ADMIN", receiver: "INVESTOR", message, type: "MESSAGE", location: null, _csrf })
+            .done(() => {
+              document.getElementById("messageText").value = "";
+              showModelGeneralOKDialogBox("Your Message Was Sent!");
+              window.location.href = "chat";
+            });
+        }
+      }
+    }); 
+  });
+</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+  <div class="col-md-12">
+    {{#if errorMessage}}
+      <p class="message error">{{errorMessage}}</p>
+    {{/if}}
+    {{#if successMessage}}
+      <p class="message success">{{successMessage}}</p>
+    {{/if}}
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="title"><img src="/img/chat.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Chat List</h4>
+          </div>
+          <div class="col-md-6">
+          </div>
+        </div>
+      </div>
+      <div class="content" style="overflow: auto;">
+        {{#if chatListCount}}
+        <div class="row">
+          <div class="col-xs-12">
+            <br/>
+            <table id="datatable" class="table table-striped" style="overflow: auto;">
+              <thead class="thead">
+                <th class="thead">Full Name</th>
+                <th class="thead">Date Sent</th>
+                <th class="thead"></th>
+                <th class="thead"></th>
+              </thead>
+              <tbody>
+                {{#each chatList}}
+                <tr {{#if this.isRead}} class="is-read" {{else}} class="is-unread" {{/if}}>
+                  <td>{{this.FULL_NAME}}</td>
+                  <td>{{this.DATE_SENT}}</td>
+                  <td>
+                    <button
+                      class="btn btn-fill btn-success js-reply"
+                      data-investorid="{{this.investorID}}"
+                    >
+                      View / Reply
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-fill btn-danger js-delete"
+                      data-investorid="{{this.investorID}}"
+                    >
+                      Delete <i class="ti-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {{else}}
+          <label>No Conversation Found</label>
+        {{/if}}
+      </div>
+    </div>
+    <br/>
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="title"><img src="/img/send-to-all.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Send a Message to Project's Investors</h4>
+          </div>
+          <div class="col-md-6">
+          </div>
+        </div>
+      </div>
+      <div class="content" style="overflow: auto;">
+        <div class="row align-items-center">
+          <div class="col-md-10">
+              <textarea 
+                id="messageText"
+                name="messageText"
+                maxlength="2000"
+                rows="6"
+                required
+                class="form-control border-input js-send"
+                style="width:100%;"></textarea>
+            </div>
+            <div class="col-md-2">
+                <button id="sendBtn" class="btn btn-lg btn-fill btn-success js-send">
+                  Send
+                </button>
+            </div>
+        </div>
+      </div>
+      <br/>
+    </div>
+    <br/>
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="title"><img src="/img/archived-messages.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Previously Sent-To-All Messages</h4>
+          </div>
+          <div class="col-md-6">
+          </div>
+        </div>
+      </div>
+      <div class="content" style="overflow: auto;">
+        {{#if messagesCount}}
+        <div class="row">
+          <div class="col-xs-12">
+            <br/>
+            <table id="messagesdatatable" class="table table-striped" style="overflow: auto;">
+              <thead class="thead">
+                <th class="thead">Full Name</th>
+                <th class="thead">Message</th>
+                <th class="thead">Date Sent</th>
+              </thead>
+              <tbody>
+                {{#each messages}}
+                <tr>
+                  <td>{{this.FULL_NAME}}</td>
+                  <td>{{this.message}}</td>
+                  <td>{{this.DATE_SENT}}</td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {{else}}
+          <label>No Messages Found</label>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,6 @@
+query MoonpayWidgetUrl($shares: Float!, $shareTypeId: Int!, $alertId: Int) {
+  moonpayWidgetUrl(shares: $shares, shareTypeID: $shareTypeId, alertID: $alertId)
+}
+query MoonpayBuyAlertTransactionReceiptUrl($alertId: Int!) {
+  moonpayBuyAlertTransactionReceiptUrl(alertID: $alertId)
+}

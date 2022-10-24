@@ -1,0 +1,210 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+    })
+    var link = ""
+    const availableCompanyShares = {{availableCompanyShares}};
+
+    function back() {
+        window.location.href = "/platform/shareslist?id={{cid}}";
+    }
+    function setNnumberOfSharesDB() {
+
+            if(document.getElementById("setshares").value != "") {
+                if(isNaN(document.getElementById("setshares").value)) {
+                    showModelGeneralOKDialogBox("Please enter a valid number");
+                    return;
+                } else {
+                    if(  parseInt(document.getElementById("setshares").value)  > availableCompanyShares   ) {
+                        showModelGeneralOKDialogBox("you cannot enter shares greater than " + availableCompanyShares);
+                        return;
+                    }
+                }
+            } else {
+                if(document.getElementById("setshares").value == "") {
+                    showModelGeneralOKDialogBox("Please enter a value");
+                    return;
+                }
+            }
+
+            const val2 = availableCompanyShares -  parseInt(document.getElementById("setshares").value);
+            link = "/platform/restrictSharesToPurchase?id={{record.ID}}&stoid={{record.stoid}}&val=" + val2;
+
+            showModelGeneralYesNoDialogBox("Are you sure to reduce the number of shares available to transfer ? ", "Yes", "Cancel")
+
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = link;
+    }
+
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                   <div class="col-md-10">
+                        <h4 class="title">Add / Edit Share Class</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="return back()" class="btn btn-info btn-fill">Back to list</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <div class="row">
+                    <div class="col-md-3"> <label>Title</label> </div>
+                    <div class="col-md-9">
+                        {{record.title}}
+                    </div>
+                </div>
+                    <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Total Shares</label> </div>
+                    <div class="col-md-9">
+                         {{numberFormat currentTotalShares decimalLength="ShareCountInFractions"}}
+                    </div>
+                </div>
+                    <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Company Shares</label> </div>
+                    <div class="col-md-9">
+                         {{numberFormat availableCompanyShares decimalLength="ShareCountInFractions"}}
+                    </div>
+                </div>
+                    <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Shares available for Selling</label> </div>
+                    <div class="col-md-3">
+                         {{numberFormat sharesForPurchase decimalLength="ShareCountInFractions"}}
+                    </div>
+                </div>
+                    <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Restricted Shares (not for selling)</label> </div>
+                    <div class="col-md-9">
+                         {{numberFormat record.reduceSharesForPurchase decimalLength="ShareCountInFractions"}}
+                    </div>
+                </div>
+                    <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Decimals</label> </div>
+                    <div class="col-md-3">
+                         {{record.blockchainDecimals}}
+                    </div>
+                </div>
+                    <br />
+                <div class="row">
+                    <div class="col-md-3"><label>IPFS Document Hash</label> </div>
+                    <div class="col-md-3">
+                         {{record.ipfsDocumentHash}}
+                    </div>
+                </div>
+                    <br />                    
+                <div class="row">
+                    <div class="col-md-3"><label>Nominal Value</label> </div>
+                    <div class="col-md-9">
+                        {{currencySymbol record.currencyid}}  {{numberFormat record.nominalValue decimalLength="2"}}
+                    </div>
+                </div>
+                    <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Market Value</label> </div>
+                    <div class="col-md-9">
+                        {{#if record.premimum}}
+                            {{currencySymbol record.currencyid}}  {{numberFormat record.premimum decimalLength="2"}}
+                        {{else}}
+                            n/a
+                        {{/if}}
+                    </div>
+                </div>
+                <br />
+
+				{{#if record.isblockchain}}
+                {{#unless platformConfig}}
+                  {{#if defaultBlockchainEtherum}}
+                <div class="row">
+                    <div class="col-md-3"> <label>Custodian / Company Wallet Address</label></div>
+                    <div class="col-md-9">
+                        {{record.ethereumBlockchainPublicAddress}}
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Contract Address</label> </div>
+                    <div class="col-md-9">
+                        {{record.ethereumContractAddress}}
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3"><label>White List Address</label> </div>
+                    <div class="col-md-9">
+                        {{record.ethereumWhitelistAddress}}
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Asset Name</label> </div>
+                    <div class="col-md-9">
+                        {{record.AssetName}}
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-3"><label>Asset Tag</label> </div>
+                    <div class="col-md-9">
+                        {{record.AssetTag}}
+                    </div>
+                </div>
+                  {{/if}}
+                {{/unless}}                 
+				{{/if}}
+
+                <br /><br />
+
+                <h4 class="title"> <img src="/img/graydot.png" width="20px">  &nbsp;&nbsp;  Set Number of Shares Available for Purchase</h4>
+
+
+                <label>You can set number of shares available for selling.  </label>
+                <div class="row">
+                    <div class="col-md-3"><label>Total Available Shares </label> </div>
+                    <div class="col-md-3">
+                         {{numberFormat availableCompanyShares decimalLength="ShareCountInFractions"}}
+                    </div>
+                </div>
+
+
+                <label>Currently &nbsp; <b>{{numberFormat sharesForPurchase decimalLength="ShareCountInFractions"}} </b> &nbsp;  shares are available for investor to purchase and &nbsp; <b> {{numberFormat record.reduceSharesForPurchase decimalLength="ShareCountInFractions"}}</b> &nbsp;  shares are not available. </label>
+                <br /><br />
+
+                Enter number of shares for selling. Please enter shares less than <b>{{numberFormat availableCompanyShares decimalLength="ShareCountInFractions"}} </b>
+                <br/> <br/>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input type="text" maxLength="12" id="setshares" name="setshares" class="form-control border-input" placeholder="Enter Shares" value="">
+                    </div>
+                     <div class="col-md-1">
+                    </div>
+                     <div class="col-md-4">
+                        <button type="button" onclick="return setNnumberOfSharesDB()"class="btn btn-info btn-fill btn-sm">Set Shares Available</button>
+                    </div>
+                </div>
+
+                
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{{> Footer}}

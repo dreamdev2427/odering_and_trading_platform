@@ -1,0 +1,19 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "createdb": "db-migrate db:create $DB_DATABASE -e create-db && db-migrate up:populate -e populate-db",
+    "customizedb": "node customizeDb.js -e populate-db",
+    "dropdb": "db-migrate db:drop $DB_DATABASE -e create-db"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "db-migrate": "^0.11.12",
+    "db-migrate-mysql": "^2.1.2",
+    "mysql2": "^2.3.2"
+  }
+}

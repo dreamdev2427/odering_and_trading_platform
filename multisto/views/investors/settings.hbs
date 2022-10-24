@@ -1,0 +1,204 @@
+{{> Header}}
+
+<script language="javascript">
+    var currentauth = 0;
+    var link = "";
+
+    $(document).ready(function() {
+        $("#Settings").addClass('active');        
+    })
+    function chancghePassword() {
+
+            var res = "";
+
+            if(document.getElementById("oldpassword").value == "")
+                res = '<li>{{{__ "Old Password is required"}}}</li>';
+            if(document.getElementById("newPassword").value == "")
+                res = res + '<li>{{{__ "New Password is required"}}}</li>';
+            if(document.getElementById("retypeNewPassword").value != document.getElementById("newPassword").value)
+                res = res + '<li>{{{__ "Password incorrectly re-typed"}}}</li>';
+            if(document.getElementById("newPassword").value.length < 10)
+                res = res + '<li>{{{__ "Password must be minimum 10 characters long"}}}</li>';
+            if(document.getElementById("newPassword").value.length > 100)
+                res = res + '<li>{{{__ "Password must be maximum of 100 characters long"}}}</li>';
+
+            var matchedCase = new Array();
+            matchedCase.push("[$@$!%*#?&]"); // Special Charector
+            matchedCase.push("[A-Z]");      // Uppercase Alpabates
+            matchedCase.push("[0-9]");      // Numbers
+            matchedCase.push("[a-z]");     // Lowercase Alphabates
+            var ctr = 0;
+            for (var i = 0; i < matchedCase.length; i++) {
+                if (new RegExp(matchedCase[i]).test(document.getElementById("newPassword").value)) {
+                    ctr++;
+                }
+            }
+            if(ctr != 4) {
+                res = res + "<li>{{{__ "Password must be more secure"}}}</li>";    
+            }
+
+            if(res == "")
+                document.getElementById("retypePasswordForm").submit();
+            else
+            {
+                $(window).scrollTop(0);
+                $("#ErrorMessages").html(res)
+            }            
+    }        
+    function change2factorauth(auth) {
+        currentauth = auth;
+
+        var msg = "";
+        var btn = "";
+        if(auth == 0) {
+            msg = '{{{__ "Are you sure you want to de-activate 2 factor authentification"}}} ?';
+            btn = '{{{__ "Yes Disable Authentication"}}}';
+        } else {
+            msg = '{{{__ "Are you sure you want to activate 2 factor authentification"}}} ?';
+            btn = '{{{__ "Yes Enable Authentication"}}}';
+        }
+        
+        link = "/changeinvestorauth?auth=" + currentauth;
+        showModelGeneralYesNoDialogBox(msg, btn, '{{{__ "Cancel"}}}');
+    }
+    function addnewkey() {
+        if(document.getElementById("publickey").value == "") {
+            showModelGeneralOKDialogBox("Please enter new public key");
+            return;   
+        }
+        
+        window.location.href = "/addnewpublickeyofinvestor?key=" + document.getElementById("publickey").value;
+    }
+    function deletenewkey(id) {
+        link = "deleteinvestorpublickey?id=" + id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete this public key", "Delete", "Cancel");
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = link;
+    }
+
+</script>
+
+{{> HeaderInner}}
+
+{{> stolistselection}}
+
+    <b><span id="ErrorMessages" style="color:red"> {{message}} </span></b> 
+
+    
+        <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/lock.png" width="32px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Change-Password"}}}</h4>
+                    <label>{{{__ "Change-your-password"}}}</label>
+                </div>
+                <div class="content">
+
+                    <form id="retypePasswordForm" action="/changePassword" method="post">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>{{{__ "Enter-old-password"}}}</label>
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" maxlength="100" class="form-control border-input" id="oldpassword" name="oldpassword" placeholder="{{{__ "Enter-old-password"}}}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>{{{__ "Enter-new-password"}}}</label>
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="newPassword" name="newPassword" placeholder="{{{__ "Enter-new-password"}}}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>{{{__ "Re-Type-new-password"}}}</label>
+                        </div>
+                        <div class="col-md-4">
+                                <input type="password" class="form-control border-input" id="retypeNewPassword" name="retypeNewPassword" placeholder="{{{__ "Re-Type-new-password"}}}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-6">
+                            <button type="button" onclick="chancghePassword()" class="btn btn-info btn-fill">{{{__ "Change-Password"}}}</button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    </form>
+                    
+                    <br /><hr />
+                    <div class="row">
+                        <div class="col-md-12">
+                             <b>{{{__ "2-Factor-Authentication"}}}</b>
+                            <br /> <label> {{{__ "2-Factor-Authentication-will-enable-you-to-secure-your-account"}}} </label> <br />
+                            
+                            {{#if investorRec.twofactorenable}}
+                                <img src="/img/greendot.png" width="24px" /> &nbsp; {{{__ "2-Factor-authentication-is-currently-enabled"}}} 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" onclick="change2factorauth(0)" class="btn btn-info btn-fill btn-sm"> &nbsp; {{{__ "De-Activate"}}} &nbsp;</button>
+                            {{else}}
+                                <img src="/img/emptycircle.png" width="22px" /> &nbsp; {{{__ "2-Factor-authentication-is-currently-disabled"}}} 
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" onclick="change2factorauth(1)" class="btn btn-info btn-fill btn-sm"> &nbsp; {{{__ "Activate"}}} &nbsp;</button>
+                            {{/if}}
+                        </div>
+                    </div>
+
+                    <br />&nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        {{#ifIn Data.stoType '[0, 1]'}}
+            <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"> <img src="/img/blockchainwallet.png" width="32px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Shared-Ethereum-Public-Keys"}}}</h4>
+                        <label>{{{__ "Please-provide-the-list-of-public-keys-from-your-wallet"}}}</label>
+                    </div>
+                    <div class="content">
+
+
+                        {{#if publickeys.length}}
+                            {{#each publickeys}}
+                                <button type="button" onclick="deletenewkey({{this.ID}})" class="btn btn-info btn-sm btn-fill">{{{../__ "Delete"}}}</button>
+                                &nbsp;&nbsp; 
+                                {{this.title}} <br /><br />
+                            {{/each}}
+                        {{else}}
+                            <label>{{{__ "No-Public-Keys-Found"}}}</label>
+                            <br /><br />
+                        {{/if}}
+
+                        <br />
+
+                        <label>{{{__ "Enter-a-new-key-from-your-wallet"}}}</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input maxlength="50" class="form-control border-input" id="publickey" name="publickey" placeholder="{{{__ "Enter-Public-Key"}}}">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" onclick="addnewkey()" class="btn btn-info btn-fill">{{{__ "Add-Key"}}}</button>
+                            </div>
+                        </div>
+                        <br/>&nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/ifIn}}
+
+
+{{> Footer}}

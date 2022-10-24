@@ -1,0 +1,7 @@
+{
+    "id": "schindlers2",
+    "version": "staging",
+    "apiHostname": "api.schindlersdigital.com",
+    "frontendHostname": "investor.schindlersdigital.com",
+    "multistoHostname": "admin.schindlersdigital.com"
+}

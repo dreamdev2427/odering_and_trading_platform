@@ -1,0 +1,210 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			$("#dvidends").addClass('active');
+		})
+
+        function viewDividend(id) {
+          window.location.href = "viewdividend?id=" + id;
+          return false;
+        }
+
+        function listingDividends() {
+          window.location.href = "listdividend";
+          return false;
+        }
+	</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+	<div class="col-md-12 ">
+		<div class="card">
+			<div class="header">
+
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title"><img src="/img/dividends.png" width="30px" >
+                            &nbsp;
+                            Dividend Details
+                        </h4>
+                    </div>
+                    <div class="col-md-3">
+                        <button onclick="return listingDividends()"  class="btn btn-info btn-fill ">Back to Dividend List</button>
+                    </div>
+                </div>
+			</div>
+			 <div class="content">
+
+                   <div class="row">
+                        <div class="col-md-3">
+                            <label>Share Class</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{record.ShareTitle}}
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Title</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{record.title}}
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Date Creation</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{record.DateReport}}
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Total Amount paid in this Dividend</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{currencySymbol record.currencyid}}
+                            {{numberFormat record.totalamount decimalLength="-"}}
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Total Investor Shares</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{numberFormat record.investorTotalShares decimalLength="ShareCountInFractions"}}
+                        </div>
+                    </div>
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Total Shares of Company</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{numberFormat record.companyTotalShares decimalLength="ShareCountInFractions"}}
+                        </div>
+                    </div>
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Investors in Company</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{record.totalInvestors}}
+                        </div>
+                    </div>
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Dividend Distributed to Investors</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{listrecords.length}}
+                        </div>
+                    </div>
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Distribution Mode</label>
+                        </div>
+                        <div class="col-md-9">
+                             {{#ifEqual record.payouttype 1}}
+                                    Dividend amount divided based on number of shares
+                            {{/ifEqual}}
+                             {{#ifEqual record.payouttype 2}}
+                                    Dividend amount divided based on share capital
+                            {{/ifEqual}}
+                        </div>
+                    </div>
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Details</label>
+                        </div>
+                        <div class="col-md-9">
+                            {{record.Details}}
+                        </div>
+                    </div>
+                    <br />
+
+
+                    <br ><br />
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                Investor
+                            </div>
+                            <div class="col-md-2">
+                                Shares
+                            </div>
+                            <div class="col-md-2">
+                                Amount
+                            </div>
+                            <div class="col-md-2">
+                                Paid
+                            </div>
+                            <div class="col-md-2">
+
+                            </div>
+                        </div>
+
+                    <br />
+
+
+                 {{#each listrecords}}
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                {{addTovalue @index 1}}
+                                &nbsp;-&nbsp;
+                                {{this.firstName}} {{this.lastName}}
+                            </div>
+                            <div class="col-md-2">
+                                {{numberFormat this.shares decimalLength="ShareCountInFractions"}}
+                            </div>
+                            <div class="col-md-2">
+                                {{currencySymbol ../record.currencyid}}
+                                {{numberFormat this.amounttopaid decimalLength="-"}}
+                            </div>
+                            <div class="col-md-2">
+                                {{#if this.status}}
+                                    {{this.DatePaid}}
+                                {{/if}}
+                            </div>
+                            <div class="col-md-2">
+                                <button onclick="return viewDividend({{this.ID}})"  class="btn btn-info btn-fill btn-sm">View</button>
+                            </div>
+                        </div>
+                        <br />
+                    {{/each}}
+
+                    <br />&nbsp;
+
+			</div>
+		</div>
+	</div>
+</div>
+
+{{> Footer}}
+

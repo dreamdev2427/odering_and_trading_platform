@@ -1,0 +1,72 @@
+{{> Header}}
+
+<script>
+  $(document).ready(function() {
+    $("#verifyInvestorComTestSuit").addClass('active');
+  })
+  function setAccreditationLevel(verifyID, accreditationLevel) {
+    document.getElementById('verifyID').value = verifyID;
+    document.getElementById('accreditationLevel').value = accreditationLevel;
+    document.getElementById('setVerifyInvestorAccreditationLevelForm').submit();
+  }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="row">
+   <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+              Verify Investor Com Testing suit
+              <br/>
+              <label>Here you can test your integration with verify investor</label>
+              <label>Please fetch all of the investors, copy the wanted investor's ID, then set their accreditation level using the dropdown menu.</label>
+              <br/>
+
+            </div>
+            <br>
+
+            <div class="content">
+              <div class="row">
+                <div class="col-md-12">
+                  <b><ul><span style="color:red;" id="verifyInvestorsListError">{{verifyInvestorsListError}}</span></ul></b>
+                  {{#each verifyInvestors}}
+                    {{#if this.verifyID}}
+                      <div class="row">
+                        <div class="col-md-2">
+                          VerifyInvestor ID: {{this.verifyID}}
+                        </div>
+                        <div class="col-md-3">
+                          Internal Investor ID: {{this.investorID}}
+                        </div>
+                        <div class="col-md-3">
+                          Internal sto ID: {{this.stoID}}
+                        </div>
+                        <div class="col-md-2">
+                          <button type="button" onclick="return setAccreditationLevel({{this.verifyID}}, 'accredited')" class="btn btn-info btn-fill btn-sm">
+                            Accredit Investor
+                          </button>
+                        </div>
+                        <div class="col-md-2">
+                          <button type="button" onclick="return setAccreditationLevel({{this.verifyID}}, 'not_accredited')" class="btn btn-info btn-fill btn-sm">
+                            Reject Investor
+                          </button>
+                        </div>
+                      </div>
+                      <hr/>
+                    {{/if}}
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="setVerifyInvestorAccreditationLevelForm" action="/platform/setVerifyInvestorAccreditationLevel" method="post" >
+  <input type="hidden" id="verifyID" name="verifyID" value=""/>
+  <input type="hidden" id="accreditationLevel" name="accreditationLevel" value=""/>
+  <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

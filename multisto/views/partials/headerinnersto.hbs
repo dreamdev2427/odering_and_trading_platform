@@ -1,0 +1,218 @@
+<style>
+    .notification {
+        background: #ff0036;
+        margin-left: 1rem;
+    }
+</style>
+
+	<script language="javascript">
+        $(document).ready(function() {
+            $.get("/admin/unreadMessagesCount", function(data) {
+                if(data.COUNT !== 0) {
+                    document.getElementById("unreadMessages").innerHTML = data.COUNT;
+                }
+            });
+        });
+
+            function logout() {
+                window.location.href = "logout";
+                return false;
+            }
+            function settings() {
+                window.location.href = "settings";
+                return false;
+            }
+
+            function toNewRegisterList() {
+                switch ({{Data.kycProvider}}){
+                    case 0:
+                        window.location.href = "investorsKYCList";
+                        break;
+                    case 1:
+                        window.location.href = `https://kyc.blockpass.org/kyc/dashboard/#/{{Data.blockPassClientId}}/kyc_list`;
+                        break;
+                    default:
+                        window.location.href = "investorsKYCList";
+                        break;
+                }
+                return false;
+            }
+	</script>
+
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div class="sidebar" data-background-color="black" data-active-color="danger">
+    <!--
+		Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+		Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+	-->
+    	<div class="sidebar-wrapper" style="overflow-x: hidden; overflow-y: auto;">
+            <div class="logo">
+                 <a href="dashboardsto" class="simple-text"  >
+                    <img src="/img/stologo/{{Data.logo}}" style="max-height: 100px; max-width: 120px;" />
+                </a>
+            </div>
+
+            <ul class="nav">
+
+                <li id="DashboardMenu">
+                    <a href="dashboardsto">
+                        <i class="ti-view-grid"></i>
+                        <p>Overview</p>
+                    </a>
+                </li>
+
+
+                {{#ifIn 1 Data.AdminRights}}
+                <li id="InvestorsMenu">
+                    <a href="investorssto">
+                        <i class="ti-user"></i>
+                        <p>Investors</p>
+                    </a>
+                </li>
+                {{/ifIn}}
+
+
+
+                {{#ifIn 9 Data.AdminRights}}
+                    <li id="KYC">
+                        <a href="javascript:void(0);" onclick="toNewRegisterList()">
+                            <i class="ti-clipboard"></i>
+                            <p>New Registrations</p>
+                        </a>
+                    </li>
+                {{/ifIn}}
+
+
+
+                {{#ifIn 8 Data.AdminRights}}
+                <li id="NewTokens">
+                    <a href="newtoken">
+                        <i class="ti-view-list"></i>
+                        <p>Manage Shares</p>
+                    </a>
+                </li>
+                {{/ifIn}}
+
+
+                {{#if Data.showReportsModuleMenuItem}}
+                    <li id="ShareRegister">
+                        <a href="shares">
+                            <i class="ti-timer"></i>
+                            <p>Share Register</p>
+                        </a>
+                    </li>
+                {{/if}}
+
+
+                {{#if Data.showVotingModuleMenuItem}}
+                    <li id="voting">
+                        <a href="voting">
+                            <i class="ti-stamp"></i>
+                            <p>Meetings / Votes</p>
+                        </a>
+                    </li>
+                {{/if}}
+
+
+                {{#ifIn 11 Data.AdminRights}}
+                    <li id="CompanyUpdates">
+                        <a href="updates">
+                            <i class="ti-volume"></i>
+                            <p>Company News</p>
+                        </a>
+                    </li>
+                {{/ifIn}}
+
+
+                {{#ifIn 42 Data.AdminRights}}
+                    <li id="dvidends">
+                        <a href="dividends">
+                            <i class="ti-layout-grid2-alt"></i>
+                            <p>Dividends</p>
+                        </a>
+                    </li>
+                {{/ifIn}}
+
+                <li id="chat">
+                    <a href="chat">
+                        <i class="ti-comments-smiley"></i>
+                        <p>
+                            Messages<span id="unreadMessages" class="badge badge-pill badge-danger notification"></span>
+                        </p>
+                    </a>
+                </li>
+
+                {{!-- {{#ifIn 12 Data.AdminRights}}
+                    <li id="inbox">
+                        <a href="inbox">
+                            <i class="ti-email"></i>
+                            <p>Inbox</p>
+                        </a>
+                    </li>
+                {{/ifIn}} --}}
+
+                <li id="documents">
+                    <a href="directorylist">
+                        <i class="ti-clipboard"></i>
+                        <p>Documents</p>
+                    </a>
+                </li>
+
+                {{#ifIn 7 Data.AdminRights}}
+                    <li id="ActivityLogs">
+                        <a href="activitylogsto">
+                            <i class="ti-eye"></i>
+                            <p>Activity Logs</p>
+                        </a>
+                    </li>
+                {{/ifIn}}
+
+
+            </ul>
+    	</div>
+    </div>
+
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar bar1"></span>
+                        <span class="icon-bar bar2"></span>
+                        <span class="icon-bar bar3"></span>
+                    </button>
+                    <a class="navbar-brand stopATagLink">{{Data.stoTitle}}: Issuer Dashboard</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                          <a class="stopATagLink"><b>Current User:</b> {{Data.Login_UserName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        </li>
+                        <li>
+                            <a href="#" onclick="return settings();" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="ti-settings"></i>
+								<span >Settings</span>
+                            </a>
+                        </li>
+						<li>
+                            <a href="#" onclick="return logout();">
+								<i class="ti-arrow-circle-up"></i>
+								<span >Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+
+        <div class="content">
+		      <div class="container-fluid">
+

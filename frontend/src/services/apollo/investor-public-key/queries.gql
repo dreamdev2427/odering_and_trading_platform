@@ -1,0 +1,3 @@
+query IsInvestorWhiteListed($walletAddress: String!) {
+  isInvestorWhiteListed(walletAddress: $walletAddress)
+}

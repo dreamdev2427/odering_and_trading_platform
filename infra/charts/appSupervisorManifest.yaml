@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: supervisor
+spec:
+  project: default
+  source:
+    repoURL: 'https://gitlab.com/digishares/digishares-platform.git'
+    path: infra/charts/appSupervisor
+    targetRevision: staging
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argocd
+  syncPolicy:
+    syncOptions:
+      - PruneLast=true
+    automated:
+      prune: true
+      selfHeal: true

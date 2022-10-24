@@ -1,0 +1,239 @@
+{{> Header}}
+
+<script language="javascript">
+    var totalRecords = {{RecordCount}};
+    var totalNumberOfRecordsOnPages = {{RecordsPerPaging}};
+    var TotalShares = {{TotalShares}};
+    var TotalCompanyShares = {{TotalCompanyShares}};
+
+    $(document).ready(function() {
+        $("#InvestorsMenu").addClass('active');
+
+        var currentPage = 1;
+        if(getParameterByName("page") != null)
+            currentPage = parseInt(getParameterByName("page")) + 1;
+
+        var pages = Math.floor(totalRecords/totalNumberOfRecordsOnPages);
+        var remainder = totalRecords % totalNumberOfRecordsOnPages;
+        if(remainder > 0)
+            pages = pages + 1;
+
+        var a = 0;
+        for(a=1;a<=pages;a++) {
+            if(currentPage == a)
+                $("#pages").append("<option selected value='" + a + "'>" + a + "</option>")
+            else
+                $("#pages").append("<option value='" + a + "'>" + a + "</option>")
+        }
+
+        //calculate percentages of investor's shares
+        $(".SharesValue").each(function( index ) {
+            var n = parseInt($(this).text());
+
+            if(!isNaN(n)) {
+                n = ((n / TotalShares) * 100).toFixed(3).toString();
+				n = parseFloat(n);
+                $(this).parent().parent().find(".SharesPercentValue").text(n + " %");
+            }
+        });
+
+        {{#if BulkUploadsInvestorsCount}}
+            InvestorSearchModule_enableBulkInvestorSelectionInDropDown();
+        {{/if}}
+
+        InvestorSearchModule_setControls();
+    })
+    function viewClicked(id) {
+        window.location.href = "investorsViewSto?id=" + id;
+        return false;
+    }
+    function viewKYC(id) {
+        window.location.href = "KYCView?id=" + id + "&link=1";
+        return false;
+    }
+    function addInvestor() {
+        window.location.href = "searchInvestorEmailtoRegister";
+        return false;
+    }
+    function refreshTokens(investorID, investorPublicKey) {
+        window.location.href = "refreshToken?id=" + investorID + "&publicKey=" + investorPublicKey + "&screen=list";
+        return false;
+    }
+    function dataPageChanged() {
+        var search = InvestorSearchModule_getPageSearchCriteria();
+
+        if(search != "")
+            search = search + "&";
+
+        var pag = document.getElementById("pages").value;
+        pag = pag - 1;
+        search = search + "page=" + pag;
+
+        window.location.href = "/admin/investorssto?" + search;
+        return false;
+    }
+</script>
+
+{{> HeaderInnerSto}}
+
+{{> investorSearchModule  targetServerSideEndpointAutoPost='investorssto' HelperMessage="" DisplaySortingControls=1}}
+
+<div class="row">
+    <div class="col-md-12 topPaddingBetweenPageSections">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/list.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Investors List
+                    {{#if investorAddEditEnabled}}
+                            <button onclick="addInvestor()" id="addInvestorButton" name="addInvestorButton" class="btn btn-info btn-fill" style="float: right;" data-toggle="tooltip" data-placement="right" title="Create new investor profile on behalf of investor">Create New Investor Profile</button>
+                    {{/if}}
+                </h4>
+                <p class="category">Click “View” for the individual investor details and to access the "transfer of shares" function</p>
+            </div>
+            <br />
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12">
+                        {{#if BulkUploadsInvestorsCount}}
+                            <span style="color:red"> {{BulkUploadsInvestorsCount}} investor profile(s) are created through bulk uploads. Please select those investors from above selection and view / edit information and click Done </span>
+                            <br /><br />
+                        {{/if}}
+                        <div class="row">
+                            <div class="col-md-3"><b>Total Shares in Circulation</b></div>
+                            <div class="col-md-3"> {{numberFormat TotalShares decimalLength="ShareCountInFractions"}} </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-3"><b>Shares Still Held by the Company</b></div>
+                            <div class="col-md-3">{{numberFormat TotalCompanyShares decimalLength="ShareCountInFractions"}}</div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-3"><b>Shares Distributed</b></div>
+                            <div class="col-md-3">{{numberFormat TotalInvestorShares decimalLength="ShareCountInFractions"}} </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content table-responsive table-full-width icon-section">
+
+                    <span style="float:right; padding-right:40px;"> <b>Total investors &nbsp;&nbsp;&nbsp; {{RecordCount}}</b> </span>
+                    <table class="table table-striped">
+                        <thead class="listingHeaderFontSize">
+                            <th>ID</th>
+                            <th></th>
+                            <th>Name</th>
+                            {{#if displayDividends}}
+                                <th>Dividends Period</th>
+                                <th>Dividends</th>
+                            {{/if}}
+                            <th>Country</th>
+                            <th>Shares</th>
+                            {{#if displayAffiliate}}
+                                <th>Affiliate Eligibility</th>
+                                <th>Affiliate Tokens</th>
+                                <th>Affiliate Currency</th>
+                            {{/if}}
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each DataRows}}
+                            <tr>
+                                <td style="width: 5%; vertical-align: top;">{{this.ID}}</td>
+                                <td style="width: 5%; vertical-align: top;">
+                                    <img src="/img/investorstotypesicons/i{{this.KYCCurrentStatus}}.png"  width="23px;" />
+                                </td>
+                                <td style="width: 35%; vertical-align: top;">
+                                    {{this.DisplayName}}
+                                    {{#if this.investorType}}
+                                            (  {{this.FirstName}} {{this.LastName}}  {{this.NamePrimaryContact}}  )
+                                    {{/if}}
+
+                                    {{#unless this.isActive}}
+                                        <span style="color:red; font-size:10px;"> <br /> ( Login Disabled )</span>
+                                    {{/unless}}
+
+                                    {{#if this.KYCApplied}}
+                                        <span style="color:red; font-size:10px;"> <br /> (  Upgrade Requested )</span>
+                                    {{/if}}
+
+                                    {{#if this.investorBulkUploadStatus}}
+                                        <span style="color:red; font-size:10px;"> <br /> (  Bulk Upload )</span>
+                                    {{/if}}
+
+                                    {{#if ../displayAffiliate}}
+                                        {{#unless this.affiliateVm.registered}}
+                                            <span style="color:red; font-size:10px;"> <br /> ( Not in Affiliate System )</span>
+                                        {{/unless}}
+                                    {{/if}}
+
+                                </td>
+                                {{#if ../displayDividends}}
+                                    <td style="width: 5%; vertical-align: top;">
+                                        {{#if this.dividendVm.period}}
+                                            {{this.dividendVm.period}}
+                                        {{else}}-{{/if}}
+                                    </td>
+                                    <td style="width: 5%; vertical-align: top;">
+                                        {{#if this.dividendVm.dividends}}
+                                            {{this.dividendVm.dividends}}
+                                        {{else}}-{{/if}}
+                                    </td>
+                                {{/if}}
+                                <td style="width: 15%; vertical-align: top;">
+                                    {{this.country}}
+                                </td>
+                                <td style="width: 15%; vertical-align: top;">
+                                    <span class="SharesValue" style="display:none;">{{#if this.Shares}}{{numberFormat this.Shares decimalLength="ShareCountInFractions"}}{{/if}}</span>
+                                    &nbsp;
+                                                {{#if this.Shares}} {{numberFormat this.Shares decimalLength="ShareCountInFractions"}} {{/if}}&nbsp;
+                                </td>
+                                {{#if this.affiliateVm}}
+                                    <td style="width: 5%; vertical-align: top;">
+                                        {{#if this.affiliateVm.eligible}}
+                                            Yes
+                                        {{else}}No{{/if}}
+                                    </td>
+                                    <td style="width: 5%; vertical-align: top;">
+                                        {{#if this.affiliateVm.tokens}}
+                                            {{this.affiliateVm.tokens}}
+                                        {{else}}-{{/if}}
+                                    </td>
+                                    <td style="width: 5%; vertical-align: top;">
+                                        {{#if this.affiliateVm.fiat}}
+                                            {{this.affiliateVm.fiat}}
+                                        {{else}}-{{/if}}
+                                    </td>
+                                {{/if}}
+                                <td style="width: 10%; vertical-align: top;">
+                                    <span class="SharesPercentValue"> </span>
+                                </td>
+                                <td style="width: 15%; vertical-align: top;">
+                                    <button onclick="return viewClicked({{this.ID}})" class="btn btn-sm btn-info btn-fill">View</button>
+                                    <button onclick="return viewKYC({{this.ID}})" class="btn btn-sm btn-info btn-fill">KYC</button>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-md-9"></div> <div class="col-md-1"> &nbsp;&nbsp;&nbsp;</div>
+                        <div class="col-md-2"><b>Goto Page</b> <select onchange="dataPageChanged()" style="width:85px;" id="pages" name="pages"   class="form-control border-input"  ></select></div>
+                    </div>
+                    <br />
+                    <div class="row"><div class="col-md-12">
+                        {{#each STOInvestorTypes}}
+                            <b style="margin-left:20px;"></b><img src="/img/investorstotypesicons/i{{this.id}}.png"  width="23px;" /> &nbsp; {{this.type}} &nbsp;&nbsp;
+                        {{/each}}
+                    </div></div>
+
+                    <br /> &nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

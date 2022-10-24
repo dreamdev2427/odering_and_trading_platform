@@ -1,0 +1,252 @@
+{{> Header}}
+
+<script language="javascript">
+
+			var totalRecords = {{RecordCount}};
+			var totalNumberOfRecordsOnPages = {{RecordsPerPaging}};
+
+			$(document).ready(function() {
+				$("#ActivityLogs").addClass('active');
+                $( "#toDate" ).datepicker({ dateFormat: 'yy-mm-dd' });
+				$( "#fromDate" ).datepicker({ dateFormat: 'yy-mm-dd' });
+
+				if(getParameterByName("fromDate") != null)
+					document.getElementById("fromDate").value = getParameterByName("fromDate");
+
+				if(getParameterByName("toDate") != null)
+					document.getElementById("toDate").value = getParameterByName("toDate");
+
+				if(getParameterByName("activityType") != null)
+					$("#activityType").val( getParameterByName("activityType") );
+
+				var currentPage = 1;
+				if(getParameterByName("page") != null)
+					currentPage = parseInt(getParameterByName("page")) + 1;
+
+				var pages = Math.floor(totalRecords/totalNumberOfRecordsOnPages);
+				var remainder = totalRecords % totalNumberOfRecordsOnPages;
+				if(remainder > 0)
+					pages = pages + 1;
+
+				var a = 0;
+				for(a=1;a<=pages;a++)
+				{
+					if(currentPage == a)
+						$("#pages").append("<option selected value='" + a + "'>" + a + "</option>")
+					else
+						$("#pages").append("<option value='" + a + "'>" + a + "</option>")
+				}
+			})
+
+			function submitForm() {
+				var search = getPageSearchCriteria();
+
+				if(search == "")
+                    return resetForm();
+				else
+				{
+					window.location.href = "activitylog?" + search;
+					return false;
+				}
+			}
+
+			function resetForm() {
+                window.location.href = "activitylog";
+                return false;
+			}
+
+			function dataPageChanged() {
+
+				var search = getPageSearchCriteria();
+
+				if(search != "")
+					search = search + "&";
+
+				var pag = document.getElementById("pages").value;
+				pag = pag - 1;
+				search = search + "page=" + pag;
+
+				window.location.href = "activitylog?" + search;
+				return false;
+			}
+
+			function getPageSearchCriteria() {
+
+				var search = "";
+
+				if(document.getElementById("toDate").value != "")
+					search = "toDate=" + document.getElementById("toDate").value;
+
+				if(document.getElementById("fromDate").value != "") {
+					if(search != "")
+						search = search + "&";
+					search = search + "fromDate=" + document.getElementById("fromDate").value;
+				}
+
+				if(document.getElementById("activityType").value != -1) {
+					if(search != "")
+						search = search + "&";
+					search = search + "activityType=" + document.getElementById("activityType").value;
+				}
+
+
+				return search;
+			}
+
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row">
+       <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/search.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Activity Log Search</h4>
+                </div>
+                <div class="content table-responsive table-full-width icon-section">
+                    <br />
+                    <div class="row">
+                            <div class="col-md-1"> </div>
+
+                            <div class="col-md-2">
+                                <span style="font-size:15px;"> Date
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                From </span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <input  id="fromDate" name="fromDate" class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" type=text />
+                            </div>
+
+                            <div class="col-md-1">
+                                <span style="font-size:15px;"> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;
+                                    To  </span>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="toDate" name="toDate" class="form-control border-input datepicker-here" data-language='en'  data-date-format="MM dd yyyy" type=text autocomplete="off" type=text />
+                            </div>
+
+
+                            <div class="col-md-1"> </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                            <div class="col-md-1"> </div>
+
+                            <div class="col-md-2">
+                                <span style="font-size:15px;">  Log type   </span>
+                            </div>
+                            <div class="col-md-3">
+                                <span style="font-size:15px;">
+                                <select id="activityType"  style="font-size:16px;"  name="activityType" class="form-control border-input" style="padding:3px; width:250px;">
+                                    <option value="-1"> All </option>
+                                    <option value="1"> System User Created </option>
+                                    <option value="2"> System User Login Authorization </option>
+                                    <option value="4"> System User Modified </option>
+                                    <option value="5"> Shares Transferred </option>
+                                    <option value="6"> Investor Authorization </option>
+                                    <option value="7"> Company Shares Created </option>
+                                    <option value="8"> Investor Approved </option>
+                                    <option value="9"> Investor KYC Document Update </option>
+                                    <option value="10"> Company Shares Removed </option>
+                                    <option value="11"> Investor Shares Tokenover </option>
+                                    <option value="12"> Investor New Address Approved </option>
+                                    <option value="13"> Investor New Address Whitelisted </option>
+                                    <option value="14"> Investor New Address Denied </option>
+                                    <option value="15"> News Item Created </option>
+                                    <option value="16"> Bulk Email Send </option>
+                                    <option value="17"> Award Affiliate Income (automatic) </option>
+                                    <option value="18"> Funds Deposited In Wallet </option>
+                                    <option value="19"> Investor Log In </option>
+		                            <option value="20"> Project Administrator Log In </option>
+                                    <option value="21"> Request For Share Purchasing Received </option>
+                                    <option value="22"> Request For Share Purchasing Approved (Blockchain) </option>
+                                    <option value="23"> Request For Share Purchasing Approved (Non-Blockchain) </option>
+                                    <option value="24"> Investor Log Out </option>
+                                    <option value="25"> Project Administrator Log Out </option>
+                                    <option value="26"> Admin Receiving a Payment Request </option>
+                                    <option value="27"> Admin Declining a Payment Request </option>
+                                    <option value="28"> Admin Accepting a Payment Request </option>
+                                    <option value="29"> Trading of Shares Within The Platform (Sell) </option>
+                                    <option value="30"> Trading of Shares Within The Platform (Buy) </option>
+                                    <option value="31"> Contract Signing </option>
+                                    <option value="32"> Admin Transferring Shares From an Investor Back to The Company </option>
+                                    <option value="33"> SumSub callback received </option>
+                                    <option value="40"> Dividend Payment </option>
+                                    <option value="41"> Dividend Deleted </option>
+                                </select>
+                                </span>
+                            </div>
+
+                            <div class="col-md-1"> </div>
+                        </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-7"> </div>
+
+                        <div class="col-md-4">
+                            <button onclick="submitForm()" class="btn btn-info btn-fill">Search Logs</button>
+                            &nbsp;&nbsp;&nbsp;
+                            <button onclick="resetForm()" class="btn btn-info btn-fill">Reset Search</button>
+                        </div>
+
+                    </div>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row topPaddingBetweenPageSections">
+           <div class="col-md-12 ">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title"> <img src="/img/events.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; Activity Logs</h4>
+                    </div>
+                    <div class="content table-responsive table-full-width icon-section">
+
+                        <span style="float:right; padding-right:40px;"> <b>Records &nbsp;&nbsp;&nbsp; {{RecordCount}}</b> </span>
+
+                        <table class="table table-striped">
+                            <thead>
+                                <th><b>Date</b></th>
+                                <th><b>STO</b></th>
+                                <th><b>User</b></th>
+                                <th><b>Investor</b></th>
+                                <th><b>Activity</b></th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each DataRows}}
+                                <tr>
+                                    <td style="width: 15%">{{this.LogDate}} </td>
+                                    <td style="width: 15%">
+                                        {{#if this.logo}}
+                                            <img src='/img/stologo/{{this.logo}}' style="max-width:100px; max-height:60px;">
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 15%">{{this.UserFirstName}} {{this.UserLastName}}</td>
+                                    <td style="width: 15%">{{this.InvestorFirstName}} {{this.InvestorLastName}}</td>
+                                    <td style="width: 40%">{{this.Description}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+
+
+                        <div class="row">
+                            <div class="col-md-9"></div> <div class="col-md-1"> &nbsp;&nbsp;  &nbsp;</div>
+                            <div class="col-md-2"><b>Go Page</b> <select onchange="dataPageChanged()" style="width:85px;" id="pages" name="pages"   class="form-control border-input"  ></select></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+{{> Footer}}
+

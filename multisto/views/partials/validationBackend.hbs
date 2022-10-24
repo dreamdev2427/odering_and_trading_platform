@@ -1,0 +1,61 @@
+{{!--
+========= ABOUT =========
+This module will check if the backend has provided an errors object.
+If true, it will find and outline fields with errors in them.
+It will also attach error messages below the inputs in question.
+
+Make sure you are using the border-input class on the inputs.
+
+The error object from the backend must have this type:
+{ field: string, message: string }[]
+Notice this is an array.
+ --}}
+<style>
+    .border-input.error {
+        border-color: red;
+        border-width: 1.5pt;
+    }
+    .errorText {
+        color: maroon;
+        font-style: italic;
+    }
+</style>
+<script lang="javascript">
+    function fillLastModel() {
+        try {
+            const model = JSON.parse(`{{{LastModel}}}`);
+            delete model._csrf;
+
+            Object.keys(model).forEach(key => {
+                $(`#${key}`).val(model[key]);
+            });
+        }catch (e) {
+            if ("{{LastModel}}"){
+                console.error('Could not load last model.');
+            }
+        }
+    }
+    function loadErrors() {
+        const errors = [
+        {{#each ValidationErrors}}
+            { field: "{{this.field}}", error: "{{this.error}}" },
+        {{/each}}
+        ];
+        return errors;
+    }
+    function validationErrors() {
+        const errors = loadErrors();
+        if (errors.length) {
+            fillLastModel();
+        }
+        errors.forEach(error => {
+            let field = $(`#${error.field}`);
+            field.addClass('error');
+            field.parent().append(`<p class="errorText">❌ ${error.error}</p>`);
+        });
+    }
+    $(document).ready(() => {
+        fillLastModel();
+        validationErrors();
+    });
+</script>

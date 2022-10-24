@@ -1,0 +1,72 @@
+<html>
+<head>
+    <title>{{SiteParameter_PageTitle}}</title>
+    <link rel="shortcut icon" href="../img/site/{{favicon}}" type="image/x-icon" />
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+
+      document.addEventListener("keydown", keyDownTextField, false);
+      function keyDownTextField(e) {
+        var keyCode = e.keyCode;
+        if(keyCode==13) {
+          e.preventDefault();
+          document.getElementById("submitButton").click();
+        }
+      }
+
+         function login() {
+                if(document.getElementById("username").value === "") {
+                    alert("Username required");
+                    return false;
+                }
+
+                if(document.getElementById("password").value === "") {
+                    alert("Password required");
+                    return false;
+                }
+
+                document.getElementById("Login").submit();
+         }
+
+     </script>
+</head>
+
+<body id="LoginForm">
+<br /><br />
+
+<div class="container" style="">
+    <div class="login-form">
+        <div class="main-div">
+            <div class="panel" width="100%;">
+               <img src="/img/stologo/{{logo}}" style="max-height: 140px; max-width: 180px;" />
+                <br />
+                <span style="font-size:30px">Platform Admin Login</span>
+               <p>Please enter your user name and password</p>
+            </div>
+            <br />
+            <form id="Login" name="Login" action="/platform/adminsignin" method="post">
+
+                <div class="form-group">
+                    <input type="text" maxLength="70" class="form-control" id="username" name="username" placeholder="Username">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" maxLength="30" class="form-control" id="password" name="password" placeholder="Password">
+                </div>
+
+                <br><br>
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                <a id="submitButton" onclick="return login()" class="btn btn-primary">Login</a>
+
+            </form>
+            <br>
+            <span style="color:red;"> <b>{{UserMessage}}</b> </span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

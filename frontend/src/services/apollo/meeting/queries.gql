@@ -1,0 +1,134 @@
+query GetMeetings($stoId: Int!) {
+        investorAllMeeting(stoID: $stoId) {
+        past {
+            ID
+            stoID
+            title
+            type
+            nameResponsiblePerson
+            phoneResponsiblePerson
+            emailResponsiblePerson
+            nameProxyPerson
+            phoneProxyPerson
+            emailProxyPerson
+            place
+            openDate
+            opendate
+            closeDate
+            closedate
+            voteType
+            timezone
+            timePadding
+        }
+        current {
+            ID
+            stoID
+            title
+            type
+            nameResponsiblePerson
+            phoneResponsiblePerson
+            emailResponsiblePerson
+            nameProxyPerson
+            phoneProxyPerson
+            emailProxyPerson
+            place
+            openDate
+            opendate
+            closeDate
+            closedate
+            voteType
+            timezone
+            timePadding
+        }
+        future {
+            ID
+            stoID
+            title
+            type
+            phoneResponsiblePerson
+            nameResponsiblePerson
+            emailResponsiblePerson
+            phoneProxyPerson
+            nameProxyPerson
+            emailProxyPerson
+            place
+            openDate
+            opendate
+            closeDate
+            closedate
+            voteType
+            timezone
+            timePadding
+        }
+    }
+}
+
+query InvestorMeeting($meetingId: Int!, $_id: Int!) {
+    investorMeeting(meetingID: $meetingId) {
+        ID
+        stoID
+        title
+        type
+        nameResponsiblePerson
+        phoneResponsiblePerson
+        emailResponsiblePerson
+        nameProxyPerson
+        phoneProxyPerson
+        emailProxyPerson
+        place
+        openDate
+        opendate
+        closeDate
+        closedate
+        voteType
+        timezone
+        timePadding
+    }
+    findSto(ID: $_id) {
+        companyType
+    }
+}
+
+query InvestorVoteOptions($meetingId: Int!) {
+    investorVotingOptions(votingID: $meetingId) {
+        ID
+        votingID
+        optionTxt
+        description
+        companyComments
+        isActiveByAdmin
+        documents {
+            ID
+            votingID
+            votingOptionID
+            documentLink
+            title
+            description
+        }
+    }
+}
+
+query UserVotingData($votingId: Int!) {
+    investorUserVoting(votingID: $votingId) {
+        ID
+        votingID
+        userID
+        votingOptionID
+        investmentContributed
+        isCastedByInvestor
+        votingOptionValue
+    }
+}
+
+
+query OptionsVoteStatistic($votingId: Int!) {
+    investorVotingOptions(votingID: $votingId) {
+        ID
+        votingUserStatistic {
+            votesYes
+            votesNo
+            votesAbstention
+            count
+        }
+    }
+}

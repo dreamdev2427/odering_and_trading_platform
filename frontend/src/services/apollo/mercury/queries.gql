@@ -1,0 +1,28 @@
+query GetMercuryAccountInfo {
+  getMercuryAccountInfo {
+    accountNumber
+    routingNumber
+  }
+}
+
+query GetMercuryRecipient {
+  getMercuryRecipient {
+    id
+    name
+    emails
+    paymentMethod
+    electronicRoutingInfo {
+      accountNumber
+      electronicAccountType
+      routingNumber
+      address {
+        address1
+        city
+        region
+        postalCode
+        country
+      }
+    }
+  }
+}
+

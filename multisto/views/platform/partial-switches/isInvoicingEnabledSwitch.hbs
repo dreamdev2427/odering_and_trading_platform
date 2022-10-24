@@ -1,0 +1,36 @@
+<script>
+  function postisInvoicingEnabled(isChecked) {
+    document.getElementById('isInvoicingEnabled-intValue').value = +isChecked;
+    document.getElementById('isInvoicingEnabled-redirectUrl').value = window.location.href;
+    document.getElementById('postisInvoicingEnabled').submit();
+  }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;"
+                        alt='add more' /> Enable invoicing</h4>
+                <label>Enable/Disable invoicing</label>
+            </div>
+            <div class="content">
+                <form method="post" id="postisInvoicingEnabled" action="postParamUpdateToApi">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="switch">
+                                <input type="checkbox" onclick="postisInvoicingEnabled(this.checked)"
+                                    {{#if isInvoicingEnabled}} checked {{/if}} />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="isInvoicingEnabled-intValue" name="intValue" />
+                    <input type="hidden" id="isInvoicingEnabled-stringValue" name="stringValue" value="" />
+                    <input type="hidden" id="isInvoicingEnabled-param" name="param" value="isInvoicingEnabled" />
+                    <input type="hidden" id="isInvoicingEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

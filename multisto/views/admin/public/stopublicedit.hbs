@@ -1,0 +1,63 @@
+{{> Header}}
+
+	<script language="javascript">
+
+        $(document).ready(function() {
+            //$("#ActivityLogs").addClass('active');    
+            
+                $('#htmlText').summernote({
+                    dialogsInBody: true,
+                    placeholder: 'Enter Email Text',
+                    tabsize: 2,
+                    height: 300
+                  });
+
+        });
+
+        function cancelsection() {
+              window.location.href = "/stopublic?id={{mainrecord.stoid}}";
+              return false;    
+        }
+        
+
+	</script>
+
+{{> HeaderInner}}
+		
+    <div class="row">		
+       <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="img/search.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; HTML Section Add / Edit
+                    </h4>
+                </div>
+                <div class="content table-responsive table-full-width icon-section">
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            
+                            <form id="saveHTMLSection" name="saveHTMLSection" action="saveHTMLSection" method="post">
+                                <label>Enter Title</label>
+                                <input type="text" id="title" name="title" class="form-control border-input" value="{{mainrecord.title}}" /> 
+                                <br /><br />
+                                <label>Enter Email</label>
+                                <textarea id="htmlText" name="htmlText" rows="5" class="form-control border-input">{{mainrecord.contents}}</textarea>
+
+                                <input type="hidden" name="op" id="op" value="{{op}}" />
+                                <input type="hidden" name="id" id="id" value="{{mainrecord.ID}}" />
+                                <input type="hidden" name="stoid" id="stoid" value="{{stoid}}" />
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                <button type="submit" class="btn btn-info btn-fill btn-wd">Save Section</button> 
+                                &nbsp;&nbsp;
+                                <button onclick="cancelsection()" class="btn btn-info btn-fill btn-wd">Cancel</button> 
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

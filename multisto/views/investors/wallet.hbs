@@ -1,0 +1,80 @@
+{{> Header}}
+
+	<script language="javascript">
+		$(document).ready(function() {
+			// $("#inbox").addClass('active');            
+		})
+	</script>
+
+{{> HeaderInner}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">
+                        <img src="/img/wallet.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;
+                        Wallet Information
+                    </h4>
+                </div>
+
+                <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label>Share Class</label>
+                        </div>
+                        <div class="col-md-4">
+                            {{shareTypeRec.title}}
+                        </div>
+                        <div class="col-md-1"></div>
+
+
+                        <div class="col-md-3">    
+                            <label>Value</label>
+                            &nbsp;&nbsp;&nbsp;
+                            {{currencySymbol shareTypeRec.currencyid}}
+                            {{shareTypeRec.nominalValue}}
+                        </div>
+                        <div class="col-md-3">                        
+                            {{#if shareTypeRec.premimum}}
+                                <label>Market Value</label>
+                                &nbsp;&nbsp;&nbsp;                    
+                                {{shareTypeRec.premimum}}
+                            {{/if}}                        
+                        </div>
+                    </div>
+
+                    <br />
+                    <label>Investor Total Shares</label>
+                    &nbsp;&nbsp;&nbsp;                    
+                    <b>{{shareRec.shares}}</b>
+
+                    <br /><br /><br />
+                    <h4 class="title">Wallet Addresses for Share Class</h4>
+                    <br />
+                    {{#each walletRec}}
+                        <div class="row">
+                            <div class="col-md-6">
+                                    <img src="/img/graydot.png" width="15px"> &nbsp; 
+                                    {{#if (eq this.publicKey "platform")}} 
+                                            Company Managed Shares (Off-Blockchain)
+                                    {{else}}
+                                            {{this.publicKey}} 
+                                    {{/if}}                                
+                            </div>
+                            <div class="col-md-3">
+                                {{numberFormat this.shares decimalLength="ShareCountInFractions"}}
+                            </div>
+                        </div>                    
+                        <br /><br />
+                    {{/each}}
+
+                    &nbsp;
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

@@ -1,0 +1,367 @@
+{{> Header}}
+
+<script language="javascript">
+    var listType = {{listType}};
+    var linkToDeleteVoting = "";
+
+    $(document).ready(function() {
+        $("#voting").addClass('active');
+
+        let element = document.getElementById("listType");
+        element.value = listType;
+    })
+    function votingdetails(id) {
+        if(listType == 0) {
+            window.location.href = "votingdetails?id=" + id;
+            return false;
+        } else {
+            window.location.href = "meetingView?id=" + id;
+            return false;
+        }
+    }
+    function newvoting() {
+        if(document.getElementById("listType").value == "0")
+            window.location.href = "votingedit";
+        else if(document.getElementById("listType").value == "1")
+            window.location.href = "meetingedit";
+        else if(document.getElementById("listType").value == "2")
+            window.location.href = "polledit";
+
+        return false;
+    }
+    function editvoting(id) {
+
+        if(document.getElementById("listType").value == "0")
+            window.location.href = "votingedit?id=" + id;
+        else
+            window.location.href = "meetingedit?id=" + id;
+
+        return false;
+    }
+    function changeList() {
+        window.location.href = "voting?type=" + document.getElementById("listType").value;
+        return false;
+    }
+    function viewpublicpoll(id) {
+        window.location.href = "viewpublicpoll?id=" + id;
+        return false;
+    }
+
+    function deleteVotings(id) {
+        linkToDeleteVoting = "/admin/deletePublicVoting?id=" + id;
+        showModelGeneralYesNoDialogBox("Are you sure you want to delete voting campaign from system ? <br /><br /> Please beaware this will delete all voting data from the system", "Yes Delete", "Cancel");
+    }
+
+    function generalModelOKButtonClickedClientEvent() {
+        window.location.href = linkToDeleteVoting;
+        return false;
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+<div class="row">
+    <div class="col-md-12 ">
+      <div class="card">
+        <div class="header">
+          <h4 class="title">
+              <img src="/img/meeting.png" width="35px;" style="padding-bottom:-10px;" /> &nbsp; Meetings / Votes
+          </h4>
+          <label>
+            Here you can set up meetings and votes for shareholders and stakeholders in the project
+          </label>
+          <br/>
+        </div>
+      </div>
+
+        <div class="card">
+            <div class="header">
+                <div class="row">
+
+                        <div class="col-md-3">
+                            <h4 class="title">
+                                {{#ifEqual listType 1}}
+                                    <img src="/img/meeting.png" width="35px;" style="padding-bottom:-10px;" /> &nbsp; Meetings
+                                {{/ifEqual}}
+
+                                {{#ifEqual listType 0}}
+                                    <img src="/img/polls.png" width="35px;" style="padding-bottom:-10px;" /> &nbsp; Internal Polls
+                                {{/ifEqual}}
+
+                                {{#ifEqual listType 2}}
+                                    <img src="/img/polls.png" width="35px;" style="padding-bottom:-10px;" /> &nbsp; Public Polls
+                                {{/ifEqual}}
+
+                            </h4>
+                        </div>
+                        <div class="col-md-3">
+                            <select onchange="changeList()" id="listType" class="form-control border-input" style="padding:3px; width:250px;">
+                                {{#ifIn 14 Data.AdminRights}}<option value="1"> Meetings </option>{{/ifIn}}
+                                {{#ifIn 27 Data.AdminRights}}<option value="0"> Internal Polls </option>{{/ifIn}}
+                                {{#ifIn 28 Data.AdminRights}}<option value="2"> Public Polls </option>{{/ifIn}}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            {{#ifIn 14 Data.AdminRights}}
+                                <button onclick="newvoting()" class="btn btn-info btn-fill" style="float: right;">Add New</button>
+                            {{/ifIn}}
+                        </div>
+                        <div class="col-md-3"> </div>
+
+                    </div>
+            </div>
+
+            <div class="content">
+                <br />
+                {{#if records.length}}
+                    <table class="table table-striped">
+                        {{#ifEqual listType 1}}
+                            <thead class="listingHeaderFontSize">
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Place</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Zone</th>
+                                <th></th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each records}}
+                                    <tr>
+                                        <td style="width: 15%; vertical-align: top;">
+                                            {{this.opendate}}
+                                        </td>
+                                        <td style="width: 30%; vertical-align: top;"> {{this.title}} </td>
+                                        <td style="width: 15%; vertical-align: top;">
+                                            {{this.place}}
+                                        </td>
+                                        <td style="width: 8%; vertical-align: top;">
+                                            {{this.starttime}}
+                                        </td>
+                                        <td style="width: 8%; vertical-align: top;">
+                                            {{this.endtime}}
+                                        </td>
+                                        <td style="width: 4%; vertical-align: top;">
+                                            <span class="badge badge-secondary">{{this.timezone}}</span>
+                                        </td>
+                                        <td style="width: 5%; vertical-align: top;">
+                                            {{#ifEqual this.open 1}}
+                                                <img src="/img/yellowdot.png" width="22px;"/>
+                                            {{/ifEqual}}
+
+                                            {{#ifEqual this.open 2}}
+                                                <img src="/img/greendot.png" width="25px;"/>
+                                            {{/ifEqual}}
+
+                                            {{#ifEqual this.open 0}}
+                                                <img src="/img/graydot.png" width="20px;"/>
+                                            {{/ifEqual}}
+
+                                        </td>
+                                        <td style="width: 15%; vertical-align: top;">
+                                            {{#ifEqual this.open 0}}
+                                                <button onclick="votingdetails({{this.id}})" class="btn btn-info btn-fill btn-sm">View </button> &nbsp;&nbsp;
+                                            {{/ifEqual}}
+
+                                            {{#ifIn this.open '[1,2]'}}
+                                                <button onclick="votingdetails({{this.id}})" class="btn btn-info btn-fill btn-sm">View</button> &nbsp;&nbsp;
+                                            {{/ifIn}}
+
+
+                                            {{#if this.open}}
+                                                {{#ifIn 14 ../Data.AdminRights}}
+                                                    <button onclick="editvoting({{this.id}})" class="btn btn-info btn-fill btn-sm">Edit</button>
+                                                {{/ifIn}}
+                                            {{/if}}
+                                            <a rel="noreferrer" target="_blank" href="https://meet.digishares.live/{{this.title}}#userInfo.displayName=%22Manager%22" class="btn btn-danger btn-fill btn-sm">Join</a>
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        {{/ifEqual}}
+
+                        {{#ifEqual listType 0}}
+                            <thead class="listingHeaderFontSize">
+                                <th>Base On</th>
+                                <th>Title</th>
+                                <th>Launch</th>
+                                <th>Close</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each records}}
+                                    <tr>
+                                        <td style="width: 15%; vertical-align: top;">
+                                            {{#ifEqual this.votetype 1}}
+                                                User
+                                            {{/ifEqual}}
+                                            {{#ifEqual this.votetype 2}}
+                                                Share
+                                            {{/ifEqual}}
+                                            {{#ifEqual this.votetype 3}}
+                                                Investment
+                                            {{/ifEqual}}
+                                        </td>
+                                        <td style="width: 36%; vertical-align: top;"> {{this.title}} </td>
+                                        <td style="width: 15%; vertical-align: top;"> {{this.opendate}} </td>
+                                        <td style="width: 15%; vertical-align: top;"> {{this.closedate}} </td>
+                                        <td style="width: 5%; vertical-align: top;">
+                                            {{#ifEqual this.open 1}}
+                                                <img src="/img/yellowdot.png" width="22px;"/>
+                                            {{/ifEqual}}
+
+                                            {{#ifEqual this.open 2}}
+                                                <img src="/img/greendot.png" width="25px;"/>
+                                            {{/ifEqual}}
+
+                                            {{#ifEqual this.open 0}}
+                                                <img src="/img/graydot.png" width="20px;"/>
+                                            {{/ifEqual}}
+                                        </td>
+                                        <td style="width: 7%; vertical-align: top;">
+                                            {{#ifEqual this.open 0}}
+                                                <button onclick="votingdetails({{this.id}})" class="btn btn-info btn-fill btn-sm">&nbsp; View &nbsp; </button>
+                                            {{/ifEqual}}
+
+                                            {{#ifEqual this.open 2}}
+                                                <button onclick="votingdetails({{this.id}})" class="btn btn-info btn-fill btn-sm">&nbsp; View &nbsp; </button>
+                                            {{/ifEqual}}
+                                        </td>
+                                        <td style="width: 7%; vertical-align: top;">
+                                            {{#if this.open}}
+                                                {{#ifIn 14 ../Data.AdminRights}}
+                                                    <button onclick="editvoting({{this.id}})" class="btn btn-info btn-fill btn-sm">&nbsp; Edit  &nbsp;</button>
+                                                {{/ifIn}}
+                                            {{/if}}
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        {{/ifEqual}}
+
+                        {{#ifEqual listType 2}}
+                            <thead class="listingHeaderFontSize">
+                                <th>Title</th>
+                                <th>Launch</th>
+                                <th>Close</th>
+                                <th></th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each records}}
+                                    <tr>
+                                        <td style="width: 45%; vertical-align: top;"> {{this.title}} </td>
+                                        <td style="width: 15%; vertical-align: top;">
+                                            {{this.opendate}}
+                                        </td>
+                                        <td style="width: 15%; vertical-align: top;">
+                                            {{this.closedate}}
+                                        </td>
+                                        <td style="width: 5%; vertical-align: top;">
+                                            {{#ifEqual this.open 1}}
+                                                <img src="/img/yellowdot.png" width="22px;"/>
+                                            {{/ifEqual}}
+
+                                            {{#ifEqual this.open 2}}
+                                                <img src="/img/greendot.png" width="25px;"/>
+                                            {{/ifEqual}}
+
+                                            {{#ifEqual this.open 0}}
+                                                <img src="/img/graydot.png" width="20px;"/>
+                                            {{/ifEqual}}
+
+                                        </td>
+                                        <td style="width: 20%; vertical-align: top;">
+                                            {{#ifIn this.open '[0,2]'}}
+                                                <button onclick="viewpublicpoll({{this.id}})" class="btn btn-info btn-fill btn-sm">&nbsp; View &nbsp; </button> &nbsp;&nbsp;
+                                            {{/ifIn}}
+
+
+                                            <button onclick="deleteVotings({{this.id}})" class="btn btn-info btn-fill btn-sm">&nbsp; Delete &nbsp; </button> &nbsp;&nbsp;
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+
+                        {{/ifEqual}}
+                    </table>
+                        <br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <img src="/img/greendot.png" width="25px;"/> &nbsp;
+                            {{#ifEqual listType 1}} Meeting {{/ifEqual}}
+                            {{#ifEqual listType 0}} Voting {{/ifEqual}}
+                            {{#ifEqual listType 2}} Public Poll {{/ifEqual}}
+                            Started
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <img src="/img/yellowdot.png" width="22px;"/> &nbsp;
+                            {{#ifEqual listType 1}} Meeting {{/ifEqual}}
+                            {{#ifEqual listType 0}} Voting {{/ifEqual}}
+                            {{#ifEqual listType 2}} Public Poll {{/ifEqual}}
+                            Scheduled in Future
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <img src="/img/graydot.png" width="20px;"/> &nbsp;
+                            {{#ifEqual listType 1}} Meeting {{/ifEqual}}
+                            {{#ifEqual listType 0}} Voting {{/ifEqual}}
+                            {{#ifEqual listType 2}} Public Poll {{/ifEqual}}
+                            Done
+                        <br /><br />&nbsp;
+                {{else}}
+                    <br />&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{#ifEqual listType 1}}
+                        <label>No Meetings Found</label>
+                    {{/ifEqual}}
+
+                    {{#ifEqual listType 0}}
+                        <label>No Polls Found</label>
+                    {{/ifEqual}}
+
+                    {{#ifEqual listType 2}}
+                        <label>No Public Polls Found</label>
+                    {{/ifEqual}}
+
+                    <br /><br />
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- <div class="row">
+    <div class="col-md-12 ">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    <img src="/img/voting2.png" width="35px;" style="padding-bottom:-10px;" /> &nbsp; Voting Power
+                </h4>
+            </div>
+            <div class="content">
+                You can configure the amount of votes a share class grants by adjusting the multipliers below.
+                <br/>
+                This affects the result when voting according to the number of shares owned.
+                <br/>
+                <br/>
+                <form id="votingPower" class="form-group form-inline" method="post" action="/admin/postVotingPower">
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    {{#each shareTypes}}
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-6">
+                                <label for="share-{{this.id}}">{{this.title}}</label>
+                            </div>
+                            <div class="col-sm-3 col-xs-6">
+                                <input id="share-{{this.id}}" name="{{this.id}}" type="number" step="0.1" min="0" max="1000000" value="{{this.votingPower}}" class="form-control border-input"/>
+                            </div>
+                        </div>
+                        <br/>
+                    {{/each}}
+                    <br/>
+                    <button class="btn btn-info btn-fill">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> --}}
+
+{{> Footer}}

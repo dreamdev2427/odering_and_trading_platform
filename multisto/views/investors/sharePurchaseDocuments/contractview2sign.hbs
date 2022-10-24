@@ -1,0 +1,167 @@
+{{> Header}}
+
+<script src="/libs/signature.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Cedarville+Cursive&family=Shadows+Into+Light&display=swap"
+      rel="stylesheet">
+<script language="javascript">
+    var emptyImage;
+
+    $(document).ready(function () {
+        $("#InvestorsMenu").addClass('active');
+
+        initlizeSignaturesCanvas("newSignature");
+        disAllowLanguageSwitchingOnThisPage();
+        document.getElementById('signatureFileInput').addEventListener('change', handleSignatureFile);
+    })
+
+    function signContract() {
+        if (isSignatureAreaIsEmpty("newSignature")) {
+            showModelGeneralOKDialogBox('{{{__
+                    "You did not sign the contract. Please use you mouse to draw your signature"}}}');
+            return;
+        }
+        document.getElementById("signatureData").value = getSignatureImageData("newSignature");
+        document.getElementById("signature").submit();
+    }
+
+    function handleSignatureFile(e) {
+        var canvas = document.getElementById("newSignature");
+        var context = canvas.getContext("2d");
+        var img = new Image;
+
+        img.onload = function () {
+            const canvasRatio = 340 / 220
+            const imgRatio = this.width / this.height
+            if (canvasRatio < imgRatio) { //canvas is taller
+                context.drawImage(this, 0, (220 - this.height * (340 / this.width)) / 2, 340, this.height * (340 / this.width));
+            } else { //canvas is shorter
+                context.drawImage(this, (340 - this.width * (220 / this.height)) / 2, 0, this.width * (220 / this.height), 220);
+            }
+        }
+        img.src = URL.createObjectURL(e.target.files[0])
+    }
+
+    function generateSignature(font) {
+        var text = "{{fullname}}";
+        signatureClear('newSignature')
+        var canvas = document.getElementById("newSignature");
+        var context = canvas.getContext("2d");
+        //resize signature to fit on canvas
+        var fontsize = 200;
+        do {
+            fontsize--;
+            context.font = fontsize + "px " + font;
+        } while (context.measureText(text).width > (canvas.width - 20) || context.measureText(text).fontBoundingBoxAscent > (100))
+
+        context.font = fontsize + "px " + font;
+        context.fillStyle = "#000";
+        context.fillText(text, (canvas.width - context.measureText(text).width) / 2, 120);
+        context.fillStyle = "#FFF";
+    }
+
+    function gottosignsection() {
+        window.location.hash = "signcontractsection";
+    }
+
+</script>
+<style>
+    .generatedSignatureButon {
+        width: 340px;
+        font-size: 30px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        margin-bottom: 10px;
+    }
+</style>
+{{> HeaderInner}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title">{{{__ "Contract Details"}}}</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-info btn-fill btn-wd" onclick="gottosignsection()">Sign
+                            Contract
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <br/>
+                {{{contents}}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="signcontractsection" class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">{{{__ "Sign Contract"}}}</h4>
+                <label>{{{__ "Please draw your signature below, select a pre-made one or upload one"}}}</label>
+            </div>
+            <div class="content">
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <canvas class="roundCorners" id="newSignature"
+                                style="position: relative; margin: 0; padding: 0; border: 1px solid #c4caac;"></canvas>
+                    </div>
+
+                    <div class="col-md-7">
+                        <label>{{{__ "Click a pre-madde signature to use it:"}}}</label> <br/>
+                        <button type="button" class="btn btn-info btn-fill btn-xl generatedSignatureButon"
+                                style="font-family: 'Allura', cursive;"
+                                onclick="generateSignature('Allura, cursive')">{{fullname}}</button>
+                        <br>
+                        <button type="button" class="btn btn-info btn-fill btn-xl generatedSignatureButon"
+                                style="font-family: 'Cedarville Cursive', cursive;"
+                                onclick="generateSignature('Cedarville Cursive, cursive')">{{fullname}}</button>
+                        <br>
+                        <button type="button" class="btn btn-info btn-fill btn-xl generatedSignatureButon"
+                                style="font-family: 'Shadows Into Light', cursive;"
+                                onclick="generateSignature('Shadows Into Light, cursive')">{{fullname}}</button>
+                        <br/><br/>
+                        <label>{{{__ "Select a signature file"}}}</label><br/>
+                        <input style="display: none" type="file" accept="image/*" id="signatureFileInput"/>
+                        <button type="button" class="btn btn-info btn-fill btn-sm"
+                                onclick="document.getElementById('signatureFileInput').click();">{{{__
+                                "Select File"}}}</button>
+                        <br/><br/>
+                        <label>{{{__ "Clear the signature and re-sign"}}}</label><br>
+                        <button type="button" class="btn btn-info btn-fill btn-sm"
+                                onclick="signatureClear('newSignature')">{{{__ "Clear Signatures"}}}</button>
+                        <br/>
+                    </div>
+
+                </div>
+                <br/><br/>
+                <div class="row">
+                    <div class="col-md-5">
+                        <label>{{{__ "Click the button and sign the contract"}}}</label> <br/>
+                        <button type="button" class="btn btn-info btn-fill btn-wd" onclick="signContract()">{{{__
+                                "Sign Contract"}}}</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="signature" name="signature" action="/sharePurchaseDocumentSignPost" method="post">
+    <input type="hidden" id="signatureData" name="signatureData"/>
+    <input type="hidden" id="sharePurchaseID" name="sharePurchaseID" value="{{sharePurchaseID}}"/>
+    <input type="hidden" id="documentID" name="documentID" value="{{documentID}}"/>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+</form>
+
+{{> Footer}}
+

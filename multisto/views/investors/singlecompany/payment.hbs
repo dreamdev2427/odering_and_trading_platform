@@ -1,0 +1,478 @@
+{{> Header}}
+
+	<script language="javascript">
+        var currentAmount = 0;
+        var currentShares = 0;
+        var currentID = 0;
+        var fromCurrencyID = 0;
+		var salesAmountOffered = 0;
+    var convertedPrice = 0;
+
+        var InvestorOrderForSTOExists = {{InvestorOrderForSTOExists}};
+        var shareData = {
+             {{#each shareTypesRec}}
+                    "id{{this.ID}}": { "price": {{this.totalPrice}}, "minimum": {{this.minimumSharesToBuyByInvestor}}, "companyShares": {{this.companyShares}}, "currency": "{{currencySymbol this.currencyid}}", "blockchainBuyOrdersAllowed": {{this.blockchainBuyOrdersAllowed}}, "currencyID": {{this.currencyid}} },
+            {{/each}}
+        };
+        var totalAmount = {{totalAmount}};
+
+		$(document).ready(function(){
+                for (var key in shareData) {
+                         document.getElementById(key).value =  (shareData[key].price * shareData[key].minimum).toFixed(3)
+                }
+
+
+                /*$('#transferblockchain').click (function () {
+                    var thisCheck = $(this);
+                    if (thisCheck.is (':checked')) {
+                          $("#blockchainsection").show();
+                    } else {
+                          $("#blockchainsection").hide();
+                    }
+                });*/
+      updateConversionRate();
+
+		})
+		function depositfundsinwallet(id, currencyId) {
+
+            {{#if InvestorOrderForSTOExists}}
+                        showModelGeneralOKDialogBox("You already have open order to buy shares from company. Please open your portfolio and review your request")
+            {{else}}
+
+
+
+                        currentID = id;
+            if (fromCurrencyID === 0) {
+              fromCurrencyID = currencyId;
+            }
+						currentAmount =  parseFloat( document.getElementById("id" + id).value );    // (z * shareData["id" + id].price).toFixed(3)  ;
+						salesAmountOffered = currentAmount;
+                        currentShares = parseFloat( document.getElementById("incrementtext" + id).value ) ;
+
+						if (currentShares >  shareData["id" + id].companyShares  ) {
+                            showModelGeneralOKDialogBox("Only " + shareData["id" + id].companyShares + " shares are available to buy" )
+                            return;
+						}
+
+                        if(currentShares == 0) {
+                            showModelGeneralOKDialogBox("Please enter number of shares to buy")
+                            return;
+                        }
+
+						if(  currentShares <  shareData["id" + id].minimum  ) {
+							showModelGeneralOKDialogBox("Your indicated number of shares does not meet the minimum.  Please enter a number greater than or equal to the minimum shares " + shareData["id" + id].minimum );
+
+							return;
+						}
+
+                        $("#spanShares").html(currentShares);
+                        $("#spanAmount").html(shareData["id" + id].currency + " " + currentAmount);
+                        $('#modelSendPayment').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+
+            {{/if}}
+
+      // update drop down menu of wallets
+      const wallets = JSON.parse(decodeURIComponent(`{{{walletBalancesString}}}`));
+      const channels = JSON.parse(`{{{channels}}}`);
+      const walletBalancesSelectable = wallets.filter((w) => {
+        return channels.some((c) => {
+          return c.Abbreviation === w.Abbreviation || currencyId === w.currencyID;
+        });
+      });
+
+      // Get all options within <select id='foo'>...</select>
+      var op = document.getElementById("paymentWallet").getElementsByTagName("option");
+      for (var i = 0; i < op.length; i++) {
+        // lowercase comparison for case-insensitivity
+        if (walletBalancesSelectable.some((w) => {
+          return w.Abbreviation === (op[i].value.split('-')[0])
+        }) ) {
+          op[i].disabled = false;
+        } else {
+          op[i].disabled = true;
+          op[i].hidden = true;
+        }
+      }
+		}
+		function amoutChanged(id) {
+            const incrementText = document.getElementById(`incrementtext${id}`);
+            if(  incrementText.value == ""  )
+                incrementText.value = (shareData["id" + id].minimum);
+
+            incrementText.value = parseFloat(incrementText.value).toFixed({{ShareCountInFractions}});
+            var z = parseFloat( incrementText.value )
+            if( z == 0) {
+                z = 1;
+                incrementText.value = "1";
+            }
+            document.getElementById("id"+ id).value = (   z *   shareData["id" + id].price ).toFixed(3)   ;
+            document.getElementById("preferValue"+ id).value  = "shares";
+        }
+		function fiatChanged(id) {
+				document.getElementById("preferValue"+ id).value  = "price";
+            document.getElementById("incrementtext"+ id).value  =
+                (document.getElementById("id"+ id).value / shareData["id" + id].price).toFixed({{ShareCountInFractions}});
+            document.getElementById("id"+ id).value  =
+                (document.getElementById("incrementtext"+ id).value * shareData["id" + id].price).toFixed(3);
+		}
+        function addmorefunds() {
+			window.location.href = "/depositfundsinwallet?stoid={{stoid}}";
+			return false;
+        }
+        function sendpaymenttoadmin() {
+            var key = "-";
+            var isblockchain = 0;
+
+            /*var active = $('#transferblockchain').prop("checked") ? 1 : 0 ;
+            if(active == 1) {
+                    if(document.getElementById("publickey").value == "") {
+                        showModelGeneralOKDialogBox("Public Key is required")
+                        return;
+                    } else {
+                        key = document.getElementById("publickey").value;
+
+                        if(key.length < 42) {
+                            showModelGeneralOKDialogBox("Public Key is not of correct format")
+                            return;
+                        }
+
+                        isblockchain = 1;
+                    }
+            }*/
+			document.getElementById("pid").value = {{record.id}};
+			document.getElementById("id").value = currentID;
+			document.getElementById("shares").value = currentShares;
+			document.getElementById("details").value = document.getElementById("emailTextLocalForm").value;
+			document.getElementById("key").value = key;
+			document.getElementById("isblockchain").value = isblockchain;
+			document.getElementById("offeredAmount").value	= convertedPrice !== 0 ? convertedPrice : salesAmountOffered;
+      document.getElementById("fromCurrencyID").value = fromCurrencyID;
+			document.getElementById("frmSendPayments").submit();
+
+        }
+
+    function updateConversionRate() {
+      const label = document.getElementById('conversionRate');
+      const selected = document.getElementById("paymentWallet").value;
+      const convertFrom = selected.split('-')[0];
+      const balance = selected.split('-')[1];
+      const channels = JSON.parse(`{{{channels}}}`);
+      let found = false;
+      for(let i = 0; i < channels.length; i++) {
+        if (channels[i].Abbreviation === convertFrom) {
+          const price = `${currentAmount / channels[i].conversionRate}`;
+          label.innerHTML = `(Conversion Rate: 1 ${channels[i].Abbreviation} -> ${channels[i].conversionRate} ${channels[i].currencyTo} )`;
+
+          document.getElementById("spanAmount").innerHTML = `${document.getElementById("spanAmount").innerHTML.split('=')[0]} = ${price} ${channels[i].Abbreviation}`;
+
+          found = true;
+          if(  price != balance  ) {
+            if (  parseFloat(price) > parseFloat(balance) ) {
+              showModelGeneralOKDialogBox("Insufficient funds in wallet – please deposit more");
+              convertedPrice = 0;
+              fromCurrencyID = channels[i].currencyID;
+              return;
+            } else {
+              convertedPrice = price;
+              fromCurrencyID = channels[i].currencyID;
+            }
+          }
+        }
+      }
+      if (!found) {
+        const spanAmount = document.getElementById("spanAmount");
+        $("#spanAmount").html(spanAmount.innerText.split('=')[0]);
+        label.innerHTML = ``;
+
+        convertedPrice = 0;
+        fromCurrencyID = channels[i].currencyID;
+      }
+    }
+
+	</script>
+
+    <style type="text/css">
+        .fontsize: font-size:16px;
+    </style>
+
+{{> HeaderInner}}
+
+    {{#if messages}}
+      <span style="color:red; font-size:18px;">{{messages}}</span>
+      <br /><br />
+    {{/if}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title">  <img src="/img/buy.png" width="30px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Send"}}}
+
+                                    {{#ifEqual Data.CurrentClientID 9}}
+                                        {{{__ "Opportunity"}}}
+                                    {{else}}
+                                        {{{__ "Project"}}}
+                                    {{/ifEqual}}
+
+                                {{{__ "Buy Shares Request"}}}</h4>
+                            <label>{{{__ "Enter share purchase details and send your request to administration"}}}</label>
+                        </div>
+                    </div>
+                </div>
+
+
+                    <div class="content">
+                                <div class="row">
+
+                                    <div class="col-md-4">
+                                        <img src="/img/stobanners/{{record.propertypicture}}"  width="100%">
+                                    </div>
+
+
+                                    <div class="col-md-8">
+                                            {{#if InvestorOrderForSTOExists}}
+                                                <span style="color:red">{{{__ "You already have open order to buy shares from company. Please open your portfolio and review your request"}}}</span>                                    <br /><br />
+                                            {{/if}}
+
+                                          {{#ifCond Data.CurrentClientID '!==' 14}}
+                                            {{#unless walletBalances.length}}
+                                                <b><span style="color:red">{{{__ "You do not have any balance / investment in project. Please click Deposit Funds or contact administration"}}}
+                                                </span></b>
+                                                <br /><br />
+                                            {{/unless}}
+                                          {{/ifCond}}
+
+
+                                            <span style="font-size:28px;">{{record.title}}</span>
+                                            <br />
+                                            {{record.details}}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                            <br  />
+
+                                            <span style="font-size:20px;"> {{{__ "Balances"}}}</span> <br />
+                                            {{#if walletBalances.length}}
+                                                    <label>  {{{__ "Your current balances in company account"}}}  </label><br /><br />
+
+                                                    {{#each walletBalances}}
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                        <b>{{this.Abbreviation}}</b>
+                                                                </div>
+                                                                <div class="col-md-5">
+                                                                        {{this.Symbol}} {{numberFormat this.Amount decimalLength="-"}}
+                                                                </div>
+                                                            </div>
+                                                            <br />
+                                                    {{/each}}
+                                            {{else}}
+                                                    <label> {{{__ "No Balances found"}}} </label>
+                                            {{/if}}
+
+                                            <br /> <br />
+                                            <label>{{{__ "Click to deposit more funds to purchase shares"}}}</label> <br />
+                                            <button onclick="return addmorefunds()" class="btn btn-info btn-fill">&nbsp;&nbsp;&nbsp;&nbsp;{{{__ "Deposit Funds"}}}&nbsp;&nbsp;&nbsp;&nbsp;</button>
+
+                                            {{#ifEqual Data.CurrentClientID 14}}
+                                              {{#unless walletBalances.length}}
+                                                <br /><br />
+                                                <b><span style="color:red">{{{__ "You do not have any balance / investment in project. Please click Deposit Funds or contact administration"}}}
+                                                </span></b>
+                                                <br /><br />
+                                              {{/unless}}
+                                            {{/ifEqual}}
+                                            <br /><br />
+
+                                    </div>
+
+                                    <div class="col-md-8">
+
+                                        {{#if message}}
+                                                <b><span style="color:red">{{message}}</span></b>
+                                                <br />
+                                        {{/if}}
+
+                                        {{#if record.isActive}}
+
+                                                {{#each shareTypesRec}}
+
+													{{#if this.isEnabled}}
+                                                        	{{#if this.companyShares}}
+
+																<br />
+																<div class="row">
+																	<div class="col-md-12">
+																		<span style="font-size:20px;" >{{this.title}}</span>
+
+																	</div>
+																</div>
+																<br />
+
+                                                                <div class="row">
+                                                                    <div class="col-md-4">
+                                                                        <span >{{{../__ "Shares Available"}}}</span>
+                                                                    </div>
+                                                                    <div class="col-md-7">
+                                                                        <span > {{numberFormat this.companyShares decimalLength="ShareCountInFractions"}}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <br />
+                                                                <div class="row">
+                                                                    <div class="col-md-4">
+                                                                        <span  >{{{../__ "Price"}}} / {{{../__ "Share"}}}</span><br />
+                                                                    </div>
+                                                                    <div class="col-md-7">
+                                                                        <span >{{currencySymbol this.currencyid}} {{this.totalPrice}}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <br />
+                                                                <div class="row">
+                                                                    <div class="col-md-4">
+                                                                        <span >{{{../__ "Minimum Shares to Purchase"}}}</span><br />
+                                                                    </div>
+                                                                    <div class="col-md-3">  {{this.minimumSharesToBuyByInvestor}}
+                                                                    </div>
+                                                                </div>
+                                                                <br /><br />
+																Enter number of shares to purchase &nbsp; OR &nbsp; investment
+																<br /><br />
+                                                                <div class="row">
+                                                                        <div class="col-md-4">
+                                                                            <span>
+                                                                                {{{../__ "Number of shares to buy"}}}
+                                                                            </span><br />
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <input type="number" step="1" style="font-size:16px;"   maxlength="15" onchange="amoutChanged({{this.ID}})" class="form-control border-input" id="incrementtext{{this.ID}}" name="incrementtext{{this.ID}}" placeholder="" value="{{this.minimumSharesToBuyByInvestor}}">
+                                                                        </div>
+                                                                </div>
+                                                                <br />
+                                                                <div class="row">
+                                                                    <div class="col-md-4">
+                                                                        <span>{{{../__ "Investment"}}} &nbsp; <span style="font-size:18px;" >  ( {{currencySymbol this.currencyid}}  ) </span> </span>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <input type="number" step="1" style="font-size:16px;" onChange="fiatChanged({{this.ID}})"  maxlength="15"  class="form-control border-input" id="id{{this.ID}}" name="id{{this.ID}}" placeholder="" value="">
+                                                                    </div>
+                                                                </div>
+                                                                <br />
+                                                                <div class="row">
+                                                                    <div class="col-md-7"></div>
+                                                                    <div class="col-md-5">
+                                                                                <button onclick="return depositfundsinwallet({{this.ID}}, {{this.currencyid}})" class="btn btn-info btn-fill"> {{{../__ "Send Buy Shares Request"}}} </button>
+                                                                    </div>
+                                                                </div>
+
+		                                                        <br /><hr />
+
+                                                                {{!-- This is value either "shares" or "price". Shares is assumed default. --}}
+                                                                <input type="hidden" id="preferValue{{this.ID}}" name="preferValue{{this.ID}}" value="shares">
+
+                                                        {{/if}}
+													{{/if}}
+
+                                                {{/each}}
+                                        {{else}}
+                                                <br/><br/>
+                                                <label>No shares are available</label>
+                                        {{/if}}
+
+                                    </div>
+
+                                </div>
+                    </div>
+
+                </div>
+
+            </div>
+</div>
+
+
+<div class = "modal fade" id="modelSendPayment" tabindex = "-1" role = "dialog" aria-labelledby = "modelSendEmailToInvestor" aria-hidden = "true">
+    <div class = "modal-dialog  modal-lg">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">  <img src="/img/lock2.png" / width="25px;"> &nbsp; Send Shares Purchase Request</h4>
+         </div>
+
+         <div  class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-3">
+                        Purchase Shares
+                    </div>
+                    <div class="col-md-3">
+                            <span id="spanShares"></span>
+                    </div>
+                 </div>
+                <br />
+                <div class="row">
+                  <div class="col-md-3">
+                          Amount Required
+                  </div>
+                  <div class="col-md-7">
+                    <span id="spanAmount"></span>
+                  </div>
+                </div>
+           <br/>
+           <div class="row">
+             <h3>
+               <div class="col-md-12">
+                 <span><b>Select Payment Method <label id="conversionRate"/> </b></span>
+               </div>
+             </h3>
+           </div>
+           <div class="row">
+             <h3>
+               <div class="col-md-6">
+                 <select id="paymentWallet" style="padding:10px;" class="form-control border-input" onchange="updateConversionRate()">
+                   <option value="" selected disabled hidden>Please select a wallet from this dropdown menu</option>
+                   {{#each walletBalances}}
+                     <option disabled="true" value={{this.Abbreviation}}-{{this.Amount}} > {{this.Abbreviation}} {{this.Symbol}} {{numberFormat this.Amount decimalLength="-"}} </option>
+                   {{/each}}
+                 </select>
+               </div>
+             </h3>
+           </div>
+                 <br />
+
+                <br />
+                Enter message to administration
+                <textarea  id="emailTextLocalForm" rows="5" maxlength="1000" class="form-control border-input"></textarea>
+
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="sendpaymenttoadmin()"> Send Request</button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+
+
+
+<form id="frmSendPayments" name="frmSendPayments" action="/buyInvestorPropertyShares"  method="post">
+  <input type="hidden" id="pid" name="pid" value="" />
+  <input type="hidden" id="id" name="id" value="" />
+  <input type="hidden" id="shares" name="shares" value="1" />
+  <input type="hidden" id="details" name="details" value="{{investorRec.ID}}" />
+  <input type="hidden" id="key" name="key" value="" />
+  <input type="hidden" id="isblockchain" name="isblockchain" value="" />
+  <input type="hidden" id="offeredAmount" name="offeredAmount" value="" />
+  <input type="hidden" id="fromCurrencyID" name="fromCurrencyID" value="" />
+  <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+
+
+{{> Footer}}

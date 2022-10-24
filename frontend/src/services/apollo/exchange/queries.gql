@@ -1,0 +1,190 @@
+query getInvestorExchangeOrders($type: ExchangeType!, $stoID: Int) {
+  getInvestorExchangeOrders(type: $type, stoID: $stoID) {
+    shareType {
+      title
+      currency {
+        ID
+        symbol
+      }
+    }
+    ID
+    atomicSwapAcceptable
+    atomicSwapCurrentStatus
+    dateFrom
+    dateTo
+    rateFrom
+    rateTo
+    shares
+    type
+  }
+}
+
+query getExchangeOrders($stoID: Int!) {
+  getExchangeOrders(stoID: $stoID) {
+    shareType {
+      title
+      currency {
+        ID
+        symbol
+      }
+    }
+    ID
+    atomicSwapAcceptable
+    atomicSwapCurrentStatus
+    dateFrom
+    rateFrom
+    rateTo
+    shares
+    type
+  }
+}
+
+query getMyOffers($stoID: Int!, $type: ExchangeType!) {
+  getExchangeOffers(stoID: $stoID, type: $type) {
+    ID
+    exchangeOrder {
+      ID
+      dateFrom
+      dateTo
+      rateFrom
+      atomicSwapAcceptable
+      atomicSwapCurrentStatus
+      shareType {
+        title
+        currency {
+          ID
+          symbol
+        }
+      }
+    }
+    rateFrom
+    sharesPartial
+  }
+}
+
+query findShareTypes($stoID: Int!) {
+  findShareTypes(stoID: $stoID) {
+    currency {
+      symbol
+    }
+    ID
+    stoID
+    title
+    nominalValue
+    premiumValue
+  }
+}
+
+query getExchangeOrderDetail($orderID: Int!) {
+  getExchangeOrderOffers(orderID: $orderID) {
+    sharesPartial
+    rateFrom
+    rateTo
+    description
+    atomicSwapAccepted
+    atomicSwapSecret
+    atomicBuyerPublicKey
+    atomicSwapExpireDate
+    investorID
+    ID
+  }
+  getExchangeOrder(orderID: $orderID) {
+    ID
+    type
+    dateFrom
+    dateTo
+    shares
+    rateFrom
+    atomicSwapAcceptable
+    investorID
+    stoID
+    shareType {
+      title
+      currency {
+        symbol
+      }
+    }
+  }
+}
+
+query getExchangeOfferDetail($orderID: Int!) {
+  getExchangeOffer(orderID: $orderID) {
+    sharesPartial
+    rateFrom
+    rateTo
+    description
+    atomicSwapAccepted
+    atomicSwapSecret
+    atomicBuyerPublicKey
+    atomicSwapExpireDate
+    investorID
+    ID
+  }
+
+  getExchangeOrder(orderID: $orderID) {
+    ID
+    type
+    stoID
+    dateFrom
+    dateTo
+    shares
+    rateFrom
+    atomicSwapAcceptable
+    atomicSwapCurrentStatus
+    atomicSwapTokenAddressAcceptable
+    investorID
+    atomicSwapSharesWallet{
+      publicKey
+    }
+    shareType {
+      ID
+      title
+      isBlockchain
+      ethereumBlockchainPublicAddress
+      ethereumContractAddress
+      currency {
+        ID
+        symbol
+      }
+    }
+  }
+}
+
+query GetAcceptedExchangeOffer($orderID: Int!) {
+  getAcceptedExchangeOffer(orderID: $orderID) {
+    ID
+      exchangeOrderID
+      investorID
+      stoID
+      sharesPartial
+      rateFrom
+      rateTo
+      description
+      atomicSwapAccepted
+      atomicSwapSecret
+      atomicBuyerPublicKey
+      atomicSwapExpireDate
+    }
+  }
+
+
+query getExchangeNewOffer($currencyID: Int!, $stoID: Int!, $shareTypeID: Int!) {
+  investorBalance(currencyID: $currencyID, stoID: $stoID) {
+    amount
+  }
+  getSharesWallets(shareTypeID: $shareTypeID) {
+    ID
+    isBlocked
+    publicKey
+    shares
+  }
+}
+
+query getInvestorPlatformBalance($shareTypeID: Int!) {
+  getSharesWallets(shareTypeID: $shareTypeID, platform: true) {
+    shares
+  }
+  investorShare(shareTypeID: $shareTypeID) {
+    shares
+  }
+}

@@ -1,0 +1,572 @@
+{{> Header}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css">
+
+<style>
+.table-borderless > tbody > tr > td,
+.table-borderless > tbody > tr > th,
+.table-borderless > tfoot > tr > td,
+.table-borderless > tfoot > tr > th,
+.table-borderless > thead > tr > td,
+.table-borderless > thead > tr > th {
+    border: none; padding: 0;
+}
+</style>
+
+<script language="javascript">
+        const stoid = {{stoid}};
+
+        var changeRequestSTOID = 0;
+        $(document).ready(function() {
+            $("#DashboardMenu").addClass('active');
+
+            let element = document.getElementById("selectedSTO");
+            element.value = stoid;
+        })
+        function refreshDistrobutionAccountTokens() {
+            window.location.href = "/refreshDistributionAccountTokens?publicKey={{tokenInfo.Distribution}}";
+            return false;
+        }
+        function getDetails(id) {
+            window.location.href = "/updateDetails?id=" + id;
+            return false;
+        }
+        function submitInvestorPublicKey(stoid) {
+            if(document.getElementById("txtInvestorPublicKey").value === "") {
+                showModelGeneralOKDialogBox("Please enter your public key");
+                return false;
+            }
+            window.location.href = "changePublciAddress?publickey=" + document.getElementById("txtInvestorPublicKey").value + "&stoid=" + stoid;
+        }
+        function requestChangePublicKey(stoid) {
+            document.getElementById("txtRequestNewPublicKey").value = "";
+            changeRequestSTOID = stoid;
+            $('#modelInvestorRequestNewKey').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+        }
+        function sendNewChangeRequestForUser() {
+            if(document.getElementById("txtRequestNewPublicKey").value == "")
+            {
+                showModelGeneralOKDialogBox("You did not enter the public key");
+                return;
+            }
+
+            window.location.href = "changePublciAddress?publickey=" + document.getElementById("txtRequestNewPublicKey").value + "&stoid=" + changeRequestSTOID;
+        }
+        function deleteChangePublicKey(stoid) {
+            window.location.href = "deleteChangeKeyRequest?stoid=" + stoid;
+        }
+        function viewddocumentcontract(id) {
+            window.location.href = "contractview2?id=" + id;
+        }
+        function reviewcontractopen(id) {
+            window.location.href = "documentviewforcomments?id=" + id;
+        }
+        function changeSTO() {
+            var e = document.getElementById("selectedSTO");
+            var val = e.options[e.selectedIndex].value;
+            window.location.href = "changeInvestorSTO?id=" + val;
+        }
+        function viewinvidation(id) {
+			window.location.href = "viewInvitationsFromOtherCompany?id=" + id;
+			return false;
+        }
+        function viewpaymentalert(id) {
+            window.location.href = "viewinvestorpaymentalert?id=" + id;
+            return false;
+        }
+        function viewwallet(id) {
+            window.location.href = "viewInvestorWallet?id=" + id;
+            return false;
+        }
+</script>
+
+{{> HeaderInner}}
+
+<b><span id="ErrorMessages" style="color:red"> {{message}} </span></b>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="content">
+
+                    <div class="row">
+                        <div class="col-md-8">
+                                <div class="row">
+                                      <div class="col-md-2">
+                                            <label> {{#ifEqual Data.stoType 2}}    Company    {{else}}    STO    {{/ifEqual}} </label>
+                                      </div>
+                                      <div class="col-md-10">
+                                            <span style="font-size:22px;">{{Data.SiteParameter_PageTitle}}</span>
+                                      </div>
+                                </div>
+                                <br />
+
+                                {{#if investorRec.investorType}}
+                                    <div class="row">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                    <div class="col-md-2">
+                                                            <label>{{{__ "Name"}}}</label>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                            {{investorRec.FirstName}} {{investorRec.LastName}}
+                                                    </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                  <div class="col-md-2">
+                                                        <label> {{{__ "Company"}}} </label>
+                                                  </div>
+                                                  <div class="col-md-10">
+                                                        {{investorRec.CompanyName}}
+                                                  </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <br />
+                                {{/if}}
+
+                                <div class="row">
+                                    {{#if investorRec.investorType}}
+                                          <div class="col-md-2">
+                                                <label> {{{__ "Title-Within-Company"}}} </label>
+                                          </div>
+                                          <div class="col-md-4">
+                                                {{investorRec.TitleWithinCompany}}
+                                          </div>
+                                    {{else}}
+                                          <div class="col-md-2">
+                                                <label> {{{__ "Name"}}} </label>
+                                          </div>
+                                          <div class="col-md-4">
+                                                {{investorRec.FirstName}} {{investorRec.LastName}}
+                                          </div>
+                                    {{/if}}
+
+
+                                    <div class="col-md-6">
+                                        <label>ID</label> &nbsp; &nbsp; {{investorRec.ID}}
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label>{{{__ "Status"}}}</label>
+                                    </div>
+
+                                    <div class="col-md-10">
+                                         {{authType}} Investor
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <img src='/img/stologo/{{logo}}' style="max-width:160px; max-height:70px;">
+
+                            {{#ifGreater Data.investorSTOs.length 1}}
+                                <br /><br />
+                                <label>You are registered in following companies. Select and switch to other company dashboard </label> <br />
+                                <select id="selectedSTO" onchange="changeSTO()"   class="form-control border-input btn-secondary" style=" padding:5px; font-size:18px;">
+                                    {{#each Data.investorSTOs}}
+                                        <option value="{{this.id}}">{{this.title}}</option>
+                                    {{/each}}
+                                </select><br />
+                            {{/ifGreater}}
+                        </div>
+                    </div>
+
+                    {{#if invitations.length}}
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-7">
+                                <h4> <img src="/img/graydot.png" width="20px;"> &nbsp; Invitation to join company </h4>
+                                <label>You have received invitations from following companies. Click the view button to view the invitation and decide about joining the company</label>
+                                <br /><br />
+                                {{#each invitations}}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <img src='/img/stologo/{{this.logo}}' style="max-width:160px; max-height:70px;">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h5>{{this.title}}</h5>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button onclick="return viewinvidation({{this.id}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;View Invitation&nbsp;&nbsp;</button>
+                                        </div>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    {{/if}}
+
+                    {{#if paymentAlerts.length}}
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4> <img src="/img/graydot.png" width="18px;"> &nbsp; Payment Alert</h4>
+                                <label>You have received Payment alert from company administration. Please click view to settle the payment</label>
+                                <br />
+                                {{#each paymentAlerts}}
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            {{this.PaymentSendDate}}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{currencySymbol this.currencyIDRequested}}
+                                            {{numberFormat this.paymentRequested decimalLength="0"}}
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button onclick="return viewpaymentalert({{this.id}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;View&nbsp;&nbsp;</button>
+                                        </div>
+                                    </div>
+                                    <br />
+                                {{/each}}
+                            </div>
+                        </div>
+                    {{/if}}
+
+                    <br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    <img src="/img/investment.png" width="25px;" style="padding-bottom:7px;" />  &nbsp; {{{__ "Current-Holdings"}}}
+                </h4>
+            </div>
+            <div class="content">
+                {{#if investorSharesRecs.length}}
+                    <table class="table" >
+                        <thead style="font-size:12px;">
+                            <th></th>
+                            <th></th>
+                            <th>{{{__ "Shares"}}}</th>
+                            <th>{{{__ "Nominal-Value"}}}</th>
+                            <th></th>
+                        </thead>
+                        <tbody style="font-size:14px;">
+                            {{#each investorSharesRecs}}
+                                <tr>
+                                    <td style="width: 5%; vertical-align: top;">
+                                        {{#if this.isblockchain}}
+                                            <img src="/img/blockchainwallet.png" title="Tokenized Shares" width="22px;" />
+                                        {{else}}
+                                            <img src="/img/nonblockchain.png"  title="Non-tokenized Shares" width="25px;" />
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 30%; vertical-align: top;">
+                                        {{this.title}}
+                                    </td>
+                                    <td style="width: 15%; vertical-align: top;">
+                                        {{#if this.shares}}
+                                             {{numberFormat this.shares decimalLength="ShareCountInFractions"}}
+                                        {{/if}}
+                                    </td>
+                                    <td style="width: 20%; vertical-align: top;">
+                                        {{currencySymbol this.currencyid}} {{this.nominalValue}}
+                                    </td>
+                                    <td style="width: 25%; vertical-align: top;">
+                                        {{#if this.isblockchain}}
+                                            <button onclick="return viewwallet({{this.investorShareID}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;View Your Wallet&nbsp;&nbsp;</button>
+
+                                        {{/if}}
+                                    </td>
+                                </tr>
+                            {{/each}}
+
+                        </tbody>
+                    </table>
+
+                {{else}}
+                    <label>{{{__ "No-Records-Found"}}}</label>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h4 class="title">
+                                <img src="/img/shares.png" width="25px;" style="padding-bottom:7px;" />  &nbsp;   {{{__ "Investment-History"}}}
+                            </h4>
+                        </div>
+                    </div>
+            </div>
+            <div class="content">
+                {{#if transactionsRecs.length}}
+                    <table class="table">
+                        <tbody>
+                            {{#each transactionsRecs}}
+                            <tr>
+                                <td style="width: 15%; vertical-align: top;">{{this.DateTime}}</td>
+                                <td style="width: 40%; vertical-align: top;"><b>{{numberFormat this.TokensTransferred decimalLength="-"}} </b> &nbsp; {{this.title}}</td>
+                                <td style="width: 45%; vertical-align: top;">{{this.Description}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                {{else}}
+                    <label>{{{__ "No-Records-Found"}}}</label>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/document.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;  {{{__ "View-Update-Verification-Profile"}}} </h4>
+            </div>
+            <div class="content">
+                {{{__ "Your-current-investor-status-is"}}} <b>{{authType}}</b> {{{__ "You-can-change-your-verification-information"}}}
+                <br /><br />
+
+                <a href='wizard?step=0' class="btn btn-info btn-fill btn-wd"> {{{__ "View"}}} / {{{__ "Update"}}} </a>
+
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#if Data.isRegisteredInvestorInSTO}}
+    {{#if meetingRec.length}}
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/meeting.png" width="25px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Meetings"}}} </h4>
+                </div>
+                <div class="content">
+                    <table class="table table-borderless">
+                        <tbody>
+                                {{#each meetingRec}}
+                                    <tr>
+                                        <td style="width: 40%; vertical-align: top;">
+                                            {{this.title}}
+                                            <br /> &nbsp;
+                                        </td>
+                                        <td style="width: 2%; vertical-align: top;">  </td>
+                                        <td style="width: 15%; vertical-align: top;">
+                                            {{this.place}}
+                                            <br /> &nbsp;
+                                        </td>
+
+                                        <td style="width: 15%; vertical-align: top;">
+                                            {{this.opendate}}
+                                            <br /> &nbsp;
+                                        </td>
+
+                                        <td style="width: 18%; vertical-align: top;">
+                                            {{this.starttime}} - {{this.closetime}}
+                                            &nbsp; <span class="badge badge-secondary">{{this.timezone}}</span>
+                                            <br /> &nbsp;
+                                        </td>
+
+                                        <td style="width: 10%; vertical-align: top;">
+                                            <a href='/meetingdetails?id={{this.id}}' class="btn btn-info btn-fill btn-sm"> &nbsp;&nbsp; {{{../__ "View-Meeting-Agenda"}}} &nbsp;&nbsp;</a>
+                                            <br /> &nbsp;
+                                        </td>
+                                    </tr>
+
+                                {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/if}}
+{{/if}}
+
+{{#if votingRec.length}}
+    <div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/polls.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;  {{{__ "Open-Polls"}}} </h4>
+            </div>
+            <div class="content">
+                <table class="table table-borderless">
+                    <tbody>
+                        {{#each votingRec}}
+                            <tr>
+                                <td style="width: 37%; vertical-align: top;">
+                                    {{this.title}}
+                                    <br />
+                                </td>
+                                <td style="width: 3%; vertical-align: top;">  </td>
+                                <td style="width: 15%; vertical-align: top;">
+                                    {{this.opendate}}
+                                </td>
+
+                                <td style="width: 15%; vertical-align: top;">
+                                    {{this.closedate}}
+                                </td>
+
+                                <td style="width: 10%; vertical-align: top;">
+                                    <a href='/votingdetails?id={{this.id}}&stoid={{this.stoid}}' class="btn btn-info btn-fill btn-sm"> &nbsp;&nbsp; {{{../__ "View-Cast-Vote"}}} &nbsp;&nbsp;</a>
+                                    <br /><br />
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+{{/if}}
+
+{{#if ShowDocumentContractOfferSection}}
+    <div class="row topPaddingBetweenPageSections">
+       <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h4 class="title"> <img src="/img/contracts.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;  {{{__ "Contracts-Documents"}}} </h4>
+                                <label>{{{__ "Please see list of contracts below (signed and unsigned)"}}}</label>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="content">
+                    {{#if documensOfferRecs.length}}
+                        {{#each documensOfferRecs}}
+                            {{#if this.showForInvestor}}
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <img src="/img/greendot.png" width="15px;"/> &nbsp;&nbsp;
+                                        {{this.title}}
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        {{#ifEqual this.this.settledContract 1}}
+                                            <span style="color:red">{{{../__ "Contract-Settled"}}}</span>
+                                        {{else}}
+                                            {{#ifEqual this.count 1}}
+                                                <span style="color:red">{{{../__ "Signed"}}}</span>
+                                            {{/ifEqual}}
+                                        {{/ifEqual}}
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <button onclick="return viewddocumentcontract({{this.ID}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;{{{../__ "View"}}}&nbsp;&nbsp;</button>
+                                    </div>
+                                </div>
+                                <br />
+                            {{/if}}
+                        {{/each}}
+                    {{/if}}
+                </div>
+
+           </div>
+        </div>
+    </div>
+{{/if}}
+
+{{#if ShowDocumentCommentsSection}}
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/document2.png" width="25px;" style="padding-bottom:4px;" /> &nbsp; {{{__ "Documents for Suggestions"}}} </h4>
+                    <label>{{{__ "Following documents are shared by admin for suggestions and comments. Please review, comment or give suggestions"}}}</label>
+                </div>
+                <div class="content">
+                    <table class="table table-borderless">
+                        <tbody>
+                            {{#each documentforreview}}
+                                {{#if this.showForInvestor}}
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <img src="/img/greendot.png" width="15px;"/> &nbsp;&nbsp;
+                                            {{this.title}}
+                                        </div>
+                                        <div class="col-md-2"></div>
+                                        <div class="col-md-2">
+                                            <button onclick="return reviewcontractopen({{this.ID}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp;{{{../__ "Review"}}} / {{{../__ "Comment"}}} &nbsp;&nbsp;</button>
+                                        </div>
+                                    </div>
+                                    <br />
+                                {{/if}}
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/if}}
+
+{{#if updateRecords.length}}
+    <div class="row topPaddingBetweenPageSections">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">  <img src="/img/news.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;  {{{__ "Latest-Company-News-Updates"}}}</h4>
+                </div>
+                <div class="content">
+
+                        {{#each updateRecords}}
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 15%; vertical-align: top;">{{this.UpdateDate}} </td>
+                                        <td style="width: 55%; vertical-align: top;">{{this.TITLE}}</td>
+                                        <td style="width: 10%; vertical-align: top;">
+                                            <button onclick="return getDetails({{this.ID}})" class="btn btn-info btn-fill btn-sm">&nbsp;&nbsp; {{{../__ "View"}}}  &nbsp;&nbsp; </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        {{/each}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+{{/if}}
+
+<div class = "modal fade" id="modelInvestorRequestNewKey" tabindex = "-1" role = "dialog" aria-labelledby="modelInvestorRequestNewKey" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">Change Public Key Request</h4>
+         </div>
+
+         <div class="modal-body">
+             <b>Enter your new key</b> <br />
+             <input type="text" id="txtRequestNewPublicKey" name="txtRequestNewPublicKey" class="form-control border-input">
+
+             <br /> Admin will review your request. Once approved you will receive notification and then you have to transfer all of your tokens to the new public key
+         </div>
+
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="sendNewChangeRequestForUser()"> Send Your Request</button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+{{> Footer}}

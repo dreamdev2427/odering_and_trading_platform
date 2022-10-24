@@ -1,0 +1,7 @@
+{
+    "id": "subinvest",
+    "version": "staging",
+    "apiHostname": "api.subinvest.cz",
+    "frontendHostname": "investor.subinvest.cz",
+    "multistoHostname": "admin.subinvest.cz"
+}

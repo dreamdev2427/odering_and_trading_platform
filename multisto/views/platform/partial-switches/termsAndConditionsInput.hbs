@@ -1,0 +1,52 @@
+<script>
+    function updateTermsAndConditionsConfig() {
+        const tcLink = document.getElementById('tclink').value;
+        const tcText = document.getElementById('tctext').value;
+        const jsonValue = {link: tcLink, text: tcText};
+        document.getElementById('termsAndConditionsConfig-stringValue').value = JSON.stringify(jsonValue);
+        document.getElementById('termsAndConditionsConfig-redirectUrl').value = window.location.href;
+        document.getElementById('setTermsAndConditionsConfig').submit();
+    }
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" /> Custom Terms and Conditions</h4>
+                <label>Change the Terms and Conditions URL on the investor register page</label>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form method="post" id="setTermsAndConditionsConfig" action="postParamUpdateToApi" >
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>T&C Link</label>
+                                    <input type="text" class="form-control border-input" id="tclink" name="tclink" form="setTermsAndConditionsConfig" value="{{tcJSON.link}}"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Link text</label>
+                                    <input type="text" class="form-control border-input" id="tctext" name="tctext" form="setTermsAndConditionsConfig" value="{{tcJSON.text}}"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="button" onclick="updateTermsAndConditionsConfig()"
+                                            class="btn btn-info btn-fill">Update</button>
+                                </div>
+                            </div>
+                            <input type="hidden" id="termsAndConditionsConfig-intValue" name="intValue"/>
+                            <input type="hidden" id="termsAndConditionsConfig-stringValue" name="stringValue" value=""/>
+                            <input type="hidden" id="termsAndConditionsConfig-param" name="param" value="termsAndConditionsConfig" />
+                            <input type="hidden" id="termsAndConditionsConfig-redirectUrl" name="redirectUrl" value="/platform/platformsettings" />
+                            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

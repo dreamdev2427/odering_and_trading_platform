@@ -1,0 +1,133 @@
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.btnfile {
+  border: 0px;
+  color: white;
+  background-color: #68b3c8;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+input[type='radio'] {
+    -webkit-appearance:none;
+    width:20px;
+    height:20px;
+    border:1px solid darkgray;
+    border-radius:50%;
+    outline:none;
+    box-shadow:0 0 5px 0px gray inset;
+}
+input[type='radio']:hover {
+    box-shadow:0 0 10px 0px #505050 inset;
+}
+input[type='radio']:before {
+    content:'';
+    display:block;
+    width:100%;
+    height:100%;
+    border-radius:50%;
+}
+input[type='radio']:checked:before {
+    background:green;
+}
+
+.icons {
+    display:none;
+}
+
+.stopATagLink {
+    pointer-events: none;
+    cursor: default;
+}
+
+ button {
+  cursor: hand;
+}
+
+ body#LoginForm{
+    background-image:linear-gradient(#efefef, #c0c0c0);
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:cover;
+    padding:10px;
+    height: 100%;
+}
+
+.login-form .form-control {
+  background: #f7f7f7 none repeat scroll 0 0;
+  border: 1px solid #d4d4d4;
+  border-radius: 4px;
+  font-size: 14px;
+  height: 50px;
+  line-height: 50px;
+}
+
+.main-div {
+  background: #ffffff none repeat scroll 0 0;
+  border-radius: 2px;
+  max-width: 420px;
+  padding: 60px;
+}
+
+.login-form{
+    text-align:center;
+    padding: 0;
+    margin: 0;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-form  .btn.btn-primary {
+  background: #68b3c8 none repeat scroll 0 0;
+  border-color: #68b3c8;
+  color: #ffffff;
+  font-size: 14px;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  padding: 0;
+}
+
+.listingHeaderFontSize {
+    font-size:12px;
+    font-weight:bold;
+    vertical-align: text-top;
+}
+
+.topPaddingBetweenPageSections {
+    padding-top:20px;
+}
+
+/* From Bootstrap 4, not available in 3 */
+@media (min-width:992px) {
+    .pull-md-right {
+        float:right;
+    }
+}
+
+.modal-backdrop {
+    z-index: 1040;
+}

@@ -1,0 +1,164 @@
+{{> Header}}
+
+	<script language="javascript">
+
+        $(document).ready(function(){
+            $("#SystemUsers").addClass('active');                
+        })
+        function editUser(){
+            window.location.href = "systemUserAddEdit?id={{userRec.ID}}";
+            return false;
+        }            
+        function activateUser(flag){
+            window.location.href = "systemUserActivateDeactivate?id={{userRec.ID}}&boolFlag=" + flag;
+            return false;
+        }    
+        function deleteSTORight(id) {
+            window.location.href = "deleteSTORight?id=" + id + "&userid=" + {{userRec.ID}};
+            return false;
+        }
+        function showGiveSTORightsDialog() {
+            $('#modelSetSTORights').appendTo("body").modal( { backdrop: 'static', keyboard: true });   
+        }
+        function setSTORightForUser() {
+            window.location.href = "setNewSTORightForUser?stoid=" + document.getElementById("selectSTO").value + "&roleid=" + document.getElementById("selectSTORole").value + "&userid=" + {{userRec.ID}};
+            return false;            
+        }
+
+	</script>
+
+{{> HeaderInnerPlatform}}
+
+   <div class="col-lg-12 col-md-7">
+        <div class="card">
+            <div class="header">
+                    <div class="row">
+                        <div class="col-md-10">                                
+                            <h4 class="title">  <img src="/img/user.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  User Details</h4>
+                        </div>
+                        <div class="col-md-2">
+                            <button onclick="return editUser()"  class="btn btn-info btn-fill btn-sm">Edit User</button>
+                        </div>                                  
+                    </div>
+            </div>
+            <div class="content">
+                <form action="addnewinvestor" method="get">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Name</label>   &nbsp;&nbsp;&nbsp;   {{userRec.FirstName}} {{userRec.LastName}}
+                            </div>
+                        </div>                                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>ID</label>   &nbsp;&nbsp;&nbsp;   {{userRec.ID}} 
+                            </div>
+                        </div>                                        
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>User Name</label>  &nbsp;&nbsp;&nbsp;  {{userRec.Username}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>User Role</label>  &nbsp;&nbsp;&nbsp;  {{userRole}}
+                            </div>
+                        </div>
+                    </div>                                    
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Email</label>  &nbsp;&nbsp;&nbsp;  {{userRec.email}}
+                            </div>
+                        </div>
+                    </div>                                    
+                    
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Rights</label>  &nbsp;&nbsp;&nbsp;  {{roleRights}}
+                                <br>
+                                {{{Rights}}}
+                            </div>
+                        </div>
+                    </div>                                    
+
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Active </label>  &nbsp;&nbsp;&nbsp;  
+                                {{#if userRec.isActive}}
+                                    Yes &nbsp;&nbsp;&nbsp;
+                                    <img src="/img/greendot.png" width="20px" />
+                                     &nbsp;&nbsp;&nbsp;
+                                    <button onclick="return activateUser(false)" class="btn btn-info btn-fill btn-sm">De-Activate</button>                                                
+                                {{else}}
+                                    No  &nbsp;&nbsp;&nbsp;
+                                    <img src="/img/reddot.png" width="20px" />
+                                     &nbsp;&nbsp;&nbsp;
+                                    <button onclick="return activateUser(true)" class="btn btn-info btn-fill btn-sm">Activate</button>
+                                {{/if}}                                                
+                            </div>                                           
+                        </div>
+                    </div>
+
+                    <br><br><br>
+                    <div class="clearfix"></div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+<div class = "modal fade" id="modelSetSTORights" tabindex = "-1" role = "dialog" aria-labelledby = "modelSetSTORights" aria-hidden = "true">
+    <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">Set STO Rights</h4>
+         </div>
+
+         <div class="modal-body">
+
+                 <b>Select STO</b> <br />
+                 <select id="selectSTO"  style="font-size:16px;"  name="selectSTO" class="form-control border-input">                 
+                     {{#each STOS}}
+                        <option value="{{this.ID}}">{{this.title}}</option>
+                     {{/each}}
+                </select>
+                 <br />             
+                 <b>Select Role</b> <br />
+                 <select id="selectSTORole"  style="font-size:16px;"  name="selectSTORole" class="form-control border-input">
+                     {{#each STORoles}}
+                        <option value="{{this.ID}}">{{this.Role}}</option>
+                     {{/each}}
+                </select>             
+                <br />
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="setSTORightForUser()"> Set User Right</button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>                 
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+
+{{> Footer}}
+
+
+

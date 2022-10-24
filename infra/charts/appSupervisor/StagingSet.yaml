@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform-set
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://gitlab.com/digishares/digishares-platform.git
+        revision: staging
+        files:
+          - path: "infra/deployments/*.json"
+  template:
+    metadata:
+      name: 'testkit-{{id}}'
+    spec:
+      project: default
+      syncPolicy:
+        syncOptions:
+          - PruneLast=true
+        automated:
+          prune: true
+          selfHeal: true
+      source:
+        repoURL: 'https://gitlab.com/digishares/digishares-platform.git'
+        path: infra/charts/platform
+        targetRevision: staging
+        helm:
+          parameters:
+            - name: "id"
+              value: "{{id}}"
+            - name: "version"
+              value: "{{version}}"
+            - name: "apiHostname"
+              value: "{{apiHostname}}"
+            - name: "frontendHostname"
+              value: "{{frontendHostname}}"
+            - name: "multistoHostname"
+              value: "{{multistoHostname}}"
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: testkits

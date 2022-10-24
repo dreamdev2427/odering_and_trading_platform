@@ -1,0 +1,18 @@
+{
+  "default": "mysql",
+  "mysql": {
+    "driver": "mysql",
+    "user": {
+      "ENV": "MYSQL_USER"
+    },
+    "host": {
+      "ENV": "MYSQL_HOST"
+    },
+    "password": {
+      "ENV": "MYSQL_PASSWORD"
+    },
+    "database": {
+      "ENV": "MYSQL_DATABASE"
+    }
+  }
+}

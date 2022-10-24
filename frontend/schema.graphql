@@ -1,0 +1,1942 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type ActiveProperty {
+  ID: Int!
+  createdAt: DateTime!
+  details: String!
+  isBuyButtonEnabled: Boolean!
+  picture: String!
+  popularity: Int!
+  projectCost: Float!
+  title: String!
+}
+
+type Admin {
+  STO: Sto!
+  user: AdminUser!
+}
+
+type AdminUser {
+  FirstName: String
+  ID: Int!
+  LastName: String
+  Username: String!
+  email: String
+  isActive: Int
+  isPlatformAdminLogin: Int
+  stoid: Int
+  twofactorenable: Int
+}
+
+type AllMeeting {
+  current: [Meeting!]!
+  future: [Meeting!]!
+  past: [Meeting!]!
+}
+
+type AppParameters {
+  AccreddRedirectLink: String!
+  AccreditationProvider: AccreditationProviderEnum!
+  IsCheckMarkSignatureActive: Boolean!
+  IsDarwSignatureActive: Boolean!
+  IsDocuSignActive: Boolean!
+  IsHelloSignActive: Boolean!
+  IsInternalWalletDisabled: Boolean!
+  IsInternalWalletGlobal: Boolean!
+  IsInternalWalletStoSpecific: Boolean!
+  IsMarketSpace: Boolean!
+  IsMoonpayEnabled: Boolean!
+  KycProvider: KycProviders!
+  KycRequirementStep: KycRequirementStep!
+  SSORedirectFrontEnd: String!
+  areSTOHostnamesEnabled: Boolean!
+  binanceWeb3Address: String!
+  clientKYC: String!
+  doAutomaticBlockchainTransactionChecks: Boolean!
+  doAutomaticPurchase: Boolean!
+  doAutomaticSellBack: Boolean!
+  drawSignaturePrefillFonts: [String!]!
+  investorDashboardTheme: String!
+  is2FAEnabledByDefault: Boolean!
+  isAccreditationEnabled: Boolean!
+  isCloudStorageEnabled: Boolean!
+  isInvoicingEnabled: Boolean!
+  isPropertySortingEnabled: Boolean!
+  isSSOModeEnabled: Boolean!
+  leftSideMenuFont: String!
+  polygonWeb3Address: String!
+  poweredByLabel: String!
+  web3Address: String!
+  isInternalTokenizedPurchaseEnabled: Boolean!
+}
+
+type Chat {
+  ID: Int!
+  adminID: Int!
+  dateRead: Timestamp
+  dateSent: Timestamp!
+  investorID: Int!
+  isDeleted: Boolean!
+  isEdited: Boolean!
+  isRead: Boolean!
+  location: String
+  message: String!
+  receiver: RECEIVER_TYPE!
+  sender: SENDER_TYPE!
+  stoID: Int!
+  type: MESSAGE_TYPE!
+}
+
+type CloudFiles {
+  ID: Int!
+  fileName: String!
+  modified: DateTime!
+  url: String
+}
+
+type Currency {
+  Address: String
+  ID: Int!
+  abbreviation: String!
+  blockchainID: Int!
+  cryptoReceivingAddress: String!
+  currency: String!
+  isBlockchainBased: Boolean!
+  isNative: Float!
+  symbol: String!
+}
+
+type DetailProperty {
+  ID: Int!
+  createdAt: DateTime!
+  details: String!
+  documents: [PropertyFile!]
+  fullDetails: String!
+  images: [PropertyFile!]
+  isBuyButtonEnabled: Boolean!
+  picture: String!
+  popularity: Int!
+  projectCost: Float!
+  title: String!
+}
+
+type DividendInvestorPayout {
+  ID: Int!
+  amount: Float!
+  investorID: Int!
+  investorShares: Float!
+  lastUpdatedAt: Timestamp!
+  payoutID: Int!
+  status: String!
+}
+
+type Document {
+  ID: Int!
+  contents: String
+  directoryID: Float!
+  docusignDocumentID: String
+  filetype: Float!
+  helloSignDocumentID: String
+  offer: OfferedDocument
+  sharePurchaseDocument: SharePurchaseDocument
+  submittedDocument: DocumentUser
+  title: String!
+}
+
+type DocumentComment {
+  ID: Int!
+  dateReplyComment: DateTime
+  documentID: Int!
+  investorID: Int!
+  isAccepted: Int!
+  isNew: Int!
+  modified: DateTime
+  reply: DocumentCommentReply!
+  replyByID: Int!
+  replyText: String!
+  stoID: Float
+  text: String!
+}
+
+type DocumentCommentReply {
+  investorID: Int!
+  modified: DateTime!
+  text: String!
+}
+
+type DocumentField {
+  ID: Int!
+  documentID: Int!
+  externalFileDataLabel: String!
+  fieldID: String!
+  helperText: String!
+  stoID: Int!
+  title: String!
+  type: Int!
+}
+
+type DocumentUser {
+  ID: Int!
+  contents: String!
+  directoryID: Int
+  document: Document!
+  documentID: Int
+  documentOfferInvestorID: Int!
+  fieldValues: [DocumentUserFieldValue!]
+  fieldValuesJson: String!
+  investorID: Int
+  sharePurchaseID: Float
+  signature: CloudFiles
+  signatureDate: DateTime
+  signatureFileID: Float
+  signatureFilePath: String
+  status: Int!
+  stoID: Int
+}
+
+type DocumentUserFieldValue {
+  ID: String
+  value: String
+}
+
+type ExchangeOffer {
+  ID: Int!
+  atomicBuyerPublicKey: String
+  atomicSwapAccepted: Boolean
+  atomicSwapExpireDate: Timestamp
+  atomicSwapSecret: String
+  description: String
+  exchangeOrder: ExchangeOrder!
+  exchangeOrderID: Int!
+  investorID: Int!
+  rateFrom: Float!
+  rateTo: Float!
+  sharesPartial: Float!
+  stoID: Int!
+}
+
+type ExchangeOrder {
+  ID: Int!
+  atomicSwapAcceptable: Boolean!
+  atomicSwapCurrentStatus: AtomicSwapStatus!
+  atomicSwapExchangeOffersID: Int
+  atomicSwapSharesWallet: SharesWallet!
+  atomicSwapSharesWalletID: Int!
+  atomicSwapTokenAddressAcceptable: String
+  dateFrom: String!
+  dateTo: String!
+  description: String
+  investorID: Int!
+  rateFrom: Float!
+  rateTo: Float!
+  shareType: ShareType!
+  shareTypeID: Int!
+  shares: Float!
+  stoID: Int!
+  type: ExchangeType!
+}
+
+type Fee {
+  ID: Int!
+  amount: Float!
+  beneficiary: FEE_BENEFICIARY!
+  status: COMMISSION_TYPE!
+  stoID: Int!
+  type: FEE_TYPE!
+}
+
+type FeeCommission {
+  ID: Int!
+  amount: Float!
+  beneficiaryID: Int!
+  beneficiaryType: BROKER_TYPE
+  dateEarned: Timestamp!
+  feeID: Int!
+  status: PAYMENT_STATUS!
+  transactionID: Int!
+}
+
+type FileUploaded {
+  link: String!
+  name: String!
+}
+
+type Inbox {
+  ID: Int!
+  date: String!
+  details: String!
+  investorID: Int!
+  isResponded: Int!
+  response: String
+  responseDate: String
+  stoID: Int!
+  title: String!
+}
+
+type InvestingEntity {
+  ID: Int!
+  accredited: Boolean!
+  address: String!
+  city: String!
+  country: String!
+  investorID: Int!
+  members: [InvestingEntityMember!]!
+  name: String!
+  nickname: String!
+  paymentMethod: InvestingEntityPaymentMethods!
+  postalCode: String!
+  state: String!
+  taxId: String!
+  type: InvestingEntityTypes!
+  typeID: Int!
+}
+
+type InvestingEntityMember {
+  ID: Int!
+  email: String!
+  entityID: Int!
+  firstName: String!
+  investorID: Int!
+  lastName: String!
+  role: InvestingEntityMemberRoles!
+  signatory: Boolean!
+}
+
+type InvestingEntityTypes {
+  ID: Int!
+  countries: [String!]!
+  title: String!
+}
+
+type Investor {
+  ID: Int!
+  address: String
+  allowedTotalInvestment: Float!
+  birthDate: String
+  brokerID: String
+  cell: String
+  companyName: String
+  country: String
+  countryBusiness: String
+  countryCitizenship: String
+  dateIncorporation: String
+  email: String!
+  employerAddress: String
+  employerName: String
+  faxNumber: String
+  firstName: String!
+  govtID: String
+  investmentLimitUpdateDate: String!
+  investorType: Int!
+  isTax: Int!
+  isTwoFactorEnabled: Boolean!
+  kinemail: String
+  kinname: String
+  kinphone: String
+  language: String!
+  lastName: String!
+  mailingAddress: String
+  maritalStatus: Int!
+  middleName: String
+  nationalID: String
+  occupation: String
+  passportNumber: String
+  phone: String
+  powerToBindCompany: Int!
+  primaryContactEmail: String
+  primaryContactName: String
+  primaryContactPhone: String
+  retirementAccount: Int!
+  secondaryContactEmail: String
+  secondaryContactName: String
+  secondaryContactPhone: String
+  socialSecurity: String
+  state: String
+  taxCountry: String
+  taxID: String
+  titleWithinCompany: String
+  town: String
+  trustOrBusinessEntity: Int!
+  userName: String!
+  yearlyTotalInvestment: Float!
+  zip: String
+}
+
+type InvestorBalance {
+  ID: Int!
+  amount: Float!
+  currency: Currency!
+  currencyID: Int!
+  investorID: Int!
+  stoID: Int!
+}
+
+type InvestorBuyAlert {
+  ID: Int!
+  date: String!
+  fromCurrencyID: Int
+  isBuySharesSigned: Int!
+  isHiddenForInvestor: Boolean!
+  isSellRequest: Boolean!
+  purchasePriceOffered: Float
+  shareType: ShareType!
+  shareTypeID: Int!
+  shares: Float!
+  status: BuyAlertStatus!
+  stoID: Int!
+}
+
+type InvestorCategory {
+  label: String!
+  value: Int!
+}
+
+type InvestorDepositAlert {
+  ID: Int!
+  amount: Float!
+  currency: Currency!
+  currencyID: Int!
+  dateApproved: String!
+  dateReceived: String!
+  details: String!
+  isApproved: Int!
+  isWithdrawFundsRequest: Boolean!
+}
+
+type InvestorInvoices {
+  ID: Int!
+  amountToPay: Float!
+  buyAlertID: Int!
+  dateCreated: Timestamp!
+  dateUpdated: Timestamp
+  investorID: Int!
+  investorWallet: String
+  invoiceDescription: String
+  isBlockchain: Boolean!
+  paymentChannel: PaymentChannel
+  paymentChannelID: Int!
+  shareType: ShareType!
+  shareTypeID: Int!
+  shares: Float!
+  status: Int!
+  stoID: Int!
+}
+
+type InvestorSto {
+  ID: Int!
+  KycExpiryDate: String
+  applied: Boolean!
+  beneficialAddress: String
+  beneficialBirth: String
+  beneficialCity: String
+  beneficialCountry: String
+  beneficialEmail: String
+  beneficialFirstName: String
+  beneficialLastName: String
+  beneficialNationality: String
+  expectedInvestment: Int!
+  expectedShares: Int!
+  investorID: Int!
+  inviteFriendEmailText: String
+  isAccountClosed: Int!
+  isActive: Int!
+  isKYC: Int!
+  isUsufructuary: Int!
+  notes: String
+  status: Int!
+  stoID: Int!
+  updateDate: String!
+  usufructuaryAddress: String
+  usufructuaryCity: String
+  usufructuaryCountry: String
+  usufructuaryEmail: String
+  usufructuaryFirstName: String
+  usufructuaryLastName: String
+}
+
+type KycField {
+  description: String
+  error: String
+  label: String
+  name: String!
+  placeholder: String
+  required: Boolean!
+  type: String!
+  values: [KycFiledValue!]
+}
+
+type KycFiledValue {
+  label: String
+  value: String!
+}
+
+type KycPage {
+  fields: [KycField!]!
+  icon: String
+  name: String!
+  pages: [KycPage!]!
+  title: String!
+}
+
+type Meeting {
+  ID: Int!
+  closeDate: DateTime
+  closedate: String
+  emailProxyPerson: String
+  emailResponsiblePerson: String
+  nameProxyPerson: String
+  nameResponsiblePerson: String
+  openDate: DateTime
+  opendate: String
+  phoneProxyPerson: String
+  phoneResponsiblePerson: String
+  place: String
+  stoID: Int!
+  timePadding: Int!
+  timezone: String!
+  title: String!
+  type: Int!
+  voteType: Int!
+}
+
+type MercuryAccount {
+  accountNumber: String!
+  address: MercuryAddress!
+  electronicAccountType: String!
+  routingNumber: String!
+}
+
+type MercuryAddress {
+  address1: String!
+  city: String!
+  country: String!
+  postalCode: String!
+  region: String!
+}
+
+type MercuryInfo {
+  accountNumber: String!
+  routingNumber: String!
+}
+
+type MercuryRecipient {
+  electronicRoutingInfo: MercuryAccount!
+  emails: [String!]!
+  id: String!
+  name: String!
+  paymentMethod: String!
+}
+
+type MoonpayConfig {
+  "Preferred highlight color for the widget as specified in the MoonPay documentation"
+  colorCode: String
+  "Will price shares to this cryptocurrency."
+  defaultCurrency: String
+  "Can not be set manually. It's the ID of the platform currency automatically matching defaultCurrency."
+  defaultCurrencyID: String
+  "Value between 0-1. Will round down purchased shares whose fractional remainder is below this value."
+  doRoundDownOn: Float
+  "Value between 0-1. Will round up purchased shares whose fractional remainder is above this value."
+  doRoundUpOn: Float
+  "Enable/disable Moonpay as payment processor."
+  enabled: Boolean
+  "ISO 639-1 standard language code. Without this, the language used is the user's browser default."
+  language: String
+  "Use live data. CAUTION"
+  liveMode: Boolean
+  "The MoonPay base URL for live-data transactions"
+  liveUrl: String
+  "As specified in the MoonPay documentation"
+  lockAmount: Boolean
+  "Parameter from your Moonpay company account."
+  publishableKey: String
+  "MoonPay will redirect here on payment completion."
+  redirectUrl: String
+  "The MoonPay base URL for sandboxed transactions"
+  sandboxUrl: String
+  "Parameter from your Moonpay company account."
+  secretKey: String
+  "Set up wallets for your company Moonpay crypto. Can set one global and/or multiple STO-specific wallets. The system will detect the STO and match it to a wallet when a payment is performed."
+  stoWallets: [MoonpayStoWallet!]
+  "Parameter from your Moonpay company account."
+  webhookKey: String
+}
+
+type MoonpayStoWallet {
+  "We will use the wallet for this STO ID only, and prefer it over any default wallet. Set stoID to 0 to set as global default wallet, used in case the current STO (when the payment is happening) has no set wallet."
+  stoID: Int!
+  "Use this to configure a single wallet address"
+  walletAddress: String!
+  "(optional) The secondary cryptocurrency wallet address identifier for coins such as EOS, XRP and XMR"
+  walletAddressTag: String
+}
+
+type MoonpayTransactionData {
+  ID: Float!
+  dateUpdated: DateTime!
+  investorID: Int
+  localStatus: String!
+  "Data as we got it from MoonPay."
+  object: JSON
+  objectType: String!
+  referenceID: Int
+  shareTypeID: Int
+}
+
+type MoonpayTransactionJSON {
+  "Our own data for this transaction. Also contains `object` which == transactionJSON"
+  localData: MoonpayTransactionData!
+  "JSON as gotten from MoonPay. If we have it locally."
+  transactionJSON: JSON
+}
+
+type Mutation {
+  "Mutation for accept atomic swap"
+  acceptInternalSwap(offerID: Int!): Boolean!
+  addMetadataKey(key: String!): Boolean!
+  "Add new blockchain"
+  addNewBlockchain(title: String!): Boolean!
+  "Mutation for adding new investor bank details"
+  addNewInvestorBankAccount(data: InvestorBankAccountInput!): String!
+  "Mutation for Admin authorization"
+  adminSignIn(STO: Int, password: String!, platform: Boolean, username: String!): String
+  "Mutation for apply investor kyc profile"
+  applyKyc(applied: Boolean!): Boolean!
+  "Decrease an investor's available share balance and increase the company's shares in that type."
+  companyTransferShares(data: TransferShareInput!): Boolean!
+  createACHPayment(amount: Float!, idempotencyKey: String!, stoID: Int!): Boolean!
+  "Mutation for blockchain transaction transfer"
+  createBlockchainTransactionTransfer(data: BlockchainSharesTransferTransactionsInput!): Boolean!
+  "Create an exchange buy order"
+  createBuyOrder(order: ExchangeBuyOrderInput!): Boolean!
+  "Mutation for document comment creation"
+  createComment(documentID: Int!, text: String!): Int!
+  "Mutation for creation an investor for market space"
+  createInvestorMarketSpace(data: InvestorMarketSpaceInput!): Int!
+  "Create an exchange offer"
+  createOffer(offer: ExchangeOfferInput!): Boolean!
+  "Create an exchange sell order"
+  createSellOrder(order: ExchangeSellOrderInput!): Boolean!
+  "Mutation for removing Chat History"
+  deleteChatHistory(investorID: Int!, stoID: Int!): Boolean!
+  "Mutation for removing Chat History Permanently"
+  deleteChatHistoryPermanently(investorID: Int!, stoID: Int!): Boolean!
+  "Mutation for removing Chat List"
+  deleteChatList(stoID: Int!): Boolean!
+  "Mutation for removing Chat List Permanently"
+  deleteChatListPermanently(stoID: Int!): Boolean!
+  "Mutation for document comment deletion"
+  deleteComment(commentID: Int!): Boolean!
+  "Mutation for removing Customer Support's Chat History"
+  deleteCustomerSupportChatHistory(investorID: Int!, stoID: Int!): Boolean!
+  "Mutation for removing Customer Support's Chat History Permanently"
+  deleteCustomerSupportChatHistoryPermanently(investorID: Int!, stoID: Int!): Boolean!
+  "Mutation for removing Customer Support's Chat List"
+  deleteCustomerSupportChatList(stoID: Int!): Boolean!
+  "Mutation for removing Customer Support's Chat List Permanently"
+  deleteCustomerSupportChatListPermanently(stoID: Int!): Boolean!
+  "Remove an exchange offer"
+  deleteOffer(orderID: Int!): Boolean!
+  "Mutation for removing one single Message"
+  deleteOneMessage(chatID: Int!): Boolean!
+  "Mutation for removing one single Message Permanently"
+  deleteOneMessagePermanently(chatID: Int!): Boolean!
+  "Remove an exchange order"
+  deleteOrder(orderID: Int!): Boolean!
+  "Mutation for document deleteSharePurchaseRequest"
+  deleteSharePurchaseRequest(documentID: Int!): Boolean!
+  "Mutation for removing a Fee Commission"
+  feeCommissionDelete(feeCommissionID: Int!): Boolean!
+  "Mutation for removing all Fee Commissions"
+  feeCommissionDeleteAll: Boolean!
+  "Mutation for updating a Fee Commission"
+  feeCommissionUpdate(data: FeeCommissionInput!, feeCommissionID: Int!): Boolean!
+  "Mutation for creating a Fee"
+  feeCreate(data: FeeInput!): Boolean!
+  "Mutation for removing a Fee"
+  feeDelete(feeID: Int!): Boolean!
+  "Mutation for removing all Fees"
+  feeDeleteAll: Boolean!
+  "Mutation for updating a Fee"
+  feeUpdate(data: FeeInput!, feeID: Int!): Boolean!
+  "Mutation for delete uploaded files"
+  fileRemove(file: String!): Boolean!
+  "Mutation for upload investors files"
+  fileUpload(file: Upload!): FileUploaded!
+  "Mutation for update investor kyc profile"
+  fillKyc(data: JSON!): Boolean!
+  "Mutation for Investor authorization"
+  generateAPIToken: String!
+  "Mutation for Investor 2FA confirmation"
+  investor2FAConfirm(code: Int!): String!
+  "Mutation for update beneficial"
+  investorBeneficialUpdate(data: InvestorBeneficialInput!): Boolean!
+  "Create an investors buy alert"
+  investorBuyAlert(query: InvestorBuyAlertInput!): Int!
+  "Create an investors buy alert as admin or API"
+  investorBuyAlertAdmin(
+    data: InvestorBuyAlertInputAdmin!,
+    "Custom flow options"
+    options: InvestorBuyAlertOptions
+  ): Int!
+  "Mutation for hiding Investor Share Purchase Alert when no longer needed"
+  investorBuyAlertHide(alertID: Int!): Boolean!
+  "Create an investors buy alert for market space"
+  investorBuyAlertMarketSpace(data: InvestorBuyAlertMSInput!): Int!
+  "Mutation for removing/hiding Investor Share Purchase Alert"
+  investorBuyAlertRemove(alertID: Int!): Boolean!
+  "Mutation for removing Investor Share Purchase Alert as admin or API"
+  investorBuyAlertRemoveAdmin(alertID: Int!): Boolean!
+  "Mutation for change password"
+  investorChangePassword(data: ChangePasswordInput!): Boolean!
+  "Mutation for update investor company profile"
+  investorCompanyProfile(data: InvestorCompanyProfileInput!): Boolean!
+  "Create an investors deposit or withdraw alert"
+  investorDepositWithdrawAlert(data: InvestorDepositWithdrawAlertInput!): Boolean!
+  "Mutation for create inbox"
+  investorInboxCreate(data: InboxInput!): Int!
+  "Mutation for creating Investing Entities"
+  investorInvestingEntityCreate(data: InvestingEntityInput!): Boolean!
+  "Mutation for creating Investing Entity member"
+  investorInvestingEntityMemberCreate(data: InvestingEntityMemberInput!): Boolean!
+  "Mutation for remove Investing Entity members"
+  investorInvestingEntityMemberRemove(memberID: Int!): Boolean!
+  "Mutation for updating Investing Entity members"
+  investorInvestingEntityMemberUpdate(data: InvestingEntityMemberInput!, memberID: Int!): Boolean!
+  "Mutation for remove Investing Entities"
+  investorInvestingEntityRemove(entityID: Int!): Boolean!
+  "Mutation for updating Investing Entities"
+  investorInvestingEntityUpdate(data: InvestingEntityInput!, entityID: Int!): Boolean!
+  "Mutation for update investor profile"
+  investorProfile(data: InvestorProfileInput!): Boolean!
+  "Mutation for add public key"
+  investorPublicKeyAdd(blockchainID: Int!, title: String!): Boolean!
+  "Mutation for delete public key"
+  investorPublicKeyDelete(keyID: Int!): Boolean!
+  "Mutation for register investor vote"
+  investorRegisterVote(data: RegisterVoteInput!): Boolean!
+  "Mutation for reset password"
+  investorReset(email: String!, stoID: Int!): Boolean!
+  "Mutation for set new password"
+  investorSetPassword(data: SetPasswordInput!): Boolean!
+  "Mutation for toggle 2FA authorization"
+  investorToggleTwoFA: Boolean!
+  "Increase an investor's share balance and decrease the company's available shares in that type."
+  investorTransferShares(data: TransferShareInput!): Boolean!
+  "Mutation for update usufructuary"
+  investorUsufructuaryUpdate(data: InvestorUsufructuaryInput!): Boolean!
+  "Mutation for verify account"
+  investorVerify(secret: String!): Int!
+  "Mutation for creating a message"
+  messageCreate(data: ChatInput!): Int!
+  "Mutation for updating a message"
+  messageUpdate(chatID: Int!, data: ChatInput!): Boolean!
+  "Registers a payment sent from MoonPay, after the investor has initiated it. Both admin and investor role possible."
+  moonpayAddTransactionDefault(
+    "`transactionID` is a programmatic value, as received at your `redirectURL` webhook"
+    moonpayID: String!,
+    "`transactionStatus` is a programmatic value, as received at your `redirectURL` webhook"
+    status: String!
+  ): Boolean!
+  "Modify the platform configuration for Moonpay. Returns a status message on success."
+  moonpayConfigUpdate(config: MoonpayConfigInput!): String!
+  """
+
+  This mutation triggers a refresh process for the logged in investor. It will re-fetch the data from SumSub servers.
+  Mainly used in order to manually fetch the investor status, in case the webhook never reaches the api,
+  yet the UI element reports the user has been verified
+  """
+  refreshInvestorData: Boolean!
+  removeMetadataKey(key: String!): Boolean!
+  "Mutation for document sendContract"
+  sendContract(documentID: Int!): Boolean!
+  sendMercuryInstructionalEmail(accountNumber: String!, note: String!, routingNumber: String!, stoID: Int!): Boolean!
+  "Mutation for document sendSharePurchaseContract"
+  sendSharePurchaseContract(documentID: Int!, sharePurchaseID: Int!): Boolean!
+  "Set DocuSign signature for document. Similar to setSharePurchaseDocumentSignature."
+  setDocuSignSignature(documentID: Int!, docusignEnvelopeID: String!, sharePurchaseID: Int!): Boolean!
+  setMercuryRecipient(accountNumber: String!, routingNumber: String!): Boolean!
+  "Enable or disable an STO"
+  setSTOStatus(isActive: Boolean!, stoID: Int!): Boolean!
+  "Mutation for document setSharePurchaseDocumentSignature"
+  setSharePurchaseDocumentSignature(
+    base64: String!,
+    documentID: Int!,
+    "Include if using admin role"
+    investorID: Int,
+    sharePurchaseID: Int!
+  ): String!
+  "Mutation for document setSignature"
+  setSignature(base64: String!, documentID: Int!): String!
+  "Mutation for document setSubmittedDocument"
+  setSubmittedDocument(documentID: Int!, fieldValues: [DocumentFieldValueDTO!]!): Boolean!
+  "Mutation for document setSubmittedSharePurchaseDocument"
+  setSubmittedSharePurchaseDocument(documentID: Int!, fieldValues: [DocumentFieldValueDTO!]!, sharePurchaseID: Int!): Boolean!
+  "Set a theme config"
+  setThemeConfig(theme: String!): Boolean!
+  "Mutation for Investor authorization"
+  signIn(email: String!, password: String!, stoID: Int!): String!
+  "Mutation for Investor SSO authorization"
+  signInSSO(data: SignInSSOInput!): String!
+  "Mutation for Investor register"
+  signUp(data: SignUpInput!): Int!
+  "Mutation for sign up investor for market space"
+  signUpMarketSpace(data: SignUpMarketSpaceInput!): Int!
+  "Mutation for starting atomic swap"
+  startSwap(offerID: Int!): Boolean!
+  syncMercuryTransactions: Boolean!
+  "Transfer shares between two entities."
+  transferSharesBetween(data: TransferShareInput!, from: TransferEntity!, to: TransferEntity!): Boolean!
+  "Add new blockchain"
+  updateBlockchain(ID: Int!, title: String!): Boolean!
+  "Mutation for updating Chats to Seen status"
+  updateChatsToSeen(sender: SENDER_TYPE!, stoID: Int!): Boolean!
+  "Mutation for document comment updation"
+  updateComment(commentID: Int!, text: String!): Boolean!
+  "Update an exchange sell order"
+  updateSellOrder(data: ExchangeUpdateOrderInput!, orderID: Int!): Boolean!
+  "Check Blockchain Transaction with hash"
+  verifyTransactionFromBlockchain(data: VerifyCryptoReciepeInput!): String
+}
+
+"Represents all the data an investor needs in order to sign up via netki"
+type NetkiSignUpData {
+  "The access code required by the mobile app in order to start the KYC process"
+  accessCode: String!
+  "HTML code that nicely represents where the user can get this the Netki App"
+  mobileAppPanel: String!
+}
+
+type OfferedDocument {
+  ID: Int!
+  description: String!
+  document: Document
+  documentID: Int!
+  from: DateTime
+  title: String!
+  to: DateTime
+}
+
+type PaymentChannel {
+  ID: Int!
+  adminEmailBody: String!
+  adminEmailHeader: String!
+  canWithdrawFunds: Boolean!
+  channelType: PAYMENT_CHANNEL_TYPE!
+  currency: Currency!
+  currencyID: Int!
+  depositInstructionEmailHeader: String!
+  depositInstructionText: String!
+  details: String!
+  sendAdminEmail: Boolean!
+  sendInstructionalDepositEmail: Boolean!
+  title: String!
+}
+
+type Poll {
+  notVoted: Int!
+  totalInvestment: Int!
+  totalInvestors: Int!
+  totalShares: Int!
+}
+
+type PropertyFile {
+  ID: Int!
+  title: String!
+  url: String!
+}
+
+type PublicKey {
+  ID: Int!
+  blockchainID: Int!
+  title: String!
+}
+
+type PublicSto {
+  logo: String!
+  registrationText: String
+  settings: Settings!
+  stolinkfull: String!
+  title: String!
+}
+
+type Query {
+  "Mutation for Investor authorization"
+  adminMe: Admin
+  "Get documents that are active for investors"
+  commentableDocuments: [Document!]!
+  "Get investors Comments"
+  comments(documentID: Int!): [DocumentComment!]!
+  "Get all countries"
+  countries: [String!]!
+  "Get single document"
+  document(documentID: Int!): Document
+  "Get all Document Fields of a Document"
+  documentFields(documentID: Int!): [DocumentField!]!
+  "Get Signed DocuSign Document base64"
+  downloadSignedDocuSign(envelopeID: String!): String!
+  "Get Url of Signed HelloSign Document"
+  downloadSignedHelloSign(fileID: String!): String!
+  "Get all exchange orders"
+  exchangeOrders: [ExchangeOrder!]!
+  "Get all Fee Commissions"
+  fetchFeeCommissions(beneficiaryID: Int, beneficiaryType: BROKER_TYPE, feeID: Int, status: PAYMENT_STATUS, transactionID: Int): [FeeCommission!]!
+  "Get Fee Commission by ID"
+  fetchFeeCommissionsByID(feeCommissionID: Int!): FeeCommission!
+  "Get all Fees related to a specific STO"
+  fetchFees(beneficiary: FEE_BENEFICIARY, status: COMMISSION_TYPE, stoID: Int!, type: FEE_TYPE): [Fee!]!
+  "Mutation for Investor authorization"
+  findAdmins(email: String): [AdminUser!]!
+  "Get all blockchains available"
+  findAllBlockchains: [blockchains!]
+  "Get all currencies available"
+  findAllCurrencies: [Currency!]
+  "Mutation for listing all Investor accounts"
+  findAllInvestors: [Investor!]
+  "Get share types"
+  findAllShareTypes: [ShareType!]!
+  "Get all stos"
+  findAllSto: [Sto!]!
+  "Get specific currency"
+  findCurrency(currencyID: Int!): Currency
+  "Mutation for finding Investor accounts by *one* criterion among: ID, email, taxID, govtID."
+  findInvestor(email: String, govtID: String, investorID: Int, passportNumber: String, taxID: String): Investor
+  "Get investor dividend payouts"
+  findInvestorDividendPayouts: [DividendInvestorPayout!]!
+  "Mutation for finding multiple Investor accounts by Email array"
+  findInvestors(emails: [String!]!): [Investor!]
+  "Get share historical values"
+  findShareHistoricalValues(shareTypeID: Int!): [ShareHistoricalData!]!
+  "Get share types"
+  findShareTypes(stoID: Int): [ShareType!]!
+  "Get sto data"
+  findSto(ID: Int!): Sto
+  "Get Block Pass Client ID"
+  getBlockPassClientID: String!
+  "Get Chat by ID"
+  getChatByID(chatID: Int!): Chat!
+  "Get Sum of Fee Commissions by Beneficiary ID and Beneficiary Type"
+  getCommissionsSum(beneficiaryID: Int!, beneficiaryType: BROKER_TYPE, status: PAYMENT_STATUS): Float!
+  "Get DocuSign URL for signing redirect"
+  getDocuSignUrl(
+    documentID: Int!,
+    """
+
+    This is where the user will be redirected after signing the document.
+    The following ending parameters will be added to it: sharepurchaseid:number documentid:number envelopeid:string
+    If no URL is provided, the following link will be used: {sto0?.stolinkfull}/share-purchase-docu-sign-return?sharepurchaseid=number&documentid=number&envelopeid=string
+    """
+    preferredReturnURL: String!,
+    sharePurchaseID: Int!
+  ): String!
+  "Get investors exchange offer"
+  getExchangeOffer(orderID: Int!): ExchangeOffer
+  "Get investors exchange offers"
+  getExchangeOffers(stoID: Int!, type: ExchangeType!): [ExchangeOffer!]!
+  "Get exchange order by ID"
+  getExchangeOrder(orderID: Int!): ExchangeOrder!
+  "Get exchange orders offers"
+  getExchangeOrderOffers(orderID: Int!): [ExchangeOffer!]!
+  "Get all stos exchange orders"
+  getExchangeOrders(stoID: Int!): [ExchangeOrder!]!
+  "Get Full Name by ID"
+  getFullNameByID(userID: Int!): String!
+  "Get all Chats between Investor & Admin"
+  getInvestorAdminChats(filter: ChatFilterInput!): [Chat!]!
+  "Query for Getting the Sum of Investor's Collected Commissions"
+  getInvestorCommissionsSum(status: PAYMENT_STATUS): Float!
+  "Get investors exchange orders"
+  getInvestorExchangeOrders(stoID: Int, type: ExchangeType!): [ExchangeOrder!]!
+  "Get all Chats between Investor & Platform"
+  getInvestorPlatformChats(filter: ChatFilterInput!): [Chat!]!
+  "Get all investor types"
+  getInvestorTypes: [StoInvestorType!]!
+  "Query For Fetching Invitation Link"
+  getInvitationLink: String!
+  getMercuryAccountInfo: MercuryInfo
+  getMercuryRecipient: MercuryRecipient
+  getNetkiSignUpData: NetkiSignUpData!
+  "Get Submitted Document corresponding to Share Purchase ID"
+  getPrefilledDocumentValues(documentID: Int!, sharePurchaseID: Int!): [DocumentUserFieldValue!]!
+  "Get investors shares wallet"
+  getSharesWallets(platform: Boolean, shareTypeID: Int, stoID: Int): [SharesWallet!]!
+  "Get sum sub login token"
+  getSumSubInvestorToken: String!
+  "Get swap tokens"
+  getSwapTokens: [SwapToken!]!
+  "Query for Getting the Number of Investor's Unread Messages"
+  getUnreadMessagesCount(sender: SENDER_TYPE!, stoID: Int!): Int!
+  "Get Username by ID"
+  getUsernameByID(userID: Int!): String!
+  "Get the verifyInvestorCom url set in the database"
+  getVerifyInvestorUrl: String!
+  "Get active properties"
+  investorActiveProperties: [ActiveProperty!]!
+  "Get all meetings"
+  investorAllMeeting(stoID: Int!): AllMeeting!
+  "Get investors application parameters"
+  investorAppParameters: AppParameters!
+  "Get an investors balance"
+  investorBalance(ID: Int, currencyID: Int, stoID: Int): InvestorBalance
+  """
+
+  Get all investors balances at sto.
+  Note: if Internal Wallet Mode is set to global, this endpoint will always return values for sto 0
+  """
+  investorBalances(stoID: Int!): [InvestorBalance!]!
+  "Get all investors buy alerts"
+  investorBuyAlerts(status: BuyAlertStatus!): [InvestorBuyAlert!]
+  "Get all investors buy alerts"
+  investorBuyAlertsAdmin(
+    "Find this one alert ID specifically (in array) or return an empty array. Cancels out the other parameters."
+    alertID: Int,
+    "Filter by investor ID optionally. \"null\" == all investors"
+    investorID: Int,
+    "Filter by status optionally. By default the status is \"Pending\". \"null\" filter == \"Pending\""
+    status: BuyAlertStatus
+  ): [InvestorBuyAlert!]
+  "Get investors deposit history"
+  investorDepositHistory(stoID: Int!): [InvestorDepositAlert!]!
+  "Get property details"
+  investorDetailProperty(stoID: Int!): DetailProperty!
+  "Get an investors inbox"
+  investorInbox(ID: Int!): Inbox
+  "Get all investors inboxes"
+  investorInboxes(
+    limit: Int,
+    offset: Int,
+    "passing a negative value will fetch all records for all stos"
+    stoID: Int!
+  ): [Inbox!]
+  "Get all investors Investing Entities"
+  investorInvestingEntities: [InvestingEntity!]!
+  "Get investors Investing Entity"
+  investorInvestingEntity(entityID: Int!): InvestingEntity!
+  "Get All Investing Entity Types"
+  investorInvestingEntityTypes: [InvestingEntityTypes!]!
+  "Get a specific investors invoice alert"
+  investorInvoiceAlert(ID: Int!): InvestorInvoices!
+  "Get all investors invoice alerts"
+  investorInvoiceAlerts: [InvestorInvoices!]!
+  "Get investor kyc information"
+  investorKyc: JSON!
+  "Get meeting data"
+  investorMeeting(meetingID: Int!): Meeting
+  "Get all stos payment channels"
+  investorPaymentChannels(stoID: Int!): [PaymentChannel!]!
+  "Get poll statistics data"
+  investorPoll(meetingID: Int!): Poll!
+  "Get investors public keys"
+  investorPublicKeys: [PublicKey!]
+  "Get investor active STOs"
+  investorRelatedSto: [ActiveProperty!]!
+  "Get an investors share"
+  investorShare(ID: Int, shareTypeID: Int): Share
+  "Get an investor's share balance(s) in a share type(s)"
+  investorShareBalance(investorID: Int!, shareTypeIDs: [Int!]): [Share!]!
+  "Get all investors shares"
+  investorShares(investorID: Int, stoID: Int): [Share!]!
+  "Get investor sto information"
+  investorSto(stoID: Int): InvestorSto!
+  "Get a one update"
+  investorUpdate(ID: Int!): Update
+  "Get all updates from sto"
+  investorUpdates(
+    limit: Int,
+    offset: Int,
+    "passing a negative value will fetch all records for all stos"
+    stoID: Int!
+  ): [Update!]
+  "Get all users data"
+  investorUser: User
+  "Get investor selection"
+  investorUserVoting(votingID: Int!): [VotingUser!]!
+  "Get voting document"
+  investorVotingDocument(documentID: Int!): VotingDocuments
+  "Get voting options"
+  investorVotingOptions(votingID: Int!): [VotingOption!]!
+  "Get voting user data"
+  investorVotingUserData(votingID: Int!): VotingUserData
+  "Get Kyc structure"
+  kyc: [KycPage!]!
+  "Get all translations or translations for locale"
+  locales: [String!]!
+  "Get all accessible transactions, re-fetch them from MoonPay. Limit for refreshed data is top 50 newest transactions."
+  moonpayAllTransactionsJSON: [JSON!]
+  "Get all accessible transactions as admin or API, re-fetch them from MoonPay. Limit for refreshed data is top 50 newest transactions."
+  moonpayAllTransactionsJSONAdmin(investorID: Int!): [JSON!]
+  "Get transaction for buy alert as investor (who has interacted with Moonpay, so not just an empty reserved transaction), re-fetch from MoonPay."
+  moonpayBuyAlertTransactionJSON(alertID: Int!): MoonpayTransactionJSON
+  "Get transaction for buy alert as admin or API (where investor has interacted with Moonpay, so not just an empty reserved transaction), re-fetch from MoonPay."
+  moonpayBuyAlertTransactionJSONAdmin(alertID: Int!): MoonpayTransactionJSON
+  "Get transaction receipt for buy alert, as investor."
+  moonpayBuyAlertTransactionReceiptUrl(alertID: Int!): String
+  "Get the platform configuration for Moonpay. Warning: Contains sensitive information."
+  moonpayConfig: MoonpayConfig!
+  "Get transaction by its local ID (externalTransactionId) if accessible, re-fetch from MoonPay."
+  moonpayGetTransactionJSON(transactionID: Int!): MoonpayTransactionJSON
+  "Get transaction by its local ID (externalTransactionId on MoonPay) if accessible, re-fetch from MoonPay."
+  moonpayGetTransactionJSONAdmin(investorID: Int!, transactionID: Int!): MoonpayTransactionJSON
+  "Get last transaction for investor (where he has interacted with Moonpay, so not just an empty reserved transaction), re-fetch from MoonPay."
+  moonpayLastTransactionJSON: MoonpayTransactionJSON
+  "NB: If you want to match a buy alert, use another endpoint. Get last transaction for investor as admin or API (where he has interacted with Moonpay, so not just an empty reserved transaction), re-fetch from MoonPay."
+  moonpayLastTransactionJSONAdmin(
+    investorID: Int!,
+    "Set this if you want to get more than one transaction. There may be a hard limit on MoonPay's end"
+    limit: Int
+  ): MoonpayTransactionJSON
+  "Get URL for Moonpay widget with configuration. Optionally match to buy alert immediately. (Reserves a transaction)"
+  moonpayWidgetUrl(alertID: Int, shareTypeID: Int!, shares: Float!): String!
+  "Get URL for Moonpay widget with configuration, as admin or API. Optionally match to buy alert immediately. (Reserves a transaction)"
+  moonpayWidgetUrlAdmin(alertID: Int, investorID: Int!, shareTypeID: Int!, shares: Float!): String!
+  "Get an investors Offered Document by the documentId"
+  offeredDocument(documentID: Int!): OfferedDocument!
+  "Get investors Offered Documents valid currently"
+  offeredDocuments: [OfferedDocument!]!
+  "Get public sto data"
+  publicSto(stoID: Int!): PublicSto
+  "Send a HelloSign contract signing request to the investor"
+  sendHelloSignTemplateSignRequest(documentID: Int!, sharePurchaseID: Int!): String!
+  "Get Submitted Document corresponding to Share Purchase ID"
+  sharePurchaseDocument(
+    documentID: Int!,
+    "Include if using admin role"
+    investorID: Int,
+    sharePurchaseID: Int!
+  ): DocumentUser
+  "Get documents required for purchasing shares"
+  sharePurchaseDocuments(
+    "Include if using admin role"
+    investorID: Int,
+    sharePurchaseID: Int!
+  ): [SharePurchaseDocument!]!
+  "Get investors Submitted Document by Id"
+  submittedDocument(submittedDocumentID: Int!): DocumentUser
+  "Get investors Submitted Documents"
+  submittedDocuments(minStatus: Int!): [DocumentUser!]!
+  "Get all translations or translations for locale"
+  translations(locale: String): [Translation!]!
+  "Get investors Unfinished Documents"
+  unfinishedDocument(documentID: Int!): DocumentUser
+  "Query for new, unverified registrations, which will become investor records once verified by email. Only when email verification is required to access the dashbaord. Optionally, can be searched by exact ID, email, or secret"
+  unverifiedRegistrations(ID: Int, email: String, secret: String): [Register!]!
+}
+
+type Register {
+  ID: Int!
+  brokerID: String
+  companyName: String
+  date: DateTime
+  email: String!
+  firstName: String
+  investorType: Int!
+  lastName: String
+  referByInvestorID: Int!
+  secret: String
+  stoID: Int!
+}
+
+type Settings {
+  favicon: String
+  investorCategories: [InvestorCategory!]!
+  isInternalExchangeEnabled: Int!
+  tabTitle: String
+}
+
+type Share {
+  ID: Int!
+  investorID: Int!
+  isBlockchainAuthorized: Int!
+  isBlockchainFrozen: Int!
+  publicKey: String!
+  shareType: ShareType!
+  shareTypeID: Int!
+  shares: Float!
+  sharesHistoryID: Int!
+  stoID: Int!
+}
+
+type ShareHistoricalData {
+  ID: Int!
+  dateOfChange: Timestamp
+  premiumValue: Float!
+  shareTypeID: Int!
+  stoID: Int!
+}
+
+type SharePurchaseDocument {
+  document: Document!
+  requireOnce: Int!
+  status: Int!
+}
+
+type ShareType {
+  ID: Int!
+  availableShare: Float!
+  channelIDForAutoPayments: Int
+  companyShares: Float!
+  currency: Currency!
+  currencyID: Int!
+  custodianShares: Float!
+  ethereumBlockchainPublicAddress: String
+  isBlockchain: Boolean!
+  isCertificateNosApplicable: Boolean!
+  isShareNosApplicable: Boolean!
+  minimumSharesToBuyByInvestor: Float!
+  nominalValue: Float!
+  premiumValue: Float!
+  sellToCompany: Boolean!
+  sellValue: Float!
+  stoID: Int!
+  title: String!
+  totalPrice: Float!
+  totalShares: Float!
+}
+
+type SharesWallet {
+  ID: Int!
+  investor: Investor
+  investorID: Int!
+  isBlocked: Boolean
+  publicKey: String
+  shareType: ShareType!
+  shareTypeID: Int!
+  shares: Float!
+}
+
+type Sto {
+  ID: Int!
+  baseCurrencyID: Int!
+  companyType: Int!
+  createdAt: Timestamp!
+  details: String!
+  disclaimer: String!
+  documents: [PropertyFile!]!
+  docusign_sto_contract: String!
+  docusign_sto_purchase: String!
+  emailFooter: String!
+  ethereumContractAddress: String!
+  ethereumWhitelistAddress: String!
+  exchangeOpenDate: String!
+  externalSystemID: Int!
+  fullDetails: String!
+  helloSignClientID: String
+  images: [PropertyFile!]!
+  inviteFriendEmailText: String!
+  isActive: Int!
+  isBimountEnabled: Int
+  isBuyButtonEnabled: Boolean!
+  legalDetails: String!
+  logo: String!
+  logoUrl: String!
+  meta: [StoMetaValue!]!
+  parsedSettings: Settings!
+  picture: String!
+  popularity: Int!
+  projectAddress: String!
+  projectCost: Int
+  propertyPicture: String!
+  registrationSuccessText: String!
+  registrationText: String
+  stoInvestorTypes: [Int!]!
+  stoInvestorTypesNotOnShareRegister: [Int!]!
+  stoType: Int!
+  stolink: String!
+  stolinkfull: String!
+  tellAFriendText: String!
+  title: String!
+  verifyInvestorComHostToken: String
+  website: String!
+}
+
+type StoInvestorType {
+  ID: Float!
+  type: String!
+}
+
+type StoMetaValue {
+  display: Boolean!
+  key: String!
+  order: Float!
+  stoID: Float!
+  value: String!
+}
+
+type SwapToken {
+  ID: Int!
+  address: String
+  name: String
+  symbol: String
+}
+
+type Translation {
+  key: String!
+  locale: String!
+  translation: String!
+}
+
+type Update {
+  ID: Int!
+  coverphoto: String!
+  date: String!
+  details: String!
+  stoID: Int!
+  title: String!
+}
+
+type User {
+  investor: Investor!
+  investorSto: InvestorSto!
+  sto: Sto!
+}
+
+type VotingDocuments {
+  ID: Int!
+  description: String
+  documentLink: String!
+  title: String!
+  votingID: Int!
+  votingOption: VotingOption!
+  votingOptionID: Int!
+}
+
+type VotingOption {
+  ID: Int!
+  companyComments: String!
+  description: String
+  documents: [VotingDocuments!]!
+  isActiveByAdmin: Int!
+  optionTxt: String!
+  userVotedOption: VotingUser
+  votingID: Int!
+  votingUserStatistic: VotingUserStatistic!
+}
+
+type VotingUser {
+  ID: Int!
+  investmentContributed: Int!
+  isCastedByInvestor: Int!
+  nominalInvestmentContributed: Int!
+  userID: Int!
+  votesContributed: Int!
+  votingID: Int!
+  votingOption: VotingOption!
+  votingOptionID: Int!
+  votingOptionValue: Int!
+}
+
+type VotingUserData {
+  ID: Int!
+  attendMeeting: Int!
+  investorID: Int!
+  unannouncedDecision: Int!
+  votingID: Int!
+}
+
+type VotingUserStatistic {
+  count: Int!
+  votesAbstention: Int!
+  votesNo: Int!
+  votesYes: Int!
+}
+
+type blockchains {
+  ID: Int!
+  title: String!
+}
+
+"Denotes the providers supported by the platform"
+enum AccreditationProviderEnum {
+  Accredd
+  VerifyInvestor
+}
+
+"Statuses of atomic swap operations"
+enum AtomicSwapStatus {
+  ACCEPTED
+  BUYER_COMMITTED
+  BUYER_COMPLETED
+  NOT_INITIALIZED
+  PROCESSED
+  SELLER_COMMITTED
+  SELLER_SENT
+  UNSUCCESSFUL
+}
+
+"All Kinds of Broker Types"
+enum BROKER_TYPE {
+  Broker
+  Investor
+}
+
+enum BuyAlertStatus {
+  "Shares transferred"
+  Accepted
+  "Blocked for a reason"
+  Declined
+  "Paymend process is awaiting interaction from user"
+  PaymentAwaiting
+  "Paymend process failed"
+  PaymentFailure
+  "Paymend process is ongoing"
+  PaymentOngoing
+  "Waiting for administration to approve"
+  Pending
+  "Not ready for processing"
+  Unused
+}
+
+"All Kinds of Commission Types"
+enum COMMISSION_TYPE {
+  Flat
+  Percentage
+}
+
+"Types of exchange operations"
+enum ExchangeType {
+  BUY
+  SELL
+}
+
+"All Kinds of Fee Beneficiaries"
+enum FEE_BENEFICIARY {
+  Broker
+  Platform
+}
+
+"All Kinds of Fee Types"
+enum FEE_TYPE {
+  BuyExchange
+  BuyShares
+  Deposit
+  Registration
+  SellBack
+  SellExchange
+}
+
+"Roles of the Investing entity member"
+enum InvestingEntityMemberRoles {
+  ACCOUNTANT
+  ADVISOR
+  INVESTOR
+}
+
+"Payment methods of the Investing entity"
+enum InvestingEntityPaymentMethods {
+  ACH
+  BLOCKCHAIN
+  MAIL
+  WIRE
+}
+
+"Kyc providers supported by the platform"
+enum KycProviders {
+  BlockPass
+  Internal
+  Netki
+  SumSub
+}
+
+"Denotes the step at which the platform should require the investor to pass KYC"
+enum KycRequirementStep {
+  Ignore
+  OnPurchase
+  OnRegister
+}
+
+"All Types of Message"
+enum MESSAGE_TYPE {
+  File
+  Message
+}
+
+"All Kinds of Payment Channel Types"
+enum PAYMENT_CHANNEL_TYPE {
+  Internal
+  Mercury
+}
+
+"The Status of the Commission Fee Payment"
+enum PAYMENT_STATUS {
+  Completed
+  Pending
+  Rejected
+}
+
+"All Types of Message Receiver"
+enum RECEIVER_TYPE {
+  Admin
+  Investor
+  Platform
+}
+
+"All Types of Message Sender"
+enum SENDER_TYPE {
+  Admin
+  Investor
+  Platform
+}
+
+"Represents an actor type in a share transfer"
+enum TransferEntity {
+  Company
+  Custodian
+  Investor
+}
+
+"The javascript `Date` as string. Type represents date and time as the ISO Date string."
+scalar DateTime
+
+"The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)."
+scalar JSON
+
+"The javascript `Date` as integer. Type represents date and time as number of milliseconds from start of UNIX epoch."
+scalar Timestamp
+
+"The `Upload` scalar type represents a file upload."
+scalar Upload
+
+"Investor blockchain share transaction create data"
+input BlockchainSharesTransferTransactionsInput {
+  adminID: Float!
+  amountToSend: Float!
+  investmentAmount: Float!
+  investmentDetails: String
+  investorID: Float
+  recordDate: DateTime!
+  reduceInvestorBalance: Float!
+  shareTypeID: Float!
+  status: Float!
+  stoID: Float
+  toAddress: String!
+}
+
+"Change password data"
+input ChangePasswordInput {
+  newPassword: String!
+  oldPassword: String!
+  repeatPassword: String!
+}
+
+"Chat Filter"
+input ChatFilterInput {
+  adminID: Int
+  dateRead: Timestamp
+  dateSent: Timestamp
+  investorID: Int
+  isDeleted: Boolean
+  isEdited: Boolean
+  isRead: Boolean
+  location: String
+  message: String
+  receiver: RECEIVER_TYPE
+  sender: SENDER_TYPE
+  stoID: Int
+  type: MESSAGE_TYPE
+}
+
+"Chat Data"
+input ChatInput {
+  adminID: Int!
+  dateSent: Timestamp
+  investorID: Int!
+  location: String
+  message: String!
+  receiver: RECEIVER_TYPE!
+  sender: SENDER_TYPE!
+  stoID: Int!
+  type: MESSAGE_TYPE
+}
+
+"Document Submitted entiry data"
+input DocumentFieldValueDTO {
+  ID: String!
+  value: String!
+}
+
+input ExchangeBuyOrderInput {
+  dateFrom: String
+  dateTo: String
+  rateFrom: Float!
+  shareTypeID: Int!
+  shares: Float!
+}
+
+input ExchangeOfferInput {
+  atomicBuyerPublicKey: String!
+  description: String
+  exchangeOrderID: Int!
+  rateFrom: Float!
+  sharesPartial: Float!
+}
+
+input ExchangeSellOrderInput {
+  atomicSwapSharesWalletID: Int
+  atomicSwapTokenAddressAcceptable: String
+  dateFrom: String
+  dateTo: String
+  description: String
+  rateFrom: Float!
+  shareTypeID: Int!
+  shares: Float!
+}
+
+input ExchangeUpdateOrderInput {
+  dateTo: String
+  description: String
+  rateFrom: Float!
+}
+
+"Fee Commission data"
+input FeeCommissionInput {
+  amount: Float!
+  beneficiaryID: Int!
+  beneficiaryType: BROKER_TYPE
+  dateEarned: Timestamp
+  feeID: Int!
+  status: PAYMENT_STATUS
+  transactionID: Int!
+}
+
+"Fee data"
+input FeeInput {
+  amount: Float!
+  beneficiary: FEE_BENEFICIARY!
+  status: COMMISSION_TYPE!
+  stoID: Int!
+  type: FEE_TYPE!
+}
+
+"Investor inbox create data"
+input InboxInput {
+  content: String!
+  stoID: Float!
+  title: String!
+}
+
+"Investors Investing Entity data for creating or updating"
+input InvestingEntityInput {
+  accredited: Boolean!
+  address: String!
+  city: String!
+  country: String!
+  name: String!
+  nickname: String!
+  paymentMethod: InvestingEntityPaymentMethods!
+  postalCode: String!
+  state: String!
+  taxId: String!
+  typeID: Float!
+}
+
+"Investors Investing Entity members data"
+input InvestingEntityMemberInput {
+  email: String!
+  entityID: Float!
+  firstName: String!
+  lastName: String!
+  role: InvestingEntityMemberRoles!
+  signatory: Boolean!
+}
+
+"Investor Bank Account Input"
+input InvestorBankAccountInput {
+  accountHolderAddress: String!
+  accountHolderCity: String!
+  accountHolderCountry: String!
+  accountHolderName: String!
+  accountNo: String!
+  accountPostalCode: String!
+  accountTitle: String!
+  bankAddress: String!
+  bankCity: String!
+  bankCountry: String!
+  bankName: String!
+  iban: String!
+  routingNumber: String!
+  swift: String!
+}
+
+"Investor beneficial data"
+input InvestorBeneficialInput {
+  ID: Float!
+  beneficialAddress: String!
+  beneficialBirth: String!
+  beneficialCity: String!
+  beneficialCountry: String!
+  beneficialEmail: String!
+  beneficialFirstName: String!
+  beneficialLastName: String!
+  beneficialNationality: String!
+}
+
+"Investors buy alert data"
+input InvestorBuyAlertInput {
+  details: String
+  "Investor has acknowledged or deliberately invisible"
+  isHiddenForInvestor: Boolean
+  publicKey: String
+  shareTypeID: Int!
+  shares: Float!
+  "Optionally set a custom status upon insertion if you have your own purchasing flow. Restricted to API users and platform admins."
+  status: BuyAlertStatus
+  stoID: Int!
+  total: Float
+}
+
+"Investors buy alert data"
+input InvestorBuyAlertInputAdmin {
+  details: String
+  investorID: Int!
+  "Investor has acknowledged or deliberately invisible"
+  isHiddenForInvestor: Boolean
+  publicKey: String
+  shareTypeID: Int!
+  shares: Float!
+  "Optionally set a custom status upon insertion if you have your own purchasing flow. Restricted to API users and platform admins."
+  status: BuyAlertStatus
+  stoID: Int!
+  total: Float
+}
+
+input InvestorBuyAlertMSInput {
+  details: String
+  entityID: Int!
+  "Investor has acknowledged or deliberately invisible"
+  isHiddenForInvestor: Boolean
+  publicKey: String
+  shareTypeID: Int!
+  shares: Float!
+  "Optionally set a custom status upon insertion if you have your own purchasing flow. Restricted to API users and platform admins."
+  status: BuyAlertStatus
+  stoID: Int!
+  total: Float
+}
+
+"Custom flow options for purchasing"
+input InvestorBuyAlertOptions {
+  "Will allow you to create multiple requests for the same share type (can lead to spam!). Please be sure to know what you are doing."
+  ignoreAllPreviousRequests: Boolean
+  "Ignore investing entity"
+  ignoreEntity: Boolean
+  "Will automatically set requests as signed, ignoring all signature requirements"
+  ignoreSignatures: Boolean
+  "Do not restrict based on wallet balance"
+  ignoreWalletBalance: Boolean
+}
+
+"Investor company profile data"
+input InvestorCompanyProfileInput {
+  address: String!
+  birthDate: String!
+  companyName: String!
+  country: String!
+  firstName: String!
+  kinemail: String
+  kinname: String
+  kinphone: String
+  lastName: String!
+  nationalID: String!
+  notes: String!
+  passportNumber: String!
+  phone: String!
+  powerToBindCompany: Int!
+  state: String!
+  titleWithinCompany: String!
+  town: String!
+  zip: String!
+}
+
+"Customization options for creating investor via API"
+input InvestorCreateOptions {
+  "Assumes you trust and approve the KYC input for this investor. Marks the user as KYC-approved and enables related actions."
+  autoAcceptKyc: Boolean
+}
+
+"Investors buy alert common fields"
+input InvestorDepositWithdrawAlertInput {
+  amount: Float!
+  bankAccount: String
+  bankName: String
+  channelID: Int!
+  details: String
+  isWithdrawRequest: Boolean!
+  stoID: Int!
+  swiftCode: String
+  transactionID: String
+}
+
+input InvestorMarketSpaceInput {
+  address: String!
+  brokerID: String
+  city: String!
+  companyName: String
+  country: String!
+  email: String!
+  firstName: String!
+  investorType: Int!
+  kyc: JSON!
+  lastName: String!
+  options: InvestorCreateOptions
+  password: String!
+  phone: String!
+  referredBy: String
+  referredByID: Float
+  state: String!
+  stoID: Int!
+  zip: String!
+}
+
+"Investor profile data"
+input InvestorProfileInput {
+  address: String!
+  birthDate: String!
+  country: String!
+  firstName: String!
+  kinemail: String
+  kinname: String
+  kinphone: String
+  lastName: String!
+  nationalID: String!
+  notes: String!
+  passportNumber: String!
+  phone: String!
+  state: String!
+  town: String!
+  zip: String!
+}
+
+"Investor usufructuary data"
+input InvestorUsufructuaryInput {
+  ID: Float!
+  isUsufructuary: Float!
+  usufructuaryAddress: String!
+  usufructuaryCity: String!
+  usufructuaryCountry: String!
+  usufructuaryEmail: String!
+  usufructuaryFirstName: String!
+  usufructuaryLastName: String!
+}
+
+input MoonpayConfigInput {
+  "Preferred highlight color for the widget as specified in the MoonPay documentation"
+  colorCode: String
+  "Will price shares to this cryptocurrency."
+  defaultCurrency: String
+  "Can not be set manually. It's the ID of the platform currency automatically matching defaultCurrency."
+  defaultCurrencyID: String
+  "Value between 0-1. Will round down purchased shares whose fractional remainder is below this value."
+  doRoundDownOn: Float
+  "Value between 0-1. Will round up purchased shares whose fractional remainder is above this value."
+  doRoundUpOn: Float
+  "Enable/disable Moonpay as payment processor."
+  enabled: Boolean
+  "ISO 639-1 standard language code. Without this, the language used is the user's browser default."
+  language: String
+  "Use live data. CAUTION"
+  liveMode: Boolean
+  "The MoonPay base URL for live-data transactions"
+  liveUrl: String
+  "As specified in the MoonPay documentation"
+  lockAmount: Boolean
+  "Parameter from your Moonpay company account."
+  publishableKey: String
+  "MoonPay will redirect here on payment completion."
+  redirectUrl: String
+  "The MoonPay base URL for sandboxed transactions"
+  sandboxUrl: String
+  "Parameter from your Moonpay company account."
+  secretKey: String
+  "Set up wallets for your company Moonpay crypto. Can set one global and/or multiple STO-specific wallets. The system will detect the STO and match it to a wallet when a payment is performed."
+  stoWallets: [MoonpayStoWalletInput!]
+  "Parameter from your Moonpay company account."
+  webhookKey: String
+}
+
+input MoonpayStoWalletInput {
+  "We will use the wallet for this STO ID only, and prefer it over any default wallet. Set stoID to 0 to set as global default wallet, used in case the current STO (when the payment is happening) has no set wallet."
+  stoID: Int!
+  "Use this to configure a single wallet address"
+  walletAddress: String!
+  "(optional) The secondary cryptocurrency wallet address identifier for coins such as EOS, XRP and XMR"
+  walletAddressTag: String
+}
+
+"Register Investor vote data"
+input RegisterVoteInput {
+  meetingID: Float!
+  optionID: Float!
+  type: Float!
+  vote: Float!
+}
+
+"Set password data"
+input SetPasswordInput {
+  password: String!
+  token: String!
+}
+
+"SSO investor data"
+input SignInSSOInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+}
+
+"New investor data"
+input SignUpInput {
+  brokerID: String
+  companyName: String
+  email: String!
+  firstName: String!
+  investorType: Int!
+  lastName: String!
+  password: String!
+  stoID: Int!
+}
+
+input SignUpMarketSpaceInput {
+  address: String!
+  brokerID: String
+  city: String!
+  companyName: String
+  country: String!
+  email: String!
+  firstName: String!
+  investorType: Int!
+  lastName: String!
+  password: String!
+  phone: String!
+  referredBy: String
+  referredByID: Float
+  state: String!
+  stoID: Int!
+  zip: String!
+}
+
+"Transfer share data"
+input TransferShareInput {
+  certificateNos: String
+  investorID: Int!
+  shareNos: String
+  shareTypeID: Int!
+  stoID: Int!
+  "Idempotency token to verify transfer"
+  token: String
+  tokensToTransfer: Float!
+}
+
+"Crypto Reciepe data"
+input VerifyCryptoReciepeInput {
+  amount: Float!
+  channelID: Int!
+  currencyID: Int!
+  details: String!
+  stoID: Int!
+  transactionHash: String!
+}

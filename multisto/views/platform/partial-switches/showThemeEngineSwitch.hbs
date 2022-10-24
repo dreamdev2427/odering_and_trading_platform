@@ -1,0 +1,41 @@
+<script>
+    function changeShowThemeEngineSwitch(isChecked) {
+      document.getElementById('showThemeEngineSwitchEnabled-intValue').value = +isChecked;
+      document.getElementById('showThemeEngineSwitchEnabled-redirectUrl').value = window.location.href;
+      document.getElementById('postShowThemeEngineSwitchEnabled').submit();
+    }
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="header">
+        <h4 class="title">  <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;" alt='add more'/> Theming engine</h4>
+        <label>Allow the investor to format their UI with various colours for fonts and componenets.</label>
+      </div>
+      <div class="content">
+        <form method="post" id="postShowThemeEngineSwitchEnabled" action="postParamUpdateToApi">
+          <div class="row">
+            <div class="col-md-12">
+              <label class="switch">
+                <input id="isPropertySortingEnabled"
+                       onclick=changeShowThemeEngineSwitch(this.checked) type="checkbox"
+                  {{#if toggleThemeEditor}}
+                       checked
+                  {{/if}}
+                >
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" id="showThemeEngineSwitchEnabled-intValue" name="intValue"/>
+          <input type="hidden" id="showThemeEngineSwitchEnabled-stringValue" name="stringValue" value=""/>
+          <input type="hidden" name="param" value="toggleThemeEditor" />
+          <input type="hidden" id="showThemeEngineSwitchEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+          <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

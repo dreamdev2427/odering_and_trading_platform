@@ -1,0 +1,57 @@
+<script>
+  function setParamsByValue(param) {
+    document.getElementById('defaultProjectType-intValue').value = +param;
+    document.getElementById('defaultProjectType-redirectUrl').value = window.location.href;
+    document.getElementById('postDefaultProjectType').submit();
+  }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;"
+                        alt='add more' /> Project Type</h4>
+                <label>Select default default type for project creation</label>
+            </div>
+            <div class="content">
+                <form method="post" id="postDefaultProjectType" action="postParamUpdateToApi">
+                    <div class="row">
+                        <div class="col-md-12">
+                                <div class="btn-group" role="group" id="defaultProjectType">
+                                    <button onclick="setParamsByValue(1)"
+                                        {{#ifEqual defaultProjectType 1}}
+                                            class="btn btn-info btn-fill"
+                                        {{else}}
+                                            class="btn btn-secondary btn-fill"
+                                        {{/ifEqual}}>
+                                        Tokenized
+                                    </button>
+                                    <button onclick="setParamsByValue(2)"
+                                        {{#ifEqual defaultProjectType 2}}
+                                            class="btn btn-info btn-fill"
+                                        {{else}}
+                                            class="btn btn-secondary btn-fill"
+                                        {{/ifEqual}}>
+                                        Non-Tokenized
+                                    </button>
+                                    <button onclick="setParamsByValue(3)"
+                                        {{#ifEqual defaultProjectType 3}}
+                                            class="btn btn-info btn-fill"
+                                        {{else}}
+                                            class="btn btn-secondary btn-fill"
+                                        {{/ifEqual}}>
+                                        Combined
+                                    </button>
+                                </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="defaultProjectType-intValue" name="intValue" />
+                    <input type="hidden" id="defaultProjectType-stringValue" name="stringValue" value="" />
+                    <input type="hidden" id="defaultProjectType-param" name="param" value="defaultProjectType" />
+                    <input type="hidden" id="defaultProjectType-redirectUrl" name="redirectUrl" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,160 @@
+{{> Header}}
+
+	<script language="javascript">
+    
+    $(document).ready(function(){
+        $("#InvestorsMenu").addClass('active');
+    })
+    function backToInvestor() {
+        window.location.href = "investorsviewsto?id={{rec.InvestorID}}";
+        return false;
+    }
+    function downloadInvestorContractPDF(filetype) {
+        window.location.href = "downloadContractDocument?id={{rec.ID}}&filetype=" + filetype;
+        return false;
+    }
+    function settleContract() {
+        window.location.href = "settleInvestorContract?id={{rec.ID}}";
+        return false;        
+    }
+    function deleteInvestorContract() {
+        window.location.href = "deleteInvestorContract?id={{rec.ID}}";
+        return false;
+    }        
+
+	</script>
+
+{{> HeaderInnerSto}}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Contract Details</h4>
+                </div>
+                <div class="content">
+                        
+                        <span style="color:red; font-size:18px">{{messages}}</span>
+                    
+                        <div class="row">
+                            <div class="col-md-2"><label>Investor Name</label></div>
+                            <div class="col-md-10">{{invRec.FirstName}} {{invRec.LastName}}</div>
+                        </div>
+                        <br/>
+
+                    
+                        <div class="row">
+                            <div class="col-md-2"><label>Country</label></div>
+                            <div class="col-md-10">{{invRec.town}} {{invRec.state}} {{invRec.country}}  &nbsp;&nbsp;&nbsp;&nbsp;  ( {{invRec.phone}} ) </div>
+                        </div>
+                        <br/>
+                    
+
+                        <div class="row">
+                            <div class="col-md-2"><label>Email</label></div>
+                            <div class="col-md-10">{{invRec.email}} </div>
+                        </div>
+                        <br/><hr /><br/>
+                    
+                    
+                        <div class="row">
+                            <div class="col-md-2"><label>Contract Title</label></div>
+                            <div class="col-md-10">{{rec.ContractTitle}}</div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-md-2"><label>Contract Details</label></div>
+                            <div class="col-md-10">{{rec.ContractDetails}}</div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2"><label>Date Offered</label></div>
+                            <div class="col-md-10">{{rec.DateOffered}}</div>
+                        </div>                
+                        <br />  
+                    
+                        {{#ifIn rec.CurrentStatus '[0, 1]'}}
+                            {{#ifIn 1 Data.AdminRights}}
+                                <div class="row">
+                                        <div class="col-md-4"><label>Download original contract</label></div>
+                                        <div class="col-md-4"><button type="button" class="btn btn-info btn-fill btn-sm" onclick="downloadInvestorContractPDF(0)">Download Contract</button></div>           
+                                </div>                
+                            {{/ifIn}}
+                        {{/ifIn}}
+                    
+                        <br />
+                    
+                        {{#ifEqual rec.CurrentStatus 0}}
+                            <div class="row">
+                                    <div class="col-md-4">
+                                        <h5 style="color:red;">
+                                            Contract is not yet signed by investor
+                                        </h5>
+                                    </div>
+                            
+                                    <div class="col-md-4">
+                                        {{#ifIn 5 Data.AdminRights}}
+                                            <button type="button" onclick="return deleteInvestorContract()" class="btn btn-info btn-fill btn-sm">Delete Contract</button>
+                                        {{/ifIn}}
+                                    </div>
+                            </div>
+                    
+                        {{/ifEqual}}
+
+                        {{#ifEqual rec.CurrentStatus 1}}
+
+                            <hr />
+
+                            <label>Contract has been signed by the investor. Download and if correct and then click Settle</label>
+
+                            <br /><br />
+
+                            <div class="row">
+                                <div class="col-md-3"><label>Contract Signed</label></div>
+                                <div class="col-md-7">{{rec.DateSigned}}</div>
+                            </div>
+
+                            <br />
+
+                            <div class="row">
+                                <div class="col-md-3"><label>Download Signed Contract PDF</label></div>
+                                
+                                {{#ifIn 1 Data.AdminRights}}
+                                    <div class="col-md-4"><button type="button" class="btn btn-info btn-fill btn-sm" onclick="downloadInvestorContractPDF(1)">Download Signed Contract</button></div>
+                                {{/ifIn}}
+
+                                {{#ifIn 5 Data.AdminRights}}
+                                    <div class="col-md-4"><button type="button" class="btn btn-info btn-fill btn-sm" onclick="settleContract()">Settle Contract</button></div>
+                                {{/ifIn}}
+                            </div>                
+
+                            <hr />
+
+                        {{/ifEqual}}      
+
+                        {{#ifEqual rec.CurrentStatus 2}}
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-3"><label>Contract has been settled</label></div>
+                                {{#ifIn 1 Data.AdminRights}}
+                                    <div class="col-md-4"><button type="button" class="btn btn-info btn-fill btn-sm" onclick="downloadInvestorContractPDF(1)">Download Signed Contract</button></div>          
+                                {{/ifIn}}
+                            </div>
+                            <hr />
+                        {{/ifEqual}}                                
+
+                        <br /><br />      
+
+                        <div class="text-left">                                    
+                            <button type="button" onclick="return backToInvestor()" class="btn btn-info btn-fill btn-wd">Back</button>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                    <br><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{> Footer}}

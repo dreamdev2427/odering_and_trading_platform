@@ -1,0 +1,186 @@
+
+<script language="javascript">        
+    var MinUSD = 10000;
+    var MinEUR = 8248;
+    var investorType2 = "{{stepData.investorType}}"
+    var currencySelected = "{{stepData.Currency}}"    
+    
+    $(document).ready(function(){
+        $("input[name=investorType]").val([investorType2]);
+
+		if(!currencySelected == "") {
+			var element = document.getElementById("Currency");
+			element.value = currencySelected;            
+		}
+		
+		currencyChange();
+    })
+    function submitForm() {
+        
+        var res = "";
+        
+		if(document.getElementById("investorType").value == "")
+			res = res + "<li>Please select one option of question Do you view yourself as</li>";        
+		
+        if(document.getElementById("TotalAmount").value == "")
+        {
+            res = res + "<li>Amount is required</li>";        
+        }
+        else
+        {
+            var e = document.getElementById ("Currency");
+            var cur = e.options [e.selectedIndex] .value;
+            
+            
+            if(isNaN(document.getElementById("TotalAmount").value)) 
+                res = res + "<li>Amount must be numeric</li>";        
+            
+            if(! isNaN(document.getElementById("TotalAmount").value)) 
+            {
+                val = parseInt(document.getElementById("TotalAmount").value);
+                
+                if(cur=="EUR" && val < MinEUR)
+                    res = res + "<li>Please enter minimum € " + MinEUR + "</li>";        
+                else if(cur=="USD" && val < MinUSD)
+                    res = res + "<li>Please enter minimum $ " + MinUSD + "</li>";        
+            }
+        }
+        
+        
+        if(res == "")
+            document.getElementById("wizardForm").submit();
+        else
+        {
+            $(window).scrollTop(500);
+            $("#ErrorMessages").html(res)
+        }        
+        
+    }
+    function currencyChange() {
+        
+        var e = document.getElementById ("Currency");
+        var cur = e.options [e.selectedIndex] .value;
+
+        if(cur == "EUR")
+            $("#currencyAmount").html( " ( Minimum € " + MinEUR + " )" ); 
+        if(cur == "USD")
+            $("#currencyAmount").html( " ( Minimum $ " + MinUSD + " )" );
+		
+    }
+    function showbox() {
+        $('#myModal').appendTo("body").modal( { backdrop: 'static', keyboard: true });        
+    }    
+    function downloadFile(id) { 
+        if (id == 1)
+            window.open('../docs/DigiShares.pdf', '_blank');
+        else if (id == 2)
+            window.open('../docs/digishares-brochure.pdf', '_blank');
+        else if (id == 3)
+            window.open('../docs/DigiShares-OM.pdf', '_blank');        
+    }
+    
+</script>
+
+
+
+<div class="row topPaddingBetweenPageSections">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Investment Details</h4>
+            </div>
+            <div class="content">
+                <form id="wizardForm" name="wizardForm" action="wizardPost" method="post">
+
+
+
+                        <ul style="color:red;"><span id="ErrorMessages">{{messages}}</span></ul>    
+
+                        <br />
+                        Below please indicate how much you are interested in investing in project(s).
+                        <br />
+                        The number is not in any way binding.
+                        <br /><br />
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Select Currency </label>
+
+                                    <select onchange="currencyChange()" id="Currency" name="Currency" class="form-control border-input" value="{{stepData.Currency}}" >
+                                        <option value="USD">USD</option>
+                                        <option value="EUR">EUR</option>
+                                    </select>                
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Enter Amount <span id="currencyAmount">( Min $5500 )</span> </label>
+                                    <input type="text" maxlength="60" name="TotalAmount" id="TotalAmount" class="form-control border-input" placeholder="Enter Amount" value="{{stepData.TotalAmount}}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <br />
+                                    <label>Do you view yourself as </label>
+                                      <br />
+                                      <input type="radio" id="investorType" name="investorType"  value="A retail investor ($100-$10,000 investments)" /> &nbsp;&nbsp;&nbsp;&nbsp;  A retail investor ($100-$10,000 investments)
+                                      <br /><br />
+                                      <input type="radio" id="investorType"  name="investorType" value="An angel investor ($10,000-$100,000 investments)" />  &nbsp;&nbsp;&nbsp;&nbsp; An angel investor ($10,000-$100,000 investments)
+                                      <br /><br />
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="ID" value="{{InvestorRecord.ID}}">
+                        <input type="hidden" name="CurrentPageSubmitted" value="{{currentPageID}}" />
+                        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+
+                        <br /><br />
+                        <button type="button" onclick="submitForm()" class="btn btn-info btn-fill btn-wd">Save and Next</button>
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <a href='wizard?step=2' class="btn btn-info btn-fill btn-wd"> Next without Save </a>     
+
+                    </form>
+
+                <br /><br />
+
+                <div class="footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class = "modal fade" id = "myModal" tabindex = "-1" role = "dialog" 
+   aria-labelledby = "myModalLabel" aria-hidden = "true">
+
+   <div class = "modal-dialog">
+      <div class = "modal-content">
+
+         <div class = "modal-body">
+            <br /><br />
+            <span style="color:gray; padding-left:20px;">File not available yet</span>
+            <br /><br />
+         </div>
+
+         <div class = "modal-footer">                 
+            <button type = "button" class = "btn btn-default" data-dismiss = "modal">
+               Close
+            </button>                 
+         </div>
+
+      </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+    

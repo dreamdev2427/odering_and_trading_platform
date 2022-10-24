@@ -1,0 +1,73 @@
+{{> Header}}
+
+<script language="javascript">
+  const is2FAEnabledByDefault = JSON.parse(decodeURIComponent("{{is2FAEnabledByDefault}}"));
+  const is2FAForcedForAll  = JSON.parse(decodeURIComponent("{{is2FAForcedForAll}}"));
+
+  $(document).ready(function() {
+    if(!!is2FAEnabledByDefault.intValue) document.getElementById('newRegisters').setAttribute('checked','true');
+    if(!!is2FAForcedForAll.intValue) document.getElementById('existingRegisters').setAttribute('checked', 'true');
+  })
+  
+  function saveTwoFactorSettings() {
+    document.getElementById('set2FASettings').submit();
+  }
+</script>
+
+{{> HeaderInnerPlatform}}
+
+<div class="col-md-12">
+  <div class="card">
+    <div class="header">
+      <h4 class="title">  <img src="/img/lock.png" width="30px;" style="padding-bottom:4px;" alt='add more' />Change two-factor settings</h4>
+      <label>Change platform settings in regards to two-factor authentication</label>
+    </div>
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <form id="set2FASettings" action="/platform/postTwoFactorSettings" method="post">
+            <div class="row">
+              <div class="col-md-1">
+                <label class="switch">
+                  <input id="newRegisters" name="is2FAEnabledByDefaultToggle" type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="col-md-11">
+                <div class="row">
+                  Enable two-factor on registration
+                </div>
+                <div class="row">
+                  <label>
+                    New investors will have two-factor authentication forcefully enabled on registration.
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-1">
+                <label class="switch">
+                  <input id="existingRegisters" name="is2FAForcedForAllToggle" type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+              <div class="col-md-11">
+                <div class="row">
+                  Force enable two-factor on existing investors
+                </div>
+                <div class="row">
+                  <label>
+                    All existing investors, and future ones, will have two-factor authentication forcefully enabled.
+                  </label>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+          </form>
+          <button onclick="saveTwoFactorSettings()" class="btn btn-info btn-fill">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{> Footer}}

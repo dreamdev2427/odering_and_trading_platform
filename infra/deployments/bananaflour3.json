@@ -1,0 +1,7 @@
+{
+    "id": "bananaflour3",
+    "version": "staging",
+    "apiHostname": "api.madesbananaflour.com",
+    "frontendHostname": "investor.madesbananaflour.com",
+    "multistoHostname": "admin.madesbananaflour.com"
+}

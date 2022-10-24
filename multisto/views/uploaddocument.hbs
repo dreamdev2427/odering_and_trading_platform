@@ -1,0 +1,92 @@
+{{> Header}}
+
+<script language="javascript">
+
+    $(document).ready(function(){
+        $("#InvestorsMenu").addClass('active');
+    })
+    function backToInvestor() {
+        window.location.href = "investorsViewSto?id=" + document.getElementById('id').value;
+        return false;
+    }
+    function submitForm() {
+        var fileInput = null;
+        fileInput = document.getElementById('fileUpload');
+
+        if(fileInput.value == "")
+            showModelGeneralOKDialogBox("Please select a file to upload");
+        else if(document.getElementById('title').value == "")
+            showModelGeneralOKDialogBox("Please enter document title")
+        else
+            document.getElementById("frmFile").submit();
+    }
+
+    function fileValidation2() {
+        checkAndUpdateMultiFileUpload('files222', 'upload-file2', MultifileMultifileExtensions1, MultifileMultifileExtensions1msg, 1, MultifileMultifileMaxFileSizeMB1);
+    }
+    function uploadFileToDir() {
+        uploadMultiplefilesToServer('files222', "fileUplodProgressUpload", 3, '/admin/uploadFiles');
+    }
+    function multipleFilesUploadingDoneEvent(data) {
+        document.getElementById("title").value = document.getElementById("title2").value;
+        document.getElementById("files").value = JSON.stringify(data);
+        document.getElementById("frmuploadfiles").submit();
+    }
+
+</script>
+
+{{> HeaderInnerSto}}
+
+{{>multifileupload}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Upload Document</h4>
+            </div>
+            <div class="content">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label>Document Title</label>
+                                <input type="text" name="title2" id="title2" class="form-control border-input" placeholder="Document Title" value="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                             <div class="upload-btn-wrapper">
+                                 <button class="btnfile">Select File</button>
+                                 <input   id="files222"   name="files222" type="file"  onchange="fileValidation2()" >
+                                 &nbsp;&nbsp;&nbsp;&nbsp;
+                                 <span style="color: green; font-size: 12px; " id="upload-file2">No File Selected</span>
+                             </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div id="fileUplodProgressUpload" class="progress-bar" role="progressbar" style="width: 0px;" ></div>
+                        </div>
+                     </div>
+
+                    <br />
+                    <button type = "button" class = "btn btn-info btn-fill btn-wd" data-dismiss = "modal" onclick="uploadFileToDir()" id="createButton"> Upload File </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button type="button" onclick="return backToInvestor()" class="btn btn-info btn-fill  btn-wd">Cancel</button>
+                    <br><br><br><br>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="frmuploadfiles" name="frmuploadfiles" action="/admin/uploaddocumentPost"  method="post">
+    <input type="hidden" id="title" name="title" value="" />
+    <input type="hidden" id="id" name="id" value="{{id}}" />
+    <input type="hidden" id="files" name="files" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

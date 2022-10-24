@@ -1,0 +1,117 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function() {
+        $("#documents").addClass('active');
+    })
+    function sendAdminRes(id, name) {
+        $("#responseInvestor").html(name);
+        $("#commentid").val(id);
+        document.getElementById("commentid").value = id;
+        $('#modelSendReply').appendTo("body").modal( { backdrop: 'static', keyboard: true });
+    }
+    function sendAdminResponse() {
+        document.getElementById("commentresponse").value = document.getElementById("txtinvestorresponse").value;
+        document.getElementById("frmSendDocumentResponse").submit();
+    }
+    function backtodoc() {
+        window.location.href = "doc?id={{docid}}&dirid={{record.directoryid}}";
+    }
+</script>
+
+<style></style>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h4 class="title">  <img src="/img/comments.png" width="30px"> &nbsp; Investor Suggestions / Comments</h4>
+                        <label>Suggestion and comments from investors. Admin can reply back those comments</label>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" onclick="return backtodoc()" class="btn btn-info btn-fill">Back to Document</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="content">
+                <span id="maindocument">
+
+                        <label>Document</label> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span style="font-size:22px; color:blue">{{record.title}} </span>
+
+                        <br /><br />
+
+                        {{#each comments}}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <img src="/img/greendot.png" width="25px"> &nbsp;&nbsp;&nbsp;
+                                    <label>Commented by</label> &nbsp;
+                                    <span style="font-size:18px; color:blue"> {{this.FirstName}} {{this.Lastname}} </span>
+                                    &nbsp;&nbsp; on &nbsp; {{this.datecomment}} <br />
+                                    {{{this.comment}}}
+                                    <br /><br />
+                                    {{#ifEqual this.replybyid -1}}
+                                        <button type="button" onclick="return sendAdminRes({{this.commentID}}, '{{this.FirstName}} {{this.Lastname}}')" class="btn btn-info btn-fill btn-sm">Reply Comment</button>
+                                    {{else}}
+                                        <div class="row">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-9">
+                                                <label>Responded by</label> &nbsp;
+                                                <span style="font-size:18px; color:blue">
+                                                    {{this.uFirstName}} {{this.uLastname}}
+                                                </span>
+                                                &nbsp;&nbsp; on  {{this.datereplycomment}} <br />
+                                                <i><q style="font-size:16px;">
+                                                 {{this.reply}}
+                                                </q></i>
+                                            </div>
+                                        </div>
+                                    {{/ifEqual}}
+                                </div>
+                            </div>
+                            <br /><hr /><br />
+                        {{/each}}
+
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class = "modal fade" id="modelSendReply" tabindex = "-1" role = "dialog" aria-labelledby = "modelSendReply" aria-hidden = "true">
+    <div class = "modal-dialog  modal-lg">
+      <div class = "modal-content">
+
+         <div class = "modal-header">
+            <button type = "button" class = "close" data-dismiss = "modal" aria-hidden = "true">×</button>
+            <h4 class = "modal-title" id = "myModalLabel">Reply Back</h4>
+         </div>
+
+         <div  class="modal-body">
+             Replying to &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b><span id="responseInvestor" style="font-size:20px;"></span></b> <br /><br />
+             <textarea  id="txtinvestorresponse" name="txtinvestorresponse" rows="10" class="form-control border-input"></textarea>
+         </div>
+
+         <div class = "modal-footer">
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal" onclick="sendAdminResponse()"> Reply Back </button>
+            <button type = "button" class = "btn btn-info btn-fill" data-dismiss = "modal"> Close </button>
+         </div>
+
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<form id="frmSendDocumentResponse" name="frmSendDocumentResponse" action="/admin/sendDocumentResponse" method="post">
+    <input type="hidden" name="docid" id="docid" value="{{docid}}" />
+    <input type="hidden" name="commentid" id="commentid" value="" />
+    <input type="hidden" name="commentresponse" id="commentresponse" value="" />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+
+{{> Footer}}

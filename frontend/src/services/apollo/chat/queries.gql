@@ -1,0 +1,55 @@
+query GetPriceNegotiationList($orderID: Int!) {
+  getPriceNegotiationList(orderID: $orderID) {
+    counterpartID
+    orderID
+    orderOwnerID
+    isRead
+    dateRead
+    formattedDateSent
+    counterpartFullName
+  }
+}
+
+query GetChats($chatBetween: CHAT_BETWEEN!, $stoID: Int, $context: CHAT_CONTEXT, $contextID: Int, $counterpartID: Int) {
+  getChats(
+    chatBetween: $chatBetween
+    stoID: $stoID
+    context: $context
+    contextID: $contextID
+    counterpartID: $counterpartID
+  ) {
+    ID
+    sender
+    receiver
+    investorID
+    adminID
+    stoID
+    message
+    type
+    dateSent
+    isRead
+    dateRead
+    isEdited
+    location
+    isDeleted
+    context
+    contextID
+    contextReceiverID
+  }
+}
+
+query GetStoInfo($stoID: Int!) {
+  findSto(ID: $stoID) {
+    ID
+    title
+    details
+  }
+}
+
+query GetUnreadMessagesCount($sender: SENDER_TYPE!, $stoID: Int!) {
+  getUnreadMessagesCount(sender: $sender, stoID: $stoID)
+}
+
+query GetPriceNegotiationUnreadMessagesCount($context: CHAT_CONTEXT!, $contextID: Int!, $counterpartID: Int) {
+  getPriceNegotiationUnreadMessagesCount(context: $context, contextID: $contextID, counterpartID: $counterpartID)
+}

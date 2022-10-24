@@ -1,0 +1,1 @@
+ALTER TABLE InvestorBuyPropertyAlert DROP COLUMN `purchasePriceOffered`;

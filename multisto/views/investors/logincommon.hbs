@@ -1,0 +1,72 @@
+<html>
+<head>
+    <title>{{SiteParameter_PageTitle}}</title>
+    <link rel="shortcut icon" href="../img/site/{{favicon}}" type="image/x-icon" />         
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+    
+    <script type="text/javascript">
+
+         function login() {
+                if(document.getElementById("iusername").value === "") {
+                    alert("Username required");
+                    return false;
+                }
+             
+                if(document.getElementById("ipassword").value === "") {
+                    alert("Password required");
+                    return false;
+                }
+
+                document.getElementById("Login").submit();
+         }
+
+     </script>
+    
+    {{{ CustomPlatformCSSStyles }}}
+    
+</head>
+
+<body id="LoginForm">
+<br /><br />
+    
+<div class="container">
+    <div class="login-form">
+        <div class="main-div">
+            <div class="panel">
+               <img src="/img/stologo/{{logo}}" style="max-height: 170px; max-width: 220px;" /> 
+                <br />
+               <span style="font-size:30px">Investor Login</span>
+               <p>Please enter your user name and password</p>
+            </div>
+            
+
+            <form id="Login" action="/platform/signin" method="post">
+
+                <div class="form-group">
+                    <input type="text"  maxLength="70" class="form-control" id="iusername" name="iusername" placeholder="Email Username">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" maxlength="100" class="form-control" id="ipassword" name="ipassword" placeholder="Password">
+                </div>
+                
+                <br>
+                <button onclick="return login()" class="btn btn-primary">Login</button>
+                
+            </form>
+            
+            <a href='/forgotpassword'>Forgot Password</a>
+            
+            <br />
+            <span style="color:red;"> <b>{{UserMessage}}</b> </span>
+            <br />
+            <b>Don't have an investor login ? </b>
+            <br/> 
+            <a href="/register"> Create your profile </a>
+        </div>
+    </div>
+</div>
+    
+</body>
+</html>

@@ -1,0 +1,7 @@
+mutation FillKyc($data: JSON!) {
+    fillKyc(data: $data)
+}
+
+mutation ApplyKyc($applied: Boolean!) {
+    applyKyc(applied: $applied)
+}

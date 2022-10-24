@@ -1,0 +1,169 @@
+{{> Header}}
+
+{{> atomicswap}}
+
+
+<script language="javascript">
+	$(document).ready(function() {
+			var web3 = new Web3('{{web3Address}}');
+			web3.eth.getTransaction('{{record.transactionID}}')
+			.then((val) => {
+				var value = val.input.substring(74, val.input.length);
+				value = parseFloat(   web3.utils.fromWei(value, 'ether') , 10   );
+				$("#blockchainBalanceSpan").html( "Balance Retrieved from Blockchain &nbsp;&nbsp;" + value + " {{currencySymbol record.currencyID}}")
+			})
+	})
+    var op = 0;
+
+    function bulkEmail() {
+        window.location.href = "bulkEmail";
+        return false;
+    }
+    function approveSharesTransfers() {
+        op = 1;
+        showModelGeneralYesNoDialogBox("Are you sure you want to approve this transfer and you have verified the payment receipt in your accounts ? <br /><br /> If you click Yes then this transaction will be confirmed and investor balance will be updated accordingly", "Yes Approve", "Cancel")
+    }
+    function rejectInvestorFundsTransferInAccount() {
+        op = 2;
+        showModelGeneralYesNoDialogBox("Are you sure you want to decline this transfer ? <br /><br />", "Yes Decline", "Cancel");
+    }
+    function generalModelOKButtonClickedClientEvent() {
+        if(op == 1) {
+                window.location.href = "approveInvestorFundsTransferInAccount?id=" + {{record.ID}};
+                return false;
+        }
+
+        if(op == 2) {
+                window.location.href = "rejectInvestorFundsTransferInAccount?id=" + {{record.ID}};
+                return false;
+        }
+    }
+
+</script>
+
+
+{{> HeaderInnerSto}}
+
+    {{#if errorMessage}}
+        <span style="color:red; font-size:16px;"><b>{{errorMessage}}</b></span>
+        <br /><br />
+    {{/if}}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+
+				<div class="header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4 class="title"> <img src="/img/email.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Transfer Details from Investor</h4>
+                        </div>
+                    </div>
+				</div>
+
+				<div class="content">
+                    <div class="row">
+                            <div class="col-md-4">
+                                <label>Investor ID</label> &nbsp;&nbsp; {{record.investorID}}
+                            </div>
+
+                            <div class="col-md-2">
+                                <label>Investor</label>
+                            </div>
+
+                            <div class="col-md-6">
+                                {{#if record.investorType}}
+                                    {{record.CompanyName}}
+                                {{else}}
+                                    {{record.FirstName}} {{record.LastName}} &nbsp;&nbsp;&nbsp;&nbsp;
+                                {{/if}}
+                            </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                            <div class="col-md-2">
+                                <label>Transfer Date</label>
+                            </div>
+
+                            <div class="col-md-7">
+                                {{record.alertDateReceived}}
+                            </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                            <div class="col-md-2">
+                                <label>Amount</label>
+                            </div>
+
+                            <div class="col-md-3">
+                                   {{currencySymbol record.currencyID}}  {{numberFormat record.Amount decimalLength="-"}}
+                            </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                            <div class="col-md-2">
+                                <label>Payment Channel</label>
+                            </div>
+
+                            <div class="col-md-3">
+                                    <b>{{record.title}} </b><br />
+                                    {{textBreakLinesEnters record.paymentDetails}}
+                            </div>
+                    </div>
+
+                    <br />
+                     <label>Details from Investor</label>
+                    <br />
+                    <div class="row">
+                            <div class="col-md-7">
+                                {{textBreakLinesEnters record.Details}}
+                            </div>
+                    </div>
+                    <br /> <br />
+
+                    {{#if UserMessage}}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <span style="color:red; font-size:18px;">
+                                    {{UserMessage}}
+                                </span>
+                            </div>
+                        </div>
+                    {{/if}}
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <button onclick="return approveSharesTransfers()"  class="btn btn-info btn-fill">Approve Transfer</button>
+                        </div>
+                        <div class="col-md-10">
+                                <label> Please verify payment receipt and click Approve Transfer. This will update the investor balance within platform
+								</label>
+								<br />
+								{{#if record.conversionEnabled}}
+										<b>Note </b>  &nbsp; &nbsp; <label>Currency Conversion is enabled on this channel. The amount </label> &nbsp; {{currencySymbol record.currencyID}} {{numberFormat record.Amount decimalLength="-"}} &nbsp; <label>will be converted to</label>  &nbsp;  {{currencySymbol record.currencyToConvert}} {{numberFormat amountConversion  decimalLength="-"}} &nbsp;	<label>at the rate of</label> &nbsp; {{currencySymbol record.currencyToConvert}} {{record.conversionRate}}	 / 	{{currencySymbol record.currencyID}}
+								{{/if}}
+
+
+								{{#if record.isBlockchainBased}}
+										<br />
+										<span id="blockchainBalanceSpan"> <label> Getting Balance from Blockchain . . . </label> </span>
+								{{/if}}
+
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2">
+                            <button onclick="return rejectInvestorFundsTransferInAccount()"  class="btn btn-info btn-fill">Decline Transfer</button>
+                        </div>
+                        <div class="col-md-10">
+                                <label> Transfer can be declined. This will also send an email to investor that his transfer has been declined </label>
+                        </div>
+                    </div>
+					<br />&nbsp;
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+{{> Footer}}

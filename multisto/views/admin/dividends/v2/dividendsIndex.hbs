@@ -1,0 +1,150 @@
+{{> Header}}
+{{!-- Load DataTables with all extensions --}}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.11.3/b-2.1.0/b-html5-2.1.0/b-print-2.1.0/cr-1.5.5/fh-3.2.0/kt-2.6.4/r-2.2.9/datatables.min.css"/>
+ 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.11.3/b-2.1.0/b-html5-2.1.0/b-print-2.1.0/cr-1.5.5/fh-3.2.0/kt-2.6.4/r-2.2.9/datatables.min.js"></script>
+
+<style>
+    .hidden {
+        display: none
+    }
+    .thead {
+        position:sticky;
+        top: 0;
+        z-index: 1;
+        background-color: white;
+        box-shadow: 0 0 4px 0 rgba(0,0,0,0.1),0 0 10px 0 rgba(0,0,0,0.15);
+    }
+    .tag {
+        font-size:50%;
+        vertical-align: super;
+        border-radius: 8px;
+        padding: 4px;
+    }
+</style>
+
+<script language="javascript">
+    var newDividendHtml;
+    var dividendPayoustHtml;
+    $(document).ready(function() {
+        $("#dvidends").addClass('active');
+        newDividendHtml = $("#newDividendModal").html();
+        dividendPayoustHtml = $("#dividendPayoutsModal").html();
+        $("#newDividendModal").remove();
+        $("#dividendPayoutsModal").remove();
+
+        {{!-- var table = $("#dividendTemplates").dataTable({}); --}}
+
+        validationErrors();
+    });
+
+    function newDividend() {
+        showModelGeneralYesNoDialogBox(`Loading...<br/>{{> LoadingRipple}}`, "Create", "Cancel");
+        $(".modal-title").html("New Dividend Distribution");
+        const area = $("#commonDialogYesNoDivTextArea");
+        area.empty();
+        area.html(newDividendHtml);
+        area.css("display", "block");
+        changeModalYesButton("Create", "btn-info", () => {
+            $("#newDividendForm").submit();
+        });
+    }
+
+    {{!-- Expand the dividend and load data about next payout and individual investor transactions listing --}}
+    function expandDividend(id) {
+        setTimeout(() => scrollToId('payouts-{{this.id}}', 'fast'), 500);
+    }
+</script>
+
+<div id="newDividendModal" class="hidden">
+    {{> newDividendModal}}
+</div>
+<div id="dividendPayoutsModal" class="hidden">
+    {{> dividendPayoutsModal}}
+</div>
+
+{{> HeaderInnerSto}}
+
+{{#each ErrorMessages}}
+    <p style="color: red;">{{this.error}}</p>
+{{/each}}
+
+<div id="dividends" class="row">
+    <div clas="col-md-12">
+		<div class="card">
+			
+            <div class="header">
+                
+                <div class="row">
+                    <div class="col-md-10">                
+                        <h4 class="title">
+                            <img src="/img/dividends.png" width="30px" >
+                            &nbsp; Dividends <small class="tag">BETA</small>
+                        </h4>
+                    </div> 
+                    <div class="col-md-2">
+                        <button onclick="newDividend();" class="btn btn-info btn-fill">New Dividend</button>
+                    </div>
+                </div>
+			</div>
+
+            <main class="content" style="overflow-x: scroll;">
+                <p>
+                    Here you can create dividend distributions on a regular basis.
+                </p>
+                {{#if dividends}}
+                    <table id="dividendTemplates" class="table table-hover" style="overflow: auto;">
+                        <thead class="listingHeaderFontSize thead">
+                            <th></th>
+                            <th>Title</th>
+                            <th>Share Class</th>
+                            {{!-- <th>Payment Channel</th> --}}
+                            <th>Next Date</th>
+                            <th>Period</th>
+                            <th>Amount</th>
+                            <th>Investors</th>
+                            <th>Shares</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            {{#each dividends}}
+                            <tr class="{{#unless this.isActive}}danger{{/unless}}">
+                                <td>
+                                    {{#if this.isActive}} <img src="/img/greendot.png" width="10px" alt="ACTIVE" />
+                                    {{else}} <img src="/img/reddot.png" width="10px" alt="INACTIVE" />
+                                    {{/if}}
+                                </td>
+                                <td>{{this.title}}</td>
+                                <td>{{this.shareType.title}}</td>
+                                {{!-- <td>{{this.paymentChannel.title}}</td> --}}
+                                <td><script>var date = new Date("{{this.dateTimeDue}}"); document.write(date.toLocaleDateString());</script></td>
+                                <td>{{this.period}} {{this.periodUnit}}</td>
+                                <td class="text-right">{{this.currency.Symbol}} {{roundNumber this.totalAmount}}</td>
+                                <td>{{this.investors}}</td>
+                                <td class="text-right">{{roundNumber this.totalInvestorShares}}</td>
+                                <td>
+                                    <button class="btn btn-info"
+                                    id="payoutsBtn-{{this.id}}"
+                                    data-toggle="collapse" data-target="#payouts-{{this.id}}" onclick="expandDividend({{this.id}})">
+                                        <span class="glyphicon glyphicon-tasks"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                {{else}}
+                    <p>No records found</p>
+                    <p>Start by creating a new dividend type from the button in the top-right corner.</p>
+                {{/if}}
+            </main>
+
+        </div>
+    </div>
+</div>
+{{#each dividends}}
+    {{> dividend}}
+{{/each}}
+{{> Footer}}

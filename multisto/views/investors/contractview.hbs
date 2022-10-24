@@ -1,0 +1,148 @@
+{{> Header}}
+
+<script language="javascript">
+    $(document).ready(function(){
+        $("#InvestorsMenu").addClass('active');
+        initlizeSignaturesCanvas("newSignature");
+    })
+    function signContract() {
+        if(isSignatureAreaIsEmpty("newSignature")) {
+            showModelGeneralOKDialogBox("You did not sign the contract. Please use you mouse to draw your signatures in Step 2");
+            return;
+        }
+
+        document.getElementById("signatureData").value = getSignatureImageData("newSignature");
+        document.getElementById("signature").submit();
+    }
+    function downloadInvestorContractPDF(file) {
+        window.location.href = "downloadInvestorContractPDF?id={{rec.ID}}&file=" + file;
+        return false;
+    }
+    function deleteSignedContract(id) {
+        window.location.href = "deleteInvestorContract?id={{rec.ID}}";
+        return false;
+    }
+</script>
+
+<script src="/libs/signature.js"></script>
+
+{{> HeaderInner}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">{{{__ "Offer Details"}}}---</h4>
+            </div>
+            <div class="content">
+
+                    {{#ifEqual rec.CurrentStatus 0}}
+                        <label> You have received a new contract from the administrator. Please review and sign the contract </label>
+                        <br />
+                    {{/ifEqual}}
+
+                    <img src='/img/stologo/{{rec.logo}}' style="max-width:120px; max-height:60px;">
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-md-2"><label>
+                            {{#ifEqual Data.stoType 2}}
+                                Company
+                            {{else}}
+                                STO
+                            {{/ifEqual}}
+                        </label></div>
+                        <div class="col-md-10">{{rec.title}} </div>
+                    </div><br />
+
+                    <div class="row">
+                        <div class="col-md-2"><label>Contract Title</label></div>
+                        <div class="col-md-10">{{rec.ContractTitle}}</div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-md-2"><label>Contract Details</label></div>
+                        <div class="col-md-10">{{rec.ContractDetails}}</div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2"><label>Date Offered</label></div>
+                        <div class="col-md-10">{{rec.DateOffered}}</div>
+                    </div>
+
+                    <br />
+
+                    {{#ifEqual rec.CurrentStatus 0}}
+
+                            <h4>Step 1</h4>
+                            <div class="row">
+                                <div class="col-md-3"><label> Download the contract and review</label></div>
+                                <div class="col-md-5"><button type="button" class="btn btn-info btn-fill btn-sm" onclick="downloadInvestorContractPDF(0)">Download PDF</button></div>
+                            </div>
+                            <br />
+
+
+                            <h4>Step 2</h4>
+                            <label>Sign the contract  (Use your mouse and draw below)</label>
+                            <br />
+
+                             <div class="row">
+                                 <div class="col-md-5">
+                                    <canvas class="roundCorners" id="newSignature"
+                                    style="position: relative; margin: 0; padding: 0; border: 1px solid #c4caac;"></canvas>
+                                 </div>
+
+                                <div class="col-md-7">
+                                    <label>Clear the signature and re-sign</label> <br />
+                                    <button type="button" class="btn btn-info btn-fill btn-sm" onclick="signatureClear('signatureClear')">Clear Signatures</button>
+                                 </div>
+                             </div>
+                            <br >
+
+                            <div class="text-left">
+                                <h4>Step 3</h4>
+                                <label>Click the button and sign the contract. You can download signed contract PDF later</label> <br />
+                                <button type="button" class="btn btn-info btn-fill btn-wd" onclick="signContract()">Sign Contract</button>
+                            </div>
+
+                    {{/ifEqual}}
+
+                    {{#ifEqual rec.CurrentStatus 1}}
+
+                        <h3 style="color:green;"> <img src="/img/greendot.png" width="30px">&nbsp;&nbsp;You have signed the contract </h3>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-1"><label>Date</label></div>
+                            <div class="col-md-7">{{rec.DateSigned}}</div>
+                        </div>
+
+                        <br />
+
+                        <div class="row">
+                            <div class="col-md-3"><label>Download Signed Contract PDF</label></div>
+
+                            <div class="col-md-5"><button type="button" class="btn btn-info btn-fill btn-sm" onclick="downloadInvestorContractPDF(1)">Download</button></div>
+                        </div>
+
+                        <br />
+
+                        <div class="row">
+                            <div class="col-md-4"><label>You can delete your signature and re-sign later</label></div>
+
+                            <div class="col-md-5"><button type="button" class="btn btn-info btn-fill btn-sm" onclick="deleteSignedContract()">Delete your Signatures</button></div>
+                        </div>
+
+                    {{/ifEqual}}
+
+                    <br /><br /><br />
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="signature" name="signature" action="/signcontract" method="post" >
+    <input type="hidden" id="signatureData" name="signatureData" />
+    <input type="hidden" id="id" name="id" value={{rec.ID}} />
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+</form>
+
+{{> Footer}}

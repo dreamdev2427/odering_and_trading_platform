@@ -1,0 +1,243 @@
+{{> Header}}
+
+<style>
+    .message {
+        border: 2px solid gray;
+        background-color: #EEE;
+        color: #555;
+        border-radius: 8px;
+        padding: 16px;
+        font-size: large;
+    }
+    .error {
+        border-color: #FAA;
+        background-color: #FEE;
+        color: #A33;
+    }
+    .success {
+        border-color: #AFA;
+        background-color: #EFE;
+        color: #3A3;
+    }
+    .chat-panel {
+        height: 350px;
+        max-height: 350px;
+        margin-bottom: 10px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    .chip {
+        display: inline-block;
+        padding: 0 25px;
+        height: 50px;
+        font-size: 16px;
+        line-height: 50px;
+        border-radius: 25px;
+    }
+    .chip-investor {
+        background-color: #e4f5ef;
+    }
+    .chip-admin {
+        background-color: #dedbb4;
+    }
+    .sender-info {
+        margin-bottom: 5px;
+    }
+    .message-container {
+        margin: 20px;
+    }
+    .file-link {
+        text-decoration: none;
+        color: #017698;
+        margin-left: 15px;
+    }
+    .js-attach {
+        font-size: 20px;
+        padding: 8px;
+        border-radius: 10px / 30px;
+        background: #bada55 !important;
+    }
+    .file-input {
+        display: none !important;
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+<script language="javascript">
+    $(document).ready(function () {
+        $("#chat").addClass('active');
+        const _csrf = '{{csrfToken}}';
+        
+        $(document).on('click', '.js-back', (e) => {
+            window.location.href = "chat";
+        });
+        
+        $(document).on('click', '.js-send', (e) => {
+            const message = document.getElementById("messageText").value;
+            if(!message) {
+                return false;
+            } else {
+                const data = $(e.currentTarget).data();
+                const investorID = data.investorid;
+                $.post('/admin/createChat', { sender: "ADMIN", receiver: "INVESTOR", investorID, message, type: "MESSAGE", location: null, _csrf })
+                    .done(() => {
+                        document.getElementById("messageText").value = "";
+                        window.location.href = "chatHistory?investorID=" + investorID;
+                    });
+            }
+        });
+
+        $(document).on('keydown', '.js-send', (e) => {
+              if (e.key === 'Enter') {
+                const message = document.getElementById("messageText").value;
+                if(!message) {
+                  return false;
+                } else {
+                  const data = $(e.currentTarget).data();
+                  const investorID = data.investorid;
+                  $.post('/admin/createChat', { sender: "ADMIN", receiver: "INVESTOR", investorID, message, type: "MESSAGE", location: null, _csrf })
+                    .done(() => {
+                        document.getElementById("messageText").value = "";
+                        window.location.href = "chatHistory?investorID=" + investorID;
+                    });
+                }
+            }
+        });
+
+        $(document).on('click', '.js-attach', (e) => {
+            document.getElementById("fileInput").click();
+        });
+
+        $(document).on('change', '.js-upload', (e) => {
+            const { files } = e.currentTarget;
+            if (!files || !files.length) {
+              return false;
+            }
+            const file = files.item(0);
+            if ((file?.size || 0) / 1024 / 1024 > 10) {
+              showModelGeneralOKDialogBox("The Maximum Upload File Size Is 10 MB");
+              return false;
+            }
+            document.getElementById("sendBtn").disabled = true;
+            document.getElementById("attachmentBtn").disabled = true;
+            document.getElementById("attachmentBtn").innerHTML = `...`;
+            const data = $(e.currentTarget).data();
+            const investorID = data.investorid;
+            $("#fileUpload").ajaxSubmit({
+              success: function(res) {
+                const fileInfo = {
+                  link: res.link,
+                  name: res.name,
+                  type: file.type,
+                  originalName: file.name,
+                };
+                const newData = {
+                  sender: "ADMIN",
+                  receiver: "INVESTOR",
+                  investorID,
+                  message: JSON.stringify(fileInfo),
+                  type: "FILE",
+                  location: null,
+                  _csrf
+                };
+                $.post('/admin/createChat', newData)
+                  .done(() => {
+                    window.location.href = "chatHistory?investorID=" + investorID;
+                  });
+              }
+            });
+        });
+    });
+</script>
+
+{{> HeaderInnerSto}}
+
+<div class="row">
+  <div class="col-md-12">
+    {{#if errorMessage}}
+      <p class="message error">{{errorMessage}}</p>
+    {{/if}}
+    {{#if successMessage}}
+      <p class="message success">{{successMessage}}</p>
+    {{/if}}
+    <div class="card">
+      <div class="header">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 class="title"><img src="/img/chatbox.png" width="30px;" style="padding-bottom:4px;" /> &nbsp;  Chat History</h4>
+          </div>
+          <div class="col-md-6">
+              <div class="text-right">
+                  <button class="btn btn-lg btn-fill btn-secondary js-back">
+                    Back &#11178;
+                  </button>
+              </div>
+          </div>
+        </div>
+      </div>
+      <br/>
+      <div class="content" style="overflow: auto;">
+        {{#if chatHistoryCount}}
+        <div class="row">
+          <div class="col-md-12 chat-panel">
+            <div>
+              {{#each chatHistory}}
+              <div {{#ifCond this.sender '===' "ADMIN"}} class="text-right message-container" {{/ifCond}} {{#ifCond this.sender '===' "INVESTOR"}} class="text-left message-container" {{/ifCond}}>
+                <p class="sender-info">
+                  {{#ifCond this.sender '===' "ADMIN"}}<strong>{{this.ADMIN_FULL_NAME}}</strong>{{/ifCond}}
+                  {{#ifCond this.sender '===' "INVESTOR"}}<strong>{{this.INVESTOR_FULL_NAME}}</strong>{{/ifCond}}
+                  <small class="text-primary">At {{this.DATE_SENT}}</small>
+                </p>
+                <div {{#ifCond this.sender '===' "ADMIN"}} class="chip chip-admin" {{/ifCond}} {{#ifCond this.sender '===' "INVESTOR"}} class="chip chip-investor" {{/ifCond}}>
+                  {{#ifCond this.type '===' "MESSAGE"}}
+                    {{this.message}}
+                  {{/ifCond}}
+                  {{#ifCond this.type '===' "FILE"}}
+                    <i class="ti-import"></i>
+                    <a class="file-link" target="_blank" href={{{jsonParse this.message "link"}}} download={{{jsonParse this.message "originalName"}}}>
+                      {{{jsonParse this.message "originalName"}}}
+                    </a>
+                  {{/ifCond}}
+                </div>
+              </div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <textarea 
+                    id="messageText"
+                    name="messageText"
+                    maxlength="2000"
+                    rows="2"
+                    required
+                    data-investorid="{{investorID}}"
+                    class="form-control border-input js-send"
+                    style="width:100%;"></textarea>
+            </div>
+            <div class="col-md-1">
+              <form id="fileUpload" name="fileUpload" action="/admin/uploadFileToCloud?_csrf={{csrfToken}}" enctype="multipart/form-data" method="POST">
+                <button id="attachmentBtn" type="button" class="btn btn-lg btn-fill js-attach">
+                  <i class="ti-plus"></i>
+                </button>
+                <input id="fileInput" name="fileInput" class="file-input js-upload" type="file" data-investorid="{{investorID}}" />
+              </form>
+            </div>
+            <div class="col-md-2">
+                <button id="sendBtn" class="btn btn-lg btn-fill btn-success js-send" data-investorid="{{investorID}}">
+                    Send
+                </button>
+            </div>
+        </div>
+        {{else}}
+          <label>No Conversation Found</label>
+        {{/if}}
+      </div>
+      <br/>
+    </div>
+  </div>
+</div>
+
+{{> Footer}}

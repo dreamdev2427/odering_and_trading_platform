@@ -1,0 +1,36 @@
+<script>
+  function postIsPrivateKeyEnabled(isChecked) {
+    document.getElementById('isPrivateKeyEnabled-intValue').value = +isChecked;
+    document.getElementById('isPrivateKeyEnabled-redirectUrl').value = window.location.href;
+    document.getElementById('postisPrivateKeyEnabled').submit();
+  }
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title"> <img src="/img/addmore.png" width="30px;" style="padding-bottom:4px;"
+                        alt='add more' /> Private Key</h4>
+                <label>Enable/Disable Private Key</label>
+            </div>
+            <div class="content">
+                <form method="post" id="postisPrivateKeyEnabled" action="postParamUpdateToApi">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="switch">
+                                <input type="checkbox" onclick="postIsPrivateKeyEnabled(this.checked)"
+                                    {{#if isPrivateKeyEnabled}} checked {{/if}} />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="isPrivateKeyEnabled-intValue" name="intValue" />
+                    <input type="hidden" id="isPrivateKeyEnabled-stringValue" name="stringValue" value="" />
+                    <input type="hidden" id="isPrivateKeyEnabled-param" name="param" value="isPrivateModuleEnabled" />
+                    <input type="hidden" id="isPrivateKeyEnabled-redirectUrl" name="redirectUrl" value="/platform/otherSwitches" />
+                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

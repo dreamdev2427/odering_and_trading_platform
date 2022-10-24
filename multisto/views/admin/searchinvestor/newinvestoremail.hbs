@@ -1,0 +1,196 @@
+{{> Header}}
+
+	<script language="javascript">
+        
+        $(document).ready(function() {
+            $("#InvestorsMenu").addClass('active');                			
+        })    
+		
+        function search() {
+            if(document.getElementById("email").value == "") {
+                showModelGeneralOKDialogBox("Please enter email address");
+                return;
+            }
+            
+            if(! validations_validateEmail (document.getElementById("email").value) ) {
+                showModelGeneralOKDialogBox("Please enter valid email address");
+                return;                
+            }
+            
+            document.getElementById("investorForm").submit();
+        }
+        
+        function addwithoutemail() {
+            showModelGeneralYesNoDialogBox("Are you sure you want to create an investor profile without email address ?", "Yes Create", "Cancel")   
+        }
+        
+        function generalModelOKButtonClickedClientEvent() {
+            document.getElementById("email").value = "no"
+            document.getElementById("investorForm").submit();
+        }
+
+	</script>
+
+{{> HeaderInnerSto}}
+		
+    <div class="row">		
+       <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/search.png" width="35px;" style="padding-bottom:4px;" /> &nbsp; Search Investor</h4>
+                </div>
+                <div class="content table-responsive table-full-width icon-section">
+                    
+                    <div class="row">
+                        <div class="col-md-1"> </div>
+
+                        <div class="col-md-10">                        
+                            <label> Please enter email address and search if an investor already exists in this platform. You can only create investor profile if no investor with email address exists  </label>
+                        </div>
+                        
+                        <div class="col-md-1"> </div>
+                    </div>
+                        
+                    <br />
+                    
+                    <div class="row">
+                        
+                            <div class="col-md-1"> </div>
+
+                            <div class="col-md-6">
+                                <form id="investorForm" name="investorForm" action="searchInvestorEmailtoRegisterPost" method="post">
+                                    <label>Enter Email Address</label>
+                                    <input type="text" maxLength="120" id="email" name="email" class="form-control border-input"  type=text  placeholder="Enter Email Address">
+                                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                                </form>
+                            </div>
+
+                            <div class="col-md-1"> </div>     
+                        
+                    </div>                            
+                                        
+                    <br>
+                    <div class="row">
+                         <div class="col-md-1"> </div>        
+                        <div class="col-md-4">                                
+                            <button onclick="search()" class="btn btn-info btn-fill">Search Email Address</button> 
+                        </div>								
+                    </div>
+                   
+                    <br />
+                                                            
+                    
+                    {{#if errorMessage}}
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-1"> </div>                    
+                            <div class="col-md-10">
+                                
+                                {{#ifEqual errorMessage 1}}
+                                    <span style="font-size:18px;">
+                                        <img src="/img/reddot.png" width="25px" /> &nbsp; Investor with this email address is already member of this company
+                                    </span>
+                                    <br /><br />
+                                {{/ifEqual}}
+                                
+                                
+                                {{#ifEqual errorMessage 2}}
+                                    <span style="font-size:18px;">
+                                        <img src="/img/reddot.png" width="25px" /> &nbsp; Investor with this email address is registered with another company 
+                                    </span>
+                                    
+                                    <br /><br />
+                                    You can invite him to your company. if he accepts the invitation then his KYC profile will be made available to you that you can review and approve. 
+                                    <br /><br />    
+                                    Here is the complete process
+                                    <br /><br />    
+                                    
+                                    <div class="row">
+                                        <div class="col-md-1"> 
+                                            <b>Step 1</b> 
+                                        </div> 
+                                        <div class="col-md-10"> 
+                                            Send him an email and ask for his First Name, Last Name, City and County. If you already posses that information you can go on with step 2
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-1"> 
+                                            <b>Step 2</b> 
+                                        </div> 
+                                        <div class="col-md-10"> 
+                                             Go in New Registration tab and click Search and Send Invitation
+                                        </div>
+                                    </div>  
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-1"> 
+                                            <b>Step 3</b> 
+                                        </div> 
+                                        <div class="col-md-10"> 
+                                             Enter First Name, Last Name, City, County and click search. if the information matches with his current investor profile then the platform will send out an invitation to that investor
+                                        </div>
+                                    </div>                                  
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-1"> 
+                                            <b>Step 4</b> 
+                                        </div> 
+                                        <div class="col-md-10"> 
+                                              Investor will receive an email with your invitation. Then investor will login his profile and approve or reject your invitation 
+                                        </div>
+                                    </div>                                  
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-1"> 
+                                            <b>Step 5</b> 
+                                        </div> 
+                                        <div class="col-md-10"> 
+                                            Once investor approves your invitation then his KYC profile will be available that you can review and approve 
+                                        </div>
+                                    </div>                                  
+                                
+                                
+                                    <br /><br />
+                                {{/ifEqual}}                                
+                                
+                            </div>
+                            <div class="col-md-1"> </div>                    
+                        </div>
+                    {{/if}}                            
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="row topPaddingBetweenPageSections">		
+       <div class="col-md-12 ">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title"> <img src="/img/add.png" width="25px;" style="padding-bottom:4px;" /> &nbsp;Add Investor without email address</h4>
+                </div>
+
+
+                <div class="content table-responsive table-full-width icon-section">
+                                    
+                    <div class="row">
+                         <div class="col-md-1"> </div>        
+                        <div class="col-md-10">                                
+                            <label>Create investor profile without email address requirement. Please beaware that this investor will never be able to login in his dashboard and only admin can manage and view his profile in the system</label>
+                            <br /><br />
+                            <button onclick="addwithoutemail()" class="btn btn-info btn-fill">Create Investor Profile without Email address</button> 
+                        </div>
+                    </div>
+                    
+                </div>
+                <br />
+           </div>
+        </div>
+    </div>
+
+
+{{> Footer}}

@@ -1,0 +1,2 @@
+ALTER TABLE `stos`
+ADD COLUMN `isBimountEnabled` TINYINT NULL;

@@ -1,0 +1,34 @@
+{{> Header}}
+{{> HeaderInner}}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-12">
+                        {{{__ "Your current investor status is"}}}
+                        <b>{{authType}}</b>
+                        {{{__ "Below you can change or upgrade your profile"}}}
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <b>{{{__ "VerifyInvestorCom Accreditation Required"}}}</b>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12" style="z-index: 0">
+                        {{> accreditationVerifyInvestorCom}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{> Footer}}

@@ -1,0 +1,24 @@
+
+build-api:
+  extends: .build-image
+  variables:
+    FOLDER: api
+  only:
+    refs:
+      - staging
+    changes:
+      - "api/**/*"
+
+
+deploy-develop-api:
+  stage: deploy
+  image: cdrx/rancher-gitlab-deploy
+  variables:
+    FOLDER: api
+  script:
+    - upgrade --environment Default --stack gosecurity --service digishares-api-devel --new-image "$CI_REGISTRY_IMAGE/$FOLDER:latest" --create --no-start-before-stopping --rollback-on-error --finish-upgrade
+  only:
+    refs:
+      - staging
+    changes:
+      - "api/**/*"

@@ -1,0 +1,33 @@
+{{- define "version.current" }}
+  {{- if eq .Values.version  "staging" }}
+    {{- .Values.staging_tag }}
+  {{- else if eq .Values.version  "production" }}
+    {{- .Values.production_tag }}
+  {{- else }}
+    {{- .Values.version }}
+  {{- end }}
+{{- end }}
+
+{{- define "hostnames.api" }}
+  {{- if eq .Values.apiHostname  "default" -}}
+    api.{{.Values.id}}.{{.Values.domain}}
+  {{- else }}
+    {{- .Values.apiHostname }}
+  {{- end }}
+{{- end }}
+
+{{- define "hostnames.frontend" }}
+    {{- if eq .Values.frontendHostname  "default" -}}
+     {{.Values.id}}.{{.Values.domain}}
+    {{- else }}
+     {{- .Values.frontendHostname }}
+    {{- end }}
+{{- end }}
+
+{{- define "hostnames.multisto" }}
+    {{- if eq .Values.multistoHostname  "default" -}}
+      admin.{{.Values.id}}.{{.Values.domain}}
+    {{- else }}
+     {{- .Values.multistoHostname }}
+    {{- end }}
+{{- end }}

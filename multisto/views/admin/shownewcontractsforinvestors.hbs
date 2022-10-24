@@ -1,0 +1,117 @@
+{{> Header}}
+
+<script language="javascript">
+	$(document).ready(function() {
+		
+	})
+    
+    function viewcontract(id) {
+        window.location.href = "contractview?investorID={{investorRec.ID}}&id=" + id;
+        return false;
+    }    
+    
+</script>
+
+
+{{> HeaderInnerSto}}
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="card">
+                
+				<div class="header">
+                    <div class="col-md-10">                                
+                        <h4 class="title"> <img src="/img/docsigned0.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; New Contracts</h4>
+                        {{#if showNewContractsSection}}
+                            <label>These contracts have been sent to investor and are not yet signed</label>
+                        {{/if}}
+                    </div>
+				</div>
+                
+				<div class="content">
+
+                    <br /><br />
+
+                    {{#if showNewContractsSection}}
+                        <table class="table table-striped">
+                            <thead>
+                                <th><b>Date</b></th>
+                                <th><b>Investor</b></th>
+                                <th><b>Title</b></th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                {{#each notSignedRecs}}
+                                <tr>
+                                    <td style="width: 20%">{{this.DateOffered}} </td>
+                                    <td style="width: 20%">{{this.FirstName}} {{this.LastName}}</td>
+                                    <td style="width: 65%">{{this.ContractTitle}}</td>
+                                    <td style="width: 65%">
+                                        <button onclick="return viewcontract({{this.ID}}, {{this.InvestorID}})" class="btn btn-info btn-fill btn-sm">View Contract</button>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    {{else}}
+                        <label>No Contracts Found</label>
+                    {{/if}}
+                    
+					<br />&nbsp;
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+    <div class="row topPaddingBetweenPageSections">
+            <div class="col-md-12">
+                <div class="card">
+
+                    <div class="header">
+                        <div class="col-md-10">                                
+                            <h4 class="title"> <img src="/img/docsigned1.png" width="30px;" style="padding-bottom:-10px;" /> &nbsp; Signed Contracts</h4>
+                            {{#if showSignedContractsSection}}
+                                <label>These contracts have been signed by investors. Please review and finalize these contracts</label>
+                            {{/if}}
+                        </div>
+                    </div>
+
+                    <div class="content">
+
+                        <br /><br />
+
+                        {{#if showSignedContractsSection}}
+                            <table class="table table-striped">
+                                <thead>
+                                    <th><b>Date</b></th>
+                                    <th><b>Investor</b></th>
+                                    <th><b>Title</b></th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+                                    {{#each signedRecs}}
+                                    <tr>
+                                        <td style="width: 20%">{{this.DateOffered}} </td>
+                                        <td style="width: 20%">{{this.FirstName}} {{this.LastName}}</td>
+                                        <td style="width: 65%">{{this.ContractTitle}}</td>
+                                        <td style="width: 65%">
+                                            <button onclick="return viewcontract({{this.ID}}, {{this.InvestorID}})" class="btn btn-info btn-fill btn-sm">View Contract</button>
+                                        </td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        {{else}}
+                            <label>No Contracts Found</label>
+                        {{/if}}
+
+
+                        <br />&nbsp;
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+{{> Footer}}

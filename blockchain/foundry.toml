@@ -1,0 +1,9 @@
+[default]
+# The source directory
+src = 'src'
+# The test directory
+test = 'test'
+# The artifact directory
+out = 'out'
+# The cache directory if enabled
+cache_path = 'cache'

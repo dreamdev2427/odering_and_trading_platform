@@ -1,0 +1,3 @@
+mutation AddNewInvestorBankAccount($data: InvestorBankAccountInput!){
+    addNewInvestorBankAccount(data: $data)
+}
